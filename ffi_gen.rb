@@ -24,6 +24,14 @@ class Clang::String
 end
 
 class FFIGen
+  attr_reader :blacklist, :source, :output
+
+  def initialize(options = {})
+    @blacklist = options.fetch(:blacklist, [])
+    @source    = options[:source] or fail "No source file given!!"
+    @output    = options.fetch(:output, $stdout)
+  end
+
   class Enum
     attr_reader :constants
     
@@ -97,11 +105,9 @@ class FFIGen
   end
   
   def generate
-    blacklist = ["clang_getExpansionLocation"]
-    
     index = Clang.create_index(0, 0)
     
-    args = ["", "test.h"]
+    args = ["", @source]
     args.concat `llvm-config --cflags`.split(" ")
     args << "-I/usr/lib/gcc/x86_64-linux-gnu/4.6/include"
     args_ptr = FFI::MemoryPointer.new(FFI.type_size(:pointer) * args.size)
@@ -112,7 +118,7 @@ class FFIGen
     
     Clang.get_num_diagnostics(unit).times do |i|
       diag = Clang.get_diagnostic unit, i
-      puts Clang.format_diagnostic(diag, Clang.default_diagnostic_display_options).to_s_and_dispose
+      @output.puts Clang.format_diagnostic(diag, Clang.default_diagnostic_display_options).to_s_and_dispose
     end
     
     declarations = []
@@ -187,7 +193,7 @@ class FFIGen
       end
     end
     
-    puts "require 'ffi'\n\nclass Clang\n  extend FFI::Library\n  ffi_lib 'clang'\n\n#{declarations.join("\n\n")}\n\nend"
+    @output.puts "require 'ffi'\n\nclass Clang\n  extend FFI::Library\n  ffi_lib 'clang'\n\n#{declarations.join("\n\n")}\n\nend"
   end
     
   def to_ffi_type(full_type)
@@ -254,4 +260,10 @@ class FFIGen
   
 end
 
-FFIGen.new.generate
+if __FILE__ == $0
+  ffi_gen = FFIGen.new(
+    :blacklist => %w( clang_getExpansionLocation ),
+    :source    => "test.h"
+  )
+  ffi_gen.generate
+end
