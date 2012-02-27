@@ -24,6 +24,12 @@ class Clang::String
 end
 
 class FFIGen
+  attr_reader :blacklist
+
+  def initialize(options = {})
+    @blacklist = options.fetch(:blacklist, [])
+  end
+
   class Enum
     attr_reader :constants
     
@@ -97,8 +103,6 @@ class FFIGen
   end
   
   def generate
-    blacklist = ["clang_getExpansionLocation"]
-    
     index = Clang.create_index(0, 0)
     
     args = ["", "test.h"]
@@ -254,4 +258,7 @@ class FFIGen
   
 end
 
-FFIGen.new.generate
+ffi_gen = FFIGen.new(
+  :blacklist => %w( clang_getExpansionLocation )
+)
+ffi_gen.generate
