@@ -24,11 +24,12 @@ class Clang::String
 end
 
 class FFIGen
-  attr_reader :blacklist, :output
+  attr_reader :blacklist, :source, :output
 
   def initialize(options = {})
     @blacklist = options.fetch(:blacklist, [])
     @source    = options[:source] or fail "No source file given!!"
+    @output    = options.fetch(:output, $stdout)
   end
 
   class Enum
@@ -117,7 +118,7 @@ class FFIGen
     
     Clang.get_num_diagnostics(unit).times do |i|
       diag = Clang.get_diagnostic unit, i
-      puts Clang.format_diagnostic(diag, Clang.default_diagnostic_display_options).to_s_and_dispose
+      @output.puts Clang.format_diagnostic(diag, Clang.default_diagnostic_display_options).to_s_and_dispose
     end
     
     declarations = []
@@ -192,7 +193,7 @@ class FFIGen
       end
     end
     
-    puts "require 'ffi'\n\nclass Clang\n  extend FFI::Library\n  ffi_lib 'clang'\n\n#{declarations.join("\n\n")}\n\nend"
+    @output.puts "require 'ffi'\n\nclass Clang\n  extend FFI::Library\n  ffi_lib 'clang'\n\n#{declarations.join("\n\n")}\n\nend"
   end
     
   def to_ffi_type(full_type)
