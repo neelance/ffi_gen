@@ -24,10 +24,11 @@ class Clang::String
 end
 
 class FFIGen
-  attr_reader :blacklist
+  attr_reader :blacklist, :output
 
   def initialize(options = {})
     @blacklist = options.fetch(:blacklist, [])
+    @source    = options[:source] or fail "No source file given!!"
   end
 
   class Enum
@@ -105,7 +106,7 @@ class FFIGen
   def generate
     index = Clang.create_index(0, 0)
     
-    args = ["", "test.h"]
+    args = ["", @source]
     args.concat `llvm-config --cflags`.split(" ")
     args << "-I/usr/lib/gcc/x86_64-linux-gnu/4.6/include"
     args_ptr = FFI::MemoryPointer.new(FFI.type_size(:pointer) * args.size)
@@ -259,6 +260,7 @@ class FFIGen
 end
 
 ffi_gen = FFIGen.new(
-  :blacklist => %w( clang_getExpansionLocation )
+  :blacklist => %w( clang_getExpansionLocation ),
+  :source    => "test.h"
 )
 ffi_gen.generate
