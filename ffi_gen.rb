@@ -260,8 +260,10 @@ class FFIGen
   
 end
 
-ffi_gen = FFIGen.new(
-  :blacklist => %w( clang_getExpansionLocation ),
-  :source    => "test.h"
-)
-ffi_gen.generate
+if __FILE__ == $0
+  ffi_gen = FFIGen.new(
+    :blacklist => %w( clang_getExpansionLocation ),
+    :source    => "test.h"
+  )
+  ffi_gen.generate
+end
