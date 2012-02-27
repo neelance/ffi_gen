@@ -2,7 +2,7 @@
 
 require 'ffi'
 
-class Clang
+module Clang
   extend FFI::Library
   ffi_lib 'clang'
 
