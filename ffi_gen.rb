@@ -148,10 +148,8 @@ class FFIGen
           constant_value = value_cursor && case value_cursor[:kind]
           when :integer_literal
             read_literal value_cursor
-          when :decl_ref_expr, :binary_operator, :paren_expr
-            next # skip those entries for now
           else
-            raise value_cursor[:kind].to_s
+            next # skip those entries for now
           end
           
           enum.constants << [constant_name, constant_value]
