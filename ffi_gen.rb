@@ -114,12 +114,13 @@ class FFIGen
       args.push "-include", header
     end
     args.concat @cflags
-    args_ptr = FFI::MemoryPointer.new(FFI.type_size(:pointer) * args.size)
-    pointers = args.map { |arg| FFI::MemoryPointer.from_string(arg) }
+    args_ptr = FFI::MemoryPointer.new :pointer, args.size
+    pointers = args.map { |arg| FFI::MemoryPointer.from_string arg }
     args_ptr.write_array_of_pointer pointers
     
     index = Clang.create_index 0, 0
     unit = Clang.parse_translation_unit index, "empty.h", args_ptr, args.size, nil, 0, 0
+    unit_cursor = Clang.get_translation_unit_cursor unit
     
     Clang.get_num_diagnostics(unit).times do |i|
       diag = Clang.get_diagnostic unit, i
@@ -139,7 +140,7 @@ class FFIGen
     
     declarations = []
     @name_map = {}
-    Clang.get_children(Clang.get_translation_unit_cursor(unit)).each do |declaration|
+    Clang.get_children(unit_cursor).each do |declaration|
       location = Clang.get_cursor_location declaration
       file_ptr = FFI::MemoryPointer.new :pointer
       Clang.get_spelling_location location, file_ptr, nil, nil, nil
@@ -163,7 +164,13 @@ class FFIGen
           value_cursor = Clang.get_children(enum_constant).first
           constant_value = value_cursor && case value_cursor[:kind]
           when :integer_literal
-            read_literal value_cursor
+            tokens_ptr_ptr = FFI::MemoryPointer.new :pointer
+            num_tokens_ptr = FFI::MemoryPointer.new :uint
+            Clang.tokenize unit, Clang.get_cursor_extent(value_cursor), tokens_ptr_ptr, num_tokens_ptr
+            token = Clang::Token.new tokens_ptr_ptr.read_pointer
+            literal = Clang.get_token_spelling unit, token
+            Clang.dispose_tokens unit, tokens_ptr_ptr.read_pointer, num_tokens_ptr.read_uint
+            literal
           else
             next # skip those entries for now
           end
@@ -260,25 +267,6 @@ class FFIGen
     str = str.dup
     str.sub! /^(#{@prefixes.join('|')})/, '' # remove prefixes
     str
-  end
-  
-  def read_literal(declaration)
-    extent = Clang.get_cursor_extent declaration
-    start_loc = Clang.get_range_start extent
-    end_loc = Clang.get_range_end extent
-  
-    file_ptr = FFI::MemoryPointer.new :pointer
-    start_offset_ptr = FFI::MemoryPointer.new :uint
-    end_offset_ptr = FFI::MemoryPointer.new :uint
-    
-    Clang.get_spelling_location start_loc, file_ptr, nil, nil, start_offset_ptr
-    Clang.get_spelling_location end_loc, nil, nil, nil, end_offset_ptr
-    
-    filename = Clang.get_file_name(file_ptr.read_pointer).to_s_and_dispose
-    start_offset = start_offset_ptr.read_uint
-    end_offset = end_offset_ptr.read_uint
-    
-    IO.read(filename, end_offset - start_offset, start_offset)
   end
   
 end
