@@ -223,12 +223,15 @@ class FFIGen
     
     canonical_type = Clang.get_canonical_type full_type
     case canonical_type[:kind]
+    when :short then ":short"
     when :int then ":int"
     when :long then ":long"
     when :long_long then ":long_long"
     when :u_int then ":uint"
     when :u_long then ":ulong"
     when :u_long_long then ":ulong_long"
+    when :float then ":float"
+    when :double then ":double"
     when :void then ":void"
     when :pointer
       pointee_kind = Clang.get_pointee_type(canonical_type)[:kind]
@@ -238,7 +241,7 @@ class FFIGen
       size = Clang.get_array_size canonical_type
       "[#{to_ffi_type element_type}, #{size}]"
     else
-      raise canonical_type[:kind].to_s
+      raise NotImplementedError, "No translation for values of type #{canonical_type[:kind]}!!"
     end
   end
   
