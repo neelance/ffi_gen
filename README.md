@@ -1,6 +1,12 @@
 ffi_gen - A Generator for Ruby FFI bindings
 ===========================================
 
+Requirements
+------------
+
+* Clang 3.0 ([Download](http://llvm.org/releases/download.html#3.0), use the binaries or configure with ``--enable-shared``)
+
+
 Roadmap
 -------
 
