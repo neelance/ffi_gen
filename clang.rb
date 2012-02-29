@@ -18,20 +18,110 @@ module Clang
            :private_flags, :uint
   end
 
+  # Retrieve the character data associated with the given string.
+  #
+  # @method get_c_string(string)
+  # @param [String] string 
+  # @return [String] 
+  # @scope class
   attach_function :get_c_string, :clang_getCString, [String.by_value], :string
 
+  # Free the given string,
+  #
+  # @method dispose_string(string)
+  # @param [String] string 
+  # @return [nil] 
+  # @scope class
   attach_function :dispose_string, :clang_disposeString, [String.by_value], :void
 
+  # clang_createIndex() provides a shared context for creating
+  # translation units. It provides two options:
+  #
+  # - excludeDeclarationsFromPCH: When non-zero, allows enumeration of "local"
+  # declarations (when loading any new translation units). A "local" declaration
+  # is one that belongs in the translation unit itself and not in a precompiled
+  # header that was used by the translation unit. If zero, all declarations
+  # will be enumerated.
+  #
+  # Here is an example:
+  #
+  #   // excludeDeclsFromPCH = 1, displayDiagnostics=1
+  #   Idx = clang_createIndex(1, 1);
+  #
+  #   // IndexTest.pch was produced with the following command:
+  #   // "clang -x c IndexTest.h -emit-ast -o IndexTest.pch"
+  #   TU = clang_createTranslationUnit(Idx, "IndexTest.pch");
+  #
+  #   // This will load all the symbols from 'IndexTest.pch'
+  #   clang_visitChildren(clang_getTranslationUnitCursor(TU),
+  #                       TranslationUnitVisitor, 0);
+  #   clang_disposeTranslationUnit(TU);
+  #
+  #   // This will load all the symbols from 'IndexTest.c', excluding symbols
+  #   // from 'IndexTest.pch'.
+  #   char *args() = { "-Xclang", "-include-pch=IndexTest.pch" };
+  #   TU = clang_createTranslationUnitFromSourceFile(Idx, "IndexTest.c", 2, args,
+  #                                                  0, 0);
+  #   clang_visitChildren(clang_getTranslationUnitCursor(TU),
+  #                       TranslationUnitVisitor, 0);
+  #   clang_disposeTranslationUnit(TU);
+  #
+  # This process of creating the 'pch', loading it separately, and using it (via
+  # -include-pch) allows 'excludeDeclsFromPCH' to remove redundant callbacks
+  # (which gives the indexer the same performance benefit as the compiler).
+  #
+  # @method create_index(exclude_declarations_from_pch, display_diagnostics)
+  # @param [Integer] exclude_declarations_from_pch 
+  # @param [Integer] display_diagnostics 
+  # @return [FFI::Pointer of Index] 
+  # @scope class
   attach_function :create_index, :clang_createIndex, [:int, :int], :pointer
 
+  # Destroy the given index.
+  #
+  # The index must not be destroyed until all of the translation units created
+  # within that index have been destroyed.
+  #
+  # @method dispose_index(index)
+  # @param [FFI::Pointer of Index] index 
+  # @return [nil] 
+  # @scope class
   attach_function :dispose_index, :clang_disposeIndex, [:pointer], :void
 
+  # Retrieve the complete file and path name of the given file.
+  #
+  # @method get_file_name(s_file)
+  # @param [FFI::Pointer of File] s_file 
+  # @return [String] 
+  # @scope class
   attach_function :get_file_name, :clang_getFileName, [:pointer], String.by_value
 
+  # Retrieve the last modification time of the given file.
+  #
+  # @method get_file_time(s_file)
+  # @param [FFI::Pointer of File] s_file 
+  # @return [Integer] 
+  # @scope class
   attach_function :get_file_time, :clang_getFileTime, [:pointer], :long
 
+  # Determine whether the given header is guarded against
+  # multiple inclusions, either with the conventional
+  # #ifndef/#define/#endif macro guards or with #pragma once.
+  #
+  # @method is_file_multiple_include_guarded(tu, file)
+  # @param [FFI::Pointer of TranslationUnit] tu 
+  # @param [FFI::Pointer of File] file 
+  # @return [Integer] 
+  # @scope class
   attach_function :is_file_multiple_include_guarded, :clang_isFileMultipleIncludeGuarded, [:pointer, :pointer], :uint
 
+  # Retrieve a file handle within the given translation unit.
+  #
+  # @method get_file(tu, file_name)
+  # @param [FFI::Pointer of TranslationUnit] tu the translation unit
+  # @param [String] file_name the name of the file.
+  # @return [FFI::Pointer of File] the file handle for the named file in the translation unit \p tu, or a NULL file handle if the file was not a part of this translation unit.
+  # @scope class
   attach_function :get_file, :clang_getFile, [:pointer, :string], :pointer
 
   class SourceLocation < FFI::Struct
@@ -45,30 +135,159 @@ module Clang
            :end_int_data, :uint
   end
 
+  # Retrieve a NULL (invalid) source location.
+  #
+  # @method get_null_location()
+  # @return [SourceLocation] 
+  # @scope class
   attach_function :get_null_location, :clang_getNullLocation, [], SourceLocation.by_value
 
+  # \determine Determine whether two source locations, which must refer into
+  # the same translation unit, refer to exactly the same point in the source
+  # code.
+  #
+  # @method equal_locations(loc1, loc2)
+  # @param [SourceLocation] loc1 
+  # @param [SourceLocation] loc2 
+  # @return [Integer] non-zero if the source locations refer to the same location, zero if they refer to different locations.
+  # @scope class
   attach_function :equal_locations, :clang_equalLocations, [SourceLocation.by_value, SourceLocation.by_value], :uint
 
+  # Retrieves the source location associated with a given file/line/column
+  # in a particular translation unit.
+  #
+  # @method get_location(tu, file, line, column)
+  # @param [FFI::Pointer of TranslationUnit] tu 
+  # @param [FFI::Pointer of File] file 
+  # @param [Integer] line 
+  # @param [Integer] column 
+  # @return [SourceLocation] 
+  # @scope class
   attach_function :get_location, :clang_getLocation, [:pointer, :pointer, :uint, :uint], SourceLocation.by_value
 
+  # Retrieves the source location associated with a given character offset
+  # in a particular translation unit.
+  #
+  # @method get_location_for_offset(tu, file, offset)
+  # @param [FFI::Pointer of TranslationUnit] tu 
+  # @param [FFI::Pointer of File] file 
+  # @param [Integer] offset 
+  # @return [SourceLocation] 
+  # @scope class
   attach_function :get_location_for_offset, :clang_getLocationForOffset, [:pointer, :pointer, :uint], SourceLocation.by_value
 
+  # Retrieve a NULL (invalid) source range.
+  #
+  # @method get_null_range()
+  # @return [SourceRange] 
+  # @scope class
   attach_function :get_null_range, :clang_getNullRange, [], SourceRange.by_value
 
+  # Retrieve a source range given the beginning and ending source
+  # locations.
+  #
+  # @method get_range(begin, end)
+  # @param [SourceLocation] begin 
+  # @param [SourceLocation] end 
+  # @return [SourceRange] 
+  # @scope class
   attach_function :get_range, :clang_getRange, [SourceLocation.by_value, SourceLocation.by_value], SourceRange.by_value
 
+  # Determine whether two ranges are equivalent.
+  #
+  # @method equal_ranges(range1, range2)
+  # @param [SourceRange] range1 
+  # @param [SourceRange] range2 
+  # @return [Integer] non-zero if the ranges are the same, zero if they differ.
+  # @scope class
   attach_function :equal_ranges, :clang_equalRanges, [SourceRange.by_value, SourceRange.by_value], :uint
 
+  # Returns non-zero if \arg range is null.
+  #
+  # @method range_is_null(range)
+  # @param [SourceRange] range 
+  # @return [Integer] 
+  # @scope class
   attach_function :range_is_null, :clang_Range_isNull, [SourceRange.by_value], :int
 
+  # Retrieve the file, line, column, and offset represented by
+  # the given source location, as specified in a # line directive.
+  #
+  # Example: given the following source code in a file somefile.c
+  #
+  # #123 "dummy.c" 1
+  #
+  # static int func(void)
+  # {
+  #     return 0;
+  # }
+  #
+  # the location information returned by this function would be
+  #
+  # File: dummy.c Line: 124 Column: 12
+  #
+  # whereas clang_getExpansionLocation would have returned
+  #
+  # File: somefile.c Line: 3 Column: 12
+  #
+  # @method get_presumed_location(location, filename, line, column)
+  # @param [SourceLocation] location the location within a source file that will be decomposed into its parts.
+  # @param [FFI::Pointer to ] filename (out) if non-NULL, will be set to the filename of the source location. Note that filenames returned will be for "virtual" files, which don't necessarily exist on the machine running clang - e.g. when parsing preprocessed output obtained from a different environment. If a non-NULL value is passed in, remember to dispose of the returned value using \c clang_disposeString() once you've finished with it. For an invalid source location, an empty string is returned.
+  # @param [FFI::Pointer to ] line (out) if non-NULL, will be set to the line number of the source location. For an invalid source location, zero is returned.
+  # @param [FFI::Pointer to ] column (out) if non-NULL, will be set to the column number of the source location. For an invalid source location, zero is returned.
+  # @return [nil] 
+  # @scope class
   attach_function :get_presumed_location, :clang_getPresumedLocation, [SourceLocation.by_value, :pointer, :pointer, :pointer], :void
 
+  # Legacy API to retrieve the file, line, column, and offset represented
+  # by the given source location.
+  #
+  # This interface has been replaced by the newer interface
+  # \see clang_getExpansionLocation(). See that interface's documentation for
+  # details.
+  #
+  # @method get_instantiation_location(location, file, line, column, offset)
+  # @param [SourceLocation] location 
+  # @param [FFI::Pointer to ] file 
+  # @param [FFI::Pointer to ] line 
+  # @param [FFI::Pointer to ] column 
+  # @param [FFI::Pointer to ] offset 
+  # @return [nil] 
+  # @scope class
   attach_function :get_instantiation_location, :clang_getInstantiationLocation, [SourceLocation.by_value, :pointer, :pointer, :pointer, :pointer], :void
 
+  # Retrieve the file, line, column, and offset represented by
+  # the given source location.
+  #
+  # If the location refers into a macro instantiation, return where the
+  # location was originally spelled in the source file.
+  #
+  # @method get_spelling_location(location, file, line, column, offset)
+  # @param [SourceLocation] location the location within a source file that will be decomposed into its parts.
+  # @param [FFI::Pointer to ] file (out) if non-NULL, will be set to the file to which the given source location points.
+  # @param [FFI::Pointer to ] line (out) if non-NULL, will be set to the line to which the given source location points.
+  # @param [FFI::Pointer to ] column (out) if non-NULL, will be set to the column to which the given source location points.
+  # @param [FFI::Pointer to ] offset (out) if non-NULL, will be set to the offset into the buffer to which the given source location points.
+  # @return [nil] 
+  # @scope class
   attach_function :get_spelling_location, :clang_getSpellingLocation, [SourceLocation.by_value, :pointer, :pointer, :pointer, :pointer], :void
 
+  # Retrieve a source location representing the first character within a
+  # source range.
+  #
+  # @method get_range_start(range)
+  # @param [SourceRange] range 
+  # @return [SourceLocation] 
+  # @scope class
   attach_function :get_range_start, :clang_getRangeStart, [SourceRange.by_value], SourceLocation.by_value
 
+  # Retrieve a source location representing the last character within a
+  # source range.
+  #
+  # @method get_range_end(range)
+  # @param [SourceRange] range 
+  # @return [SourceLocation] 
+  # @scope class
   attach_function :get_range_end, :clang_getRangeEnd, [SourceRange.by_value], SourceLocation.by_value
 
   enum :diagnostic_severity, [
@@ -79,10 +298,30 @@ module Clang
     :fatal, 4
   ]
 
+  # Determine the number of diagnostics produced for the given
+  # translation unit.
+  #
+  # @method get_num_diagnostics(unit)
+  # @param [FFI::Pointer of TranslationUnit] unit 
+  # @return [Integer] 
+  # @scope class
   attach_function :get_num_diagnostics, :clang_getNumDiagnostics, [:pointer], :uint
 
+  # Retrieve a diagnostic associated with the given translation unit.
+  #
+  # @method get_diagnostic(unit, index)
+  # @param [FFI::Pointer of TranslationUnit] unit the translation unit to query.
+  # @param [Integer] index the zero-based diagnostic number to retrieve.
+  # @return [FFI::Pointer of Diagnostic] the requested diagnostic. This diagnostic must be freed via a call to \c clang_disposeDiagnostic().
+  # @scope class
   attach_function :get_diagnostic, :clang_getDiagnostic, [:pointer, :uint], :pointer
 
+  # Destroy a diagnostic.
+  #
+  # @method dispose_diagnostic(diagnostic)
+  # @param [FFI::Pointer of Diagnostic] diagnostic 
+  # @return [nil] 
+  # @scope class
   attach_function :dispose_diagnostic, :clang_disposeDiagnostic, [:pointer], :void
 
   enum :diagnostic_display_options, [
@@ -94,34 +333,177 @@ module Clang
     :display_category_name, 0x20
   ]
 
+  # Format the given diagnostic in a manner that is suitable for display.
+  #
+  # This routine will format the given diagnostic to a string, rendering
+  # the diagnostic according to the various options given. The
+  # \c clang_defaultDiagnosticDisplayOptions() function returns the set of
+  # options that most closely mimics the behavior of the clang compiler.
+  #
+  # @method format_diagnostic(diagnostic, options)
+  # @param [FFI::Pointer of Diagnostic] diagnostic The diagnostic to print.
+  # @param [Integer] options A set of options that control the diagnostic display, created by combining \c CXDiagnosticDisplayOptions values.
+  # @return [String] A new string containing for formatted diagnostic.
+  # @scope class
   attach_function :format_diagnostic, :clang_formatDiagnostic, [:pointer, :uint], String.by_value
 
+  # Retrieve the set of display options most similar to the
+  # default behavior of the clang compiler.
+  #
+  # @method default_diagnostic_display_options()
+  # @return [Integer] A set of display options suitable for use with \c clang_displayDiagnostic().
+  # @scope class
   attach_function :default_diagnostic_display_options, :clang_defaultDiagnosticDisplayOptions, [], :uint
 
+  # Determine the severity of the given diagnostic.
+  #
+  # @method get_diagnostic_severity(diagnostic)
+  # @param [FFI::Pointer of Diagnostic] diagnostic 
+  # @return [Enum] 
+  # @scope class
   attach_function :get_diagnostic_severity, :clang_getDiagnosticSeverity, [:pointer], :diagnostic_severity
 
+  # Retrieve the source location of the given diagnostic.
+  #
+  # This location is where Clang would print the caret ('^') when
+  # displaying the diagnostic on the command line.
+  #
+  # @method get_diagnostic_location(diagnostic)
+  # @param [FFI::Pointer of Diagnostic] diagnostic 
+  # @return [SourceLocation] 
+  # @scope class
   attach_function :get_diagnostic_location, :clang_getDiagnosticLocation, [:pointer], SourceLocation.by_value
 
+  # Retrieve the text of the given diagnostic.
+  #
+  # @method get_diagnostic_spelling(diagnostic)
+  # @param [FFI::Pointer of Diagnostic] diagnostic 
+  # @return [String] 
+  # @scope class
   attach_function :get_diagnostic_spelling, :clang_getDiagnosticSpelling, [:pointer], String.by_value
 
+  # Retrieve the name of the command-line option that enabled this
+  # diagnostic.
+  #
+  # @method get_diagnostic_option(diag, disable)
+  # @param [FFI::Pointer of Diagnostic] diag The diagnostic to be queried.
+  # @param [FFI::Pointer to ] disable If non-NULL, will be set to the option that disables this diagnostic (if any).
+  # @return [String] A string that contains the command-line option used to enable this warning, such as "-Wconversion" or "-pedantic".
+  # @scope class
   attach_function :get_diagnostic_option, :clang_getDiagnosticOption, [:pointer, :pointer], String.by_value
 
+  # Retrieve the category number for this diagnostic.
+  #
+  # Diagnostics can be categorized into groups along with other, related
+  # diagnostics (e.g., diagnostics under the same warning flag). This routine 
+  # retrieves the category number for the given diagnostic.
+  #
+  # @method get_diagnostic_category(diagnostic)
+  # @param [FFI::Pointer of Diagnostic] diagnostic 
+  # @return [Integer] The number of the category that contains this diagnostic, or zero if this diagnostic is uncategorized.
+  # @scope class
   attach_function :get_diagnostic_category, :clang_getDiagnosticCategory, [:pointer], :uint
 
+  # Retrieve the name of a particular diagnostic category.
+  #
+  # @method get_diagnostic_category_name(category)
+  # @param [Integer] category A diagnostic category number, as returned by \c clang_getDiagnosticCategory().
+  # @return [String] The name of the given diagnostic category.
+  # @scope class
   attach_function :get_diagnostic_category_name, :clang_getDiagnosticCategoryName, [:uint], String.by_value
 
+  # Determine the number of source ranges associated with the given
+  # diagnostic.
+  #
+  # @method get_diagnostic_num_ranges(diagnostic)
+  # @param [FFI::Pointer of Diagnostic] diagnostic 
+  # @return [Integer] 
+  # @scope class
   attach_function :get_diagnostic_num_ranges, :clang_getDiagnosticNumRanges, [:pointer], :uint
 
+  # Retrieve a source range associated with the diagnostic.
+  #
+  # A diagnostic's source ranges highlight important elements in the source
+  # code. On the command line, Clang displays source ranges by
+  # underlining them with '~' characters.
+  #
+  # @method get_diagnostic_range(diagnostic, range)
+  # @param [FFI::Pointer of Diagnostic] diagnostic the diagnostic whose range is being extracted.
+  # @param [Integer] range the zero-based index specifying which range to
+  # @return [SourceRange] the requested source range.
+  # @scope class
   attach_function :get_diagnostic_range, :clang_getDiagnosticRange, [:pointer, :uint], SourceRange.by_value
 
+  # Determine the number of fix-it hints associated with the
+  # given diagnostic.
+  #
+  # @method get_diagnostic_num_fix_its(diagnostic)
+  # @param [FFI::Pointer of Diagnostic] diagnostic 
+  # @return [Integer] 
+  # @scope class
   attach_function :get_diagnostic_num_fix_its, :clang_getDiagnosticNumFixIts, [:pointer], :uint
 
+  # Retrieve the replacement information for a given fix-it.
+  #
+  # Fix-its are described in terms of a source range whose contents
+  # should be replaced by a string. This approach generalizes over
+  # three kinds of operations: removal of source code (the range covers
+  # the code to be removed and the replacement string is empty),
+  # replacement of source code (the range covers the code to be
+  # replaced and the replacement string provides the new code), and
+  # insertion (both the start and end of the range point at the
+  # insertion location, and the replacement string provides the text to
+  # insert).
+  #
+  # @method get_diagnostic_fix_it(diagnostic, fix_it, replacement_range)
+  # @param [FFI::Pointer of Diagnostic] diagnostic The diagnostic whose fix-its are being queried.
+  # @param [Integer] fix_it The zero-based index of the fix-it.
+  # @param [FFI::Pointer to ] replacement_range The source range whose contents will be replaced with the returned replacement string. Note that source ranges are half-open ranges (a, b), so the source code should be replaced from a and up to (but not including) b.
+  # @return [String] A string containing text that should be replace the source code indicated by the \c ReplacementRange.
+  # @scope class
   attach_function :get_diagnostic_fix_it, :clang_getDiagnosticFixIt, [:pointer, :uint, :pointer], String.by_value
 
+  # Get the original translation unit source file name.
+  #
+  # @method get_translation_unit_spelling(ct_unit)
+  # @param [FFI::Pointer of TranslationUnit] ct_unit 
+  # @return [String] 
+  # @scope class
   attach_function :get_translation_unit_spelling, :clang_getTranslationUnitSpelling, [:pointer], String.by_value
 
+  # Return the CXTranslationUnit for a given source file and the provided
+  # command line arguments one would pass to the compiler.
+  #
+  # Note: The 'source_filename' argument is optional.  If the caller provides a
+  # NULL pointer, the name of the source file is expected to reside in the
+  # specified command line arguments.
+  #
+  # Note: When encountered in 'clang_command_line_args', the following options
+  # are ignored:
+  #
+  #   '-c'
+  #   '-emit-ast'
+  #   '-fsyntax-only'
+  #   '-o <output file>'  (both '-o' and '<output file>' are ignored)
+  #
+  # @method create_translation_unit_from_source_file(c_idx, source_filename, num_clang_command_line_args, command_line_args, num_unsaved_files, unsaved_files)
+  # @param [FFI::Pointer of Index] c_idx The index object with which the translation unit will be associated.
+  # @param [String] source_filename - The name of the source file to load, or NULL if the source file is included in \p clang_command_line_args.
+  # @param [Integer] num_clang_command_line_args The number of command-line arguments in \p clang_command_line_args.
+  # @param [FFI::Pointer to ] command_line_args The command-line arguments that would be passed to the \c clang executable if it were being invoked out-of-process. These command-line options will be parsed and will affect how the translation unit is parsed. Note that the following options are ignored: '-c', '-emit-ast', '-fsyntex-only' (which is the default), and '-o <output file>'.
+  # @param [Integer] num_unsaved_files the number of unsaved file entries in \p unsaved_files.
+  # @param [FFI::Pointer to ] unsaved_files the files that have not yet been saved to disk but may be required for code completion, including the contents of those files. The contents and name of these files (as specified by CXUnsavedFile) are copied when necessary, so the client only needs to guarantee their validity until the call to this function returns.
+  # @return [FFI::Pointer of TranslationUnit] 
+  # @scope class
   attach_function :create_translation_unit_from_source_file, :clang_createTranslationUnitFromSourceFile, [:pointer, :string, :int, :pointer, :uint, :pointer], :pointer
 
+  # Create a translation unit from an AST file (-emit-ast).
+  #
+  # @method create_translation_unit(index, ast_filename)
+  # @param [FFI::Pointer of Index] index 
+  # @param [String] ast_filename 
+  # @return [FFI::Pointer of TranslationUnit] 
+  # @scope class
   attach_function :create_translation_unit, :clang_createTranslationUnit, [:pointer, :string], :pointer
 
   enum :translation_unit_flags, [
@@ -135,14 +517,59 @@ module Clang
     :nested_macro_expansions, 0x40
   ]
 
+  # Returns the set of flags that is suitable for parsing a translation
+  # unit that is being edited.
+  #
+  # The set of flags returned provide options for \c clang_parseTranslationUnit()
+  # to indicate that the translation unit is likely to be reparsed many times,
+  # either explicitly (via \c clang_reparseTranslationUnit()) or implicitly
+  # (e.g., by code completion (\c clang_codeCompletionAt())). The returned flag
+  # set contains an unspecified set of optimizations (e.g., the precompiled 
+  # preamble) geared toward improving the performance of these routines. The
+  # set of optimizations enabled may change from one version to the next.
+  #
+  # @method default_editing_translation_unit_options()
+  # @return [Integer] 
+  # @scope class
   attach_function :default_editing_translation_unit_options, :clang_defaultEditingTranslationUnitOptions, [], :uint
 
+  # Parse the given source file and the translation unit corresponding
+  # to that file.
+  #
+  # This routine is the main entry point for the Clang C API, providing the
+  # ability to parse a source file into a translation unit that can then be
+  # queried by other functions in the API. This routine accepts a set of
+  # command-line arguments so that the compilation can be configured in the same
+  # way that the compiler is configured on the command line.
+  #
+  # @method parse_translation_unit(c_idx, source_filename, command_line_args, num_command_line_args, unsaved_files, num_unsaved_files, options)
+  # @param [FFI::Pointer of Index] c_idx The index object with which the translation unit will be associated.
+  # @param [String] source_filename The name of the source file to load, or NULL if the source file is included in \p command_line_args.
+  # @param [FFI::Pointer to ] command_line_args The command-line arguments that would be passed to the \c clang executable if it were being invoked out-of-process. These command-line options will be parsed and will affect how the translation unit is parsed. Note that the following options are ignored: '-c', '-emit-ast', '-fsyntex-only' (which is the default), and '-o <output file>'.
+  # @param [Integer] num_command_line_args The number of command-line arguments in \p command_line_args.
+  # @param [FFI::Pointer to ] unsaved_files the files that have not yet been saved to disk but may be required for parsing, including the contents of those files. The contents and name of these files (as specified by CXUnsavedFile) are copied when necessary, so the client only needs to guarantee their validity until the call to this function returns.
+  # @param [Integer] num_unsaved_files the number of unsaved file entries in \p unsaved_files.
+  # @param [Integer] options A bitmask of options that affects how the translation unit is managed but not its compilation. This should be a bitwise OR of the CXTranslationUnit_XXX flags.
+  # @return [FFI::Pointer of TranslationUnit] A new translation unit describing the parsed code and containing any diagnostics produced by the compiler. If there is a failure from which the compiler cannot recover, returns NULL.
+  # @scope class
   attach_function :parse_translation_unit, :clang_parseTranslationUnit, [:pointer, :string, :pointer, :int, :pointer, :uint, :uint], :pointer
 
   enum :save_translation_unit_flags, [
     :none, 0x0
   ]
 
+  # Returns the set of flags that is suitable for saving a translation
+  # unit.
+  #
+  # The set of flags returned provide options for
+  # \c clang_saveTranslationUnit() by default. The returned flag
+  # set contains an unspecified set of options that save translation units with
+  # the most commonly-requested data.
+  #
+  # @method default_save_options(tu)
+  # @param [FFI::Pointer of TranslationUnit] tu 
+  # @return [Integer] 
+  # @scope class
   attach_function :default_save_options, :clang_defaultSaveOptions, [:pointer], :uint
 
   enum :save_error, [
@@ -152,16 +579,73 @@ module Clang
     :invalid_tu, 3
   ]
 
+  # Saves a translation unit into a serialized representation of
+  # that translation unit on disk.
+  #
+  # Any translation unit that was parsed without error can be saved
+  # into a file. The translation unit can then be deserialized into a
+  # new \c CXTranslationUnit with \c clang_createTranslationUnit() or,
+  # if it is an incomplete translation unit that corresponds to a
+  # header, used as a precompiled header when parsing other translation
+  # units.
+  #
+  # @method save_translation_unit(tu, file_name, options)
+  # @param [FFI::Pointer of TranslationUnit] tu The translation unit to save.
+  # @param [String] file_name The file to which the translation unit will be saved.
+  # @param [Integer] options A bitmask of options that affects how the translation unit is saved. This should be a bitwise OR of the CXSaveTranslationUnit_XXX flags.
+  # @return [Integer] A value that will match one of the enumerators of the CXSaveError enumeration. Zero (CXSaveError_None) indicates that the translation unit was saved successfully, while a non-zero value indicates that a problem occurred.
+  # @scope class
   attach_function :save_translation_unit, :clang_saveTranslationUnit, [:pointer, :string, :uint], :int
 
+  # Destroy the specified CXTranslationUnit object.
+  #
+  # @method dispose_translation_unit(translation_unit)
+  # @param [FFI::Pointer of TranslationUnit] translation_unit 
+  # @return [nil] 
+  # @scope class
   attach_function :dispose_translation_unit, :clang_disposeTranslationUnit, [:pointer], :void
 
   enum :reparse_flags, [
     :none, 0x0
   ]
 
+  # Returns the set of flags that is suitable for reparsing a translation
+  # unit.
+  #
+  # The set of flags returned provide options for
+  # \c clang_reparseTranslationUnit() by default. The returned flag
+  # set contains an unspecified set of optimizations geared toward common uses
+  # of reparsing. The set of optimizations enabled may change from one version 
+  # to the next.
+  #
+  # @method default_reparse_options(tu)
+  # @param [FFI::Pointer of TranslationUnit] tu 
+  # @return [Integer] 
+  # @scope class
   attach_function :default_reparse_options, :clang_defaultReparseOptions, [:pointer], :uint
 
+  # Reparse the source files that produced this translation unit.
+  #
+  # This routine can be used to re-parse the source files that originally
+  # created the given translation unit, for example because those source files
+  # have changed (either on disk or as passed via \p unsaved_files). The
+  # source code will be reparsed with the same command-line options as it
+  # was originally parsed. 
+  #
+  # Reparsing a translation unit invalidates all cursors and source locations
+  # that refer into that translation unit. This makes reparsing a translation
+  # unit semantically equivalent to destroying the translation unit and then
+  # creating a new translation unit with the same command-line arguments.
+  # However, it may be more efficient to reparse a translation 
+  # unit using this routine.
+  #
+  # @method reparse_translation_unit(tu, num_unsaved_files, unsaved_files, options)
+  # @param [FFI::Pointer of TranslationUnit] tu The translation unit whose contents will be re-parsed. The translation unit must originally have been built with \c clang_createTranslationUnitFromSourceFile().
+  # @param [Integer] num_unsaved_files The number of unsaved file entries in \p unsaved_files.
+  # @param [FFI::Pointer to ] unsaved_files The files that have not yet been saved to disk but may be required for parsing, including the contents of those files. The contents and name of these files (as specified by CXUnsavedFile) are copied when necessary, so the client only needs to guarantee their validity until the call to this function returns.
+  # @param [Integer] options A bitset of options composed of the flags in CXReparse_Flags. The function \c clang_defaultReparseOptions() produces a default set of options recommended for most uses, based on the translation unit.
+  # @return [Integer] 0 if the sources could be reparsed. A non-zero value will be returned if reparsing was impossible, such that the translation unit is invalid. In such cases, the only valid call for \p TU is \c clang_disposeTranslationUnit(TU).
+  # @scope class
   attach_function :reparse_translation_unit, :clang_reparseTranslationUnit, [:pointer, :uint, :pointer, :uint], :int
 
   enum :tu_resource_usage_kind, [
@@ -181,6 +665,13 @@ module Clang
     :preprocessor_header_search, 14
   ]
 
+  # Returns the human-readable null-terminated C string that represents
+  #  the name of the memory category.  This string should never be freed.
+  #
+  # @method get_tu_resource_usage_name(kind)
+  # @param [Enum] kind 
+  # @return [String] 
+  # @scope class
   attach_function :get_tu_resource_usage_name, :clang_getTUResourceUsageName, [:tu_resource_usage_kind], :string
 
   class TUResourceUsageEntry < FFI::Struct
@@ -194,8 +685,19 @@ module Clang
            :entries, :pointer
   end
 
+  # Return the memory usage of a translation unit.  This object
+  #  should be released with clang_disposeCXTUResourceUsage().
+  #
+  # @method get_cxtu_resource_usage(tu)
+  # @param [FFI::Pointer of TranslationUnit] tu 
+  # @return [TUResourceUsage] 
+  # @scope class
   attach_function :get_cxtu_resource_usage, :clang_getCXTUResourceUsage, [:pointer], TUResourceUsage.by_value
 
+  # @method dispose_cxtu_resource_usage(usage)
+  # @param [TUResourceUsage] usage 
+  # @return [nil] 
+  # @scope class
   attach_function :dispose_cxtu_resource_usage, :clang_disposeCXTUResourceUsage, [TUResourceUsage.by_value], :void
 
   enum :cursor_kind, [
@@ -352,34 +854,136 @@ module Clang
            :data, [:pointer, 3]
   end
 
+  # Retrieve the NULL cursor, which represents no entity.
+  #
+  # @method get_null_cursor()
+  # @return [Cursor] 
+  # @scope class
   attach_function :get_null_cursor, :clang_getNullCursor, [], Cursor.by_value
 
+  # Retrieve the cursor that represents the given translation unit.
+  #
+  # The translation unit cursor can be used to start traversing the
+  # various declarations within the given translation unit.
+  #
+  # @method get_translation_unit_cursor(translation_unit)
+  # @param [FFI::Pointer of TranslationUnit] translation_unit 
+  # @return [Cursor] 
+  # @scope class
   attach_function :get_translation_unit_cursor, :clang_getTranslationUnitCursor, [:pointer], Cursor.by_value
 
+  # Determine whether two cursors are equivalent.
+  #
+  # @method equal_cursors(cursor, cursor)
+  # @param [Cursor] cursor 
+  # @param [Cursor] cursor 
+  # @return [Integer] 
+  # @scope class
   attach_function :equal_cursors, :clang_equalCursors, [Cursor.by_value, Cursor.by_value], :uint
 
+  # Returns non-zero if \arg cursor is null.
+  #
+  # @method cursor_is_null(cursor)
+  # @param [Cursor] cursor 
+  # @return [Integer] 
+  # @scope class
   attach_function :cursor_is_null, :clang_Cursor_isNull, [Cursor.by_value], :int
 
+  # Compute a hash value for the given cursor.
+  #
+  # @method hash_cursor(cursor)
+  # @param [Cursor] cursor 
+  # @return [Integer] 
+  # @scope class
   attach_function :hash_cursor, :clang_hashCursor, [Cursor.by_value], :uint
 
+  # Retrieve the kind of the given cursor.
+  #
+  # @method get_cursor_kind(cursor)
+  # @param [Cursor] cursor 
+  # @return [Enum] 
+  # @scope class
   attach_function :get_cursor_kind, :clang_getCursorKind, [Cursor.by_value], :cursor_kind
 
+  # Determine whether the given cursor kind represents a declaration.
+  #
+  # @method is_declaration(enum)
+  # @param [Enum] enum 
+  # @return [Integer] 
+  # @scope class
   attach_function :is_declaration, :clang_isDeclaration, [:cursor_kind], :uint
 
+  # Determine whether the given cursor kind represents a simple
+  # reference.
+  #
+  # Note that other kinds of cursors (such as expressions) can also refer to
+  # other cursors. Use clang_getCursorReferenced() to determine whether a
+  # particular cursor refers to another entity.
+  #
+  # @method is_reference(enum)
+  # @param [Enum] enum 
+  # @return [Integer] 
+  # @scope class
   attach_function :is_reference, :clang_isReference, [:cursor_kind], :uint
 
+  # Determine whether the given cursor kind represents an expression.
+  #
+  # @method is_expression(enum)
+  # @param [Enum] enum 
+  # @return [Integer] 
+  # @scope class
   attach_function :is_expression, :clang_isExpression, [:cursor_kind], :uint
 
+  # Determine whether the given cursor kind represents a statement.
+  #
+  # @method is_statement(enum)
+  # @param [Enum] enum 
+  # @return [Integer] 
+  # @scope class
   attach_function :is_statement, :clang_isStatement, [:cursor_kind], :uint
 
+  # Determine whether the given cursor kind represents an attribute.
+  #
+  # @method is_attribute(enum)
+  # @param [Enum] enum 
+  # @return [Integer] 
+  # @scope class
   attach_function :is_attribute, :clang_isAttribute, [:cursor_kind], :uint
 
+  # Determine whether the given cursor kind represents an invalid
+  # cursor.
+  #
+  # @method is_invalid(enum)
+  # @param [Enum] enum 
+  # @return [Integer] 
+  # @scope class
   attach_function :is_invalid, :clang_isInvalid, [:cursor_kind], :uint
 
+  # Determine whether the given cursor kind represents a translation
+  # unit.
+  #
+  # @method is_translation_unit(enum)
+  # @param [Enum] enum 
+  # @return [Integer] 
+  # @scope class
   attach_function :is_translation_unit, :clang_isTranslationUnit, [:cursor_kind], :uint
 
+  # Determine whether the given cursor represents a preprocessing
+  # element, such as a preprocessor directive or macro instantiation.
+  #
+  # @method is_preprocessing(enum)
+  # @param [Enum] enum 
+  # @return [Integer] 
+  # @scope class
   attach_function :is_preprocessing, :clang_isPreprocessing, [:cursor_kind], :uint
 
+  # Determine whether the given cursor represents a currently
+  #  unexposed piece of the AST (e.g., CXCursor_UnexposedStmt).
+  #
+  # @method is_unexposed(enum)
+  # @param [Enum] enum 
+  # @return [Integer] 
+  # @scope class
   attach_function :is_unexposed, :clang_isUnexposed, [:cursor_kind], :uint
 
   enum :linkage_kind, [
@@ -390,8 +994,20 @@ module Clang
     :external
   ]
 
+  # Determine the linkage of the entity referred to by a given cursor.
+  #
+  # @method get_cursor_linkage(cursor)
+  # @param [Cursor] cursor 
+  # @return [Enum] 
+  # @scope class
   attach_function :get_cursor_linkage, :clang_getCursorLinkage, [Cursor.by_value], :linkage_kind
 
+  # Determine the availability of the entity that this cursor refers to.
+  #
+  # @method get_cursor_availability(cursor)
+  # @param [Cursor] cursor The cursor to query.
+  # @return [Enum] The availability of the cursor.
+  # @scope class
   attach_function :get_cursor_availability, :clang_getCursorAvailability, [Cursor.by_value], :availability_kind
 
   enum :language_kind, [
@@ -401,32 +1017,232 @@ module Clang
     :c_plus_plus
   ]
 
+  # Determine the "language" of the entity referred to by a given cursor.
+  #
+  # @method get_cursor_language(cursor)
+  # @param [Cursor] cursor 
+  # @return [Enum] 
+  # @scope class
   attach_function :get_cursor_language, :clang_getCursorLanguage, [Cursor.by_value], :language_kind
 
+  # Returns the translation unit that a cursor originated from.
+  #
+  # @method cursor_get_translation_unit(cursor)
+  # @param [Cursor] cursor 
+  # @return [FFI::Pointer of TranslationUnit] 
+  # @scope class
   attach_function :cursor_get_translation_unit, :clang_Cursor_getTranslationUnit, [Cursor.by_value], :pointer
 
+  # Creates an empty CXCursorSet.
+  #
+  # @method create_cx_cursor_set()
+  # @return [FFI::Pointer of CursorSet] 
+  # @scope class
   attach_function :create_cx_cursor_set, :clang_createCXCursorSet, [], :pointer
 
+  # Disposes a CXCursorSet and releases its associated memory.
+  #
+  # @method dispose_cx_cursor_set(cset)
+  # @param [FFI::Pointer of CursorSet] cset 
+  # @return [nil] 
+  # @scope class
   attach_function :dispose_cx_cursor_set, :clang_disposeCXCursorSet, [:pointer], :void
 
+  # Queries a CXCursorSet to see if it contains a specific CXCursor.
+  #
+  # @method cx_cursor_set_contains(cset, cursor)
+  # @param [FFI::Pointer of CursorSet] cset 
+  # @param [Cursor] cursor 
+  # @return [Integer] non-zero if the set contains the specified cursor.
+  # @scope class
   attach_function :cx_cursor_set_contains, :clang_CXCursorSet_contains, [:pointer, Cursor.by_value], :uint
 
+  # Inserts a CXCursor into a CXCursorSet.
+  #
+  # @method cx_cursor_set_insert(cset, cursor)
+  # @param [FFI::Pointer of CursorSet] cset 
+  # @param [Cursor] cursor 
+  # @return [Integer] zero if the CXCursor was already in the set, and non-zero otherwise.
+  # @scope class
   attach_function :cx_cursor_set_insert, :clang_CXCursorSet_insert, [:pointer, Cursor.by_value], :uint
 
+  # Determine the semantic parent of the given cursor.
+  #
+  # The semantic parent of a cursor is the cursor that semantically contains
+  # the given \p cursor. For many declarations, the lexical and semantic parents
+  # are equivalent (the lexical parent is returned by 
+  # \c clang_getCursorLexicalParent()). They diverge when declarations or
+  # definitions are provided out-of-line. For example:
+  #
+  # \code
+  # class C {
+  #  void f();
+  # };
+  #
+  # void C::f() { }
+  # \endcode
+  #
+  # In the out-of-line definition of \c C::f, the semantic parent is the 
+  # the class \c C, of which this function is a member. The lexical parent is
+  # the place where the declaration actually occurs in the source code; in this
+  # case, the definition occurs in the translation unit. In general, the 
+  # lexical parent for a given entity can change without affecting the semantics
+  # of the program, and the lexical parent of different declarations of the
+  # same entity may be different. Changing the semantic parent of a declaration,
+  # on the other hand, can have a major impact on semantics, and redeclarations
+  # of a particular entity should all have the same semantic context.
+  #
+  # In the example above, both declarations of \c C::f have \c C as their
+  # semantic context, while the lexical context of the first \c C::f is \c C
+  # and the lexical context of the second \c C::f is the translation unit.
+  #
+  # For global declarations, the semantic parent is the translation unit.
+  #
+  # @method get_cursor_semantic_parent(cursor)
+  # @param [Cursor] cursor 
+  # @return [Cursor] 
+  # @scope class
   attach_function :get_cursor_semantic_parent, :clang_getCursorSemanticParent, [Cursor.by_value], Cursor.by_value
 
+  # Determine the lexical parent of the given cursor.
+  #
+  # The lexical parent of a cursor is the cursor in which the given \p cursor
+  # was actually written. For many declarations, the lexical and semantic parents
+  # are equivalent (the semantic parent is returned by 
+  # \c clang_getCursorSemanticParent()). They diverge when declarations or
+  # definitions are provided out-of-line. For example:
+  #
+  # \code
+  # class C {
+  #  void f();
+  # };
+  #
+  # void C::f() { }
+  # \endcode
+  #
+  # In the out-of-line definition of \c C::f, the semantic parent is the 
+  # the class \c C, of which this function is a member. The lexical parent is
+  # the place where the declaration actually occurs in the source code; in this
+  # case, the definition occurs in the translation unit. In general, the 
+  # lexical parent for a given entity can change without affecting the semantics
+  # of the program, and the lexical parent of different declarations of the
+  # same entity may be different. Changing the semantic parent of a declaration,
+  # on the other hand, can have a major impact on semantics, and redeclarations
+  # of a particular entity should all have the same semantic context.
+  #
+  # In the example above, both declarations of \c C::f have \c C as their
+  # semantic context, while the lexical context of the first \c C::f is \c C
+  # and the lexical context of the second \c C::f is the translation unit.
+  #
+  # For declarations written in the global scope, the lexical parent is
+  # the translation unit.
+  #
+  # @method get_cursor_lexical_parent(cursor)
+  # @param [Cursor] cursor 
+  # @return [Cursor] 
+  # @scope class
   attach_function :get_cursor_lexical_parent, :clang_getCursorLexicalParent, [Cursor.by_value], Cursor.by_value
 
+  # Determine the set of methods that are overridden by the given
+  # method.
+  #
+  # In both Objective-C and C++, a method (aka virtual member function,
+  # in C++) can override a virtual method in a base class. For
+  # Objective-C, a method is said to override any method in the class's
+  # interface (if we're coming from an implementation), its protocols,
+  # or its categories, that has the same selector and is of the same
+  # kind (class or instance). If no such method exists, the search
+  # continues to the class's superclass, its protocols, and its
+  # categories, and so on.
+  #
+  # For C++, a virtual member function overrides any virtual member
+  # function with the same signature that occurs in its base
+  # classes. With multiple inheritance, a virtual member function can
+  # override several virtual member functions coming from different
+  # base classes.
+  #
+  # In all cases, this function determines the immediate overridden
+  # method, rather than all of the overridden methods. For example, if
+  # a method is originally declared in a class A, then overridden in B
+  # (which in inherits from A) and also in C (which inherited from B),
+  # then the only overridden method returned from this function when
+  # invoked on C's method will be B's method. The client may then
+  # invoke this function again, given the previously-found overridden
+  # methods, to map out the complete method-override set.
+  #
+  # @method get_overridden_cursors(cursor, overridden, num_overridden)
+  # @param [Cursor] cursor A cursor representing an Objective-C or C++ method. This routine will compute the set of methods that this method overrides.
+  # @param [FFI::Pointer to ] overridden A pointer whose pointee will be replaced with a pointer to an array of cursors, representing the set of overridden methods. If there are no overridden methods, the pointee will be set to NULL. The pointee must be freed via a call to \c clang_disposeOverriddenCursors().
+  # @param [FFI::Pointer to ] num_overridden A pointer to the number of overridden functions, will be set to the number of overridden functions in the array pointed to by \p overridden.
+  # @return [nil] 
+  # @scope class
   attach_function :get_overridden_cursors, :clang_getOverriddenCursors, [Cursor.by_value, :pointer, :pointer], :void
 
+  # Free the set of overridden cursors returned by \c
+  # clang_getOverriddenCursors().
+  #
+  # @method dispose_overridden_cursors(overridden)
+  # @param [FFI::Pointer to ] overridden 
+  # @return [nil] 
+  # @scope class
   attach_function :dispose_overridden_cursors, :clang_disposeOverriddenCursors, [:pointer], :void
 
+  # Retrieve the file that is included by the given inclusion directive
+  # cursor.
+  #
+  # @method get_included_file(cursor)
+  # @param [Cursor] cursor 
+  # @return [FFI::Pointer of File] 
+  # @scope class
   attach_function :get_included_file, :clang_getIncludedFile, [Cursor.by_value], :pointer
 
+  # Map a source location to the cursor that describes the entity at that
+  # location in the source code.
+  #
+  # clang_getCursor() maps an arbitrary source location within a translation
+  # unit down to the most specific cursor that describes the entity at that
+  # location. For example, given an expression \c x + y, invoking
+  # clang_getCursor() with a source location pointing to "x" will return the
+  # cursor for "x"; similarly for "y". If the cursor points anywhere between
+  # "x" or "y" (e.g., on the + or the whitespace around it), clang_getCursor()
+  # will return a cursor referring to the "+" expression.
+  #
+  # @method get_cursor(translation_unit, source_location)
+  # @param [FFI::Pointer of TranslationUnit] translation_unit 
+  # @param [SourceLocation] source_location 
+  # @return [Cursor] a cursor representing the entity at the given source location, or a NULL cursor if no such entity can be found.
+  # @scope class
   attach_function :get_cursor, :clang_getCursor, [:pointer, SourceLocation.by_value], Cursor.by_value
 
+  # Retrieve the physical location of the source constructor referenced
+  # by the given cursor.
+  #
+  # The location of a declaration is typically the location of the name of that
+  # declaration, where the name of that declaration would occur if it is
+  # unnamed, or some keyword that introduces that particular declaration.
+  # The location of a reference is where that reference occurs within the
+  # source code.
+  #
+  # @method get_cursor_location(cursor)
+  # @param [Cursor] cursor 
+  # @return [SourceLocation] 
+  # @scope class
   attach_function :get_cursor_location, :clang_getCursorLocation, [Cursor.by_value], SourceLocation.by_value
 
+  # Retrieve the physical extent of the source construct referenced by
+  # the given cursor.
+  #
+  # The extent of a cursor starts with the file/line/column pointing at the
+  # first character within the source construct that the cursor refers to and
+  # ends with the last character withinin that source construct. For a
+  # declaration, the extent covers the declaration itself. For a reference,
+  # the extent covers the location of the reference (e.g., where the referenced
+  # entity was actually used).
+  #
+  # @method get_cursor_extent(cursor)
+  # @param [Cursor] cursor 
+  # @return [SourceRange] 
+  # @scope class
   attach_function :get_cursor_extent, :clang_getCursorExtent, [Cursor.by_value], SourceRange.by_value
 
   enum :type_kind, [
@@ -480,36 +1296,148 @@ module Clang
            :data, [:pointer, 2]
   end
 
+  # Retrieve the type of a CXCursor (if any).
+  #
+  # @method get_cursor_type(c)
+  # @param [Cursor] c 
+  # @return [Type] 
+  # @scope class
   attach_function :get_cursor_type, :clang_getCursorType, [Cursor.by_value], Type.by_value
 
+  # \determine Determine whether two CXTypes represent the same type.
+  #
+  # @method equal_types(a, b)
+  # @param [Type] a 
+  # @param [Type] b 
+  # @return [Integer] non-zero if the CXTypes represent the same type and zero otherwise.
+  # @scope class
   attach_function :equal_types, :clang_equalTypes, [Type.by_value, Type.by_value], :uint
 
+  # Return the canonical type for a CXType.
+  #
+  # Clang's type system explicitly models typedefs and all the ways
+  # a specific type can be represented.  The canonical type is the underlying
+  # type with all the "sugar" removed.  For example, if 'T' is a typedef
+  # for 'int', the canonical type for 'T' would be 'int'.
+  #
+  # @method get_canonical_type(t)
+  # @param [Type] t 
+  # @return [Type] 
+  # @scope class
   attach_function :get_canonical_type, :clang_getCanonicalType, [Type.by_value], Type.by_value
 
+  #  \determine Determine whether a CXType has the "const" qualifier set, 
+  #  without looking through typedefs that may have added "const" at a different level.
+  #
+  # @method is_const_qualified_type(t)
+  # @param [Type] t 
+  # @return [Integer] 
+  # @scope class
   attach_function :is_const_qualified_type, :clang_isConstQualifiedType, [Type.by_value], :uint
 
+  #  \determine Determine whether a CXType has the "volatile" qualifier set,
+  #  without looking through typedefs that may have added "volatile" at a different level.
+  #
+  # @method is_volatile_qualified_type(t)
+  # @param [Type] t 
+  # @return [Integer] 
+  # @scope class
   attach_function :is_volatile_qualified_type, :clang_isVolatileQualifiedType, [Type.by_value], :uint
 
+  #  \determine Determine whether a CXType has the "restrict" qualifier set,
+  #  without looking through typedefs that may have added "restrict" at a different level.
+  #
+  # @method is_restrict_qualified_type(t)
+  # @param [Type] t 
+  # @return [Integer] 
+  # @scope class
   attach_function :is_restrict_qualified_type, :clang_isRestrictQualifiedType, [Type.by_value], :uint
 
+  # For pointer types, returns the type of the pointee.
+  #
+  # @method get_pointee_type(t)
+  # @param [Type] t 
+  # @return [Type] 
+  # @scope class
   attach_function :get_pointee_type, :clang_getPointeeType, [Type.by_value], Type.by_value
 
+  # Return the cursor for the declaration of the given type.
+  #
+  # @method get_type_declaration(t)
+  # @param [Type] t 
+  # @return [Cursor] 
+  # @scope class
   attach_function :get_type_declaration, :clang_getTypeDeclaration, [Type.by_value], Cursor.by_value
 
+  # Returns the Objective-C type encoding for the specified declaration.
+  #
+  # @method get_decl_obj_c_type_encoding(c)
+  # @param [Cursor] c 
+  # @return [String] 
+  # @scope class
   attach_function :get_decl_obj_c_type_encoding, :clang_getDeclObjCTypeEncoding, [Cursor.by_value], String.by_value
 
+  # Retrieve the spelling of a given CXTypeKind.
+  #
+  # @method get_type_kind_spelling(k)
+  # @param [Enum] k 
+  # @return [String] 
+  # @scope class
   attach_function :get_type_kind_spelling, :clang_getTypeKindSpelling, [:type_kind], String.by_value
 
+  # Retrieve the result type associated with a function type.
+  #
+  # @method get_result_type(t)
+  # @param [Type] t 
+  # @return [Type] 
+  # @scope class
   attach_function :get_result_type, :clang_getResultType, [Type.by_value], Type.by_value
 
+  # Retrieve the result type associated with a given cursor.  This only
+  #  returns a valid type of the cursor refers to a function or method.
+  #
+  # @method get_cursor_result_type(c)
+  # @param [Cursor] c 
+  # @return [Type] 
+  # @scope class
   attach_function :get_cursor_result_type, :clang_getCursorResultType, [Cursor.by_value], Type.by_value
 
+  # Return 1 if the CXType is a POD (plain old data) type, and 0
+  #  otherwise.
+  #
+  # @method is_pod_type(t)
+  # @param [Type] t 
+  # @return [Integer] 
+  # @scope class
   attach_function :is_pod_type, :clang_isPODType, [Type.by_value], :uint
 
+  # Return the element type of an array type.
+  #
+  # If a non-array type is passed in, an invalid type is returned.
+  #
+  # @method get_array_element_type(t)
+  # @param [Type] t 
+  # @return [Type] 
+  # @scope class
   attach_function :get_array_element_type, :clang_getArrayElementType, [Type.by_value], Type.by_value
 
+  # Return the the array size of a constant array.
+  #
+  # If a non-array type is passed in, -1 is returned.
+  #
+  # @method get_array_size(t)
+  # @param [Type] t 
+  # @return [Integer] 
+  # @scope class
   attach_function :get_array_size, :clang_getArraySize, [Type.by_value], :long_long
 
+  # Returns 1 if the base class specified by the cursor with kind
+  #   CX_CXXBaseSpecifier is virtual.
+  #
+  # @method is_virtual_base(cursor)
+  # @param [Cursor] cursor 
+  # @return [Integer] 
+  # @scope class
   attach_function :is_virtual_base, :clang_isVirtualBase, [Cursor.by_value], :uint
 
   enum :cxx_access_specifier, [
@@ -519,12 +1447,42 @@ module Clang
     :x_private
   ]
 
+  # Returns the access control level for the C++ base specifier
+  # represented by a cursor with kind CXCursor_CXXBaseSpecifier or
+  # CXCursor_AccessSpecifier.
+  #
+  # @method get_cxx_access_specifier(cursor)
+  # @param [Cursor] cursor 
+  # @return [Enum] 
+  # @scope class
   attach_function :get_cxx_access_specifier, :clang_getCXXAccessSpecifier, [Cursor.by_value], :cxx_access_specifier
 
+  # Determine the number of overloaded declarations referenced by a 
+  # \c CXCursor_OverloadedDeclRef cursor.
+  #
+  # @method get_num_overloaded_decls(cursor)
+  # @param [Cursor] cursor The cursor whose overloaded declarations are being queried.
+  # @return [Integer] The number of overloaded declarations referenced by \c cursor. If it is not a \c CXCursor_OverloadedDeclRef cursor, returns 0.
+  # @scope class
   attach_function :get_num_overloaded_decls, :clang_getNumOverloadedDecls, [Cursor.by_value], :uint
 
+  # Retrieve a cursor for one of the overloaded declarations referenced
+  # by a \c CXCursor_OverloadedDeclRef cursor.
+  #
+  # @method get_overloaded_decl(cursor, index)
+  # @param [Cursor] cursor The cursor whose overloaded declarations are being queried.
+  # @param [Integer] index The zero-based index into the set of overloaded declarations in the cursor.
+  # @return [Cursor] A cursor representing the declaration referenced by the given \c cursor at the specified \c index. If the cursor does not have an associated set of overloaded declarations, or if the index is out of bounds, returns \c clang_getNullCursor();
+  # @scope class
   attach_function :get_overloaded_decl, :clang_getOverloadedDecl, [Cursor.by_value, :uint], Cursor.by_value
 
+  # For cursors representing an iboutletcollection attribute,
+  #  this function returns the collection element type.
+  #
+  # @method get_ib_outlet_collection_type(cursor)
+  # @param [Cursor] cursor 
+  # @return [Type] 
+  # @scope class
   attach_function :get_ib_outlet_collection_type, :clang_getIBOutletCollectionType, [Cursor.by_value], Type.by_value
 
   enum :child_visit_result, [
@@ -535,42 +1493,266 @@ module Clang
 
   callback :cursor_visitor, [Cursor.by_value, Cursor.by_value, :pointer], :child_visit_result
 
+  # Visit the children of a particular cursor.
+  #
+  # This function visits all the direct children of the given cursor,
+  # invoking the given \p visitor function with the cursors of each
+  # visited child. The traversal may be recursive, if the visitor returns
+  # \c CXChildVisit_Recurse. The traversal may also be ended prematurely, if
+  # the visitor returns \c CXChildVisit_Break.
+  #
+  # @method visit_children(parent, visitor, client_data)
+  # @param [Cursor] parent the cursor whose child may be visited. All kinds of cursors can be visited, including invalid cursors (which, by definition, have no children).
+  # @param [Callback] visitor the visitor function that will be invoked for each child of \p parent.
+  # @param [FFI::Pointer of ClientData] client_data pointer data supplied by the client, which will be passed to the visitor each time it is invoked.
+  # @return [Integer] a non-zero value if the traversal was terminated prematurely by the visitor returning \c CXChildVisit_Break.
+  # @scope class
   attach_function :visit_children, :clang_visitChildren, [Cursor.by_value, :cursor_visitor, :pointer], :uint
 
+  # Retrieve a Unified Symbol Resolution (USR) for the entity referenced
+  # by the given cursor.
+  #
+  # A Unified Symbol Resolution (USR) is a string that identifies a particular
+  # entity (function, class, variable, etc.) within a program. USRs can be
+  # compared across translation units to determine, e.g., when references in
+  # one translation refer to an entity defined in another translation unit.
+  #
+  # @method get_cursor_usr(cursor)
+  # @param [Cursor] cursor 
+  # @return [String] 
+  # @scope class
   attach_function :get_cursor_usr, :clang_getCursorUSR, [Cursor.by_value], String.by_value
 
+  # Construct a USR for a specified Objective-C class.
+  #
+  # @method construct_usr_obj_c_class(class_name)
+  # @param [String] class_name 
+  # @return [String] 
+  # @scope class
   attach_function :construct_usr_obj_c_class, :clang_constructUSR_ObjCClass, [:string], String.by_value
 
+  # Construct a USR for a specified Objective-C category.
+  #
+  # @method construct_usr_obj_c_category(class_name, category_name)
+  # @param [String] class_name 
+  # @param [String] category_name 
+  # @return [String] 
+  # @scope class
   attach_function :construct_usr_obj_c_category, :clang_constructUSR_ObjCCategory, [:string, :string], String.by_value
 
+  # Construct a USR for a specified Objective-C protocol.
+  #
+  # @method construct_usr_obj_c_protocol(protocol_name)
+  # @param [String] protocol_name 
+  # @return [String] 
+  # @scope class
   attach_function :construct_usr_obj_c_protocol, :clang_constructUSR_ObjCProtocol, [:string], String.by_value
 
+  # Construct a USR for a specified Objective-C instance variable and
+  #   the USR for its containing class.
+  #
+  # @method construct_usr_obj_c_ivar(name, class_usr)
+  # @param [String] name 
+  # @param [String] class_usr 
+  # @return [String] 
+  # @scope class
   attach_function :construct_usr_obj_c_ivar, :clang_constructUSR_ObjCIvar, [:string, String.by_value], String.by_value
 
+  # Construct a USR for a specified Objective-C method and
+  #   the USR for its containing class.
+  #
+  # @method construct_usr_obj_c_method(name, is_instance_method, class_usr)
+  # @param [String] name 
+  # @param [Integer] is_instance_method 
+  # @param [String] class_usr 
+  # @return [String] 
+  # @scope class
   attach_function :construct_usr_obj_c_method, :clang_constructUSR_ObjCMethod, [:string, :uint, String.by_value], String.by_value
 
+  # Construct a USR for a specified Objective-C property and the USR
+  #  for its containing class.
+  #
+  # @method construct_usr_obj_c_property(property, class_usr)
+  # @param [String] property 
+  # @param [String] class_usr 
+  # @return [String] 
+  # @scope class
   attach_function :construct_usr_obj_c_property, :clang_constructUSR_ObjCProperty, [:string, String.by_value], String.by_value
 
+  # Retrieve a name for the entity referenced by this cursor.
+  #
+  # @method get_cursor_spelling(cursor)
+  # @param [Cursor] cursor 
+  # @return [String] 
+  # @scope class
   attach_function :get_cursor_spelling, :clang_getCursorSpelling, [Cursor.by_value], String.by_value
 
+  # Retrieve the display name for the entity referenced by this cursor.
+  #
+  # The display name contains extra information that helps identify the cursor,
+  # such as the parameters of a function or template or the arguments of a 
+  # class template specialization.
+  #
+  # @method get_cursor_display_name(cursor)
+  # @param [Cursor] cursor 
+  # @return [String] 
+  # @scope class
   attach_function :get_cursor_display_name, :clang_getCursorDisplayName, [Cursor.by_value], String.by_value
 
+  # For a cursor that is a reference, retrieve a cursor representing the
+  # entity that it references.
+  #
+  # Reference cursors refer to other entities in the AST. For example, an
+  # Objective-C superclass reference cursor refers to an Objective-C class.
+  # This function produces the cursor for the Objective-C class from the
+  # cursor for the superclass reference. If the input cursor is a declaration or
+  # definition, it returns that declaration or definition unchanged.
+  # Otherwise, returns the NULL cursor.
+  #
+  # @method get_cursor_referenced(cursor)
+  # @param [Cursor] cursor 
+  # @return [Cursor] 
+  # @scope class
   attach_function :get_cursor_referenced, :clang_getCursorReferenced, [Cursor.by_value], Cursor.by_value
 
+  #  For a cursor that is either a reference to or a declaration
+  #  of some entity, retrieve a cursor that describes the definition of
+  #  that entity.
+  #
+  #  Some entities can be declared multiple times within a translation
+  #  unit, but only one of those declarations can also be a
+  #  definition. For example, given:
+  #
+  #  \code
+  #  int f(int, int);
+  #  int g(int x, int y) { return f(x, y); }
+  #  int f(int a, int b) { return a + b; }
+  #  int f(int, int);
+  #  \endcode
+  #
+  #  there are three declarations of the function "f", but only the
+  #  second one is a definition. The clang_getCursorDefinition()
+  #  function will take any cursor pointing to a declaration of "f"
+  #  (the first or fourth lines of the example) or a cursor referenced
+  #  that uses "f" (the call to "f' inside "g") and will return a
+  #  declaration cursor pointing to the definition (the second "f"
+  #  declaration).
+  #
+  #  If given a cursor for which there is no corresponding definition,
+  #  e.g., because there is no definition of that entity within this
+  #  translation unit, returns a NULL cursor.
+  #
+  # @method get_cursor_definition(cursor)
+  # @param [Cursor] cursor 
+  # @return [Cursor] 
+  # @scope class
   attach_function :get_cursor_definition, :clang_getCursorDefinition, [Cursor.by_value], Cursor.by_value
 
+  # Determine whether the declaration pointed to by this cursor
+  # is also a definition of that entity.
+  #
+  # @method is_cursor_definition(cursor)
+  # @param [Cursor] cursor 
+  # @return [Integer] 
+  # @scope class
   attach_function :is_cursor_definition, :clang_isCursorDefinition, [Cursor.by_value], :uint
 
+  # Retrieve the canonical cursor corresponding to the given cursor.
+  #
+  # In the C family of languages, many kinds of entities can be declared several
+  # times within a single translation unit. For example, a structure type can
+  # be forward-declared (possibly multiple times) and later defined:
+  #
+  # \code
+  # struct X;
+  # struct X;
+  # struct X {
+  #   int member;
+  # };
+  # \endcode
+  #
+  # The declarations and the definition of \c X are represented by three 
+  # different cursors, all of which are declarations of the same underlying 
+  # entity. One of these cursor is considered the "canonical" cursor, which
+  # is effectively the representative for the underlying entity. One can 
+  # determine if two cursors are declarations of the same underlying entity by
+  # comparing their canonical cursors.
+  #
+  # @method get_canonical_cursor(cursor)
+  # @param [Cursor] cursor 
+  # @return [Cursor] The canonical cursor for the entity referred to by the given cursor.
+  # @scope class
   attach_function :get_canonical_cursor, :clang_getCanonicalCursor, [Cursor.by_value], Cursor.by_value
 
+  # Determine if a C++ member function or member function template is 
+  # declared 'static'.
+  #
+  # @method cxx_method_is_static(c)
+  # @param [Cursor] c 
+  # @return [Integer] 
+  # @scope class
   attach_function :cxx_method_is_static, :clang_CXXMethod_isStatic, [Cursor.by_value], :uint
 
+  # Determine if a C++ member function or member function template is
+  # explicitly declared 'virtual' or if it overrides a virtual method from
+  # one of the base classes.
+  #
+  # @method cxx_method_is_virtual(c)
+  # @param [Cursor] c 
+  # @return [Integer] 
+  # @scope class
   attach_function :cxx_method_is_virtual, :clang_CXXMethod_isVirtual, [Cursor.by_value], :uint
 
+  # Given a cursor that represents a template, determine
+  # the cursor kind of the specializations would be generated by instantiating
+  # the template.
+  #
+  # This routine can be used to determine what flavor of function template,
+  # class template, or class template partial specialization is stored in the
+  # cursor. For example, it can describe whether a class template cursor is
+  # declared with "struct", "class" or "union".
+  #
+  # @method get_template_cursor_kind(c)
+  # @param [Cursor] c The cursor to query. This cursor should represent a template declaration.
+  # @return [Enum] The cursor kind of the specializations that would be generated by instantiating the template \p C. If \p C is not a template, returns \c CXCursor_NoDeclFound.
+  # @scope class
   attach_function :get_template_cursor_kind, :clang_getTemplateCursorKind, [Cursor.by_value], :cursor_kind
 
+  # Given a cursor that may represent a specialization or instantiation
+  # of a template, retrieve the cursor that represents the template that it
+  # specializes or from which it was instantiated.
+  #
+  # This routine determines the template involved both for explicit 
+  # specializations of templates and for implicit instantiations of the template,
+  # both of which are referred to as "specializations". For a class template
+  # specialization (e.g., \c std::vector<bool>), this routine will return 
+  # either the primary template (\c std::vector) or, if the specialization was
+  # instantiated from a class template partial specialization, the class template
+  # partial specialization. For a class template partial specialization and a
+  # function template specialization (including instantiations), this
+  # this routine will return the specialized template.
+  #
+  # For members of a class template (e.g., member functions, member classes, or
+  # static data members), returns the specialized or instantiated member. 
+  # Although not strictly "templates" in the C++ language, members of class
+  # templates have the same notions of specializations and instantiations that
+  # templates do, so this routine treats them similarly.
+  #
+  # @method get_specialized_cursor_template(c)
+  # @param [Cursor] c A cursor that may be a specialization of a template or a member of a template.
+  # @return [Cursor] If the given cursor is a specialization or instantiation of a template or a member thereof, the template or member that it specializes or from which it was instantiated. Otherwise, returns a NULL cursor.
+  # @scope class
   attach_function :get_specialized_cursor_template, :clang_getSpecializedCursorTemplate, [Cursor.by_value], Cursor.by_value
 
+  # Given a cursor that references something else, return the source range
+  # covering that reference.
+  #
+  # @method get_cursor_reference_name_range(c, name_flags, piece_index)
+  # @param [Cursor] c A cursor pointing to a member reference, a declaration reference, or an operator call.
+  # @param [Integer] name_flags A bitset with three independent flags: CXNameRange_WantQualifier, CXNameRange_WantTemplateArgs, and CXNameRange_WantSinglePiece.
+  # @param [Integer] piece_index For contiguous names or when passing the flag CXNameRange_WantSinglePiece, only one piece with index 0 is available. When the CXNameRange_WantSinglePiece flag is not passed for a non-contiguous names, this index can be used to retreive the individual pieces of the name. See also CXNameRange_WantSinglePiece.
+  # @return [SourceRange] The piece of the name pointed to by the given cursor. If there is no name, or if the PieceIndex is out-of-range, a null-cursor will be returned.
+  # @scope class
   attach_function :get_cursor_reference_name_range, :clang_getCursorReferenceNameRange, [Cursor.by_value, :uint, :uint], SourceRange.by_value
 
   enum :name_ref_flags, [
@@ -592,26 +1774,126 @@ module Clang
            :ptr_data, :pointer
   end
 
+  # Determine the kind of the given token.
+  #
+  # @method get_token_kind(token)
+  # @param [Token] token 
+  # @return [Enum] 
+  # @scope class
   attach_function :get_token_kind, :clang_getTokenKind, [Token.by_value], :token_kind
 
+  # Determine the spelling of the given token.
+  #
+  # The spelling of a token is the textual representation of that token, e.g.,
+  # the text of an identifier or keyword.
+  #
+  # @method get_token_spelling(translation_unit, token)
+  # @param [FFI::Pointer of TranslationUnit] translation_unit 
+  # @param [Token] token 
+  # @return [String] 
+  # @scope class
   attach_function :get_token_spelling, :clang_getTokenSpelling, [:pointer, Token.by_value], String.by_value
 
+  # Retrieve the source location of the given token.
+  #
+  # @method get_token_location(translation_unit, token)
+  # @param [FFI::Pointer of TranslationUnit] translation_unit 
+  # @param [Token] token 
+  # @return [SourceLocation] 
+  # @scope class
   attach_function :get_token_location, :clang_getTokenLocation, [:pointer, Token.by_value], SourceLocation.by_value
 
+  # Retrieve a source range that covers the given token.
+  #
+  # @method get_token_extent(translation_unit, token)
+  # @param [FFI::Pointer of TranslationUnit] translation_unit 
+  # @param [Token] token 
+  # @return [SourceRange] 
+  # @scope class
   attach_function :get_token_extent, :clang_getTokenExtent, [:pointer, Token.by_value], SourceRange.by_value
 
+  # Tokenize the source code described by the given range into raw
+  # lexical tokens.
+  #
+  # @method tokenize(tu, range, tokens, num_tokens)
+  # @param [FFI::Pointer of TranslationUnit] tu the translation unit whose text is being tokenized.
+  # @param [SourceRange] range the source range in which text should be tokenized. All of the tokens produced by tokenization will fall within this source range,
+  # @param [FFI::Pointer to ] tokens this pointer will be set to point to the array of tokens that occur within the given source range. The returned pointer must be freed with clang_disposeTokens() before the translation unit is destroyed.
+  # @param [FFI::Pointer to ] num_tokens will be set to the number of tokens in the \c *Tokens array.
+  # @return [nil] 
+  # @scope class
   attach_function :tokenize, :clang_tokenize, [:pointer, SourceRange.by_value, :pointer, :pointer], :void
 
+  # Annotate the given set of tokens by providing cursors for each token
+  # that can be mapped to a specific entity within the abstract syntax tree.
+  #
+  # This token-annotation routine is equivalent to invoking
+  # clang_getCursor() for the source locations of each of the
+  # tokens. The cursors provided are filtered, so that only those
+  # cursors that have a direct correspondence to the token are
+  # accepted. For example, given a function call \c f(x),
+  # clang_getCursor() would provide the following cursors:
+  #
+  #   * when the cursor is over the 'f', a DeclRefExpr cursor referring to 'f'.
+  #   * when the cursor is over the '(' or the ')', a CallExpr referring to 'f'.
+  #   * when the cursor is over the 'x', a DeclRefExpr cursor referring to 'x'.
+  #
+  # Only the first and last of these cursors will occur within the
+  # annotate, since the tokens "f" and "x' directly refer to a function
+  # and a variable, respectively, but the parentheses are just a small
+  # part of the full syntax of the function call expression, which is
+  # not provided as an annotation.
+  #
+  # @method annotate_tokens(tu, tokens, num_tokens, cursors)
+  # @param [FFI::Pointer of TranslationUnit] tu the translation unit that owns the given tokens.
+  # @param [FFI::Pointer to ] tokens the set of tokens to annotate.
+  # @param [Integer] num_tokens the number of tokens in \p Tokens.
+  # @param [FFI::Pointer to ] cursors an array of \p NumTokens cursors, whose contents will be replaced with the cursors corresponding to each token.
+  # @return [nil] 
+  # @scope class
   attach_function :annotate_tokens, :clang_annotateTokens, [:pointer, :pointer, :uint, :pointer], :void
 
+  # Free the given set of tokens.
+  #
+  # @method dispose_tokens(tu, tokens, num_tokens)
+  # @param [FFI::Pointer of TranslationUnit] tu 
+  # @param [FFI::Pointer to ] tokens 
+  # @param [Integer] num_tokens 
+  # @return [nil] 
+  # @scope class
   attach_function :dispose_tokens, :clang_disposeTokens, [:pointer, :pointer, :uint], :void
 
+  # for debug/testing */
+  #
+  # @method get_cursor_kind_spelling(kind)
+  # @param [Enum] kind 
+  # @return [String] 
+  # @scope class
   attach_function :get_cursor_kind_spelling, :clang_getCursorKindSpelling, [:cursor_kind], String.by_value
 
+  # @method get_definition_spelling_and_extent(cursor, start_buf, end_buf, start_line, start_column, end_line, end_column)
+  # @param [Cursor] cursor 
+  # @param [FFI::Pointer to ] start_buf 
+  # @param [FFI::Pointer to ] end_buf 
+  # @param [FFI::Pointer to ] start_line 
+  # @param [FFI::Pointer to ] start_column 
+  # @param [FFI::Pointer to ] end_line 
+  # @param [FFI::Pointer to ] end_column 
+  # @return [nil] 
+  # @scope class
   attach_function :get_definition_spelling_and_extent, :clang_getDefinitionSpellingAndExtent, [Cursor.by_value, :pointer, :pointer, :pointer, :pointer, :pointer, :pointer], :void
 
+  # @method enable_stack_traces()
+  # @return [nil] 
+  # @scope class
   attach_function :enable_stack_traces, :clang_enableStackTraces, [], :void
 
+  # @method execute_on_thread(fn, user_data, stack_size)
+  # @param [FFI::Pointer to ] fn 
+  # @param [FFI::Pointer to ] user_data 
+  # @param [Integer] stack_size 
+  # @return [nil] 
+  # @scope class
   attach_function :execute_on_thread, :clang_executeOnThread, [:pointer, :pointer, :uint], :void
 
   class CompletionResult < FFI::Struct
@@ -643,22 +1925,89 @@ module Clang
     :vertical_space
   ]
 
+  # Determine the kind of a particular chunk within a completion string.
+  #
+  # @method get_completion_chunk_kind(completion_string, chunk_number)
+  # @param [FFI::Pointer of CompletionString] completion_string the completion string to query.
+  # @param [Integer] chunk_number the 0-based index of the chunk in the completion string.
+  # @return [Enum] the kind of the chunk at the index \c chunk_number.
+  # @scope class
   attach_function :get_completion_chunk_kind, :clang_getCompletionChunkKind, [:pointer, :uint], :completion_chunk_kind
 
+  # Retrieve the text associated with a particular chunk within a
+  # completion string.
+  #
+  # @method get_completion_chunk_text(completion_string, chunk_number)
+  # @param [FFI::Pointer of CompletionString] completion_string the completion string to query.
+  # @param [Integer] chunk_number the 0-based index of the chunk in the completion string.
+  # @return [String] the text associated with the chunk at index \c chunk_number.
+  # @scope class
   attach_function :get_completion_chunk_text, :clang_getCompletionChunkText, [:pointer, :uint], String.by_value
 
+  # Retrieve the completion string associated with a particular chunk
+  # within a completion string.
+  #
+  # @method get_completion_chunk_completion_string(completion_string, chunk_number)
+  # @param [FFI::Pointer of CompletionString] completion_string the completion string to query.
+  # @param [Integer] chunk_number the 0-based index of the chunk in the completion string.
+  # @return [FFI::Pointer of CompletionString] the completion string associated with the chunk at index \c chunk_number.
+  # @scope class
   attach_function :get_completion_chunk_completion_string, :clang_getCompletionChunkCompletionString, [:pointer, :uint], :pointer
 
+  # Retrieve the number of chunks in the given code-completion string.
+  #
+  # @method get_num_completion_chunks(completion_string)
+  # @param [FFI::Pointer of CompletionString] completion_string 
+  # @return [Integer] 
+  # @scope class
   attach_function :get_num_completion_chunks, :clang_getNumCompletionChunks, [:pointer], :uint
 
+  # Determine the priority of this code completion.
+  #
+  # The priority of a code completion indicates how likely it is that this 
+  # particular completion is the completion that the user will select. The
+  # priority is selected by various internal heuristics.
+  #
+  # @method get_completion_priority(completion_string)
+  # @param [FFI::Pointer of CompletionString] completion_string The completion string to query.
+  # @return [Integer] The priority of this completion string. Smaller values indicate higher-priority (more likely) completions.
+  # @scope class
   attach_function :get_completion_priority, :clang_getCompletionPriority, [:pointer], :uint
 
+  # Determine the availability of the entity that this code-completion
+  # string refers to.
+  #
+  # @method get_completion_availability(completion_string)
+  # @param [FFI::Pointer of CompletionString] completion_string The completion string to query.
+  # @return [Enum] The availability of the completion string.
+  # @scope class
   attach_function :get_completion_availability, :clang_getCompletionAvailability, [:pointer], :availability_kind
 
+  # Retrieve the number of annotations associated with the given
+  # completion string.
+  #
+  # @method get_completion_num_annotations(completion_string)
+  # @param [FFI::Pointer of CompletionString] completion_string the completion string to query.
+  # @return [Integer] the number of annotations associated with the given completion string.
+  # @scope class
   attach_function :get_completion_num_annotations, :clang_getCompletionNumAnnotations, [:pointer], :uint
 
+  # Retrieve the annotation associated with the given completion string.
+  #
+  # @method get_completion_annotation(completion_string, annotation_number)
+  # @param [FFI::Pointer of CompletionString] completion_string the completion string to query.
+  # @param [Integer] annotation_number the 0-based index of the annotation of the completion string.
+  # @return [String] annotation string associated with the completion at index \c annotation_number, or a NULL string if that annotation is not available.
+  # @scope class
   attach_function :get_completion_annotation, :clang_getCompletionAnnotation, [:pointer, :uint], String.by_value
 
+  # Retrieve a completion string for an arbitrary declaration or macro
+  # definition cursor.
+  #
+  # @method get_cursor_completion_string(cursor)
+  # @param [Cursor] cursor The cursor to query.
+  # @return [FFI::Pointer of CompletionString] A non-context-sensitive completion string for declaration and macro definition cursors, or NULL for other kinds of cursors.
+  # @scope class
   attach_function :get_cursor_completion_string, :clang_getCursorCompletionString, [Cursor.by_value], :pointer
 
   class CodeCompleteResults < FFI::Struct
@@ -675,40 +2024,206 @@ module Clang
     :unexposed, 0
   ]
 
+  # Returns a default set of code-completion options that can be
+  # passed to\c clang_codeCompleteAt(). 
+  #
+  # @method default_code_complete_options()
+  # @return [Integer] 
+  # @scope class
   attach_function :default_code_complete_options, :clang_defaultCodeCompleteOptions, [], :uint
 
+  # Perform code completion at a given location in a translation unit.
+  #
+  # This function performs code completion at a particular file, line, and
+  # column within source code, providing results that suggest potential
+  # code snippets based on the context of the completion. The basic model
+  # for code completion is that Clang will parse a complete source file,
+  # performing syntax checking up to the location where code-completion has
+  # been requested. At that point, a special code-completion token is passed
+  # to the parser, which recognizes this token and determines, based on the
+  # current location in the C/Objective-C/C++ grammar and the state of
+  # semantic analysis, what completions to provide. These completions are
+  # returned via a new \c CXCodeCompleteResults structure.
+  #
+  # Code completion itself is meant to be triggered by the client when the
+  # user types punctuation characters or whitespace, at which point the
+  # code-completion location will coincide with the cursor. For example, if \c p
+  # is a pointer, code-completion might be triggered after the "-" and then
+  # after the ">" in \c p->. When the code-completion location is afer the ">",
+  # the completion results will provide, e.g., the members of the struct that
+  # "p" points to. The client is responsible for placing the cursor at the
+  # beginning of the token currently being typed, then filtering the results
+  # based on the contents of the token. For example, when code-completing for
+  # the expression \c p->get, the client should provide the location just after
+  # the ">" (e.g., pointing at the "g") to this code-completion hook. Then, the
+  # client can filter the results based on the current token text ("get"), only
+  # showing those results that start with "get". The intent of this interface
+  # is to separate the relatively high-latency acquisition of code-completion
+  # results from the filtering of results on a per-character basis, which must
+  # have a lower latency.
+  #
+  # @method code_complete_at(tu, complete_filename, complete_line, complete_column, unsaved_files, num_unsaved_files, options)
+  # @param [FFI::Pointer of TranslationUnit] tu The translation unit in which code-completion should occur. The source files for this translation unit need not be completely up-to-date (and the contents of those source files may be overridden via \p unsaved_files). Cursors referring into the translation unit may be invalidated by this invocation.
+  # @param [String] complete_filename The name of the source file where code completion should be performed. This filename may be any file included in the translation unit.
+  # @param [Integer] complete_line The line at which code-completion should occur.
+  # @param [Integer] complete_column The column at which code-completion should occur. Note that the column should point just after the syntactic construct that initiated code completion, and not in the middle of a lexical token.
+  # @param [FFI::Pointer to ] unsaved_files the Tiles that have not yet been saved to disk but may be required for parsing or code completion, including the contents of those files. The contents and name of these files (as specified by CXUnsavedFile) are copied when necessary, so the client only needs to guarantee their validity until the call to this function returns.
+  # @param [Integer] num_unsaved_files The number of unsaved file entries in \p unsaved_files.
+  # @param [Integer] options Extra options that control the behavior of code completion, expressed as a bitwise OR of the enumerators of the CXCodeComplete_Flags enumeration. The \c clang_defaultCodeCompleteOptions() function returns a default set of code-completion options.
+  # @return [FFI::Pointer to ] If successful, a new \c CXCodeCompleteResults structure containing code-completion results, which should eventually be freed with \c clang_disposeCodeCompleteResults(). If code completion fails, returns NULL.
+  # @scope class
   attach_function :code_complete_at, :clang_codeCompleteAt, [:pointer, :string, :uint, :uint, :pointer, :uint, :uint], :pointer
 
+  # Sort the code-completion results in case-insensitive alphabetical 
+  # order.
+  #
+  # @method sort_code_completion_results(results, num_results)
+  # @param [FFI::Pointer to ] results The set of results to sort.
+  # @param [Integer] num_results The number of results in \p Results.
+  # @return [nil] 
+  # @scope class
   attach_function :sort_code_completion_results, :clang_sortCodeCompletionResults, [:pointer, :uint], :void
 
+  # Free the given set of code-completion results.
+  #
+  # @method dispose_code_complete_results(results)
+  # @param [FFI::Pointer to ] results 
+  # @return [nil] 
+  # @scope class
   attach_function :dispose_code_complete_results, :clang_disposeCodeCompleteResults, [:pointer], :void
 
+  # Determine the number of diagnostics produced prior to the
+  # location where code completion was performed.
+  #
+  # @method code_complete_get_num_diagnostics(results)
+  # @param [FFI::Pointer to ] results 
+  # @return [Integer] 
+  # @scope class
   attach_function :code_complete_get_num_diagnostics, :clang_codeCompleteGetNumDiagnostics, [:pointer], :uint
 
+  # Retrieve a diagnostic associated with the given code completion.
+  #
+  #Result: 
+  # the code completion results to query.
+  #
+  # @method code_complete_get_diagnostic(results, index)
+  # @param [FFI::Pointer to ] results 
+  # @param [Integer] index the zero-based diagnostic number to retrieve.
+  # @return [FFI::Pointer of Diagnostic] the requested diagnostic. This diagnostic must be freed via a call to \c clang_disposeDiagnostic().
+  # @scope class
   attach_function :code_complete_get_diagnostic, :clang_codeCompleteGetDiagnostic, [:pointer, :uint], :pointer
 
+  # Determines what compeltions are appropriate for the context
+  # the given code completion.
+  #
+  # @method code_complete_get_contexts(results)
+  # @param [FFI::Pointer to ] results the code completion results to query
+  # @return [Integer] the kinds of completions that are appropriate for use along with the given code completion results.
+  # @scope class
   attach_function :code_complete_get_contexts, :clang_codeCompleteGetContexts, [:pointer], :ulong_long
 
+  # Returns the cursor kind for the container for the current code
+  # completion context. The container is only guaranteed to be set for
+  # contexts where a container exists (i.e. member accesses or Objective-C
+  # message sends); if there is not a container, this function will return
+  # CXCursor_InvalidCode.
+  #
+  # @method code_complete_get_container_kind(results, is_incomplete)
+  # @param [FFI::Pointer to ] results the code completion results to query
+  # @param [FFI::Pointer to ] is_incomplete on return, this value will be false if Clang has complete information about the container. If Clang does not have complete information, this value will be true.
+  # @return [Enum] the container kind, or CXCursor_InvalidCode if there is not a container
+  # @scope class
   attach_function :code_complete_get_container_kind, :clang_codeCompleteGetContainerKind, [:pointer, :pointer], :cursor_kind
 
+  # Returns the USR for the container for the current code completion
+  # context. If there is not a container for the current context, this
+  # function will return the empty string.
+  #
+  # @method code_complete_get_container_usr(results)
+  # @param [FFI::Pointer to ] results the code completion results to query
+  # @return [String] the USR for the container
+  # @scope class
   attach_function :code_complete_get_container_usr, :clang_codeCompleteGetContainerUSR, [:pointer], String.by_value
 
+  # Returns the currently-entered selector for an Objective-C message
+  # send, formatted like "initWithFoo:bar:". Only guaranteed to return a
+  # non-empty string for CXCompletionContext_ObjCInstanceMessage and
+  # CXCompletionContext_ObjCClassMessage.
+  #
+  # @method code_complete_get_obj_c_selector(results)
+  # @param [FFI::Pointer to ] results the code completion results to query
+  # @return [String] the selector (or partial selector) that has been entered thus far for an Objective-C message send.
+  # @scope class
   attach_function :code_complete_get_obj_c_selector, :clang_codeCompleteGetObjCSelector, [:pointer], String.by_value
 
+  # Return a version string, suitable for showing to a user, but not
+  #        intended to be parsed (the format is not guaranteed to be stable).
+  #
+  # @method get_clang_version()
+  # @return [String] 
+  # @scope class
   attach_function :get_clang_version, :clang_getClangVersion, [], String.by_value
 
+  # Enable/disable crash recovery.
+  #
+  #Flag: 
+  # to indicate if crash recovery is enabled.  A non-zero value
+  #        enables crash recovery, while 0 disables it.
+  #
+  # @method toggle_crash_recovery(is_enabled)
+  # @param [Integer] is_enabled 
+  # @return [nil] 
+  # @scope class
   attach_function :toggle_crash_recovery, :clang_toggleCrashRecovery, [:uint], :void
 
   callback :inclusion_visitor, [:pointer, :uint, :pointer], :pointer
 
+  # Visit the set of preprocessor inclusions in a translation unit.
+  #   The visitor function is called with the provided data for every included
+  #   file.  This does not include headers included by the PCH file (unless one
+  #   is inspecting the inclusions in the PCH file itself).
+  #
+  # @method get_inclusions(tu, visitor, client_data)
+  # @param [FFI::Pointer of TranslationUnit] tu 
+  # @param [Callback] visitor 
+  # @param [FFI::Pointer of ClientData] client_data 
+  # @return [nil] 
+  # @scope class
   attach_function :get_inclusions, :clang_getInclusions, [:pointer, :inclusion_visitor, :pointer], :void
 
+  # Retrieve a remapping.
+  #
+  # @method get_remappings(path)
+  # @param [String] path the path that contains metadata about remappings.
+  # @return [FFI::Pointer of Remapping] the requested remapping. This remapping must be freed via a call to \c clang_remap_dispose(). Can return NULL if an error occurred.
+  # @scope class
   attach_function :get_remappings, :clang_getRemappings, [:string], :pointer
 
+  # Determine the number of remappings.
+  #
+  # @method remap_get_num_files(remapping)
+  # @param [FFI::Pointer of Remapping] remapping 
+  # @return [Integer] 
+  # @scope class
   attach_function :remap_get_num_files, :clang_remap_getNumFiles, [:pointer], :uint
 
+  # Get the original and the associated filename from the remapping.
+  #
+  # @method remap_get_filenames(remapping, index, original, transformed)
+  # @param [FFI::Pointer of Remapping] remapping 
+  # @param [Integer] index 
+  # @param [FFI::Pointer to ] original If non-NULL, will be set to the original filename.
+  # @param [FFI::Pointer to ] transformed If non-NULL, will be set to the filename that the original is associated with.
+  # @return [nil] 
+  # @scope class
   attach_function :remap_get_filenames, :clang_remap_getFilenames, [:pointer, :uint, :pointer, :pointer], :void
 
+  # Dispose the remapping.
+  #
+  # @method remap_dispose(remapping)
+  # @param [FFI::Pointer of Remapping] remapping 
+  # @return [nil] 
+  # @scope class
   attach_function :remap_dispose, :clang_remap_dispose, [:pointer], :void
 
   enum :visitor_result, [
@@ -721,6 +2236,14 @@ module Clang
            :visit, :pointer
   end
 
+  # Find references of a declaration in a specific file.
+  #
+  # @method find_references_in_file(cursor, file, visitor)
+  # @param [Cursor] cursor pointing to a declaration or a reference of one.
+  # @param [FFI::Pointer of File] file to search for references.
+  # @param [CursorAndRangeVisitor] visitor callback that will receive pairs of CXCursor/CXSourceRange for each reference found. The CXSourceRange will point inside the file; if the reference is inside a macro (and not a macro argument) the CXSourceRange will be invalid.
+  # @return [nil] 
+  # @scope class
   attach_function :find_references_in_file, :clang_findReferencesInFile, [Cursor.by_value, :pointer, CursorAndRangeVisitor.by_value], :void
 
 end

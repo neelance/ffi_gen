@@ -59,6 +59,10 @@ class FFIGen
       "  enum :#{@generator.to_ruby_lowercase @name}, [#{lines.join(",")}\n  ]"
     end
     
+    def type_name
+      "Enum"
+    end
+    
     def reference
       ":#{@generator.to_ruby_lowercase @name}"
     end
@@ -78,8 +82,12 @@ class FFIGen
       "  class #{@generator.to_ruby_camelcase @name} < FFI::Struct\n    layout #{lines.join(",\n           ")}\n  end"
     end
     
+    def type_name
+      @generator.to_ruby_camelcase @name
+    end
+    
     def reference
-      "#{@generator.to_ruby_camelcase @name}.by_value"
+      "#{type_name}.by_value"
     end
   end
   
@@ -87,20 +95,68 @@ class FFIGen
     attr_reader :name, :parameters
     attr_accessor :return_type
     
-    def initialize(generator, name, is_callback)
+    def initialize(generator, name, is_callback, comment)
       @generator = generator
       @name = name
       @parameters = []
       @is_callback = is_callback
+      @comment = comment
     end
     
     def to_s
-      signature = "[#{@parameters.map{ |param| @generator.to_ffi_type param }.join(', ')}], #{@generator.to_ffi_type @return_type}"
-      if @is_callback
-        "  callback :#{@generator.to_ruby_lowercase @name}, #{signature}"
-      else
-        "  attach_function :#{@generator.to_ruby_lowercase @name}, :#{@name}, #{signature}"
+      str = ""
+      
+      ruby_name = @generator.to_ruby_lowercase @name
+      ruby_parameters = @parameters.map do |(name, type)|
+        ruby_param_type = @generator.to_type_name type
+        ruby_param_name = @generator.to_ruby_lowercase(name.empty? ? ruby_param_type.split.last : name)
+        [ruby_param_name, ruby_param_type, []]
       end
+      
+      signature = "[#{@parameters.map{ |(name, type)| @generator.to_ffi_type type }.join(', ')}], #{@generator.to_ffi_type @return_type}"
+      if @is_callback
+        str << "  callback :#{ruby_name}, #{signature}"
+      else
+        function_description = []
+        return_value_description = []
+        current_description = function_description
+        @comment.split("\n").map do |line|
+          line.sub! /^\s*\/?\*+\/?/, ''
+          line.gsub! '\\brief ', ''
+          line.gsub! '[', '('
+          line.gsub! ']', ')'
+          if line.gsub! /\\param (.*?) /, ''
+            index = @parameters.index { |(name, type)| name == $1 }
+            if index
+              current_description = ruby_parameters[index][2]
+            else
+              current_description << "#{$1}: "
+            end
+          end
+          current_description = return_value_description if line.gsub! '\\returns ', ''
+          current_description << line
+        end
+        
+        function_description.shift while not function_description.empty? and function_description.first.strip.empty?
+        function_description.pop while not function_description.empty? and function_description.last.strip.empty?
+        unless function_description.empty?
+          str << function_description.map{ |line| "  ##{line}\n" }.join
+          str << "  #\n"
+        end
+        
+        str << "  # @method #{ruby_name}(#{ruby_parameters.map{ |(name, type, description)| name }.join(', ')})\n"
+        ruby_parameters.each do |(name, type, description)|
+          str << "  # @param [#{type}] #{name} #{description.join(" ").gsub(/ +/, ' ').strip}\n"
+        end
+        str << "  # @return [#{@generator.to_type_name @return_type}] #{return_value_description.join(" ").gsub(/ +/, ' ').strip}\n"
+        str << "  # @scope class\n"
+        str << "  attach_function :#{ruby_name}, :#{@name}, #{signature}"
+      end
+      str
+    end
+    
+    def type_name
+      "Callback"
     end
     
     def reference
@@ -140,16 +196,32 @@ class FFIGen
     
     declarations = []
     @name_map = {}
+    previous_declaration_end = Clang.get_cursor_location unit_cursor
     Clang.get_children(unit_cursor).each do |declaration|
       location = Clang.get_cursor_location declaration
       file_ptr = FFI::MemoryPointer.new :pointer
       Clang.get_spelling_location location, file_ptr, nil, nil, nil
       file = file_ptr.read_pointer
       
+      extent = Clang.get_cursor_extent declaration
+      comment_range = Clang.get_range previous_declaration_end, Clang.get_range_start(extent)
+      previous_declaration_end = Clang.get_range_end extent
+      
       next if not all_header_files.include? file
       
       name = Clang.get_cursor_spelling(declaration).to_s_and_dispose
       next if blacklist.include? name
+
+      comment = ""
+      tokens_ptr_ptr = FFI::MemoryPointer.new :pointer
+      num_tokens_ptr = FFI::MemoryPointer.new :uint
+      Clang.tokenize unit, comment_range, tokens_ptr_ptr, num_tokens_ptr
+      num_tokens = num_tokens_ptr.read_uint
+      tokens_ptr = FFI::Pointer.new Clang::Token, tokens_ptr_ptr.read_pointer
+      num_tokens.times do |i|
+        token = Clang::Token.new tokens_ptr[i]
+        comment = Clang.get_token_spelling(unit, token).to_s_and_dispose if Clang.get_token_kind(token) == :comment
+      end
       
       case declaration[:kind]
       when :enum_decl
@@ -179,12 +251,15 @@ class FFIGen
         end
       
       when :function_decl
-        function = Function.new self, name, false
+        function = Function.new self, name, false, comment
         function.return_type = Clang.get_cursor_result_type declaration
         declarations << function
         
         Clang.get_children(declaration).each do |function_child|
-          function.parameters << Clang.get_cursor_type(function_child) if function_child[:kind] == :parm_decl
+          next if function_child[:kind] != :parm_decl
+          param_name = Clang.get_cursor_spelling(function_child).to_s_and_dispose
+          param_type = Clang.get_cursor_type function_child
+          function.parameters << [param_name, param_type]
         end
       
       when :typedef_decl
@@ -201,13 +276,15 @@ class FFIGen
           end
           
         elsif typedef_children.size > 1
-          callback = Function.new self, name, true
+          callback = Function.new self, name, true, comment
           callback.return_type = Clang.get_cursor_type typedef_children.first
           declarations << callback
           @name_map[name] = callback
           
           typedef_children[1..-1].each do |param_decl|
-            callback.parameters << Clang.get_cursor_type(param_decl)
+            param_name = Clang.get_cursor_spelling(param_decl).to_s_and_dispose
+            param_type = Clang.get_cursor_type param_decl
+            callback.parameters << [param_name, param_type]
           end
         end
         
@@ -241,14 +318,40 @@ class FFIGen
     when :double then ":double"
     when :void then ":void"
     when :pointer
-      pointee_kind = Clang.get_pointee_type(canonical_type)[:kind]
-      pointee_kind == :char_s ? ":string" : ":pointer"
+      pointee_type = Clang.get_pointee_type canonical_type
+      pointee_type[:kind] == :char_s ? ":string" : ":pointer"
     when :constant_array
       element_type = Clang.get_array_element_type canonical_type
       size = Clang.get_array_size canonical_type
       "[#{to_ffi_type element_type}, #{size}]"
     else
-      raise NotImplementedError, "No translation for values of type #{canonical_type[:kind]}!!"
+      raise NotImplementedError, "No translation for values of type #{canonical_type[:kind]}"
+    end
+  end
+  
+  def to_type_name(full_type)
+    declaration = Clang.get_type_declaration full_type
+    name = Clang.get_cursor_spelling(declaration).to_s_and_dispose
+    return @name_map[name].type_name if @name_map.has_key? name
+    
+    canonical_type = Clang.get_canonical_type full_type
+    case canonical_type[:kind]
+    when :short, :int, :long, :long_long, :u_int, :u_long, :u_long_long then "Integer"
+    when :float, :double then "Float"
+    when :void then "nil"
+    when :pointer
+      pointee_type = Clang.get_pointee_type canonical_type
+      if pointee_type[:kind] == :char_s
+        "String"
+      elsif not name.empty?
+        "FFI::Pointer of #{to_ruby_camelcase name}"
+      else
+        pointee_declaration = Clang.get_type_declaration full_type
+        pointee_name = Clang.get_cursor_spelling(pointee_declaration).to_s_and_dispose
+        "FFI::Pointer to #{pointee_name}"
+      end
+    else
+      raise NotImplementedError, "No type name for type #{canonical_type[:kind]}"
     end
   end
   
