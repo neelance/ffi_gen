@@ -5,6 +5,15 @@ ffi_gen - A Generator for Ruby FFI bindings
 *Contributors:* Jeremy Voorhis (thanks for the initial idea)
 
 
+Features
+--------
+* Generation of FFI methods, structures, enums and callbacks
+* Generation of YARD documentation comments
+* Tested with headers of the following libraries:
+  * Clang
+  * LLVM
+
+
 Requirements
 ------------
 
@@ -15,9 +24,8 @@ Roadmap
 -------
 
 * Rake Task
-* Generation of YARD documentation comments
+* Improved YARD documentation comments
 * Support for more libraries:
-  * LLVM
   * OpenGL
   * Cairo
   * (Write me if you have a whish)
