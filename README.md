@@ -23,7 +23,6 @@ Requirements
 Roadmap
 -------
 
-* Rake Task
 * Improved YARD documentation comments
 * Support for more libraries:
   * OpenGL
