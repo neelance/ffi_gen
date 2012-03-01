@@ -22,7 +22,7 @@ Requirements
 
 Example
 -------
-Use the following interface in a script or rake task:
+Use the following interface in a script or Rake task:
 
     FFIGen.generate(
       ruby_module: "Clang",
