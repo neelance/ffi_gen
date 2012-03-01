@@ -24,18 +24,6 @@ class Clang::String
 end
 
 class FFIGen
-  attr_reader :ruby_module, :ffi_lib, :headers, :output, :blacklist, :cflags
-
-  def initialize(options = {})
-    @ruby_module = options[:ruby_module] or fail "No module name given."
-    @ffi_lib     = options[:ffi_lib] or fail "No FFI library given."
-    @headers     = options[:headers] or fail "No headers given."
-    @cflags      = options.fetch :cflags, []
-    @prefixes    = options.fetch :prefixes, []
-    @blacklist   = options.fetch :blacklist, []
-    @output      = options.fetch :output, $stdout
-  end
-
   class Enum
     attr_reader :constants
     
@@ -49,9 +37,13 @@ class FFIGen
     def to_s
       prefix_length = 0
       
-      first_underscore = @constants.first[0].index("_")
-      underscore_prefix = @constants.first[0][0..first_underscore]
-      prefix_length = first_underscore + 1 if @constants.all? { |(constant_name, constant_value, constant_comment)| constant_name[0..first_underscore] == underscore_prefix }
+      unless @constants.empty?
+        first_underscore = @constants.first[0].index("_")
+        if first_underscore
+          underscore_prefix = @constants.first[0][0..first_underscore]
+          prefix_length = first_underscore + 1 if @constants.all? { |(constant_name, constant_value, constant_comment)| constant_name[0..first_underscore] == underscore_prefix }
+        end
+      end
       
       symbols = []
       definitions = []
@@ -174,7 +166,24 @@ class FFIGen
     end
   end
   
-  def generate
+  attr_reader :ruby_module, :ffi_lib, :headers, :output, :blacklist, :cflags
+
+  def initialize(options = {})
+    @ruby_module = options[:ruby_module] or fail "No module name given."
+    @ffi_lib     = options[:ffi_lib] or fail "No FFI library given."
+    @headers     = options[:headers] or fail "No headers given."
+    @cflags      = options.fetch :cflags, []
+    @prefixes    = options.fetch :prefixes, []
+    @blacklist   = options.fetch :blacklist, []
+    @output      = options.fetch :output, $stdout
+    
+    @translation_unit = nil
+    @declarations = nil
+  end
+  
+  def translation_unit
+    return @translation_unit unless @translation_unit.nil?
+    
     args = []
     @headers.each do |header|
       args.push "-include", header
@@ -185,82 +194,52 @@ class FFIGen
     args_ptr.write_array_of_pointer pointers
     
     index = Clang.create_index 0, 0
-    unit = Clang.parse_translation_unit index, "empty.h", args_ptr, args.size, nil, 0, 0
-    unit_cursor = Clang.get_translation_unit_cursor unit
+    @translation_unit = Clang.parse_translation_unit index, File.join(File.dirname(__FILE__), "empty.h"), args_ptr, args.size, nil, 0, 0
     
-    Clang.get_num_diagnostics(unit).times do |i|
-      diag = Clang.get_diagnostic unit, i
+    Clang.get_num_diagnostics(@translation_unit).times do |i|
+      diag = Clang.get_diagnostic @translation_unit, i
       $stderr.puts Clang.format_diagnostic(diag, Clang.default_diagnostic_display_options).to_s_and_dispose
     end
     
-    header_directories = []
-    all_header_files = []
-    Clang.get_inclusions unit, proc { |included_file, inclusion_stack, include_length, client_data|
+    @translation_unit
+  end
+  
+  def declarations
+    return @declarations unless @declarations.nil?
+    
+    header_files = []
+    Clang.get_inclusions translation_unit, proc { |included_file, inclusion_stack, include_length, client_data|
       filename = Clang.get_file_name(included_file).to_s_and_dispose
-      header = @headers.find { |header| filename.end_with? header }
-      if header or header_directories.any? { |dir| filename.start_with? dir }
-        all_header_files << included_file
-        header_directories << File.dirname(filename) if header and File.dirname(header) != "."
-      end
+      header_files << included_file if @headers.any? { |header| filename.end_with? header }
     }, nil
     
-    declarations = []
-    @name_map = {}
+    @declarations = {}
+    unit_cursor = Clang.get_translation_unit_cursor translation_unit
     previous_declaration_end = Clang.get_cursor_location unit_cursor
     Clang.get_children(unit_cursor).each do |declaration|
-      declaration_location = Clang.get_cursor_location declaration
       file_ptr = FFI::MemoryPointer.new :pointer
-      Clang.get_spelling_location declaration_location, file_ptr, nil, nil, nil
+      Clang.get_spelling_location Clang.get_cursor_location(declaration), file_ptr, nil, nil, nil
       file = file_ptr.read_pointer
       
       extent = Clang.get_cursor_extent declaration
       comment_range = Clang.get_range previous_declaration_end, Clang.get_range_start(extent)
       previous_declaration_end = Clang.get_range_end extent
       
-      next if not all_header_files.include? file
+      next if not header_files.include? file
       
       name = Clang.get_cursor_spelling(declaration).to_s_and_dispose
       next if blacklist.include? name
-
-      comment = extract_comment unit, comment_range
+      
+      comment = extract_comment translation_unit, comment_range
       
       case declaration[:kind]
       when :enum_decl
-        enum = Enum.new self, name, comment
-        declarations << enum
-        @name_map[name] = enum
-        
-        previous_constant_location = declaration_location
-        Clang.get_children(declaration).each do |enum_constant|
-          constant_name = Clang.get_cursor_spelling(enum_constant).to_s_and_dispose
-          constant_location = Clang.get_cursor_location enum_constant
-          
-          constant_value = nil
-          value_cursor = Clang.get_children(enum_constant).first
-          constant_value = value_cursor && case value_cursor[:kind]
-          when :integer_literal
-            tokens_ptr_ptr = FFI::MemoryPointer.new :pointer
-            num_tokens_ptr = FFI::MemoryPointer.new :uint
-            Clang.tokenize unit, Clang.get_cursor_extent(value_cursor), tokens_ptr_ptr, num_tokens_ptr
-            token = Clang::Token.new tokens_ptr_ptr.read_pointer
-            literal = Clang.get_token_spelling unit, token
-            Clang.dispose_tokens unit, tokens_ptr_ptr.read_pointer, num_tokens_ptr.read_uint
-            literal
-          else
-            next # skip those entries for now
-          end
-          
-          constant_comment_range = Clang.get_range previous_constant_location, constant_location
-          constant_comment = extract_comment unit, constant_comment_range
-          previous_constant_location = constant_location
-          
-          enum.constants << [constant_name, constant_value, constant_comment]
-        end
+        read_named_declaration declaration, name, comment unless name.empty?
       
       when :function_decl
         function = Function.new self, name, false, comment
         function.return_type = Clang.get_cursor_result_type declaration
-        declarations << function
+        @declarations[name] = function
         
         Clang.get_children(declaration).each do |function_child|
           next if function_child[:kind] != :parm_decl
@@ -271,22 +250,13 @@ class FFIGen
       
       when :typedef_decl
         typedef_children = Clang.get_children declaration
-        if typedef_children.size == 1 and typedef_children.first[:kind] == :struct_decl
-          struct = Struct.new self, name
-          declarations << struct
-          @name_map[name] = struct
-          
-          Clang.get_children(typedef_children.first).each do |field_decl|
-            field_name = Clang.get_cursor_spelling(field_decl).to_s_and_dispose
-            field_type = Clang.get_cursor_type field_decl
-            struct.fields << [field_name, field_type]
-          end
+        if typedef_children.size == 1
+          read_named_declaration typedef_children.first, name, comment unless @declarations.has_key? name
           
         elsif typedef_children.size > 1
           callback = Function.new self, name, true, comment
           callback.return_type = Clang.get_cursor_type typedef_children.first
-          declarations << callback
-          @name_map[name] = callback
+          @declarations[name] = callback
           
           typedef_children[1..-1].each do |param_decl|
             param_name = Clang.get_cursor_spelling(param_decl).to_s_and_dispose
@@ -297,8 +267,12 @@ class FFIGen
         
       end
     end
-    
-    content = "# Generated by ffi_gen. Please do not change this file by hand.\n\nrequire 'ffi'\n\nmodule #{@ruby_module}\n  extend FFI::Library\n  ffi_lib '#{@ffi_lib}'\n\n#{declarations.join("\n\n")}\n\nend"
+
+    @declarations
+  end
+  
+  def generate
+    content = "# Generated by ffi_gen. Please do not change this file by hand.\n\nrequire 'ffi'\n\nmodule #{@ruby_module}\n  extend FFI::Library\n  ffi_lib '#{@ffi_lib}'\n\n#{declarations.values.join("\n\n")}\n\nend"
     if @output.is_a? String
       File.open(@output, "w") { |file| file.write content }
       puts "ffi_gen: #{@output}"
@@ -307,15 +281,60 @@ class FFIGen
     end
   end
   
-  def extract_comment(unit, range)
+  def read_named_declaration(declaration, name, comment)
+    case declaration[:kind]
+    when :enum_decl
+      enum = Enum.new self, name, comment
+      @declarations[name] = enum
+      
+      previous_constant_location = Clang.get_cursor_location declaration
+      Clang.get_children(declaration).each do |enum_constant|
+        constant_name = Clang.get_cursor_spelling(enum_constant).to_s_and_dispose
+        constant_location = Clang.get_cursor_location enum_constant
+        
+        constant_value = nil
+        value_cursor = Clang.get_children(enum_constant).first
+        constant_value = value_cursor && case value_cursor[:kind]
+        when :integer_literal
+          tokens_ptr_ptr = FFI::MemoryPointer.new :pointer
+          num_tokens_ptr = FFI::MemoryPointer.new :uint
+          Clang.tokenize translation_unit, Clang.get_cursor_extent(value_cursor), tokens_ptr_ptr, num_tokens_ptr
+          token = Clang::Token.new tokens_ptr_ptr.read_pointer
+          literal = Clang.get_token_spelling translation_unit, token
+          Clang.dispose_tokens translation_unit, tokens_ptr_ptr.read_pointer, num_tokens_ptr.read_uint
+          literal
+        else
+          next # skip those entries for now
+        end
+        
+        constant_comment_range = Clang.get_range previous_constant_location, constant_location
+        constant_comment = extract_comment translation_unit, constant_comment_range
+        previous_constant_location = constant_location
+        
+        enum.constants << [constant_name, constant_value, constant_comment]
+      end
+      
+    when :struct_decl
+      struct = Struct.new self, name
+      @declarations[name] = struct
+      
+      Clang.get_children(declaration).each do |field_decl|
+        field_name = Clang.get_cursor_spelling(field_decl).to_s_and_dispose
+        field_type = Clang.get_cursor_type field_decl
+        struct.fields << [field_name, field_type]
+      end
+    end
+  end
+  
+  def extract_comment(translation_unit, range)
     tokens_ptr_ptr = FFI::MemoryPointer.new :pointer
     num_tokens_ptr = FFI::MemoryPointer.new :uint
-    Clang.tokenize unit, range, tokens_ptr_ptr, num_tokens_ptr
+    Clang.tokenize translation_unit, range, tokens_ptr_ptr, num_tokens_ptr
     num_tokens = num_tokens_ptr.read_uint
     tokens_ptr = FFI::Pointer.new Clang::Token, tokens_ptr_ptr.read_pointer
     (num_tokens - 1).downto(0) do |i|
       token = Clang::Token.new tokens_ptr[i]
-      return Clang.get_token_spelling(unit, token).to_s_and_dispose if Clang.get_token_kind(token) == :comment
+      return Clang.get_token_spelling(translation_unit, token).to_s_and_dispose if Clang.get_token_kind(token) == :comment
     end
     ""
   end
@@ -323,7 +342,7 @@ class FFIGen
   def to_ffi_type(full_type)
     declaration = Clang.get_type_declaration full_type
     name = Clang.get_cursor_spelling(declaration).to_s_and_dispose
-    return @name_map[name].reference if @name_map.has_key? name
+    return @declarations[name].reference if @declarations.has_key? name
     
     canonical_type = Clang.get_canonical_type full_type
     case canonical_type[:kind]
@@ -355,7 +374,7 @@ class FFIGen
   def to_type_name(full_type)
     declaration = Clang.get_type_declaration full_type
     name = Clang.get_cursor_spelling(declaration).to_s_and_dispose
-    return @name_map[name].type_name if @name_map.has_key? name
+    return @declarations[name].type_name if @declarations.has_key? name
     
     canonical_type = Clang.get_canonical_type full_type
     case canonical_type[:kind]
@@ -421,10 +440,14 @@ class FFIGen
     str
   end
   
+  def self.generate(options = {})
+    self.new(options).generate
+  end
+  
 end
 
 if __FILE__ == $0
-  ffi_gen = FFIGen.new(
+  FFIGen.generate(
     ruby_module: "Clang",
     ffi_lib:     "clang",
     headers:     ["clang-c/Index.h"],
@@ -433,5 +456,4 @@ if __FILE__ == $0
     blacklist:   ["clang_getExpansionLocation"],
     output:      "clang.rb"
   )
-  ffi_gen.generate
 end
