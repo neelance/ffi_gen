@@ -61,7 +61,7 @@ class FFIGen
         symbols << symbol
         definitions << "    #{symbol}#{constant_value ? ", #{constant_value}" : ""}"
         description = constant_comment.split("\n").map { |line| @generator.prepare_comment_line line }
-        symbol_descriptions << "  # #{symbol}:: #{@generator.create_one_line_description description}"
+        symbol_descriptions << "  # #{symbol}::\n  #   #{@generator.create_description_comment(description, '  #   ', true)}"
       end
 
       enum_description = []
@@ -70,7 +70,7 @@ class FFIGen
       end
       
       str = ""
-      str << @generator.create_description_comment(enum_description)
+      str << @generator.create_description_comment(enum_description, '  # ')
       str << "  # === Options:\n#{symbol_descriptions.join("\n")}\n  #\n"
       str << "  # @return [Array of Symbols]\n"
       str << "  def self.#{@generator.to_ruby_lowercase @name}_enum\n    [#{symbols.join(', ')}]\n  end\n"
@@ -153,12 +153,12 @@ class FFIGen
           current_description << line
         end
         
-        str << @generator.create_description_comment(function_description)
+        str << @generator.create_description_comment(function_description, '  # ')
         str << "  # @method #{ruby_name}(#{ruby_parameters.map{ |(name, type, description)| name }.join(', ')})\n"
         ruby_parameters.each do |(name, type, description)|
-          str << "  # @param [#{type}] #{name} #{@generator.create_one_line_description description}\n"
+          str << "  # @param [#{type}] #{name} #{@generator.create_description_comment(description, '  #   ', true)}\n"
         end
-        str << "  # @return [#{@generator.to_type_name @return_type}] #{@generator.create_one_line_description return_value_description}\n"
+        str << "  # @return [#{@generator.to_type_name @return_type}] #{@generator.create_description_comment(return_value_description, '  #   ', true)}\n"
         str << "  # @scope class\n"
         str << "  attach_function :#{ruby_name}, :#{@name}, #{signature}"
       end
@@ -394,22 +394,27 @@ class FFIGen
   
   def prepare_comment_line(line)
     line = line.dup
-    line.sub! /^\s*\/?\*+\/?/, ''
+    line.sub! /\ ?\*+\/\s*$/, ''
+    line.sub! /^\s*\/?\*+ ?/, ''
     line.gsub! /\\(brief|determine) /, ''
     line.gsub! '[', '('
     line.gsub! ']', ')'
     line
   end
   
-  def create_description_comment(description)
+  def create_description_comment(description, line_prefix, inline_mode = false)
     description.shift while not description.empty? and description.first.strip.empty?
     description.pop while not description.empty? and description.last.strip.empty?
     return "" if description.empty?
-    description.map{ |line| "  ##{line}\n" }.join + "  #\n"
-  end
-  
-  def create_one_line_description(description)
-    description.join(" ").gsub(/ +/, ' ').strip
+    
+    str = ""
+    description << "" if not inline_mode # empty line at end
+    description.each_with_index do |line, index|
+      str << line_prefix if not inline_mode or index > 0
+      str << line
+      str << "\n" if not inline_mode or index < description.size - 1
+    end
+    str
   end
   
 end
