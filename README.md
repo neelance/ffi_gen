@@ -5,19 +5,42 @@ ffi_gen - A Generator for Ruby FFI bindings
 *Contributors:* Jeremy Voorhis (thanks for the initial idea)
 
 
+Features
+--------
+* Generation of FFI methods, structures, enums and callbacks
+* Generation of YARD documentation comments
+* Tested with headers of the following libraries:
+  * Clang
+  * LLVM
+
+
 Requirements
 ------------
 
 * Clang 3.0 ([Download](http://llvm.org/releases/download.html#3.0), use the binaries or configure with ``--enable-shared``)
 
 
+Example
+-------
+Use the following interface in a script or Rake task:
+
+    FFIGen.generate(
+      ruby_module: "Clang",
+      ffi_lib:     "clang",
+      headers:     ["clang-c/Index.h"],
+      cflags:      `llvm-config --cflags`.split(" "),
+      prefixes:    ["clang_", "CX"],
+      blacklist:   ["clang_getExpansionLocation"],
+      output:      "clang.rb"
+    )
+
+Output: [clang.rb](https://github.com/neelance/ffi_gen/blob/master/clang.rb)
+
 Roadmap
 -------
 
-* Rake Task
-* Generation of YARD documentation comments
+* Improved YARD documentation comments
 * Support for more libraries:
-  * LLVM
   * OpenGL
   * Cairo
   * (Write me if you have a whish)
