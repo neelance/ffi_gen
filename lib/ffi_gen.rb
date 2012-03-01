@@ -1,4 +1,4 @@
-require "clang"
+require "ffi_gen/clang"
 
 class << Clang
   def get_children(declaration)
@@ -206,7 +206,7 @@ class FFIGen
     args_ptr.write_array_of_pointer pointers
     
     index = Clang.create_index 0, 0
-    @translation_unit = Clang.parse_translation_unit index, File.join(File.dirname(__FILE__), "empty.h"), args_ptr, args.size, nil, 0, 0
+    @translation_unit = Clang.parse_translation_unit index, File.join(File.dirname(__FILE__), "ffi_gen/empty.h"), args_ptr, args.size, nil, 0, 0
     
     Clang.get_num_diagnostics(@translation_unit).times do |i|
       diag = Clang.get_diagnostic @translation_unit, i
@@ -466,6 +466,6 @@ if __FILE__ == $0
     cflags:      `llvm-config --cflags`.split(" "),
     prefixes:    ["clang_", "CX"],
     blacklist:   ["clang_getExpansionLocation"],
-    output:      "clang.rb"
+    output:      "ffi_gen/clang.rb"
   )
 end
