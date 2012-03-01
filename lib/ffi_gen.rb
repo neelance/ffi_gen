@@ -76,14 +76,14 @@ class FFIGen
       str = ""
       str << @generator.create_description_comment(enum_description, '  # ')
       str << "  # === Options:\n#{symbol_descriptions.join("\n")}\n  #\n"
-      str << "  # @return [Array of Symbols]\n"
+      str << "  # @return [Array<Symbol>]\n"
       str << "  def self.#{@generator.to_ruby_lowercase @name}_enum\n    [#{symbols.join(', ')}]\n  end\n"
       str << "  enum :#{@generator.to_ruby_lowercase @name}, [\n#{definitions.join(",\n")}\n  ]"
       str
     end
     
-    def type_name
-      "Symbol from #{@generator.to_ruby_lowercase @name}_enum"
+    def type_name(short)
+      short ? @name : "Symbol from #{@generator.to_ruby_lowercase @name}_enum"
     end
     
     def reference
@@ -105,12 +105,12 @@ class FFIGen
       "  class #{@generator.to_ruby_camelcase @name} < FFI::Struct\n    layout #{lines.join(",\n           ")}\n  end"
     end
     
-    def type_name
+    def type_name(short)
       @generator.to_ruby_camelcase @name
     end
     
     def reference
-      "#{type_name}.by_value"
+      "#{type_name(false)}.by_value"
     end
   end
   
@@ -132,7 +132,7 @@ class FFIGen
       ruby_name = @generator.to_ruby_lowercase @name
       ruby_parameters = @parameters.map do |(name, type)|
         ruby_param_type = @generator.to_type_name type
-        ruby_param_name = @generator.to_ruby_lowercase(name.empty? ? ruby_param_type.split.last : name)
+        ruby_param_name = @generator.to_ruby_lowercase(name.empty? ? @generator.to_type_name(type, true) : name)
         [ruby_param_name, ruby_param_type, []]
       end
       
@@ -169,7 +169,7 @@ class FFIGen
       str
     end
     
-    def type_name
+    def type_name(short)
       "Callback"
     end
     
@@ -383,10 +383,10 @@ class FFIGen
     end
   end
   
-  def to_type_name(full_type)
+  def to_type_name(full_type, short = false)
     declaration = Clang.get_type_declaration full_type
     name = Clang.get_cursor_spelling(declaration).to_s_and_dispose
-    return @declarations[name].type_name if @declarations.has_key? name
+    return @declarations[name].type_name(short) if @declarations.has_key? name
     
     canonical_type = Clang.get_canonical_type full_type
     case canonical_type[:kind]
@@ -399,11 +399,11 @@ class FFIGen
       if pointee_type[:kind] == :char_s
         "String"
       elsif not name.empty?
-        "FFI::Pointer of #{to_ruby_camelcase name}"
+        short ? name : "FFI::Pointer(#{to_ruby_camelcase name})"
       else
         pointee_declaration = Clang.get_type_declaration full_type
         pointee_name = Clang.get_cursor_spelling(pointee_declaration).to_s_and_dispose
-        "FFI::Pointer to #{pointee_name}"
+        short ? pointee_name : "FFI::Pointer(*#{to_ruby_camelcase pointee_name})"
       end
     else
       raise NotImplementedError, "No type name for type #{canonical_type[:kind]}"
@@ -466,6 +466,6 @@ if __FILE__ == $0
     cflags:      `llvm-config --cflags`.split(" "),
     prefixes:    ["clang_", "CX"],
     blacklist:   ["clang_getExpansionLocation"],
-    output:      "ffi_gen/clang.rb"
+    output:      File.join(File.dirname(__FILE__), "ffi_gen/clang.rb")
   )
 end
