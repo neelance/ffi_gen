@@ -327,16 +327,19 @@ class FFIGen
     
     canonical_type = Clang.get_canonical_type full_type
     case canonical_type[:kind]
+    when :void then ":void"
+    when :bool then ":bool"
+    when :u_char then ":uchar"
+    when :u_short then ":ushort"
+    when :u_int then ":uint"
+    when :u_long then ":ulong"
+    when :u_long_long then ":ulong_long"
     when :short then ":short"
     when :int then ":int"
     when :long then ":long"
     when :long_long then ":long_long"
-    when :u_int then ":uint"
-    when :u_long then ":ulong"
-    when :u_long_long then ":ulong_long"
     when :float then ":float"
     when :double then ":double"
-    when :void then ":void"
     when :pointer
       pointee_type = Clang.get_pointee_type canonical_type
       pointee_type[:kind] == :char_s ? ":string" : ":pointer"
@@ -356,9 +359,10 @@ class FFIGen
     
     canonical_type = Clang.get_canonical_type full_type
     case canonical_type[:kind]
-    when :short, :int, :long, :long_long, :u_int, :u_long, :u_long_long then "Integer"
-    when :float, :double then "Float"
     when :void then "nil"
+    when :bool then "Boolean"
+    when :u_char, :u_short, :u_int, :u_long, :u_long_long, :short, :int, :long, :long_long then "Integer"
+    when :float, :double then "Float"
     when :pointer
       pointee_type = Clang.get_pointee_type canonical_type
       if pointee_type[:kind] == :char_s
