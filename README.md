@@ -20,6 +20,22 @@ Requirements
 * Clang 3.0 ([Download](http://llvm.org/releases/download.html#3.0), use the binaries or configure with ``--enable-shared``)
 
 
+Example
+-------
+Use the following interface in a script or rake task:
+
+    FFIGen.generate(
+      ruby_module: "Clang",
+      ffi_lib:     "clang",
+      headers:     ["clang-c/Index.h"],
+      cflags:      `llvm-config --cflags`.split(" "),
+      prefixes:    ["clang_", "CX"],
+      blacklist:   ["clang_getExpansionLocation"],
+      output:      "clang.rb"
+    )
+
+Output: [clang.rb](https://github.com/neelance/ffi_gen/blob/master/clang.rb)
+
 Roadmap
 -------
 
