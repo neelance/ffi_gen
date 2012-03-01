@@ -39,9 +39,10 @@ class FFIGen
   class Enum
     attr_reader :constants
     
-    def initialize(generator, name)
+    def initialize(generator, name, comment)
       @generator = generator
       @name = name
+      @comment = comment
       @constants = []
     end
     
@@ -50,17 +51,35 @@ class FFIGen
       
       first_underscore = @constants.first[0].index("_")
       underscore_prefix = @constants.first[0][0..first_underscore]
-      prefix_length = first_underscore + 1 if @constants.all? { |(constant_name, constant_value)| constant_name[0..first_underscore] == underscore_prefix }
-  
-      lines = @constants.map { |(constant_name, constant_value)|
-        "\n    :#{@generator.to_ruby_lowercase constant_name[prefix_length..-1]}" +
-        (constant_value ? ", #{constant_value}" : "")
-      }
-      "  enum :#{@generator.to_ruby_lowercase @name}, [#{lines.join(",")}\n  ]"
+      prefix_length = first_underscore + 1 if @constants.all? { |(constant_name, constant_value, constant_comment)| constant_name[0..first_underscore] == underscore_prefix }
+      
+      symbols = []
+      definitions = []
+      symbol_descriptions = []
+      @constants.map do |(constant_name, constant_value, constant_comment)|
+        symbol = ":#{@generator.to_ruby_lowercase constant_name[prefix_length..-1]}"
+        symbols << symbol
+        definitions << "    #{symbol}#{constant_value ? ", #{constant_value}" : ""}"
+        description = constant_comment.split("\n").map { |line| @generator.prepare_comment_line line }
+        symbol_descriptions << "  # #{symbol}:: #{@generator.create_one_line_description description}"
+      end
+
+      enum_description = []
+      @comment.split("\n").map do |line|
+        enum_description << @generator.prepare_comment_line(line)
+      end
+      
+      str = ""
+      str << @generator.create_description_comment(enum_description)
+      str << "  # === Options:\n#{symbol_descriptions.join("\n")}\n  #\n"
+      str << "  # @return [Array of Symbols]\n"
+      str << "  def self.#{@generator.to_ruby_lowercase @name}_enum\n    [#{symbols.join(', ')}]\n  end\n"
+      str << "  enum :#{@generator.to_ruby_lowercase @name}, [\n#{definitions.join(",\n")}\n  ]"
+      str
     end
     
     def type_name
-      "Enum"
+      "Symbol from #{@generator.to_ruby_lowercase @name}_enum"
     end
     
     def reference
@@ -121,10 +140,7 @@ class FFIGen
         return_value_description = []
         current_description = function_description
         @comment.split("\n").map do |line|
-          line.sub! /^\s*\/?\*+\/?/, ''
-          line.gsub! '\\brief ', ''
-          line.gsub! '[', '('
-          line.gsub! ']', ')'
+          line = @generator.prepare_comment_line line
           if line.gsub! /\\param (.*?) /, ''
             index = @parameters.index { |(name, type)| name == $1 }
             if index
@@ -137,18 +153,12 @@ class FFIGen
           current_description << line
         end
         
-        function_description.shift while not function_description.empty? and function_description.first.strip.empty?
-        function_description.pop while not function_description.empty? and function_description.last.strip.empty?
-        unless function_description.empty?
-          str << function_description.map{ |line| "  ##{line}\n" }.join
-          str << "  #\n"
-        end
-        
+        str << @generator.create_description_comment(function_description)
         str << "  # @method #{ruby_name}(#{ruby_parameters.map{ |(name, type, description)| name }.join(', ')})\n"
         ruby_parameters.each do |(name, type, description)|
-          str << "  # @param [#{type}] #{name} #{description.join(" ").gsub(/ +/, ' ').strip}\n"
+          str << "  # @param [#{type}] #{name} #{@generator.create_one_line_description description}\n"
         end
-        str << "  # @return [#{@generator.to_type_name @return_type}] #{return_value_description.join(" ").gsub(/ +/, ' ').strip}\n"
+        str << "  # @return [#{@generator.to_type_name @return_type}] #{@generator.create_one_line_description return_value_description}\n"
         str << "  # @scope class\n"
         str << "  attach_function :#{ruby_name}, :#{@name}, #{signature}"
       end
@@ -198,9 +208,9 @@ class FFIGen
     @name_map = {}
     previous_declaration_end = Clang.get_cursor_location unit_cursor
     Clang.get_children(unit_cursor).each do |declaration|
-      location = Clang.get_cursor_location declaration
+      declaration_location = Clang.get_cursor_location declaration
       file_ptr = FFI::MemoryPointer.new :pointer
-      Clang.get_spelling_location location, file_ptr, nil, nil, nil
+      Clang.get_spelling_location declaration_location, file_ptr, nil, nil, nil
       file = file_ptr.read_pointer
       
       extent = Clang.get_cursor_extent declaration
@@ -212,25 +222,18 @@ class FFIGen
       name = Clang.get_cursor_spelling(declaration).to_s_and_dispose
       next if blacklist.include? name
 
-      comment = ""
-      tokens_ptr_ptr = FFI::MemoryPointer.new :pointer
-      num_tokens_ptr = FFI::MemoryPointer.new :uint
-      Clang.tokenize unit, comment_range, tokens_ptr_ptr, num_tokens_ptr
-      num_tokens = num_tokens_ptr.read_uint
-      tokens_ptr = FFI::Pointer.new Clang::Token, tokens_ptr_ptr.read_pointer
-      num_tokens.times do |i|
-        token = Clang::Token.new tokens_ptr[i]
-        comment = Clang.get_token_spelling(unit, token).to_s_and_dispose if Clang.get_token_kind(token) == :comment
-      end
+      comment = extract_comment unit, comment_range
       
       case declaration[:kind]
       when :enum_decl
-        enum = Enum.new self, name
+        enum = Enum.new self, name, comment
         declarations << enum
         @name_map[name] = enum
         
+        previous_constant_location = declaration_location
         Clang.get_children(declaration).each do |enum_constant|
           constant_name = Clang.get_cursor_spelling(enum_constant).to_s_and_dispose
+          constant_location = Clang.get_cursor_location enum_constant
           
           constant_value = nil
           value_cursor = Clang.get_children(enum_constant).first
@@ -247,7 +250,11 @@ class FFIGen
             next # skip those entries for now
           end
           
-          enum.constants << [constant_name, constant_value]
+          constant_comment_range = Clang.get_range previous_constant_location, constant_location
+          constant_comment = extract_comment unit, constant_comment_range
+          previous_constant_location = constant_location
+          
+          enum.constants << [constant_name, constant_value, constant_comment]
         end
       
       when :function_decl
@@ -299,7 +306,20 @@ class FFIGen
       @output.write content
     end
   end
-    
+  
+  def extract_comment(unit, range)
+    tokens_ptr_ptr = FFI::MemoryPointer.new :pointer
+    num_tokens_ptr = FFI::MemoryPointer.new :uint
+    Clang.tokenize unit, range, tokens_ptr_ptr, num_tokens_ptr
+    num_tokens = num_tokens_ptr.read_uint
+    tokens_ptr = FFI::Pointer.new Clang::Token, tokens_ptr_ptr.read_pointer
+    (num_tokens - 1).downto(0) do |i|
+      token = Clang::Token.new tokens_ptr[i]
+      return Clang.get_token_spelling(unit, token).to_s_and_dispose if Clang.get_token_kind(token) == :comment
+    end
+    ""
+  end
+  
   def to_ffi_type(full_type)
     declaration = Clang.get_type_declaration full_type
     name = Clang.get_cursor_spelling(declaration).to_s_and_dispose
@@ -370,6 +390,26 @@ class FFIGen
     str = str.dup
     str.sub! /^(#{@prefixes.join('|')})/, '' # remove prefixes
     str
+  end
+  
+  def prepare_comment_line(line)
+    line = line.dup
+    line.sub! /^\s*\/?\*+\/?/, ''
+    line.gsub! /\\(brief|determine) /, ''
+    line.gsub! '[', '('
+    line.gsub! ']', ')'
+    line
+  end
+  
+  def create_description_comment(description)
+    description.shift while not description.empty? and description.first.strip.empty?
+    description.pop while not description.empty? and description.last.strip.empty?
+    return "" if description.empty?
+    description.map{ |line| "  ##{line}\n" }.join + "  #\n"
+  end
+  
+  def create_one_line_description(description)
+    description.join(" ").gsub(/ +/, ' ').strip
   end
   
 end
