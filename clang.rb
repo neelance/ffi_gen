@@ -784,15 +784,15 @@ module Clang
   # saving the translation unit.
   # 
   # === Options:
-  # :none::
+  # :save_translation_unit_none::
   #   Used to indicate that no special saving options are needed.
   #
   # @return [Array of Symbols]
   def self.save_translation_unit_flags_enum
-    [:none]
+    [:save_translation_unit_none]
   end
   enum :save_translation_unit_flags, [
-    :none, 0x0
+    :save_translation_unit_none, 0x0
   ]
 
   # Returns the set of flags that is suitable for saving a translation
@@ -879,15 +879,15 @@ module Clang
   # reparsing the translation unit.
   # 
   # === Options:
-  # :none::
+  # :reparse_none::
   #   Used to indicate that no special reparsing options are needed.
   #
   # @return [Array of Symbols]
   def self.reparse_flags_enum
-    [:none]
+    [:reparse_none]
   end
   enum :reparse_flags, [
-    :none, 0x0
+    :reparse_none, 0x0
   ]
 
   # Returns the set of flags that is suitable for reparsing a translation
@@ -3202,16 +3202,16 @@ module Clang
   # contexts are occurring simultaneously.
   # 
   # === Options:
-  # :unexposed::
+  # :completion_context_unexposed::
   #   The context for completions is unexposed, as only Clang results
   #   should be included. (This is equivalent to having no context bits set.)
   #
   # @return [Array of Symbols]
   def self.completion_context_enum
-    [:unexposed]
+    [:completion_context_unexposed]
   end
   enum :completion_context, [
-    :unexposed, 0
+    :completion_context_unexposed, 0
   ]
 
   # Returns a default set of code-completion options that can be

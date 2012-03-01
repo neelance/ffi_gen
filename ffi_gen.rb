@@ -36,12 +36,24 @@ class FFIGen
     
     def to_s
       prefix_length = 0
+      suffix_length = 0
       
-      unless @constants.empty?
-        first_underscore = @constants.first[0].index("_")
-        if first_underscore
-          underscore_prefix = @constants.first[0][0..first_underscore]
-          prefix_length = first_underscore + 1 if @constants.all? { |(constant_name, constant_value, constant_comment)| constant_name[0..first_underscore] == underscore_prefix }
+      unless @constants.size < 2
+        search_pattern = @constants.all? { |constant| constant[0].include? "_" } ? /(?<=_)/ : /[A-Z]/
+        first_name = @constants.first[0]
+        
+        loop do
+          position = first_name.index(search_pattern, prefix_length + 1) or break
+          prefix = first_name[0...position]
+          break if not @constants.all? { |constant| constant[0].start_with? prefix }
+          prefix_length = position
+        end
+        
+        loop do
+          position = first_name.rindex(search_pattern, first_name.size - suffix_length - 1) or break
+          prefix = first_name[position..-1]
+          break if not @constants.all? { |constant| constant[0].end_with? prefix }
+          suffix_length = first_name.size - position
         end
       end
       
@@ -49,7 +61,7 @@ class FFIGen
       definitions = []
       symbol_descriptions = []
       @constants.map do |(constant_name, constant_value, constant_comment)|
-        symbol = ":#{@generator.to_ruby_lowercase constant_name[prefix_length..-1]}"
+        symbol = ":#{@generator.to_ruby_lowercase constant_name[prefix_length..(-1 - suffix_length)]}"
         symbols << symbol
         definitions << "    #{symbol}#{constant_value ? ", #{constant_value}" : ""}"
         description = constant_comment.split("\n").map { |line| @generator.prepare_comment_line line }
