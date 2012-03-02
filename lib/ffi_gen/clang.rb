@@ -6,9 +6,29 @@ module Clang
   extend FFI::Library
   ffi_lib 'clang'
 
+  # A single translation unit, which resides in an index.
+  # 
+  # = Fields:
+  #
   class TranslationUnitImpl < FFI::Struct
   end
 
+  # Provides the contents of a file that has not yet been saved to disk.
+  # 
+  # Each CXUnsavedFile instance provides the name of a file on the
+  # system along with the current contents of that file that have not
+  # yet been saved to disk.
+  # 
+  # = Fields:
+  # :filename ::
+  #   (String) The file whose contents have not yet been saved.
+  #   
+  #   This file must already exist in the file system.
+  # :contents ::
+  #   (String) A buffer containing the unsaved contents of this file.
+  # :length ::
+  #   (Integer) The length of the unsaved contents of this buffer.
+  #
   class UnsavedFile < FFI::Struct
     layout :filename, :string,
            :contents, :string,
@@ -20,14 +40,14 @@ module Clang
   # it being deprecated or unavailable.
   # 
   # === Options:
-  # :available::
+  # :available ::
   #   The entity is available.
-  # :deprecated::
+  # :deprecated ::
   #   The entity is available, but has been deprecated (and its use is
   #   not recommended).
-  # :not_available::
+  # :not_available ::
   #   The entity is not available; any use of it will be an error.
-  # :not_accessible::
+  # :not_accessible ::
   #   The entity is available, but not accessible; any use of it will be
   #   an error.
   #
@@ -42,6 +62,19 @@ module Clang
     :not_accessible
   ]
 
+  # A character string.
+  # 
+  # The \c CXString type is used to return strings from the interface when
+  # the ownership of that string might different from one call to the next.
+  # Use \c clang_getCString() to retrieve the string data and, once finished
+  # with the string data, call \c clang_disposeString() to free the string.
+  # 
+  # = Fields:
+  # :data ::
+  #   (FFI::Pointer(*Void)) 
+  # :private_flags ::
+  #   (Integer) 
+  #
   class String < FFI::Struct
     layout :data, :pointer,
            :private_flags, :uint
@@ -154,11 +187,36 @@ module Clang
   # @scope class
   attach_function :get_file, :clang_getFile, [:pointer, :string], :pointer
 
+  # Identifies a specific source location within a translation
+  # unit.
+  # 
+  # Use clang_getExpansionLocation() or clang_getSpellingLocation()
+  # to map a source location to a particular file, line, and column.
+  # 
+  # = Fields:
+  # :ptr_data ::
+  #   (Array<FFI::Pointer(*Void)>) 
+  # :int_data ::
+  #   (Integer) 
+  #
   class SourceLocation < FFI::Struct
     layout :ptr_data, [:pointer, 2],
            :int_data, :uint
   end
 
+  # Identifies a half-open character range in the source code.
+  # 
+  # Use clang_getRangeStart() and clang_getRangeEnd() to retrieve the
+  # starting and end locations from a source range, respectively.
+  # 
+  # = Fields:
+  # :ptr_data ::
+  #   (Array<FFI::Pointer(*Void)>) 
+  # :begin_int_data ::
+  #   (Integer) 
+  # :end_int_data ::
+  #   (Integer) 
+  #
   class SourceRange < FFI::Struct
     layout :ptr_data, [:pointer, 2],
            :begin_int_data, :uint,
@@ -338,18 +396,18 @@ module Clang
   # Describes the severity of a particular diagnostic.
   # 
   # === Options:
-  # :ignored::
+  # :ignored ::
   #   A diagnostic that has been suppressed, e.g., by a command-line
   #   option.
-  # :note::
+  # :note ::
   #   This diagnostic is a note that should be attached to the
   #   previous (non-note) diagnostic.
-  # :warning::
+  # :warning ::
   #   This diagnostic indicates suspicious code that may not be
   #   wrong.
-  # :error::
+  # :error ::
   #   This diagnostic indicates that the code is ill-formed.
-  # :fatal::
+  # :fatal ::
   #   This diagnostic indicates that the code is ill-formed such
   #   that future parser recovery is unlikely to produce useful
   #   results.
@@ -399,7 +457,7 @@ module Clang
   # behavior of \c clang_displayDiagnostic().
   # 
   # === Options:
-  # :display_source_location::
+  # :display_source_location ::
   #   Display the source-location information where the
   #   diagnostic was located.
   #   
@@ -411,31 +469,31 @@ module Clang
   #   \endcode
   #   
   #   This option corresponds to the clang flag \c -fshow-source-location.
-  # :display_column::
+  # :display_column ::
   #   If displaying the source-location information of the
   #   diagnostic, also include the column number.
   #   
   #   This option corresponds to the clang flag \c -fshow-column.
-  # :display_source_ranges::
+  # :display_source_ranges ::
   #   If displaying the source-location information of the
   #   diagnostic, also include information about source ranges in a
   #   machine-parsable format.
   #   
   #   This option corresponds to the clang flag
   #   \c -fdiagnostics-print-source-range-info.
-  # :display_option::
+  # :display_option ::
   #   Display the option name associated with this diagnostic, if any.
   #   
   #   The option name displayed (e.g., -Wconversion) will be placed in brackets
   #   after the diagnostic text. This option corresponds to the clang flag
   #   \c -fdiagnostics-show-option.
-  # :display_category_id::
+  # :display_category_id ::
   #   Display the category number associated with this diagnostic, if any.
   #   
   #   The category number is displayed within brackets after the diagnostic text.
   #   This option corresponds to the clang flag 
   #   \c -fdiagnostics-show-category=id.
-  # :display_category_name::
+  # :display_category_name ::
   #   Display the category name associated with this diagnostic, if any.
   #   
   #   The category name is displayed within brackets after the diagnostic text.
@@ -657,10 +715,10 @@ module Clang
   # constructing the translation unit.
   # 
   # === Options:
-  # :none::
+  # :none ::
   #   Used to indicate that no special translation-unit options are
   #   needed.
-  # :detailed_preprocessing_record::
+  # :detailed_preprocessing_record ::
   #   Used to indicate that the parser should construct a "detailed"
   #   preprocessing record, including all macro definitions and instantiations.
   #   
@@ -669,7 +727,7 @@ module Clang
   #   is usually not retained. However, it can be useful for
   #   applications that require more detailed information about the
   #   behavior of the preprocessor.
-  # :incomplete::
+  # :incomplete ::
   #   Used to indicate that the translation unit is incomplete.
   #   
   #   When a translation unit is considered "incomplete", semantic
@@ -679,7 +737,7 @@ module Clang
   #   instantiation of implicitly-instantiation function templates in
   #   C++. This option is typically used when parsing a header with the
   #   intent of producing a precompiled header.
-  # :precompiled_preamble::
+  # :precompiled_preamble ::
   #   Used to indicate that the translation unit should be built with an 
   #   implicit precompiled header for the preamble.
   #   
@@ -692,24 +750,24 @@ module Clang
   #   preamble or the files in it have not changed, \c
   #   clang_reparseTranslationUnit() will re-use the implicit
   #   precompiled header to improve parsing performance.
-  # :cache_completion_results::
+  # :cache_completion_results ::
   #   Used to indicate that the translation unit should cache some
   #   code-completion results with each reparse of the source file.
   #   
   #   Caching of code-completion results is a performance optimization that
   #   introduces some overhead to reparsing but improves the performance of
   #   code-completion operations.
-  # :x_precompiled_preamble::
+  # :x_precompiled_preamble ::
   #   DEPRECATED: Enable precompiled preambles in C++.
   #   
   #   Note: this is a *temporary* option that is available only while
   #   we are testing C++ precompiled preamble support. It is deprecated.
-  # :x_chained_pch::
+  # :x_chained_pch ::
   #   DEPRECATED: Enabled chained precompiled preambles in C++.
   #   
   #   Note: this is a *temporary* option that is available only while
   #   we are testing C++ precompiled preamble support. It is deprecated.
-  # :nested_macro_expansions::
+  # :nested_macro_expansions ::
   #   Used to indicate that the "detailed" preprocessing record,
   #   if requested, should also contain nested macro expansions.
   #   
@@ -793,7 +851,7 @@ module Clang
   # saving the translation unit.
   # 
   # === Options:
-  # :save_translation_unit_none::
+  # :save_translation_unit_none ::
   #   Used to indicate that no special saving options are needed.
   #
   # @return [Array<Symbol>]
@@ -822,21 +880,21 @@ module Clang
   # \c clang_saveTranslationUnit().
   # 
   # === Options:
-  # :none::
+  # :none ::
   #   Indicates that no error occurred while saving a translation unit.
-  # :unknown::
+  # :unknown ::
   #   Indicates that an unknown error occurred while attempting to save
   #   the file.
   #   
   #   This error typically indicates that file I/O failed when attempting to 
   #   write the file.
-  # :translation_errors::
+  # :translation_errors ::
   #   Indicates that errors during translation prevented this attempt
   #   to save the translation unit.
   #   
   #   Errors that prevent the translation unit from being saved can be
   #   extracted using \c clang_getNumDiagnostics() and \c clang_getDiagnostic().
-  # :invalid_tu::
+  # :invalid_tu ::
   #   Indicates that the translation unit to be saved was somehow
   #   invalid (e.g., NULL).
   #
@@ -888,7 +946,7 @@ module Clang
   # reparsing the translation unit.
   # 
   # === Options:
-  # :reparse_none::
+  # :reparse_none ::
   #   Used to indicate that no special reparsing options are needed.
   #
   # @return [Array<Symbol>]
@@ -953,33 +1011,33 @@ module Clang
   # Categorizes how memory is being used by a translation unit.
   # 
   # === Options:
-  # :ast::
+  # :ast ::
   #   
-  # :identifiers::
+  # :identifiers ::
   #   
-  # :selectors::
+  # :selectors ::
   #   
-  # :global_completion_results::
+  # :global_completion_results ::
   #   
-  # :source_manager_content_cache::
+  # :source_manager_content_cache ::
   #   
-  # :ast_side_tables::
+  # :ast_side_tables ::
   #   
-  # :source_manager_membuffer_malloc::
+  # :source_manager_membuffer_malloc ::
   #   
-  # :source_manager_membuffer_m_map::
+  # :source_manager_membuffer_m_map ::
   #   
-  # :external_ast_source_membuffer_malloc::
+  # :external_ast_source_membuffer_malloc ::
   #   
-  # :external_ast_source_membuffer_m_map::
+  # :external_ast_source_membuffer_m_map ::
   #   
-  # :preprocessor::
+  # :preprocessor ::
   #   
-  # :preprocessing_record::
+  # :preprocessing_record ::
   #   
-  # :source_manager_data_structures::
+  # :source_manager_data_structures ::
   #   
-  # :preprocessor_header_search::
+  # :preprocessor_header_search ::
   #   
   #
   # @return [Array<Symbol>]
@@ -1012,11 +1070,31 @@ module Clang
   # @scope class
   attach_function :get_tu_resource_usage_name, :clang_getTUResourceUsageName, [:tu_resource_usage_kind], :string
 
+  # (Not documented)
+  # 
+  # = Fields:
+  # :kind ::
+  #   (Symbol from tu_resource_usage_kind_enum) The memory usage category.
+  # :amount ::
+  #   (Integer) Amount of resources used. 
+  #         The units will depend on the resource kind.
+  #
   class TUResourceUsageEntry < FFI::Struct
     layout :kind, :tu_resource_usage_kind,
            :amount, :ulong
   end
 
+  # The memory usage of a CXTranslationUnit, broken into categories.
+  # 
+  # = Fields:
+  # :data ::
+  #   (FFI::Pointer(*Void)) Private data member, used for queries.
+  # :num_entries ::
+  #   (Integer) The number of entries in the 'entries' array.
+  # :entries ::
+  #   (FFI::Pointer(*TUResourceUsageEntry)) An array of key-value pairs, representing the breakdown of memory
+  #               usage.
+  #
   class TUResourceUsage < FFI::Struct
     layout :data, :pointer,
            :num_entries, :uint,
@@ -1043,7 +1121,7 @@ module Clang
   # Describes the kind of entity that a cursor refers to.
   # 
   # === Options:
-  # :unexposed_decl::
+  # :unexposed_decl ::
   #   A declaration whose specific kind is not exposed via this
   #   interface.
   #   
@@ -1051,92 +1129,92 @@ module Clang
   #   of declaration; one can extract their location information,
   #   spelling, find their definitions, etc. However, the specific kind
   #   of the declaration is not reported.
-  # :struct_decl::
+  # :struct_decl ::
   #   A C or C++ struct.
-  # :union_decl::
+  # :union_decl ::
   #   A C or C++ union.
-  # :class_decl::
+  # :class_decl ::
   #   A C++ class.
-  # :enum_decl::
+  # :enum_decl ::
   #   An enumeration.
-  # :field_decl::
+  # :field_decl ::
   #   A field (in C) or non-static data member (in C++) in a
   #   struct, union, or C++ class.
-  # :enum_constant_decl::
+  # :enum_constant_decl ::
   #   An enumerator constant.
-  # :function_decl::
+  # :function_decl ::
   #   A function.
-  # :var_decl::
+  # :var_decl ::
   #   A variable.
-  # :parm_decl::
+  # :parm_decl ::
   #   A function or method parameter.
-  # :obj_c_interface_decl::
+  # :obj_c_interface_decl ::
   #   An Objective-C @interface.
-  # :obj_c_category_decl::
+  # :obj_c_category_decl ::
   #   An Objective-C @interface for a category.
-  # :obj_c_protocol_decl::
+  # :obj_c_protocol_decl ::
   #   An Objective-C @protocol declaration.
-  # :obj_c_property_decl::
+  # :obj_c_property_decl ::
   #   An Objective-C @property declaration.
-  # :obj_c_ivar_decl::
+  # :obj_c_ivar_decl ::
   #   An Objective-C instance variable.
-  # :obj_c_instance_method_decl::
+  # :obj_c_instance_method_decl ::
   #   An Objective-C instance method.
-  # :obj_c_class_method_decl::
+  # :obj_c_class_method_decl ::
   #   An Objective-C class method.
-  # :obj_c_implementation_decl::
+  # :obj_c_implementation_decl ::
   #   An Objective-C @implementation.
-  # :obj_c_category_impl_decl::
+  # :obj_c_category_impl_decl ::
   #   An Objective-C @implementation for a category.
-  # :typedef_decl::
+  # :typedef_decl ::
   #   A typedef
-  # :x_method::
+  # :x_method ::
   #   A C++ class method.
-  # :namespace::
+  # :namespace ::
   #   A C++ namespace.
-  # :linkage_spec::
+  # :linkage_spec ::
   #   A linkage specification, e.g. 'extern "C"'.
-  # :constructor::
+  # :constructor ::
   #   A C++ constructor.
-  # :destructor::
+  # :destructor ::
   #   A C++ destructor.
-  # :conversion_function::
+  # :conversion_function ::
   #   A C++ conversion function.
-  # :template_type_parameter::
+  # :template_type_parameter ::
   #   A C++ template type parameter.
-  # :non_type_template_parameter::
+  # :non_type_template_parameter ::
   #   A C++ non-type template parameter.
-  # :template_template_parameter::
+  # :template_template_parameter ::
   #   A C++ template template parameter.
-  # :function_template::
+  # :function_template ::
   #   A C++ function template.
-  # :class_template::
+  # :class_template ::
   #   A C++ class template.
-  # :class_template_partial_specialization::
+  # :class_template_partial_specialization ::
   #   A C++ class template partial specialization.
-  # :namespace_alias::
+  # :namespace_alias ::
   #   A C++ namespace alias declaration.
-  # :using_directive::
+  # :using_directive ::
   #   A C++ using directive.
-  # :using_declaration::
+  # :using_declaration ::
   #   A C++ using declaration.
-  # :type_alias_decl::
+  # :type_alias_decl ::
   #   A C++ alias declaration
-  # :obj_c_synthesize_decl::
+  # :obj_c_synthesize_decl ::
   #   An Objective-C @synthesize definition.
-  # :obj_c_dynamic_decl::
+  # :obj_c_dynamic_decl ::
   #   An Objective-C @dynamic definition.
-  # :x_access_specifier::
+  # :x_access_specifier ::
   #   An access specifier.
-  # :first_ref::
+  # :first_ref ::
   #   References
-  # :obj_c_super_class_ref::
+  # :obj_c_super_class_ref ::
   #   Decl references
-  # :obj_c_protocol_ref::
+  # :obj_c_protocol_ref ::
   #   
-  # :obj_c_class_ref::
+  # :obj_c_class_ref ::
   #   
-  # :type_ref::
+  # :type_ref ::
   #   A reference to a type declaration.
   #   
   #   A type reference occurs anywhere where a type is named but not
@@ -1150,17 +1228,17 @@ module Clang
   #   The typedef is a declaration of size_type (CXCursor_TypedefDecl),
   #   while the type of the variable "size" is referenced. The cursor
   #   referenced by the type of size is the typedef for size_type.
-  # :x_base_specifier::
+  # :x_base_specifier ::
   #   
-  # :template_ref::
+  # :template_ref ::
   #   A reference to a class template, function template, template
   #   template parameter, or class template partial specialization.
-  # :namespace_ref::
+  # :namespace_ref ::
   #   A reference to a namespace or namespace alias.
-  # :member_ref::
+  # :member_ref ::
   #   A reference to a member of a struct, union, or class that occurs in 
   #   some non-expression context, e.g., a designated initializer.
-  # :label_ref::
+  # :label_ref ::
   #   A reference to a labeled statement.
   #   
   #   This cursor kind is used to describe the jump to "start_over" in the 
@@ -1174,7 +1252,7 @@ module Clang
   #   \endcode
   #   
   #   A label reference cursor refers to a label statement.
-  # :overloaded_decl_ref::
+  # :overloaded_decl_ref ::
   #   A reference to a set of overloaded functions or function templates
   #   that has not yet been resolved to a specific function or function template.
   #   
@@ -1209,19 +1287,19 @@ module Clang
   #   The functions \c clang_getNumOverloadedDecls() and 
   #   \c clang_getOverloadedDecl() can be used to retrieve the definitions
   #   referenced by this cursor.
-  # :first_invalid::
+  # :first_invalid ::
   #   Error conditions
-  # :invalid_file::
+  # :invalid_file ::
   #   
-  # :no_decl_found::
+  # :no_decl_found ::
   #   
-  # :not_implemented::
+  # :not_implemented ::
   #   
-  # :invalid_code::
+  # :invalid_code ::
   #   
-  # :first_expr::
+  # :first_expr ::
   #   Expressions
-  # :unexposed_expr::
+  # :unexposed_expr ::
   #   An expression whose specific kind is not exposed via this
   #   interface.
   #   
@@ -1229,61 +1307,61 @@ module Clang
   #   of expression; one can extract their location information,
   #   spelling, children, etc. However, the specific kind of the
   #   expression is not reported.
-  # :decl_ref_expr::
+  # :decl_ref_expr ::
   #   An expression that refers to some value declaration, such
   #   as a function, varible, or enumerator.
-  # :member_ref_expr::
+  # :member_ref_expr ::
   #   An expression that refers to a member of a struct, union,
   #   class, Objective-C class, etc.
-  # :call_expr::
+  # :call_expr ::
   #   An expression that calls a function.
-  # :obj_c_message_expr::
+  # :obj_c_message_expr ::
   #   An expression that sends a message to an Objective-C
   #      object or class.
-  # :block_expr::
+  # :block_expr ::
   #   An expression that represents a block literal.
-  # :integer_literal::
+  # :integer_literal ::
   #   An integer literal.
-  # :floating_literal::
+  # :floating_literal ::
   #   A floating point number literal.
-  # :imaginary_literal::
+  # :imaginary_literal ::
   #   An imaginary number literal.
-  # :string_literal::
+  # :string_literal ::
   #   A string literal.
-  # :character_literal::
+  # :character_literal ::
   #   A character literal.
-  # :paren_expr::
+  # :paren_expr ::
   #   A parenthesized expression, e.g. "(1)".
   #   
   #   This AST node is only formed if full location information is requested.
-  # :unary_operator::
+  # :unary_operator ::
   #   This represents the unary-expression's (except sizeof and
   #   alignof).
-  # :array_subscript_expr::
+  # :array_subscript_expr ::
   #   (C99 6.5.2.1) Array Subscripting.
-  # :binary_operator::
+  # :binary_operator ::
   #   A builtin binary operation expression such as "x + y" or
   #   "x <= y".
-  # :compound_assign_operator::
+  # :compound_assign_operator ::
   #   Compound assignment such as "+=".
-  # :conditional_operator::
+  # :conditional_operator ::
   #   The ?: ternary operator.
-  # :c_style_cast_expr::
+  # :c_style_cast_expr ::
   #   An explicit cast in C (C99 6.5.4) or a C-style cast in C++
   #   (C++ (expr.cast)), which uses the syntax (Type)expr.
   #   
   #   For example: (int)f.
-  # :compound_literal_expr::
+  # :compound_literal_expr ::
   #   (C99 6.5.2.5)
-  # :init_list_expr::
+  # :init_list_expr ::
   #   Describes an C or C++ initializer list.
-  # :addr_label_expr::
+  # :addr_label_expr ::
   #   The GNU address of label extension, representing &&label.
-  # :stmt_expr::
+  # :stmt_expr ::
   #   This is the GNU Statement Expression extension: ({int X=4; X;})
-  # :generic_selection_expr::
+  # :generic_selection_expr ::
   #   Represents a C1X generic selection.
-  # :gnu_null_expr::
+  # :gnu_null_expr ::
   #   Implements the GNU __null extension, which is a name for a null
   #   pointer constant that has integral type (e.g., int or long) and is the same
   #   size and alignment as a pointer.
@@ -1291,15 +1369,15 @@ module Clang
   #   The __null extension is typically only used by system headers, which define
   #   NULL as __null in C++ rather than using 0 (which is an integer that may not
   #   match the size of a pointer).
-  # :x_static_cast_expr::
+  # :x_static_cast_expr ::
   #   C++'s static_cast<> expression.
-  # :x_dynamic_cast_expr::
+  # :x_dynamic_cast_expr ::
   #   C++'s dynamic_cast<> expression.
-  # :x_reinterpret_cast_expr::
+  # :x_reinterpret_cast_expr ::
   #   C++'s reinterpret_cast<> expression.
-  # :x_const_cast_expr::
+  # :x_const_cast_expr ::
   #   C++'s const_cast<> expression.
-  # :x_functional_cast_expr::
+  # :x_functional_cast_expr ::
   #   Represents an explicit C++ type conversion that uses "functional"
   #   notion (C++ (expr.type.conv)).
   #   
@@ -1307,43 +1385,43 @@ module Clang
   #   \code
   #     x = int(0.5);
   #   \endcode
-  # :x_typeid_expr::
+  # :x_typeid_expr ::
   #   A C++ typeid expression (C++ (expr.typeid)).
-  # :x_bool_literal_expr::
+  # :x_bool_literal_expr ::
   #   (C++ 2.13.5) C++ Boolean Literal.
-  # :x_null_ptr_literal_expr::
+  # :x_null_ptr_literal_expr ::
   #   (C++0x 2.14.7) C++ Pointer Literal.
-  # :x_this_expr::
+  # :x_this_expr ::
   #   Represents the "this" expression in C++
-  # :x_throw_expr::
+  # :x_throw_expr ::
   #   (C++ 15) C++ Throw Expression.
   #   
   #   This handles 'throw' and 'throw' assignment-expression. When
   #   assignment-expression isn't present, Op will be null.
-  # :x_new_expr::
+  # :x_new_expr ::
   #   A new expression for memory allocation and constructor calls, e.g:
   #   "new CXXNewExpr(foo)".
-  # :x_delete_expr::
+  # :x_delete_expr ::
   #   A delete expression for memory deallocation and destructor calls,
   #   e.g. "delete() pArray".
-  # :unary_expr::
+  # :unary_expr ::
   #   A unary expression.
-  # :obj_c_string_literal::
+  # :obj_c_string_literal ::
   #   ObjCStringLiteral, used for Objective-C string literals i.e. "foo".
-  # :obj_c_encode_expr::
+  # :obj_c_encode_expr ::
   #   ObjCEncodeExpr, used for in Objective-C.
-  # :obj_c_selector_expr::
+  # :obj_c_selector_expr ::
   #   ObjCSelectorExpr used for in Objective-C.
-  # :obj_c_protocol_expr::
+  # :obj_c_protocol_expr ::
   #   Objective-C's protocol expression.
-  # :obj_c_bridged_cast_expr::
+  # :obj_c_bridged_cast_expr ::
   #   An Objective-C "bridged" cast expression, which casts between
   #   Objective-C pointers and C pointers, transferring ownership in the process.
   #   
   #   \code
   #     NSString *str = (__bridge_transfer NSString *)CFCreateString();
   #   \endcode
-  # :pack_expansion_expr::
+  # :pack_expansion_expr ::
   #   Represents a C++0x pack expansion that produces a sequence of
   #   expressions.
   #   
@@ -1356,7 +1434,7 @@ module Clang
   #    f(static_cast<Types&&>(args)...);
   #   }
   #   \endcode
-  # :size_of_pack_expr::
+  # :size_of_pack_expr ::
   #   Represents an expression that computes the length of a parameter
   #   pack.
   #   
@@ -1366,9 +1444,9 @@ module Clang
   #     static const unsigned value = sizeof...(Types);
   #   };
   #   \endcode
-  # :first_stmt::
+  # :first_stmt ::
   #   Statements
-  # :unexposed_stmt::
+  # :unexposed_stmt ::
   #   A statement whose specific kind is not exposed via this
   #   interface.
   #   
@@ -1376,7 +1454,7 @@ module Clang
   #   statement; one can extract their location information, spelling,
   #   children, etc. However, the specific kind of the statement is not
   #   reported.
-  # :label_stmt::
+  # :label_stmt ::
   #   A labelled statement in a function. 
   #   
   #   This cursor kind is used to describe the "start_over:" label statement in 
@@ -1386,99 +1464,99 @@ module Clang
   #     start_over:
   #       ++counter;
   #   \endcode
-  # :compound_stmt::
+  # :compound_stmt ::
   #   A group of statements like { stmt stmt }.
   #   
   #   This cursor kind is used to describe compound statements, e.g. function
   #   bodies.
-  # :case_stmt::
+  # :case_stmt ::
   #   A case statment.
-  # :default_stmt::
+  # :default_stmt ::
   #   A default statement.
-  # :if_stmt::
+  # :if_stmt ::
   #   An if statement
-  # :switch_stmt::
+  # :switch_stmt ::
   #   A switch statement.
-  # :while_stmt::
+  # :while_stmt ::
   #   A while statement.
-  # :do_stmt::
+  # :do_stmt ::
   #   A do statement.
-  # :for_stmt::
+  # :for_stmt ::
   #   A for statement.
-  # :goto_stmt::
+  # :goto_stmt ::
   #   A goto statement.
-  # :indirect_goto_stmt::
+  # :indirect_goto_stmt ::
   #   An indirect goto statement.
-  # :continue_stmt::
+  # :continue_stmt ::
   #   A continue statement.
-  # :break_stmt::
+  # :break_stmt ::
   #   A break statement.
-  # :return_stmt::
+  # :return_stmt ::
   #   A return statement.
-  # :asm_stmt::
+  # :asm_stmt ::
   #   A GNU inline assembly statement extension.
-  # :obj_c_at_try_stmt::
+  # :obj_c_at_try_stmt ::
   #   Objective-C's overall @try-@catc-@finall statement.
-  # :obj_c_at_catch_stmt::
+  # :obj_c_at_catch_stmt ::
   #   Objective-C's @catch statement.
-  # :obj_c_at_finally_stmt::
+  # :obj_c_at_finally_stmt ::
   #   Objective-C's @finally statement.
-  # :obj_c_at_throw_stmt::
+  # :obj_c_at_throw_stmt ::
   #   Objective-C's @throw statement.
-  # :obj_c_at_synchronized_stmt::
+  # :obj_c_at_synchronized_stmt ::
   #   Objective-C's @synchronized statement.
-  # :obj_c_autorelease_pool_stmt::
+  # :obj_c_autorelease_pool_stmt ::
   #   Objective-C's autorelease pool statement.
-  # :obj_c_for_collection_stmt::
+  # :obj_c_for_collection_stmt ::
   #   Objective-C's collection statement.
-  # :x_catch_stmt::
+  # :x_catch_stmt ::
   #   C++'s catch statement.
-  # :x_try_stmt::
+  # :x_try_stmt ::
   #   C++'s try statement.
-  # :x_for_range_stmt::
+  # :x_for_range_stmt ::
   #   C++'s for (* : *) statement.
-  # :seh_try_stmt::
+  # :seh_try_stmt ::
   #   Windows Structured Exception Handling's try statement.
-  # :seh_except_stmt::
+  # :seh_except_stmt ::
   #   Windows Structured Exception Handling's except statement.
-  # :seh_finally_stmt::
+  # :seh_finally_stmt ::
   #   Windows Structured Exception Handling's finally statement.
-  # :null_stmt::
+  # :null_stmt ::
   #   The null satement ";": C99 6.8.3p3.
   #   
   #   This cursor kind is used to describe the null statement.
-  # :decl_stmt::
+  # :decl_stmt ::
   #   Adaptor class for mixing declarations with statements and
   #   expressions.
-  # :translation_unit::
+  # :translation_unit ::
   #   Cursor that represents the translation unit itself.
   #   
   #   The translation unit cursor exists primarily to act as the root
   #   cursor for traversing the contents of a translation unit.
-  # :first_attr::
+  # :first_attr ::
   #   Attributes
-  # :unexposed_attr::
+  # :unexposed_attr ::
   #   An attribute whose specific kind is not exposed via this
   #   interface.
-  # :ib_action_attr::
+  # :ib_action_attr ::
   #   
-  # :ib_outlet_attr::
+  # :ib_outlet_attr ::
   #   
-  # :ib_outlet_collection_attr::
+  # :ib_outlet_collection_attr ::
   #   
-  # :x_final_attr::
+  # :x_final_attr ::
   #   
-  # :x_override_attr::
+  # :x_override_attr ::
   #   
-  # :annotate_attr::
+  # :annotate_attr ::
   #   
-  # :preprocessing_directive::
+  # :preprocessing_directive ::
   #   Preprocessing
-  # :macro_definition::
+  # :macro_definition ::
   #   
-  # :macro_expansion::
+  # :macro_expansion ::
   #   
-  # :inclusion_directive::
+  # :inclusion_directive ::
   #   
   #
   # @return [Array<Symbol>]
@@ -1633,6 +1711,31 @@ module Clang
     :inclusion_directive, 503
   ]
 
+  # A cursor representing some element in the abstract syntax tree for
+  # a translation unit.
+  # 
+  # The cursor abstraction unifies the different kinds of entities in a
+  # program--declaration, statements, expressions, references to declarations,
+  # etc.--under a single "cursor" abstraction with a common set of operations.
+  # Common operation for a cursor include: getting the physical location in
+  # a source file where the cursor points, getting the name associated with a
+  # cursor, and retrieving cursors for any child nodes of a particular cursor.
+  # 
+  # Cursors can be produced in two specific ways.
+  # clang_getTranslationUnitCursor() produces a cursor for a translation unit,
+  # from which one can use clang_visitChildren() to explore the rest of the
+  # translation unit. clang_getCursor() maps from a physical source location
+  # to the entity that resides at that location, allowing one to map from the
+  # source code into the AST.
+  # 
+  # = Fields:
+  # :kind ::
+  #   (Symbol from cursor_kind_enum) 
+  # :xdata ::
+  #   (Integer) 
+  # :data ::
+  #   (Array<FFI::Pointer(*Void)>) 
+  #
   class Cursor < FFI::Struct
     layout :kind, :cursor_kind,
            :xdata, :int,
@@ -1774,18 +1877,18 @@ module Clang
   # Describe the linkage of the entity referred to by a cursor.
   # 
   # === Options:
-  # :invalid::
+  # :invalid ::
   #   This value indicates that no linkage information is available
   #   for a provided CXCursor.
-  # :no_linkage::
+  # :no_linkage ::
   #   This is the linkage for variables, parameters, and so on that
   #    have automatic storage.  This covers normal (non-extern) local variables.
-  # :internal::
+  # :internal ::
   #   This is the linkage for static variables and static functions.
-  # :unique_external::
+  # :unique_external ::
   #   This is the linkage for entities with external linkage that live
   #   in C++ anonymous namespaces.
-  # :external::
+  # :external ::
   #   This is the linkage for entities with true, external linkage.
   #
   # @return [Array<Symbol>]
@@ -1819,13 +1922,13 @@ module Clang
   # Describe the "language" of the entity referred to by a cursor.
   # 
   # === Options:
-  # :invalid::
+  # :invalid ::
   #   
-  # :c::
+  # :c ::
   #   
-  # :obj_c::
+  # :obj_c ::
   #   
-  # :c_plus_plus::
+  # :c_plus_plus ::
   #   
   #
   # @return [Array<Symbol>]
@@ -1855,6 +1958,10 @@ module Clang
   # @scope class
   attach_function :cursor_get_translation_unit, :clang_Cursor_getTranslationUnit, [Cursor.by_value], :pointer
 
+  # A fast container representing a set of CXCursors.
+  # 
+  # = Fields:
+  #
   class CursorSetImpl < FFI::Struct
   end
 
@@ -2082,92 +2189,92 @@ module Clang
   # Describes the kind of type
   # 
   # === Options:
-  # :invalid::
+  # :invalid ::
   #   Reprents an invalid type (e.g., where no type is available).
-  # :unexposed::
+  # :unexposed ::
   #   A type whose specific kind is not exposed via this
   #   interface.
-  # :void::
+  # :void ::
   #   Builtin types
-  # :bool::
+  # :bool ::
   #   
-  # :char_u::
+  # :char_u ::
   #   
-  # :u_char::
+  # :u_char ::
   #   
-  # :char16::
+  # :char16 ::
   #   
-  # :char32::
+  # :char32 ::
   #   
-  # :u_short::
+  # :u_short ::
   #   
-  # :u_int::
+  # :u_int ::
   #   
-  # :u_long::
+  # :u_long ::
   #   
-  # :u_long_long::
+  # :u_long_long ::
   #   
-  # :u_int128::
+  # :u_int128 ::
   #   
-  # :char_s::
+  # :char_s ::
   #   
-  # :s_char::
+  # :s_char ::
   #   
-  # :w_char::
+  # :w_char ::
   #   
-  # :short::
+  # :short ::
   #   
-  # :int::
+  # :int ::
   #   
-  # :long::
+  # :long ::
   #   
-  # :long_long::
+  # :long_long ::
   #   
-  # :int128::
+  # :int128 ::
   #   
-  # :float::
+  # :float ::
   #   
-  # :double::
+  # :double ::
   #   
-  # :long_double::
+  # :long_double ::
   #   
-  # :null_ptr::
+  # :null_ptr ::
   #   
-  # :overload::
+  # :overload ::
   #   
-  # :dependent::
+  # :dependent ::
   #   
-  # :obj_c_id::
+  # :obj_c_id ::
   #   
-  # :obj_c_class::
+  # :obj_c_class ::
   #   
-  # :obj_c_sel::
+  # :obj_c_sel ::
   #   
-  # :complex::
+  # :complex ::
   #   
-  # :pointer::
+  # :pointer ::
   #   
-  # :block_pointer::
+  # :block_pointer ::
   #   
-  # :l_value_reference::
+  # :l_value_reference ::
   #   
-  # :r_value_reference::
+  # :r_value_reference ::
   #   
-  # :record::
+  # :record ::
   #   
-  # :enum::
+  # :enum ::
   #   
-  # :typedef::
+  # :typedef ::
   #   
-  # :obj_c_interface::
+  # :obj_c_interface ::
   #   
-  # :obj_c_object_pointer::
+  # :obj_c_object_pointer ::
   #   
-  # :function_no_proto::
+  # :function_no_proto ::
   #   
-  # :function_proto::
+  # :function_proto ::
   #   
-  # :constant_array::
+  # :constant_array ::
   #   
   #
   # @return [Array<Symbol>]
@@ -2220,6 +2327,14 @@ module Clang
     :constant_array, 112
   ]
 
+  # The type of an element in the abstract syntax tree.
+  # 
+  # = Fields:
+  # :kind ::
+  #   (Symbol from type_kind_enum) 
+  # :data ::
+  #   (Array<FFI::Pointer(*Void)>) 
+  #
   class Type < FFI::Struct
     layout :kind, :type_kind,
            :data, [:pointer, 2]
@@ -2374,13 +2489,13 @@ module Clang
   # cursor with kind CX_CXXBaseSpecifier.
   # 
   # === Options:
-  # :x_invalid_access_specifier::
+  # :x_invalid_access_specifier ::
   #   
-  # :x_public::
+  # :x_public ::
   #   
-  # :x_protected::
+  # :x_protected ::
   #   
-  # :x_private::
+  # :x_private ::
   #   
   #
   # @return [Array<Symbol>]
@@ -2444,12 +2559,12 @@ module Clang
   # \c CXCursorVisitor to indicate how clang_visitChildren() proceed.
   # 
   # === Options:
-  # :break::
+  # :break ::
   #   Terminates the cursor traversal.
-  # :continue::
+  # :continue ::
   #   Continues the cursor traversal with the next sibling of
   #   the cursor just visited, without visiting its children.
-  # :recurse::
+  # :recurse ::
   #   Recursively traverse the children of this cursor, using
   #   the same visitor and client data.
   #
@@ -2463,6 +2578,25 @@ module Clang
     :recurse
   ]
 
+  # <em>This is no real method. This entry is only for documentation of the callback.</em>
+  # 
+  # Visitor invoked for each cursor found by a traversal.
+  # 
+  # This visitor function will be invoked for each cursor found by
+  # clang_visitCursorChildren(). Its first argument is the cursor being
+  # visited, its second argument is the parent visitor for that cursor,
+  # and its third argument is the client data provided to
+  # clang_visitCursorChildren().
+  # 
+  # The visitor should return one of the \c CXChildVisitResult values
+  # to direct clang_visitCursorChildren().
+  # 
+  # @method cursor_visitor_callback(cursor, parent, client_data)
+  # @param [Cursor] cursor 
+  # @param [Cursor] parent 
+  # @param [FFI::Pointer(ClientData)] client_data 
+  # @return [Symbol from child_visit_result_enum] 
+  # @scope class
   callback :cursor_visitor, [Cursor.by_value, Cursor.by_value, :pointer], :child_visit_result
 
   # Visit the children of a particular cursor.
@@ -2477,7 +2611,7 @@ module Clang
   # @param [Cursor] parent the cursor whose child may be visited. All kinds of
   #   cursors can be visited, including invalid cursors (which, by
   #   definition, have no children).
-  # @param [Callback] visitor the visitor function that will be invoked for each
+  # @param [Proc(cursor_visitor_callback)] visitor the visitor function that will be invoked for each
   #   child of \p parent.
   # @param [FFI::Pointer(ClientData)] client_data pointer data supplied by the client, which will
   #   be passed to the visitor each time it is invoked.
@@ -2749,13 +2883,13 @@ module Clang
   # (Not documented)
   # 
   # === Options:
-  # :want_qualifier::
+  # :want_qualifier ::
   #   Include the nested-name-specifier, e.g. Foo:: in x.Foo::y, in the
   #   range.
-  # :want_template_args::
+  # :want_template_args ::
   #   Include the explicit template arguments, e.g. <int> in x.f<int>, in 
   #   the range.
-  # :want_single_piece::
+  # :want_single_piece ::
   #   If the name is non-contiguous, return the full spanning range.
   #   
   #   Non-contiguous names occur in Objective-C when a selector with two or more
@@ -2778,15 +2912,15 @@ module Clang
   # Describes a kind of token.
   # 
   # === Options:
-  # :punctuation::
+  # :punctuation ::
   #   A token that contains some kind of punctuation.
-  # :keyword::
+  # :keyword ::
   #   A language keyword.
-  # :identifier::
+  # :identifier ::
   #   An identifier (that is not a keyword).
-  # :literal::
+  # :literal ::
   #   A numeric, string, or character literal.
-  # :comment::
+  # :comment ::
   #   A comment.
   #
   # @return [Array<Symbol>]
@@ -2801,6 +2935,14 @@ module Clang
     :comment
   ]
 
+  # Describes a single preprocessing token.
+  # 
+  # = Fields:
+  # :int_data ::
+  #   (Array<Integer>) 
+  # :ptr_data ::
+  #   (FFI::Pointer(*Void)) 
+  #
   class Token < FFI::Struct
     layout :int_data, [:uint, 4],
            :ptr_data, :pointer
@@ -2939,6 +3081,22 @@ module Clang
   # @scope class
   attach_function :execute_on_thread, :clang_executeOnThread, [:pointer, :pointer, :uint], :void
 
+  # A single result of code completion.
+  # 
+  # = Fields:
+  # :cursor_kind ::
+  #   (Symbol from cursor_kind_enum) The kind of entity that this completion refers to.
+  #   
+  #   The cursor kind will be a macro, keyword, or a declaration (one of the
+  #   *Decl cursor kinds), describing the entity that the completion is
+  #   referring to.
+  #   
+  #   \todo In the future, we would like to provide a full cursor, to allow
+  #   the client to extract additional information from declaration.
+  # :completion_string ::
+  #   (FFI::Pointer(CompletionString)) The code-completion string that describes how to insert this
+  #   code-completion result into the editing buffer.
+  #
   class CompletionResult < FFI::Struct
     layout :cursor_kind, :cursor_kind,
            :completion_string, :pointer
@@ -2951,7 +3109,7 @@ module Clang
   # should be interpreted by the client or is another completion string.
   # 
   # === Options:
-  # :optional::
+  # :optional ::
   #   A code-completion string that describes "optional" text that
   #   could be a part of the template (but is not required).
   #   
@@ -2983,7 +3141,7 @@ module Clang
   #       function "f" would only include the first parameter ("int x").
   #     - Fully expand all optional chunks, in which case the template for the
   #       function "f" would have all of the parameters.
-  # :typed_text::
+  # :typed_text ::
   #   Text that a user would be expected to type to get this
   #   code-completion result.
   #   
@@ -2992,13 +3150,13 @@ module Clang
   #   declaration that could be used at the current code point. Clients are
   #   expected to filter the code-completion results based on the text in this
   #   chunk.
-  # :text::
+  # :text ::
   #   Text that should be inserted as part of a code-completion result.
   #   
   #   A "text" chunk represents text that is part of the template to be
   #   inserted into user code should this particular code-completion result
   #   be selected.
-  # :placeholder::
+  # :placeholder ::
   #   Placeholder text that should be replaced by the user.
   #   
   #   A "placeholder" chunk marks a place where the user should insert text
@@ -3007,7 +3165,7 @@ module Clang
   #   user should provide arguments for each of those parameters. The actual
   #   text in a placeholder is a suggestion for the text to display before
   #   the user replaces the placeholder with real code.
-  # :informative::
+  # :informative ::
   #   Informative text that should be displayed but never inserted as
   #   part of the template.
   #   
@@ -3015,7 +3173,7 @@ module Clang
   #   help the user decide whether a particular code-completion result is the
   #   right option, but which is not part of the actual template to be inserted
   #   by code completion.
-  # :current_parameter::
+  # :current_parameter ::
   #   Text that describes the current parameter when code-completion is
   #   referring to function call, message send, or template specialization.
   #   
@@ -3033,41 +3191,41 @@ module Clang
   #   parameter. After typing further, to \c add(17, (where the code-completion
   #   point is after the ","), the code-completion string will contain a
   #   "current paremeter" chunk to "int y".
-  # :left_paren::
+  # :left_paren ::
   #   A left parenthesis ('('), used to initiate a function call or
   #   signal the beginning of a function parameter list.
-  # :right_paren::
+  # :right_paren ::
   #   A right parenthesis (')'), used to finish a function call or
   #   signal the end of a function parameter list.
-  # :left_bracket::
+  # :left_bracket ::
   #   A left bracket ('(').
-  # :right_bracket::
+  # :right_bracket ::
   #   A right bracket (')').
-  # :left_brace::
+  # :left_brace ::
   #   A left brace ('{').
-  # :right_brace::
+  # :right_brace ::
   #   A right brace ('}').
-  # :left_angle::
+  # :left_angle ::
   #   A left angle bracket ('<').
-  # :right_angle::
+  # :right_angle ::
   #   A right angle bracket ('>').
-  # :comma::
+  # :comma ::
   #   A comma separator (',').
-  # :result_type::
+  # :result_type ::
   #   Text that specifies the result type of a given result.
   #   
   #   This special kind of informative chunk is not meant to be inserted into
   #   the text buffer. Rather, it is meant to illustrate the type that an
   #   expression using the given completion string would have.
-  # :colon::
+  # :colon ::
   #   A colon (':').
-  # :semi_colon::
+  # :semi_colon ::
   #   A semicolon (';').
-  # :equal::
+  # :equal ::
   #   An '=' sign.
-  # :horizontal_space::
+  # :horizontal_space ::
   #   Horizontal space (' ').
-  # :vertical_space::
+  # :vertical_space ::
   #   Vertical space ('\n'), after which it is generally a good idea to
   #   perform indentation.
   #
@@ -3190,6 +3348,19 @@ module Clang
   # @scope class
   attach_function :get_cursor_completion_string, :clang_getCursorCompletionString, [Cursor.by_value], :pointer
 
+  # Contains the results of code-completion.
+  # 
+  # This data structure contains the results of code completion, as
+  # produced by \c clang_codeCompleteAt(). Its contents must be freed by
+  # \c clang_disposeCodeCompleteResults.
+  # 
+  # = Fields:
+  # :results ::
+  #   (FFI::Pointer(*CompletionResult)) The code-completion results.
+  # :num_results ::
+  #   (Integer) The number of code-completion results stored in the
+  #   \c Results array.
+  #
   class CodeCompleteResults < FFI::Struct
     layout :results, :pointer,
            :num_results, :uint
@@ -3202,10 +3373,10 @@ module Clang
   # provide multiple options to \c clang_codeCompleteAt().
   # 
   # === Options:
-  # :include_macros::
+  # :include_macros ::
   #   Whether to include macros within the set of code
   #   completions returned.
-  # :include_code_patterns::
+  # :include_code_patterns ::
   #   Whether to include code patterns for language constructs
   #   within the set of code completions, e.g., for loops.
   #
@@ -3224,7 +3395,7 @@ module Clang
   # contexts are occurring simultaneously.
   # 
   # === Options:
-  # :completion_context_unexposed::
+  # :completion_context_unexposed ::
   #   The context for completions is unexposed, as only Clang results
   #   should be included. (This is equivalent to having no context bits set.)
   #
@@ -3415,6 +3586,24 @@ module Clang
   # @scope class
   attach_function :toggle_crash_recovery, :clang_toggleCrashRecovery, [:uint], :void
 
+  # <em>This is no real method. This entry is only for documentation of the callback.</em>
+  # 
+  # Visitor invoked for each file in a translation unit
+  #        (used with clang_getInclusions()).
+  # 
+  # This visitor function will be invoked by clang_getInclusions() for each
+  # file included (either at the top-level or by #include directives) within
+  # a translation unit.  The first argument is the file being included, and
+  # the second and third arguments provide the inclusion stack.  The
+  # array is sorted in order of immediate inclusion.  For example,
+  # the first element refers to the location that included 'included_file'.
+  # 
+  # @method inclusion_visitor_callback(inclusion_stack, include_len, client_data)
+  # @param [FFI::Pointer(*SourceLocation)] inclusion_stack 
+  # @param [Integer] include_len 
+  # @param [FFI::Pointer(ClientData)] client_data 
+  # @return [FFI::Pointer(File)] 
+  # @scope class
   callback :inclusion_visitor, [:pointer, :uint, :pointer], :pointer
 
   # Visit the set of preprocessor inclusions in a translation unit.
@@ -3424,7 +3613,7 @@ module Clang
   # 
   # @method get_inclusions(tu, visitor, client_data)
   # @param [FFI::Pointer(TranslationUnit)] tu 
-  # @param [Callback] visitor 
+  # @param [Proc(inclusion_visitor_callback)] visitor 
   # @param [FFI::Pointer(ClientData)] client_data 
   # @return [nil] 
   # @scope class
@@ -3472,9 +3661,9 @@ module Clang
   # @{
   # 
   # === Options:
-  # :break::
+  # :break ::
   #   
-  # :continue::
+  # :continue ::
   #   
   #
   # @return [Array<Symbol>]
@@ -3486,6 +3675,16 @@ module Clang
     :continue
   ]
 
+  # \defgroup CINDEX_HIGH Higher level API functions
+  # 
+  # @{
+  # 
+  # = Fields:
+  # :context ::
+  #   (FFI::Pointer(*Void)) 
+  # :visit ::
+  #   (FFI::Pointer(*)) 
+  #
   class CursorAndRangeVisitor < FFI::Struct
     layout :context, :pointer,
            :visit, :pointer

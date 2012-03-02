@@ -64,18 +64,13 @@ class FFIGen
         symbol = ":#{@generator.to_ruby_lowercase constant_name[prefix_length..(-1 - suffix_length)]}"
         symbols << symbol
         definitions << "    #{symbol}#{constant_value ? ", #{constant_value}" : ""}"
-        description = constant_comment.split("\n").map { |line| @generator.prepare_comment_line line }
-        symbol_descriptions << "  # #{symbol}::\n  #   #{@generator.create_description_comment(description, '  #   ', true)}"
-      end
-
-      enum_description = []
-      @comment.split("\n").map do |line|
-        enum_description << @generator.prepare_comment_line(line)
+        symbol_descriptions << "  # #{symbol} ::\n  #   #{@generator.create_description_comment(constant_comment, '  #   ', true)}\n"
       end
       
       str = ""
-      str << @generator.create_description_comment(enum_description, '  # ')
-      str << "  # === Options:\n#{symbol_descriptions.join("\n")}\n  #\n"
+      str << @generator.create_description_comment(@comment, '  # ')
+      str << "  # \n"
+      str << "  # === Options:\n#{symbol_descriptions.join}  #\n"
       str << "  # @return [Array<Symbol>]\n"
       str << "  def self.#{@generator.to_ruby_lowercase @name}_enum\n    [#{symbols.join(', ')}]\n  end\n"
       str << "  enum :#{@generator.to_ruby_lowercase @name}, [\n#{definitions.join(",\n")}\n  ]"
@@ -94,17 +89,28 @@ class FFIGen
   class Struct
     attr_reader :fields
     
-    def initialize(generator, name)
+    def initialize(generator, name, comment)
       @generator = generator
       @name = name
+      @comment = comment
       @fields = []
     end
     
     def to_s
-      lines = @fields.map { |(field_name, field_type)| ":#{@generator.to_ruby_lowercase field_name}, #{@generator.to_ffi_type field_type}" }
+      field_definitions = []
+      field_descriptions = []
+      @fields.each do |(field_name, field_type, field_comment)|
+        symbol = ":#{@generator.to_ruby_lowercase field_name}"
+        field_definitions << "#{symbol}, #{@generator.to_ffi_type field_type}"
+        field_descriptions << "  # #{symbol} ::\n  #   (#{@generator.to_type_name field_type}) #{@generator.create_description_comment(field_comment, '  #   ', true)}\n"
+      end
+      
       str = ""
+      str << @generator.create_description_comment(@comment, '  # ')
+      str << "  # \n"
+      str << "  # = Fields:\n#{field_descriptions.join}  #\n"
       str << "  class #{@generator.to_ruby_camelcase @name} < FFI::Struct\n"
-      str << "    layout #{lines.join(",\n           ")}\n" unless lines.empty?
+      str << "    layout #{field_definitions.join(",\n           ")}\n" unless @fields.empty?
       str << "  end"
       str
     end
@@ -131,8 +137,6 @@ class FFIGen
     end
     
     def to_s
-      str = ""
-      
       ruby_name = @generator.to_ruby_lowercase @name
       ruby_parameters = @parameters.map do |(name, type)|
         ruby_param_type = @generator.to_type_name type
@@ -140,41 +144,48 @@ class FFIGen
         [ruby_param_name, ruby_param_type, []]
       end
       
-      signature = "[#{@parameters.map{ |(name, type)| @generator.to_ffi_type type }.join(', ')}], #{@generator.to_ffi_type @return_type}"
-      if @is_callback
-        str << "  callback :#{ruby_name}, #{signature}"
-      else
-        function_description = []
-        return_value_description = []
-        current_description = function_description
-        @comment.split("\n").map do |line|
-          line = @generator.prepare_comment_line line
-          if line.gsub! /\\param (.*?) /, ''
-            index = @parameters.index { |(name, type)| name == $1 }
-            if index
-              current_description = ruby_parameters[index][2]
-            else
-              current_description << "#{$1}: "
-            end
+      ffi_signature = "[#{@parameters.map{ |(name, type)| @generator.to_ffi_type type }.join(', ')}], #{@generator.to_ffi_type @return_type}"
+      
+      function_description = []
+      return_value_description = []
+      current_description = function_description
+      @comment.split("\n").map do |line|
+        line = @generator.prepare_comment_line line
+        if line.gsub! /\\param (.*?) /, ''
+          index = @parameters.index { |(name, type)| name == $1 }
+          if index
+            current_description = ruby_parameters[index][2]
+          else
+            current_description << "#{$1}: "
           end
-          current_description = return_value_description if line.gsub! '\\returns ', ''
-          current_description << line
         end
-        
-        str << @generator.create_description_comment(function_description, '  # ')
-        str << "  # @method #{ruby_name}(#{ruby_parameters.map{ |(name, type, description)| name }.join(', ')})\n"
-        ruby_parameters.each do |(name, type, description)|
-          str << "  # @param [#{type}] #{name} #{@generator.create_description_comment(description, '  #   ', true)}\n"
-        end
-        str << "  # @return [#{@generator.to_type_name @return_type}] #{@generator.create_description_comment(return_value_description, '  #   ', true)}\n"
-        str << "  # @scope class\n"
-        str << "  attach_function :#{ruby_name}, :#{@name}, #{signature}"
+        current_description = return_value_description if line.gsub! '\\returns ', ''
+        current_description << line
+      end
+      
+      str = ""
+      if @is_callback
+        str << "  # <em>This is no real method. This entry is only for documentation of the callback.</em>\n"
+        str << "  # \n"
+      end
+      str << @generator.create_description_comment(function_description, '  # ')
+      str << "  # \n"
+      str << "  # @method #{ruby_name}#{@is_callback ? '_callback' : ''}(#{ruby_parameters.map{ |(name, type, description)| name }.join(', ')})\n"
+      ruby_parameters.each do |(name, type, description)|
+        str << "  # @param [#{type}] #{name} #{@generator.create_description_comment(description, '  #   ', true)}\n"
+      end
+      str << "  # @return [#{@generator.to_type_name @return_type}] #{@generator.create_description_comment(return_value_description, '  #   ', true)}\n"
+      str << "  # @scope class\n"
+      if @is_callback
+        str << "  callback :#{ruby_name}, #{ffi_signature}"
+      else
+        str << "  attach_function :#{ruby_name}, :#{@name}, #{ffi_signature}"
       end
       str
     end
     
     def type_name(short)
-      "Callback"
+      "Proc(#{@generator.to_ruby_lowercase @name}_callback)"
     end
     
     def reference
@@ -239,7 +250,9 @@ class FFIGen
       
       extent = Clang.get_cursor_extent declaration
       comment_range = Clang.get_range previous_declaration_end, Clang.get_range_start(extent)
-      previous_declaration_end = Clang.get_range_end extent
+      unless declaration[:kind] == :enum_decl or declaration[:kind] == :struct_decl # keep comment for typedef_decl
+        previous_declaration_end = Clang.get_range_end extent
+      end 
       
       next if not header_files.include? file
       
@@ -306,7 +319,6 @@ class FFIGen
       previous_constant_location = Clang.get_cursor_location declaration
       Clang.get_children(declaration).each do |enum_constant|
         constant_name = Clang.get_cursor_spelling(enum_constant).to_s_and_dispose
-        constant_location = Clang.get_cursor_location enum_constant
         
         constant_value = nil
         value_cursor = Clang.get_children(enum_constant).first
@@ -323,6 +335,7 @@ class FFIGen
           next # skip those entries for now
         end
         
+        constant_location = Clang.get_cursor_location enum_constant
         constant_comment_range = Clang.get_range previous_constant_location, constant_location
         constant_comment = extract_comment translation_unit, constant_comment_range
         previous_constant_location = constant_location
@@ -331,13 +344,20 @@ class FFIGen
       end
       
     when :struct_decl
-      struct = Struct.new self, name
+      struct = Struct.new self, name, comment
       @declarations[name] = struct
       
+      previous_field_location = Clang.get_cursor_location declaration
       Clang.get_children(declaration).each do |field_decl|
         field_name = Clang.get_cursor_spelling(field_decl).to_s_and_dispose
         field_type = Clang.get_cursor_type field_decl
-        struct.fields << [field_name, field_type]
+        
+        field_location = Clang.get_cursor_location field_decl
+        field_comment_range = Clang.get_range previous_field_location, field_location
+        field_comment = extract_comment translation_unit, field_comment_range
+        previous_field_location = field_location
+        
+        struct.fields << [field_name, field_type, field_comment]
       end
     end
   end
@@ -424,6 +444,9 @@ class FFIGen
         end
         short ? pointer_target_name : "FFI::Pointer(#{'*' * pointer_depth}#{pointer_target_name})"
       end
+    when :constant_array
+      element_type = Clang.get_array_element_type canonical_type
+      "Array<#{to_type_name element_type}>"
     else
       raise NotImplementedError, "No type name for type #{canonical_type[:kind]}"
     end
@@ -457,12 +480,15 @@ class FFIGen
   end
   
   def create_description_comment(description, line_prefix, inline_mode = false)
+    if description.is_a? String
+      description = description.split("\n").map { |line| prepare_comment_line(line) }
+    end
+    
     description.shift while not description.empty? and description.first.strip.empty?
     description.pop while not description.empty? and description.last.strip.empty?
     description << "(Not documented)" if not inline_mode and description.empty?
     
     str = ""
-    description << "" if not inline_mode # empty line at end
     description.each_with_index do |line, index|
       str << line_prefix if not inline_mode or index > 0
       str << line
