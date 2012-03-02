@@ -2,7 +2,7 @@ Gem::Specification.new do |s|
   s.platform = Gem::Platform::RUBY
 
   s.name = "ffi_gen"
-  s.version = "0.7"
+  s.version = "0.8"
   s.summary = "A generator for Ruby FFI bindings"
   s.description = "A generator for Ruby FFI bindings, directly from header files via LLVM's Clang compiler"
   s.author = "Richard Musiol"
