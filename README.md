@@ -3,6 +3,7 @@ ffi_gen - A Generator for Ruby FFI bindings
 
 *Author:* Richard Musiol  
 *Contributors:* Jeremy Voorhis (thanks for the initial idea)
+*License:* MIT (see LICENSE)
 
 
 Features
