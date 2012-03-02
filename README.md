@@ -17,7 +17,10 @@ Features
 Requirements
 ------------
 
+* Ruby 1.9
 * Clang 3.0 ([Download](http://llvm.org/releases/download.html#3.0), use the binaries or configure with ``--enable-shared``)
+
+*These requirements are only for running the generator. The generated files are Ruby 1.8 compatible and do not need Clang.*
 
 
 Example
