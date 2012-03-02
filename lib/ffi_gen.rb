@@ -398,12 +398,27 @@ class FFIGen
       pointee_type = Clang.get_pointee_type canonical_type
       if pointee_type[:kind] == :char_s
         "String"
-      elsif not name.empty?
-        short ? name : "FFI::Pointer(#{to_ruby_camelcase name})"
       else
-        pointee_declaration = Clang.get_type_declaration full_type
-        pointee_name = Clang.get_cursor_spelling(pointee_declaration).to_s_and_dispose
-        short ? pointee_name : "FFI::Pointer(*#{to_ruby_camelcase pointee_name})"
+        pointer_depth = 0
+        pointer_target_name = ""
+        current_type = full_type
+        loop do
+          declaration = Clang.get_type_declaration current_type
+          pointer_target_name = to_ruby_camelcase Clang.get_cursor_spelling(declaration).to_s_and_dispose
+          break if not pointer_target_name.empty?
+
+          case current_type[:kind]
+          when :pointer
+            pointer_depth += 1
+            current_type = Clang.get_pointee_type current_type
+          when :unexposed
+            break
+          else
+            pointer_target_name = Clang.get_type_kind_spelling(current_type[:kind]).to_s_and_dispose
+            break
+          end
+        end
+        short ? pointer_target_name : "FFI::Pointer(#{'*' * pointer_depth}#{pointer_target_name})"
       end
     else
       raise NotImplementedError, "No type name for type #{canonical_type[:kind]}"
@@ -440,7 +455,7 @@ class FFIGen
   def create_description_comment(description, line_prefix, inline_mode = false)
     description.shift while not description.empty? and description.first.strip.empty?
     description.pop while not description.empty? and description.last.strip.empty?
-    return "" if description.empty?
+    description << "(Not documented)" if not inline_mode and description.empty?
     
     str = ""
     description << "" if not inline_mode # empty line at end

@@ -255,16 +255,16 @@ module Clang
   # @method get_presumed_location(location, filename, line, column)
   # @param [SourceLocation] location the location within a source file that will be decomposed
   #   into its parts.
-  # @param [FFI::Pointer(*)] filename (out) if non-NULL, will be set to the filename of the
+  # @param [FFI::Pointer(*String)] filename (out) if non-NULL, will be set to the filename of the
   #   source location. Note that filenames returned will be for "virtual" files,
   #   which don't necessarily exist on the machine running clang - e.g. when
   #   parsing preprocessed output obtained from a different environment. If
   #   a non-NULL value is passed in, remember to dispose of the returned value
   #   using \c clang_disposeString() once you've finished with it. For an invalid
   #   source location, an empty string is returned.
-  # @param [FFI::Pointer(*)] line (out) if non-NULL, will be set to the line number of the
+  # @param [FFI::Pointer(*UInt)] line (out) if non-NULL, will be set to the line number of the
   #   source location. For an invalid source location, zero is returned.
-  # @param [FFI::Pointer(*)] column (out) if non-NULL, will be set to the column number of the
+  # @param [FFI::Pointer(*UInt)] column (out) if non-NULL, will be set to the column number of the
   #   source location. For an invalid source location, zero is returned.
   # @return [nil] 
   # @scope class
@@ -279,10 +279,10 @@ module Clang
   # 
   # @method get_instantiation_location(location, file, line, column, offset)
   # @param [SourceLocation] location 
-  # @param [FFI::Pointer(*)] file 
-  # @param [FFI::Pointer(*)] line 
-  # @param [FFI::Pointer(*)] column 
-  # @param [FFI::Pointer(*)] offset 
+  # @param [FFI::Pointer(*File)] file 
+  # @param [FFI::Pointer(*UInt)] line 
+  # @param [FFI::Pointer(*UInt)] column 
+  # @param [FFI::Pointer(*UInt)] offset 
   # @return [nil] 
   # @scope class
   attach_function :get_instantiation_location, :clang_getInstantiationLocation, [SourceLocation.by_value, :pointer, :pointer, :pointer, :pointer], :void
@@ -296,13 +296,13 @@ module Clang
   # @method get_spelling_location(location, file, line, column, offset)
   # @param [SourceLocation] location the location within a source file that will be decomposed
   #   into its parts.
-  # @param [FFI::Pointer(*)] file (out) if non-NULL, will be set to the file to which the given
+  # @param [FFI::Pointer(*File)] file (out) if non-NULL, will be set to the file to which the given
   #   source location points.
-  # @param [FFI::Pointer(*)] line (out) if non-NULL, will be set to the line to which the given
+  # @param [FFI::Pointer(*UInt)] line (out) if non-NULL, will be set to the line to which the given
   #   source location points.
-  # @param [FFI::Pointer(*)] column (out) if non-NULL, will be set to the column to which the given
+  # @param [FFI::Pointer(*UInt)] column (out) if non-NULL, will be set to the column to which the given
   #   source location points.
-  # @param [FFI::Pointer(*)] offset (out) if non-NULL, will be set to the offset into the
+  # @param [FFI::Pointer(*UInt)] offset (out) if non-NULL, will be set to the offset into the
   #   buffer to which the given source location points.
   # @return [nil] 
   # @scope class
@@ -502,7 +502,7 @@ module Clang
   # 
   # @method get_diagnostic_option(diag, disable)
   # @param [FFI::Pointer(Diagnostic)] diag The diagnostic to be queried.
-  # @param [FFI::Pointer(*)] disable If non-NULL, will be set to the option that disables this
+  # @param [FFI::Pointer(*String)] disable If non-NULL, will be set to the option that disables this
   #   diagnostic (if any).
   # @return [String] A string that contains the command-line option used to enable this
   #   warning, such as "-Wconversion" or "-pedantic". 
@@ -577,7 +577,7 @@ module Clang
   # @method get_diagnostic_fix_it(diagnostic, fix_it, replacement_range)
   # @param [FFI::Pointer(Diagnostic)] diagnostic The diagnostic whose fix-its are being queried.
   # @param [Integer] fix_it The zero-based index of the fix-it.
-  # @param [FFI::Pointer(*)] replacement_range The source range whose contents will be
+  # @param [FFI::Pointer(*SourceRange)] replacement_range The source range whose contents will be
   #   replaced with the returned replacement string. Note that source
   #   ranges are half-open ranges (a, b), so the source code should be
   #   replaced from a and up to (but not including) b.
@@ -616,14 +616,14 @@ module Clang
   #   source file is included in \p clang_command_line_args.
   # @param [Integer] num_clang_command_line_args The number of command-line arguments in
   #   \p clang_command_line_args.
-  # @param [FFI::Pointer(*)] command_line_args The command-line arguments that would be
+  # @param [FFI::Pointer(**Char_S)] command_line_args The command-line arguments that would be
   #   passed to the \c clang executable if it were being invoked out-of-process.
   #   These command-line options will be parsed and will affect how the translation
   #   unit is parsed. Note that the following options are ignored: '-c',
   #   '-emit-ast', '-fsyntex-only' (which is the default), and '-o <output file>'.
   # @param [Integer] num_unsaved_files the number of unsaved file entries in \p
   #   unsaved_files.
-  # @param [FFI::Pointer(*)] unsaved_files the files that have not yet been saved to disk
+  # @param [FFI::Pointer(*UnsavedFile)] unsaved_files the files that have not yet been saved to disk
   #   but may be required for code completion, including the contents of
   #   those files.  The contents and name of these files (as specified by
   #   CXUnsavedFile) are copied when necessary, so the client only needs to
@@ -754,14 +754,14 @@ module Clang
   #   associated.
   # @param [String] source_filename The name of the source file to load, or NULL if the
   #   source file is included in \p command_line_args.
-  # @param [FFI::Pointer(*)] command_line_args The command-line arguments that would be
+  # @param [FFI::Pointer(**Char_S)] command_line_args The command-line arguments that would be
   #   passed to the \c clang executable if it were being invoked out-of-process.
   #   These command-line options will be parsed and will affect how the translation
   #   unit is parsed. Note that the following options are ignored: '-c', 
   #   '-emit-ast', '-fsyntex-only' (which is the default), and '-o <output file>'.
   # @param [Integer] num_command_line_args The number of command-line arguments in
   #   \p command_line_args.
-  # @param [FFI::Pointer(*)] unsaved_files the files that have not yet been saved to disk
+  # @param [FFI::Pointer(*UnsavedFile)] unsaved_files the files that have not yet been saved to disk
   #   but may be required for parsing, including the contents of
   #   those files.  The contents and name of these files (as specified by
   #   CXUnsavedFile) are copied when necessary, so the client only needs to
@@ -926,7 +926,7 @@ module Clang
   #   \c clang_createTranslationUnitFromSourceFile().
   # @param [Integer] num_unsaved_files The number of unsaved file entries in \p
   #   unsaved_files.
-  # @param [FFI::Pointer(*)] unsaved_files The files that have not yet been saved to disk
+  # @param [FFI::Pointer(*UnsavedFile)] unsaved_files The files that have not yet been saved to disk
   #   but may be required for parsing, including the contents of
   #   those files.  The contents and name of these files (as specified by
   #   CXUnsavedFile) are copied when necessary, so the client only needs to
@@ -1023,6 +1023,8 @@ module Clang
   # @scope class
   attach_function :get_cxtu_resource_usage, :clang_getCXTUResourceUsage, [:pointer], TUResourceUsage.by_value
 
+  # (Not documented)
+  # 
   # @method dispose_cxtu_resource_usage(usage)
   # @param [TUResourceUsage] usage 
   # @return [nil] 
@@ -1985,12 +1987,12 @@ module Clang
   # @param [Cursor] cursor A cursor representing an Objective-C or C++
   #   method. This routine will compute the set of methods that this
   #   method overrides.
-  # @param [FFI::Pointer(*)] overridden A pointer whose pointee will be replaced with a
+  # @param [FFI::Pointer(**Cursor)] overridden A pointer whose pointee will be replaced with a
   #   pointer to an array of cursors, representing the set of overridden
   #   methods. If there are no overridden methods, the pointee will be
   #   set to NULL. The pointee must be freed via a call to 
   #   \c clang_disposeOverriddenCursors().
-  # @param [FFI::Pointer(*)] num_overridden A pointer to the number of overridden
+  # @param [FFI::Pointer(*UInt)] num_overridden A pointer to the number of overridden
   #   functions, will be set to the number of overridden functions in the
   #   array pointed to by \p overridden.
   # @return [nil] 
@@ -2001,7 +2003,7 @@ module Clang
   # clang_getOverriddenCursors().
   # 
   # @method dispose_overridden_cursors(overridden)
-  # @param [FFI::Pointer(*)] overridden 
+  # @param [FFI::Pointer(*Cursor)] overridden 
   # @return [nil] 
   # @scope class
   attach_function :dispose_overridden_cursors, :clang_disposeOverriddenCursors, [:pointer], :void
@@ -2732,6 +2734,8 @@ module Clang
   # @scope class
   attach_function :get_cursor_reference_name_range, :clang_getCursorReferenceNameRange, [Cursor.by_value, :uint, :uint], SourceRange.by_value
 
+  # (Not documented)
+  # 
   # === Options:
   # :want_qualifier::
   #   Include the nested-name-specifier, e.g. Foo:: in x.Foo::y, in the
@@ -2835,10 +2839,10 @@ module Clang
   # @param [FFI::Pointer(TranslationUnit)] tu the translation unit whose text is being tokenized.
   # @param [SourceRange] range the source range in which text should be tokenized. All of the
   #   tokens produced by tokenization will fall within this source range,
-  # @param [FFI::Pointer(*)] tokens this pointer will be set to point to the array of tokens
+  # @param [FFI::Pointer(**Token)] tokens this pointer will be set to point to the array of tokens
   #   that occur within the given source range. The returned pointer must be
   #   freed with clang_disposeTokens() before the translation unit is destroyed.
-  # @param [FFI::Pointer(*)] num_tokens will be set to the number of tokens in the \c *Tokens
+  # @param [FFI::Pointer(*UInt)] num_tokens will be set to the number of tokens in the \c *Tokens
   #   array.
   # @return [nil] 
   # @scope class
@@ -2866,9 +2870,9 @@ module Clang
   # 
   # @method annotate_tokens(tu, tokens, num_tokens, cursors)
   # @param [FFI::Pointer(TranslationUnit)] tu the translation unit that owns the given tokens.
-  # @param [FFI::Pointer(*)] tokens the set of tokens to annotate.
+  # @param [FFI::Pointer(*Token)] tokens the set of tokens to annotate.
   # @param [Integer] num_tokens the number of tokens in \p Tokens.
-  # @param [FFI::Pointer(*)] cursors an array of \p NumTokens cursors, whose contents will be
+  # @param [FFI::Pointer(*Cursor)] cursors an array of \p NumTokens cursors, whose contents will be
   #   replaced with the cursors corresponding to each token.
   # @return [nil] 
   # @scope class
@@ -2878,7 +2882,7 @@ module Clang
   # 
   # @method dispose_tokens(tu, tokens, num_tokens)
   # @param [FFI::Pointer(TranslationUnit)] tu 
-  # @param [FFI::Pointer(*)] tokens 
+  # @param [FFI::Pointer(*Token)] tokens 
   # @param [Integer] num_tokens 
   # @return [nil] 
   # @scope class
@@ -2892,26 +2896,32 @@ module Clang
   # @scope class
   attach_function :get_cursor_kind_spelling, :clang_getCursorKindSpelling, [:cursor_kind], String.by_value
 
+  # (Not documented)
+  # 
   # @method get_definition_spelling_and_extent(cursor, start_buf, end_buf, start_line, start_column, end_line, end_column)
   # @param [Cursor] cursor 
-  # @param [FFI::Pointer(*)] start_buf 
-  # @param [FFI::Pointer(*)] end_buf 
-  # @param [FFI::Pointer(*)] start_line 
-  # @param [FFI::Pointer(*)] start_column 
-  # @param [FFI::Pointer(*)] end_line 
-  # @param [FFI::Pointer(*)] end_column 
+  # @param [FFI::Pointer(**Char_S)] start_buf 
+  # @param [FFI::Pointer(**Char_S)] end_buf 
+  # @param [FFI::Pointer(*UInt)] start_line 
+  # @param [FFI::Pointer(*UInt)] start_column 
+  # @param [FFI::Pointer(*UInt)] end_line 
+  # @param [FFI::Pointer(*UInt)] end_column 
   # @return [nil] 
   # @scope class
   attach_function :get_definition_spelling_and_extent, :clang_getDefinitionSpellingAndExtent, [Cursor.by_value, :pointer, :pointer, :pointer, :pointer, :pointer, :pointer], :void
 
+  # (Not documented)
+  # 
   # @method enable_stack_traces()
   # @return [nil] 
   # @scope class
   attach_function :enable_stack_traces, :clang_enableStackTraces, [], :void
 
+  # (Not documented)
+  # 
   # @method execute_on_thread(fn, user_data, stack_size)
   # @param [FFI::Pointer(*)] fn 
-  # @param [FFI::Pointer(*)] user_data 
+  # @param [FFI::Pointer(*Void)] user_data 
   # @param [Integer] stack_size 
   # @return [nil] 
   # @scope class
@@ -3265,7 +3275,7 @@ module Clang
   # @param [Integer] complete_column The column at which code-completion should occur.
   #   Note that the column should point just after the syntactic construct that
   #   initiated code completion, and not in the middle of a lexical token.
-  # @param [FFI::Pointer(*)] unsaved_files the Tiles that have not yet been saved to disk
+  # @param [FFI::Pointer(*UnsavedFile)] unsaved_files the Tiles that have not yet been saved to disk
   #   but may be required for parsing or code completion, including the
   #   contents of those files.  The contents and name of these files (as
   #   specified by CXUnsavedFile) are copied when necessary, so the
@@ -3278,7 +3288,7 @@ module Clang
   #   CXCodeComplete_Flags enumeration. The 
   #   \c clang_defaultCodeCompleteOptions() function returns a default set
   #   of code-completion options.
-  # @return [FFI::Pointer(*)] If successful, a new \c CXCodeCompleteResults structure
+  # @return [FFI::Pointer(*CodeCompleteResults)] If successful, a new \c CXCodeCompleteResults structure
   #   containing code-completion results, which should eventually be
   #   freed with \c clang_disposeCodeCompleteResults(). If code
   #   completion fails, returns NULL.
@@ -3289,7 +3299,7 @@ module Clang
   # order.
   # 
   # @method sort_code_completion_results(results, num_results)
-  # @param [FFI::Pointer(*)] results The set of results to sort.
+  # @param [FFI::Pointer(*CompletionResult)] results The set of results to sort.
   # @param [Integer] num_results The number of results in \p Results.
   # @return [nil] 
   # @scope class
@@ -3298,7 +3308,7 @@ module Clang
   # Free the given set of code-completion results.
   # 
   # @method dispose_code_complete_results(results)
-  # @param [FFI::Pointer(*)] results 
+  # @param [FFI::Pointer(*CodeCompleteResults)] results 
   # @return [nil] 
   # @scope class
   attach_function :dispose_code_complete_results, :clang_disposeCodeCompleteResults, [:pointer], :void
@@ -3307,7 +3317,7 @@ module Clang
   # location where code completion was performed.
   # 
   # @method code_complete_get_num_diagnostics(results)
-  # @param [FFI::Pointer(*)] results 
+  # @param [FFI::Pointer(*CodeCompleteResults)] results 
   # @return [Integer] 
   # @scope class
   attach_function :code_complete_get_num_diagnostics, :clang_codeCompleteGetNumDiagnostics, [:pointer], :uint
@@ -3318,7 +3328,7 @@ module Clang
   # the code completion results to query.
   # 
   # @method code_complete_get_diagnostic(results, index)
-  # @param [FFI::Pointer(*)] results 
+  # @param [FFI::Pointer(*CodeCompleteResults)] results 
   # @param [Integer] index the zero-based diagnostic number to retrieve.
   # @return [FFI::Pointer(Diagnostic)] the requested diagnostic. This diagnostic must be freed
   #   via a call to \c clang_disposeDiagnostic().
@@ -3329,7 +3339,7 @@ module Clang
   # the given code completion.
   # 
   # @method code_complete_get_contexts(results)
-  # @param [FFI::Pointer(*)] results the code completion results to query
+  # @param [FFI::Pointer(*CodeCompleteResults)] results the code completion results to query
   # @return [Integer] the kinds of completions that are appropriate for use
   #   along with the given code completion results.
   # @scope class
@@ -3342,8 +3352,8 @@ module Clang
   # CXCursor_InvalidCode.
   # 
   # @method code_complete_get_container_kind(results, is_incomplete)
-  # @param [FFI::Pointer(*)] results the code completion results to query
-  # @param [FFI::Pointer(*)] is_incomplete on return, this value will be false if Clang has complete
+  # @param [FFI::Pointer(*CodeCompleteResults)] results the code completion results to query
+  # @param [FFI::Pointer(*UInt)] is_incomplete on return, this value will be false if Clang has complete
   #   information about the container. If Clang does not have complete
   #   information, this value will be true.
   # @return [Symbol from cursor_kind_enum] the container kind, or CXCursor_InvalidCode if there is not a
@@ -3356,7 +3366,7 @@ module Clang
   # function will return the empty string.
   # 
   # @method code_complete_get_container_usr(results)
-  # @param [FFI::Pointer(*)] results the code completion results to query
+  # @param [FFI::Pointer(*CodeCompleteResults)] results the code completion results to query
   # @return [String] the USR for the container
   # @scope class
   attach_function :code_complete_get_container_usr, :clang_codeCompleteGetContainerUSR, [:pointer], String.by_value
@@ -3367,7 +3377,7 @@ module Clang
   # CXCompletionContext_ObjCClassMessage.
   # 
   # @method code_complete_get_obj_c_selector(results)
-  # @param [FFI::Pointer(*)] results the code completion results to query
+  # @param [FFI::Pointer(*CodeCompleteResults)] results the code completion results to query
   # @return [String] the selector (or partial selector) that has been entered thus far
   #   for an Objective-C message send.
   # @scope class
@@ -3430,8 +3440,8 @@ module Clang
   # @method remap_get_filenames(remapping, index, original, transformed)
   # @param [FFI::Pointer(Remapping)] remapping 
   # @param [Integer] index 
-  # @param [FFI::Pointer(*)] original If non-NULL, will be set to the original filename.
-  # @param [FFI::Pointer(*)] transformed If non-NULL, will be set to the filename that the original
+  # @param [FFI::Pointer(*String)] original If non-NULL, will be set to the original filename.
+  # @param [FFI::Pointer(*String)] transformed If non-NULL, will be set to the filename that the original
   #   is associated with.
   # @return [nil] 
   # @scope class
