@@ -102,7 +102,11 @@ class FFIGen
     
     def to_s
       lines = @fields.map { |(field_name, field_type)| ":#{@generator.to_ruby_lowercase field_name}, #{@generator.to_ffi_type field_type}" }
-      "  class #{@generator.to_ruby_camelcase @name} < FFI::Struct\n    layout #{lines.join(",\n           ")}\n  end"
+      str = ""
+      str << "  class #{@generator.to_ruby_camelcase @name} < FFI::Struct\n"
+      str << "    layout #{lines.join(",\n           ")}\n" unless lines.empty?
+      str << "  end"
+      str
     end
     
     def type_name(short)
@@ -245,7 +249,7 @@ class FFIGen
       comment = extract_comment translation_unit, comment_range
       
       case declaration[:kind]
-      when :enum_decl
+      when :enum_decl, :struct_decl
         read_named_declaration declaration, name, comment unless name.empty?
       
       when :function_decl

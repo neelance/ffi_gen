@@ -6,6 +6,15 @@ module Clang
   extend FFI::Library
   ffi_lib 'clang'
 
+  class TranslationUnitImpl < FFI::Struct
+  end
+
+  class UnsavedFile < FFI::Struct
+    layout :filename, :string,
+           :contents, :string,
+           :length, :ulong
+  end
+
   # Describes the availability of a particular entity, which indicates
   # whether the use of this entity will result in a warning or error due to
   # it being deprecated or unavailable.
@@ -1845,6 +1854,9 @@ module Clang
   # @return [FFI::Pointer(TranslationUnit)] 
   # @scope class
   attach_function :cursor_get_translation_unit, :clang_Cursor_getTranslationUnit, [Cursor.by_value], :pointer
+
+  class CursorSetImpl < FFI::Struct
+  end
 
   # Creates an empty CXCursorSet.
   # 
