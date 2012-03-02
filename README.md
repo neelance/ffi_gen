@@ -42,11 +42,12 @@ Output: [clang.rb](https://github.com/neelance/ffi_gen/blob/master/clang.rb)
 Roadmap
 -------
 
-* Improved YARD documentation comments
 * Support for more libraries:
   * OpenGL
   * Cairo
   * (Write me if you have a whish)
+* Automatic generation of object oriented wrappers
+* Polish YARD documentation comments some more
 
 
 Hints
