@@ -39,16 +39,6 @@ Use the following interface in a script or Rake task:
 
 Output: [clang.rb](https://github.com/neelance/ffi_gen/blob/master/clang.rb)
 
-Roadmap
--------
-
-* Support for more libraries:
-  * OpenGL
-  * Cairo
-  * (Write me if you have a whish)
-* Automatic generation of object oriented wrappers
-* Polish YARD documentation comments some more
-
 
 Hints
 -----
@@ -60,3 +50,19 @@ You may need to set additional include directories:
 Your GCC include paths can be seen with:
 
     `gcc -print-prog-name=cc1` -v
+
+
+Roadmap
+-------
+
+* Support for more libraries:
+  * OpenGL
+  * Cairo
+  * (Write me if you have a whish)
+* Automatic generation of object oriented wrappers
+* Polish YARD documentation comments some more
+
+
+Feedback
+--------
+Please use Github's issue tracker for problems or suggestions. Pull requests are welcome, too.
