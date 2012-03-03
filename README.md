@@ -40,7 +40,7 @@ Use the following interface in a script or Rake task:
       output:      "clang.rb"
     )
 
-Output: [clang.rb](https://github.com/neelance/ffi_gen/blob/master/clang.rb)
+Output: [clang.rb](https://github.com/neelance/ffi_gen/blob/master/lib/ffi_gen/clang.rb)
 
 
 Hints
