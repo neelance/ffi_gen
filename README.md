@@ -74,4 +74,4 @@ Roadmap
 
 Feedback
 --------
-Please use Github's issue tracker for problems or suggestions. Pull requests are welcome, too.
+Please use GitHub's issue tracker for problems or suggestions. Pull requests are welcome, too.
