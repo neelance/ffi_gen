@@ -34,47 +34,55 @@ class FFIGen
       @constants = []
     end
     
-    def to_s
+    def write(writer)
       prefix_length = 0
       suffix_length = 0
       
       unless @constants.size < 2
-        search_pattern = @constants.all? { |constant| constant[0].include? "_" } ? /(?<=_)/ : /[A-Z]/
-        first_name = @constants.first[0]
+        search_pattern = @constants.all? { |constant| constant[:name].include? "_" } ? /(?<=_)/ : /[A-Z]/
+        first_name = @constants.first[:name]
         
         loop do
           position = first_name.index(search_pattern, prefix_length + 1) or break
           prefix = first_name[0...position]
-          break if not @constants.all? { |constant| constant[0].start_with? prefix }
+          break if not @constants.all? { |constant| constant[:name].start_with? prefix }
           prefix_length = position
         end
         
         loop do
           position = first_name.rindex(search_pattern, first_name.size - suffix_length - 1) or break
           prefix = first_name[position..-1]
-          break if not @constants.all? { |constant| constant[0].end_with? prefix }
+          break if not @constants.all? { |constant| constant[:name].end_with? prefix }
           suffix_length = first_name.size - position
         end
       end
       
-      symbols = []
-      definitions = []
-      symbol_descriptions = []
-      @constants.map do |(constant_name, constant_value, constant_comment)|
-        symbol = ":#{@generator.to_ruby_lowercase constant_name[prefix_length..(-1 - suffix_length)]}"
-        symbols << symbol
-        definitions << "    #{symbol}#{constant_value ? ", #{constant_value}" : ""}"
-        symbol_descriptions << "  # #{symbol} ::\n  #   #{@generator.create_description_comment(constant_comment, '  #   ', true)}\n"
+      @constants.each do |constant|
+        constant[:symbol] = ":#{@generator.to_ruby_lowercase constant[:name][prefix_length..(-1 - suffix_length)]}"
       end
       
-      str = ""
-      str << @generator.create_description_comment(@comment, '  # ')
-      str << "  # \n"
-      str << "  # === Options:\n#{symbol_descriptions.join}  #\n"
-      str << "  # @return [Array<Symbol>]\n"
-      str << "  def self.#{@generator.to_ruby_lowercase @name}_enum\n    [#{symbols.join(', ')}]\n  end\n"
-      str << "  enum :#{@generator.to_ruby_lowercase @name}, [\n#{definitions.join(",\n")}\n  ]"
-      str
+      writer.comment do
+        writer.write_description @comment
+        writer.puts "", "=== Options:"
+        @constants.each do |constant|
+          writer.puts "#{constant[:symbol]} ::"
+          writer.write_description constant[:comment], false, "  ", "  "
+        end
+        writer.puts "", "@return [Array<Symbol>]"
+      end
+      
+      ruby_name = @generator.to_ruby_lowercase @name
+      writer.puts "def self.#{ruby_name}_enum"
+      writer.indent do
+        writer.puts "[#{@constants.map{ |constant| constant[:symbol] }.join(', ')}]"
+      end
+      writer.puts "end", "enum :#{ruby_name}, ["
+      writer.indent do
+        writer.write_array @constants, "," do |constant|
+          "#{constant[:symbol]}#{constant[:value] ? ", #{constant[:value]}" : ''}"
+        end
+      end
+      writer.puts "]", ""
     end
     
     def type_name(short)
@@ -96,23 +104,29 @@ class FFIGen
       @fields = []
     end
     
-    def to_s
-      field_definitions = []
-      field_descriptions = []
-      @fields.each do |(field_name, field_type, field_comment)|
-        symbol = ":#{@generator.to_ruby_lowercase field_name}"
-        field_definitions << "#{symbol}, #{@generator.to_ffi_type field_type}"
-        field_descriptions << "  # #{symbol} ::\n  #   (#{@generator.to_type_name field_type}) #{@generator.create_description_comment(field_comment, '  #   ', true)}\n"
+    def write(writer)
+      @fields.each do |field|
+        field[:symbol] = ":#{@generator.to_ruby_lowercase field[:name]}"
       end
       
-      str = ""
-      str << @generator.create_description_comment(@comment, '  # ')
-      str << "  # \n"
-      str << "  # = Fields:\n#{field_descriptions.join}  #\n"
-      str << "  class #{@generator.to_ruby_camelcase @name} < FFI::Struct\n"
-      str << "    layout #{field_definitions.join(",\n           ")}\n" unless @fields.empty?
-      str << "  end"
-      str
+      writer.comment do
+        writer.write_description @comment
+        unless @fields.empty?
+          writer.puts "", "= Fields:"
+          @fields.each do |field|
+            writer.puts "#{field[:symbol]} ::"
+            writer.write_description field[:comment], false, "  (#{@generator.to_type_name field[:type]}) ", "  "
+          end
+        end
+      end
+      
+      writer.puts "class #{@generator.to_ruby_camelcase @name} < FFI::Struct"
+      writer.indent do
+        writer.write_array @fields, ",", "layout ", "       " do |field|
+          "#{field[:symbol]}, #{@generator.to_ffi_type field[:type]}"
+        end
+      end
+      writer.puts "end", ""
     end
     
     def type_name(short)
@@ -136,25 +150,25 @@ class FFIGen
       @comment = comment
     end
     
-    def to_s
+    def write(writer)
       ruby_name = @generator.to_ruby_lowercase @name
-      ruby_parameters = @parameters.map do |(name, type)|
-        ruby_param_type = @generator.to_type_name type
-        ruby_param_name = @generator.to_ruby_lowercase(name.empty? ? @generator.to_type_name(type, true) : name)
-        [ruby_param_name, ruby_param_type, []]
+      @parameters.each do |parameter|
+        parameter[:ruby_type] = @generator.to_type_name parameter[:type]
+        parameter[:ruby_name] = @generator.to_ruby_lowercase(parameter[:name].empty? ? @generator.to_type_name(parameter[:type], true) : parameter[:name])
+        parameter[:description] = []
       end
       
-      ffi_signature = "[#{@parameters.map{ |(name, type)| @generator.to_ffi_type type }.join(', ')}], #{@generator.to_ffi_type @return_type}"
+      ffi_signature = "[#{@parameters.map{ |parameter| @generator.to_ffi_type parameter[:type] }.join(', ')}], #{@generator.to_ffi_type @return_type}"
       
       function_description = []
       return_value_description = []
       current_description = function_description
       @comment.split("\n").map do |line|
-        line = @generator.prepare_comment_line line
+        line = writer.prepare_comment_line line
         if line.gsub! /\\param (.*?) /, ''
-          index = @parameters.index { |(name, type)| name == $1 }
-          if index
-            current_description = ruby_parameters[index][2]
+          parameter = @parameters.find { |parameter| parameter[:name] == $1 }
+          if parameter
+            current_description = parameter[:description]
           else
             current_description << "#{$1}: "
           end
@@ -163,25 +177,23 @@ class FFIGen
         current_description << line
       end
       
-      str = ""
-      if @is_callback
-        str << "  # <em>This is no real method. This entry is only for documentation of the callback.</em>\n"
-        str << "  # \n"
+      writer.comment do
+        if @is_callback
+          writer.puts "<em>This is no real method. This entry is only for documentation of the callback.</em>", ""
+        end
+        writer.write_description function_description
+        writer.puts "", "@method #{ruby_name}#{@is_callback ? '_callback' : ''}(#{@parameters.map{ |parameter| parameter[:ruby_name] }.join(', ')})"
+        @parameters.each do |parameter|
+          writer.write_description parameter[:description], false, "@param [#{parameter[:ruby_type]}] #{parameter[:ruby_name]} ", "  "
+        end
+        writer.write_description return_value_description, false, "@return [#{@generator.to_type_name @return_type}] ", "  "
+        writer.puts "@scope class"
       end
-      str << @generator.create_description_comment(function_description, '  # ')
-      str << "  # \n"
-      str << "  # @method #{ruby_name}#{@is_callback ? '_callback' : ''}(#{ruby_parameters.map{ |(name, type, description)| name }.join(', ')})\n"
-      ruby_parameters.each do |(name, type, description)|
-        str << "  # @param [#{type}] #{name} #{@generator.create_description_comment(description, '  #   ', true)}\n"
-      end
-      str << "  # @return [#{@generator.to_type_name @return_type}] #{@generator.create_description_comment(return_value_description, '  #   ', true)}\n"
-      str << "  # @scope class\n"
       if @is_callback
-        str << "  callback :#{ruby_name}, #{ffi_signature}"
+        writer.puts "callback :#{ruby_name}, #{ffi_signature}", ""
       else
-        str << "  attach_function :#{ruby_name}, :#{@name}, #{ffi_signature}"
+        writer.puts "attach_function :#{ruby_name}, :#{@name}, #{ffi_signature}", ""
       end
-      str
     end
     
     def type_name(short)
@@ -190,6 +202,61 @@ class FFIGen
     
     def reference
       ":#{@generator.to_ruby_lowercase @name}"
+    end
+  end
+  
+  class Writer
+    attr_reader :output
+    
+    def initialize
+      @indentation = ""
+      @output = ""
+    end
+    
+    def indent(prefix = "  ")
+      previous_indentation = @indentation
+      @indentation += prefix
+      yield
+      @indentation = previous_indentation
+    end
+    
+    def comment(&block)
+      indent "# ", &block
+    end
+    
+    def puts(*lines)
+      lines.each do |line|
+        @output << "#{@indentation}#{line}\n"
+      end
+    end
+    
+    def write_array(array, separator = "", first_line_prefix = "", other_lines_prefix = "")
+      array.each_with_index do |entry, index|
+        entry = yield entry if block_given?
+        puts "#{index == 0 ? first_line_prefix : other_lines_prefix}#{entry}#{index < array.size - 1 ? separator : ''}"
+      end
+    end
+    
+    def prepare_comment_line(line)
+      line = line.dup
+      line.sub! /\ ?\*+\/\s*$/, ''
+      line.sub! /^\s*\/?\*+ ?/, ''
+      line.gsub! /\\(brief|determine) /, ''
+      line.gsub! '[', '('
+      line.gsub! ']', ')'
+      line
+    end
+    
+    def write_description(description, not_documented_message = true, first_line_prefix = "", other_lines_prefix = "")
+      if description.is_a? String
+        description = description.split("\n").map { |line| prepare_comment_line(line) }
+      end
+      
+      description.shift while not description.empty? and description.first.strip.empty?
+      description.pop while not description.empty? and description.last.strip.empty?
+      description << (not_documented_message ? "(Not documented)" : "") if description.empty?
+      
+      write_array description, "", first_line_prefix, other_lines_prefix
     end
   end
   
@@ -274,7 +341,7 @@ class FFIGen
           next if function_child[:kind] != :parm_decl
           param_name = Clang.get_cursor_spelling(function_child).to_s_and_dispose
           param_type = Clang.get_cursor_type function_child
-          function.parameters << [param_name, param_type]
+          function.parameters << { name: param_name, type: param_type}
         end
       
       when :typedef_decl
@@ -290,7 +357,7 @@ class FFIGen
           typedef_children[1..-1].each do |param_decl|
             param_name = Clang.get_cursor_spelling(param_decl).to_s_and_dispose
             param_type = Clang.get_cursor_type param_decl
-            callback.parameters << [param_name, param_type]
+            callback.parameters << { name: param_name, type: param_type }
           end
         end
         
@@ -301,12 +368,20 @@ class FFIGen
   end
   
   def generate
-    content = "# Generated by ffi_gen. Please do not change this file by hand.\n\nrequire 'ffi'\n\nmodule #{@ruby_module}\n  extend FFI::Library\n  ffi_lib '#{@ffi_lib}'\n\n#{declarations.values.join("\n\n")}\n\nend"
+    writer = Writer.new
+    writer.puts "# Generated by ffi_gen. Please do not change this file by hand.", "", "require 'ffi'", "", "module #{@ruby_module}"
+    writer.indent do
+      writer.puts "extend FFI::Library", "ffi_lib '#{@ffi_lib}'", ""
+      declarations.each do |name, declaration|
+        declaration.write writer
+      end
+    end
+    writer.puts "end"
     if @output.is_a? String
-      File.open(@output, "w") { |file| file.write content }
+      File.open(@output, "w") { |file| file.write writer.output }
       puts "ffi_gen: #{@output}"
     else
-      @output.write content
+      @output.write writer.output
     end
   end
   
@@ -340,7 +415,7 @@ class FFIGen
         constant_comment = extract_comment translation_unit, constant_comment_range
         previous_constant_location = constant_location
         
-        enum.constants << [constant_name, constant_value, constant_comment]
+        enum.constants << { name: constant_name, value: constant_value, comment: constant_comment }
       end
       
     when :struct_decl
@@ -357,7 +432,7 @@ class FFIGen
         field_comment = extract_comment translation_unit, field_comment_range
         previous_field_location = field_location
         
-        struct.fields << [field_name, field_type, field_comment]
+        struct.fields << { name: field_name, type: field_type, comment: field_comment }
       end
     end
   end
@@ -467,34 +542,6 @@ class FFIGen
   def to_ruby_camelcase(str)
     str = str.dup
     str.sub! /^(#{@prefixes.join('|')})/, '' # remove prefixes
-    str
-  end
-  
-  def prepare_comment_line(line)
-    line = line.dup
-    line.sub! /\ ?\*+\/\s*$/, ''
-    line.sub! /^\s*\/?\*+ ?/, ''
-    line.gsub! /\\(brief|determine) /, ''
-    line.gsub! '[', '('
-    line.gsub! ']', ')'
-    line
-  end
-  
-  def create_description_comment(description, line_prefix, inline_mode = false)
-    if description.is_a? String
-      description = description.split("\n").map { |line| prepare_comment_line(line) }
-    end
-    
-    description.shift while not description.empty? and description.first.strip.empty?
-    description.pop while not description.empty? and description.last.strip.empty?
-    description << "(Not documented)" if not inline_mode and description.empty?
-    
-    str = ""
-    description.each_with_index do |line, index|
-      str << line_prefix if not inline_mode or index > 0
-      str << line
-      str << "\n" if not inline_mode or index < description.size - 1
-    end
     str
   end
   
