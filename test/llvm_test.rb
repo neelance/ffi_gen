@@ -2,21 +2,20 @@ require "fileutils"
 require "ffi_gen"
 
 mappings = {
-  "llvm-c/Analysis.h" => "llvm/analysis.rb",
-  "llvm-c/BitReader.h" => "llvm/bit_reader.rb",
-  "llvm-c/BitWriter.h" => "llvm/bit_writer.rb",
-  "llvm-c/Core.h" => "llvm/core.rb",
-  "llvm-c/Disassembler.h" => "llvm/disassembler.rb",
-  "llvm-c/ExecutionEngine.h" => "llvm/execution_engine.rb",
-  "llvm-c/Initialization.h" => "llvm/initialization.rb",
-  "llvm-c/Object.h" => "llvm/object.rb",
-  "llvm-c/Target.h" => "llvm/target.rb",
-  "llvm-c/Transforms/IPO.h" => "llvm/transforms/ipo.rb",
-  "llvm-c/Transforms/PassManagerBuilder.h" => "llvm/transforms/pass_manager_builder.rb",
-  "llvm-c/Transforms/Scalar.h" => "llvm/transforms/scalar.rb",
+  "llvm-c/Analysis.h" => "analysis.rb",
+  "llvm-c/BitReader.h" => "bit_reader.rb",
+  "llvm-c/BitWriter.h" => "bit_writer.rb",
+  "llvm-c/Core.h" => "core.rb",
+  "llvm-c/Disassembler.h" => "disassembler.rb",
+  "llvm-c/ExecutionEngine.h" => "execution_engine.rb",
+  "llvm-c/Initialization.h" => "initialization.rb",
+  "llvm-c/Object.h" => "object.rb",
+  "llvm-c/Target.h" => "target.rb",
+  "llvm-c/Transforms/IPO.h" => "transforms/ipo.rb",
+  "llvm-c/Transforms/Scalar.h" => "transforms/scalar.rb",
 }
 
-FileUtils.mkdir_p File.join(File.dirname(__FILE__), "llvm/transforms")
+FileUtils.mkdir_p File.join(File.dirname(__FILE__), "gen/llvm/transforms")
 
 mappings.each do |header, ruby_file|
   FFIGen.generate(
@@ -27,7 +26,7 @@ mappings.each do |header, ruby_file|
     prefixes:    ["LLVM"],
     blacklist:   ["LLVMGetMDNodeNumOperands", "LLVMGetMDNodeOperand", "EDGetDisassembler",
                   "LLVMInitializeAllTargetInfos", "LLVMInitializeAllTargets", "LLVMInitializeNativeTarget"],
-    output:      File.join(File.dirname(__FILE__), ruby_file)
+    output:      File.join(File.dirname(__FILE__), "gen/llvm/#{ruby_file}")
   )
 end
 
@@ -35,7 +34,7 @@ module LLVM
 end
 
 mappings.each do |header, ruby_file|
-  require File.join(File.dirname(__FILE__), ruby_file)
+  require File.join(File.dirname(__FILE__), "gen/llvm/#{ruby_file}")
 end
 
-puts "Test successful"
+puts "LLVM Test successful"
