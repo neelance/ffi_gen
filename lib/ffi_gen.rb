@@ -389,6 +389,7 @@ class FFIGen
     when :u_int then ":uint"
     when :u_long then ":ulong"
     when :u_long_long then ":ulong_long"
+    when :char_s then ":char"
     when :short then ":short"
     when :int then ":int"
     when :long then ":long"
@@ -416,7 +417,7 @@ class FFIGen
     case canonical_type[:kind]
     when :void then "nil"
     when :bool then "Boolean"
-    when :u_char, :u_short, :u_int, :u_long, :u_long_long, :short, :int, :long, :long_long then "Integer"
+    when :u_char, :u_short, :u_int, :u_long, :u_long_long, :char_s, :short, :int, :long, :long_long then "Integer"
     when :float, :double then "Float"
     when :pointer
       pointee_type = Clang.get_pointee_type canonical_type
