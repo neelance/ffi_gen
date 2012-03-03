@@ -55,6 +55,12 @@ Your GCC include paths can be seen with:
     `gcc -print-prog-name=cc1` -v
 
 
+Projects using ffi_gen
+----------------------
+
+* https://github.com/jvoorhis/ruby-llvm
+
+
 Roadmap
 -------
 
