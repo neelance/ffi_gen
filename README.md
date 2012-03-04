@@ -1,4 +1,4 @@
-ffi_gen - A Generator for Ruby FFI bindings
+ffi_gen - A generator for Ruby FFI bindings
 ===========================================
 
 *Author:* Richard Musiol  
