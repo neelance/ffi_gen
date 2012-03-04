@@ -433,20 +433,28 @@ class FFIGen
       
     when :struct_decl
       struct = Struct.new self, name, comment
-      @declarations[name] = struct
       
       previous_field_location = Clang.get_cursor_location declaration
-      Clang.get_children(declaration).each do |field_decl|
-        field_name = Clang.get_cursor_spelling(field_decl).to_s_and_dispose
-        field_type = Clang.get_cursor_type field_decl
+      Clang.get_children(declaration).each do |struct_child|
+        child_name = Clang.get_cursor_spelling(struct_child).to_s_and_dispose
         
-        field_location = Clang.get_cursor_location field_decl
-        field_comment_range = Clang.get_range previous_field_location, field_location
-        field_comment = extract_comment translation_unit, field_comment_range
-        previous_field_location = field_location
-        
-        struct.fields << { name: field_name, type: field_type, comment: field_comment }
+        case struct_child[:kind]
+        when :field_decl
+          field_type = Clang.get_cursor_type struct_child
+  
+          field_location = Clang.get_cursor_location struct_child
+          field_comment_range = Clang.get_range previous_field_location, field_location
+          field_comment = extract_comment translation_unit, field_comment_range
+          previous_field_location = field_location
+  
+          struct.fields << { name: child_name, type: field_type, comment: field_comment }
+        when :struct_decl
+          read_named_declaration struct_child, child_name, ""
+        end
       end
+
+      @declarations[name] = struct
+      
     end
   end
   
@@ -484,12 +492,19 @@ class FFIGen
     when :float then ":float"
     when :double then ":double"
     when :pointer
-      if declaration.is_a? Function # callback
-        ":#{declaration.ruby_name}"
-      else
-        pointee_type = Clang.get_pointee_type canonical_type
-        pointee_type[:kind] == :char_s ? ":string" : ":pointer"
+      pointee_type = Clang.get_pointee_type canonical_type
+      result = ":pointer"
+      case pointee_type[:kind]
+      when :char_s
+        result = ":string"
+      when :record
+        pointee_name = Clang.get_cursor_spelling(Clang.get_type_declaration(pointee_type)).to_s_and_dispose
+        pointee_declaration = !pointee_name.empty? && @declarations[pointee_name]
+        result = pointee_declaration.ruby_name if pointee_declaration
+      when :function_proto
+        result = ":#{declaration.ruby_name}" if declaration
       end
+      result
     when :record
       "#{declaration.ruby_name}.by_value"
     when :enum
@@ -515,11 +530,20 @@ class FFIGen
     when :float, :double then "Float"
     when :pointer
       pointee_type = Clang.get_pointee_type canonical_type
-      if declaration.is_a? Function # callback
-        "Proc(_callback_#{declaration.ruby_name}_)"
-      elsif pointee_type[:kind] == :char_s
-        "String"
-      else
+      result = nil
+      
+      case pointee_type[:kind]
+      when :char_s
+        result = "String"
+      when :record
+        pointee_name = Clang.get_cursor_spelling(Clang.get_type_declaration(pointee_type)).to_s_and_dispose
+        pointee_declaration = !pointee_name.empty? && @declarations[pointee_name]
+        result = pointee_declaration.ruby_name if pointee_declaration
+      when :function_proto
+        result = "Proc(_callback_#{declaration.ruby_name}_)" if declaration
+      end
+      
+      if result.nil?
         pointer_depth = 0
         pointer_target_name = ""
         current_type = full_type
@@ -539,8 +563,10 @@ class FFIGen
             break
           end
         end
-        short ? pointer_target_name : "FFI::Pointer(#{'*' * pointer_depth}#{pointer_target_name})"
+        result = short ? pointer_target_name : "FFI::Pointer(#{'*' * pointer_depth}#{pointer_target_name})"
       end
+      
+      result
     when :record
       declaration.ruby_name
     when :enum
