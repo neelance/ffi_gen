@@ -86,14 +86,6 @@ class FFIGen
     def ruby_name
       @ruby_name ||= @generator.to_ruby_lowercase @name
     end
-    
-    def type_name(short)
-      short ? @name : "Symbol from _enum_#{ruby_name}_"
-    end
-    
-    def reference
-      ":#{ruby_name}"
-    end
   end
   
   class Struct
@@ -133,14 +125,6 @@ class FFIGen
     
     def ruby_name
       @ruby_name ||= @generator.to_ruby_camelcase @name
-    end
-    
-    def type_name(short)
-      ruby_name
-    end
-    
-    def reference
-      "#{ruby_name}.by_value"
     end
   end
   
@@ -201,14 +185,6 @@ class FFIGen
     
     def ruby_name
       @ruby_name ||= @generator.to_ruby_lowercase @name, true
-    end
-    
-    def type_name(short)
-      "Proc(_callback_#{ruby_name}_)"
-    end
-    
-    def reference
-      ":#{ruby_name}"
     end
   end
   
@@ -488,9 +464,8 @@ class FFIGen
   end
   
   def to_ffi_type(full_type)
-    declaration = Clang.get_type_declaration full_type
-    name = Clang.get_cursor_spelling(declaration).to_s_and_dispose
-    return @declarations[name].reference if @declarations.has_key? name
+    name = Clang.get_cursor_spelling(Clang.get_type_declaration(full_type)).to_s_and_dispose
+    declaration = !name.empty? && @declarations[name]
     
     canonical_type = Clang.get_canonical_type full_type
     case canonical_type[:kind]
@@ -509,8 +484,16 @@ class FFIGen
     when :float then ":float"
     when :double then ":double"
     when :pointer
-      pointee_type = Clang.get_pointee_type canonical_type
-      pointee_type[:kind] == :char_s ? ":string" : ":pointer"
+      if declaration.is_a? Function # callback
+        ":#{declaration.ruby_name}"
+      else
+        pointee_type = Clang.get_pointee_type canonical_type
+        pointee_type[:kind] == :char_s ? ":string" : ":pointer"
+      end
+    when :record
+      "#{declaration.ruby_name}.by_value"
+    when :enum
+      ":#{declaration.ruby_name}"
     when :constant_array
       element_type = Clang.get_array_element_type canonical_type
       size = Clang.get_array_size canonical_type
@@ -521,9 +504,8 @@ class FFIGen
   end
   
   def to_type_name(full_type, short = false)
-    declaration = Clang.get_type_declaration full_type
-    name = Clang.get_cursor_spelling(declaration).to_s_and_dispose
-    return @declarations[name].type_name(short) if @declarations.has_key? name
+    name = Clang.get_cursor_spelling(Clang.get_type_declaration(full_type)).to_s_and_dispose
+    declaration = !name.empty? && @declarations[name]
     
     canonical_type = Clang.get_canonical_type full_type
     case canonical_type[:kind]
@@ -533,7 +515,9 @@ class FFIGen
     when :float, :double then "Float"
     when :pointer
       pointee_type = Clang.get_pointee_type canonical_type
-      if pointee_type[:kind] == :char_s
+      if declaration.is_a? Function # callback
+        "Proc(_callback_#{declaration.ruby_name}_)"
+      elsif pointee_type[:kind] == :char_s
         "String"
       else
         pointer_depth = 0
@@ -557,6 +541,10 @@ class FFIGen
         end
         short ? pointer_target_name : "FFI::Pointer(#{'*' * pointer_depth}#{pointer_target_name})"
       end
+    when :record
+      declaration.ruby_name
+    when :enum
+      short ? declaration.ruby_name : "Symbol from _enum_#{declaration.ruby_name}_"
     when :constant_array
       element_type = Clang.get_array_element_type canonical_type
       "Array<#{to_type_name element_type}>"
