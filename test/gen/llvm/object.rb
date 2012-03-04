@@ -5,21 +5,15 @@ require 'ffi'
 module LLVM::C
   extend FFI::Library
   ffi_lib 'LLVM-3.0'
-
+  
   # (Not documented)
-  # 
-  # = Fields:
-  #
   class OpaqueObjectFile < FFI::Struct
   end
-
+  
   # (Not documented)
-  # 
-  # = Fields:
-  #
   class OpaqueSectionIterator < FFI::Struct
   end
-
+  
   # (Not documented)
   # 
   # @method create_object_file(mem_buf)
@@ -27,7 +21,7 @@ module LLVM::C
   # @return [FFI::Pointer(ObjectFileRef)] 
   # @scope class
   attach_function :create_object_file, :LLVMCreateObjectFile, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method dispose_object_file(object_file)
@@ -35,7 +29,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :dispose_object_file, :LLVMDisposeObjectFile, [:pointer], :void
-
+  
   # (Not documented)
   # 
   # @method get_sections(object_file)
@@ -43,7 +37,7 @@ module LLVM::C
   # @return [FFI::Pointer(SectionIteratorRef)] 
   # @scope class
   attach_function :get_sections, :LLVMGetSections, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method dispose_section_iterator(si)
@@ -51,7 +45,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :dispose_section_iterator, :LLVMDisposeSectionIterator, [:pointer], :void
-
+  
   # (Not documented)
   # 
   # @method is_section_iterator_at_end(object_file, si)
@@ -60,7 +54,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :is_section_iterator_at_end, :LLVMIsSectionIteratorAtEnd, [:pointer, :pointer], :int
-
+  
   # (Not documented)
   # 
   # @method move_to_next_section(si)
@@ -68,7 +62,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :move_to_next_section, :LLVMMoveToNextSection, [:pointer], :void
-
+  
   # (Not documented)
   # 
   # @method get_section_name(si)
@@ -76,7 +70,7 @@ module LLVM::C
   # @return [String] 
   # @scope class
   attach_function :get_section_name, :LLVMGetSectionName, [:pointer], :string
-
+  
   # (Not documented)
   # 
   # @method get_section_size(si)
@@ -84,7 +78,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :get_section_size, :LLVMGetSectionSize, [:pointer], :ulong
-
+  
   # (Not documented)
   # 
   # @method get_section_contents(si)
@@ -92,5 +86,5 @@ module LLVM::C
   # @return [String] 
   # @scope class
   attach_function :get_section_contents, :LLVMGetSectionContents, [:pointer], :string
-
+  
 end

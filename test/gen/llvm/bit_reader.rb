@@ -5,7 +5,7 @@ require 'ffi'
 module LLVM::C
   extend FFI::Library
   ffi_lib 'LLVM-3.0'
-
+  
   # (Not documented)
   # 
   # @method parse_bitcode(mem_buf, out_module, out_message)
@@ -15,7 +15,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :parse_bitcode, :LLVMParseBitcode, [:pointer, :pointer, :pointer], :int
-
+  
   # (Not documented)
   # 
   # @method parse_bitcode_in_context(context_ref, mem_buf, out_module, out_message)
@@ -26,7 +26,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :parse_bitcode_in_context, :LLVMParseBitcodeInContext, [:pointer, :pointer, :pointer, :pointer], :int
-
+  
   # Reads a module from the specified path, returning via the OutMP parameter
   #     a module provider which performs lazy deserialization. Returns 0 on success.
   #     Optionally returns a human-readable error message via OutMessage.
@@ -39,7 +39,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :get_bitcode_module_in_context, :LLVMGetBitcodeModuleInContext, [:pointer, :pointer, :pointer, :pointer], :int
-
+  
   # (Not documented)
   # 
   # @method get_bitcode_module(mem_buf, out_m, out_message)
@@ -49,7 +49,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :get_bitcode_module, :LLVMGetBitcodeModule, [:pointer, :pointer, :pointer], :int
-
+  
   # Deprecated: Use LLVMGetBitcodeModuleInContext instead.
   # 
   # @method get_bitcode_module_provider_in_context(context_ref, mem_buf, out_mp, out_message)
@@ -60,7 +60,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :get_bitcode_module_provider_in_context, :LLVMGetBitcodeModuleProviderInContext, [:pointer, :pointer, :pointer, :pointer], :int
-
+  
   # Deprecated: Use LLVMGetBitcodeModule instead.
   # 
   # @method get_bitcode_module_provider(mem_buf, out_mp, out_message)
@@ -70,5 +70,5 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :get_bitcode_module_provider, :LLVMGetBitcodeModuleProvider, [:pointer, :pointer, :pointer], :int
-
+  
 end

@@ -5,7 +5,7 @@ require 'ffi'
 module LLVM::C
   extend FFI::Library
   ffi_lib 'LLVM-3.0'
-
+  
   # <em>This is no real method. This entry is only for documentation of the callback.</em>
   # 
   # The type for the operand information call back function.  This is called to
@@ -33,7 +33,7 @@ module LLVM::C
   # @return [FFI::Pointer(*Void)] 
   # @scope class
   callback :op_info_callback, [:ulong, :ulong, :ulong, :int, :pointer], :pointer
-
+  
   # The initial support in LLVM MC for the most general form of a relocatable
   # expression is "AddSymbol - SubtractSymbol + Offset".  For some Darwin targets
   # this full form is encoded in the relocation information so that AddSymbol and
@@ -60,13 +60,12 @@ module LLVM::C
   #   (String) 1 if this symbol is present
   # :value ::
   #   (Integer) symbol name if not NULL
-  #
   class OpInfoSymbol1 < FFI::Struct
     layout :present, :ulong,
            :name, :string,
            :value, :ulong
   end
-
+  
   # symbol value if name is NULL
   # 
   # = Fields:
@@ -78,14 +77,13 @@ module LLVM::C
   #   (Integer) 
   # :variant_kind ::
   #   (Integer) 
-  #
   class OpInfo1 < FFI::Struct
     layout :add_symbol, OpInfoSymbol1.by_value,
            :subtract_symbol, OpInfoSymbol1.by_value,
            :value, :ulong,
            :variant_kind, :ulong
   end
-
+  
   # <em>This is no real method. This entry is only for documentation of the callback.</em>
   # 
   # The type for the symbol lookup function.  This may be called by the
@@ -107,7 +105,7 @@ module LLVM::C
   # @return [FFI::Pointer(*Void)] 
   # @scope class
   callback :symbol_lookup_callback, [:ulong, :pointer, :ulong, :pointer], :pointer
-
+  
   # Create a disassembler for the TripleName.  Symbolic disassembly is supported
   # by passing a block of information in the DisInfo parameter and specifying the
   # TagType and callback functions as described above.  These can all be passed
@@ -123,7 +121,7 @@ module LLVM::C
   # @return [FFI::Pointer(DisasmContextRef)] 
   # @scope class
   attach_function :create_disasm, :LLVMCreateDisasm, [:string, :pointer, :int, :op_info_callback, :symbol_lookup_callback], :pointer
-
+  
   # Dispose of a disassembler context.
   # 
   # @method disasm_dispose(dc)
@@ -131,7 +129,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :disasm_dispose, :LLVMDisasmDispose, [:pointer], :void
-
+  
   # Disassemble a single instruction using the disassembler context specified in
   # the parameter DC.  The bytes of the instruction are specified in the
   # parameter Bytes, and contains at least BytesSize number of bytes.  The
@@ -151,5 +149,5 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :disasm_instruction, :LLVMDisasmInstruction, [:pointer, :pointer, :ulong, :ulong, :string, :ulong], :ulong
-
+  
 end

@@ -5,7 +5,7 @@ require 'ffi'
 module LLVM::C
   extend FFI::Library
   ffi_lib 'LLVM-3.0'
-
+  
   # (Not documented)
   # 
   # === Options:
@@ -15,7 +15,7 @@ module LLVM::C
   #   verifier will print to stderr and abort()
   # :return_status ::
   #   verifier will print to stderr and return 1
-  #
+  # 
   # @return [Array<Symbol>]
   def self.verifier_failure_action_enum
     [:abort_process, :print_message, :return_status]
@@ -25,7 +25,7 @@ module LLVM::C
     :print_message,
     :return_status
   ]
-
+  
   # Verifies that a module is valid, taking the specified action if not.
   #    Optionally returns a human-readable description of any invalid constructs.
   #    OutMessage must be disposed with LLVMDisposeMessage.
@@ -37,7 +37,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :verify_module, :LLVMVerifyModule, [:pointer, :verifier_failure_action, :pointer], :int
-
+  
   # Verifies that a single function is valid, taking the specified action. Useful
   #    for debugging.
   # 
@@ -47,7 +47,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :verify_function, :LLVMVerifyFunction, [:pointer, :verifier_failure_action], :int
-
+  
   # Open up a ghostview window that displays the CFG of the current function.
   #    Useful for debugging.
   # 
@@ -56,7 +56,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :view_function_cfg, :LLVMViewFunctionCFG, [:pointer], :void
-
+  
   # (Not documented)
   # 
   # @method view_function_cfg_only(fn)
@@ -64,5 +64,5 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :view_function_cfg_only, :LLVMViewFunctionCFGOnly, [:pointer], :void
-
+  
 end

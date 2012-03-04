@@ -5,14 +5,11 @@ require 'ffi'
 module Clang
   extend FFI::Library
   ffi_lib 'clang'
-
+  
   # A single translation unit, which resides in an index.
-  # 
-  # = Fields:
-  #
   class TranslationUnitImpl < FFI::Struct
   end
-
+  
   # Provides the contents of a file that has not yet been saved to disk.
   # 
   # Each CXUnsavedFile instance provides the name of a file on the
@@ -28,13 +25,12 @@ module Clang
   #   (String) A buffer containing the unsaved contents of this file.
   # :length ::
   #   (Integer) The length of the unsaved contents of this buffer.
-  #
   class UnsavedFile < FFI::Struct
     layout :filename, :string,
            :contents, :string,
            :length, :ulong
   end
-
+  
   # Describes the availability of a particular entity, which indicates
   # whether the use of this entity will result in a warning or error due to
   # it being deprecated or unavailable.
@@ -50,7 +46,7 @@ module Clang
   # :not_accessible ::
   #   The entity is available, but not accessible; any use of it will be
   #   an error.
-  #
+  # 
   # @return [Array<Symbol>]
   def self.availability_kind_enum
     [:available, :deprecated, :not_available, :not_accessible]
@@ -61,7 +57,7 @@ module Clang
     :not_available,
     :not_accessible
   ]
-
+  
   # A character string.
   # 
   # The \c CXString type is used to return strings from the interface when
@@ -74,12 +70,11 @@ module Clang
   #   (FFI::Pointer(*Void)) 
   # :private_flags ::
   #   (Integer) 
-  #
   class String < FFI::Struct
     layout :data, :pointer,
            :private_flags, :uint
   end
-
+  
   # Retrieve the character data associated with the given string.
   # 
   # @method get_c_string(string)
@@ -87,7 +82,7 @@ module Clang
   # @return [String] 
   # @scope class
   attach_function :get_c_string, :clang_getCString, [String.by_value], :string
-
+  
   # Free the given string,
   # 
   # @method dispose_string(string)
@@ -95,7 +90,7 @@ module Clang
   # @return [nil] 
   # @scope class
   attach_function :dispose_string, :clang_disposeString, [String.by_value], :void
-
+  
   # clang_createIndex() provides a shared context for creating
   # translation units. It provides two options:
   # 
@@ -138,7 +133,7 @@ module Clang
   # @return [FFI::Pointer(Index)] 
   # @scope class
   attach_function :create_index, :clang_createIndex, [:int, :int], :pointer
-
+  
   # Destroy the given index.
   # 
   # The index must not be destroyed until all of the translation units created
@@ -149,7 +144,7 @@ module Clang
   # @return [nil] 
   # @scope class
   attach_function :dispose_index, :clang_disposeIndex, [:pointer], :void
-
+  
   # Retrieve the complete file and path name of the given file.
   # 
   # @method get_file_name(s_file)
@@ -157,7 +152,7 @@ module Clang
   # @return [String] 
   # @scope class
   attach_function :get_file_name, :clang_getFileName, [:pointer], String.by_value
-
+  
   # Retrieve the last modification time of the given file.
   # 
   # @method get_file_time(s_file)
@@ -165,7 +160,7 @@ module Clang
   # @return [Integer] 
   # @scope class
   attach_function :get_file_time, :clang_getFileTime, [:pointer], :long
-
+  
   # Determine whether the given header is guarded against
   # multiple inclusions, either with the conventional
   # #ifndef/#define/#endif macro guards or with #pragma once.
@@ -176,7 +171,7 @@ module Clang
   # @return [Integer] 
   # @scope class
   attach_function :is_file_multiple_include_guarded, :clang_isFileMultipleIncludeGuarded, [:pointer, :pointer], :uint
-
+  
   # Retrieve a file handle within the given translation unit.
   # 
   # @method get_file(tu, file_name)
@@ -186,7 +181,7 @@ module Clang
   #   or a NULL file handle if the file was not a part of this translation unit.
   # @scope class
   attach_function :get_file, :clang_getFile, [:pointer, :string], :pointer
-
+  
   # Identifies a specific source location within a translation
   # unit.
   # 
@@ -198,12 +193,11 @@ module Clang
   #   (Array<FFI::Pointer(*Void)>) 
   # :int_data ::
   #   (Integer) 
-  #
   class SourceLocation < FFI::Struct
     layout :ptr_data, [:pointer, 2],
            :int_data, :uint
   end
-
+  
   # Identifies a half-open character range in the source code.
   # 
   # Use clang_getRangeStart() and clang_getRangeEnd() to retrieve the
@@ -216,20 +210,19 @@ module Clang
   #   (Integer) 
   # :end_int_data ::
   #   (Integer) 
-  #
   class SourceRange < FFI::Struct
     layout :ptr_data, [:pointer, 2],
            :begin_int_data, :uint,
            :end_int_data, :uint
   end
-
+  
   # Retrieve a NULL (invalid) source location.
   # 
   # @method get_null_location()
   # @return [SourceLocation] 
   # @scope class
   attach_function :get_null_location, :clang_getNullLocation, [], SourceLocation.by_value
-
+  
   # Determine whether two source locations, which must refer into
   # the same translation unit, refer to exactly the same point in the source
   # code.
@@ -241,7 +234,7 @@ module Clang
   #   if they refer to different locations.
   # @scope class
   attach_function :equal_locations, :clang_equalLocations, [SourceLocation.by_value, SourceLocation.by_value], :uint
-
+  
   # Retrieves the source location associated with a given file/line/column
   # in a particular translation unit.
   # 
@@ -253,7 +246,7 @@ module Clang
   # @return [SourceLocation] 
   # @scope class
   attach_function :get_location, :clang_getLocation, [:pointer, :pointer, :uint, :uint], SourceLocation.by_value
-
+  
   # Retrieves the source location associated with a given character offset
   # in a particular translation unit.
   # 
@@ -264,14 +257,14 @@ module Clang
   # @return [SourceLocation] 
   # @scope class
   attach_function :get_location_for_offset, :clang_getLocationForOffset, [:pointer, :pointer, :uint], SourceLocation.by_value
-
+  
   # Retrieve a NULL (invalid) source range.
   # 
   # @method get_null_range()
   # @return [SourceRange] 
   # @scope class
   attach_function :get_null_range, :clang_getNullRange, [], SourceRange.by_value
-
+  
   # Retrieve a source range given the beginning and ending source
   # locations.
   # 
@@ -281,7 +274,7 @@ module Clang
   # @return [SourceRange] 
   # @scope class
   attach_function :get_range, :clang_getRange, [SourceLocation.by_value, SourceLocation.by_value], SourceRange.by_value
-
+  
   # Determine whether two ranges are equivalent.
   # 
   # @method equal_ranges(range1, range2)
@@ -290,7 +283,7 @@ module Clang
   # @return [Integer] non-zero if the ranges are the same, zero if they differ.
   # @scope class
   attach_function :equal_ranges, :clang_equalRanges, [SourceRange.by_value, SourceRange.by_value], :uint
-
+  
   # Returns non-zero if \arg range is null.
   # 
   # @method range_is_null(range)
@@ -298,7 +291,7 @@ module Clang
   # @return [Integer] 
   # @scope class
   attach_function :range_is_null, :clang_Range_isNull, [SourceRange.by_value], :int
-
+  
   # Retrieve the file, line, column, and offset represented by
   # the given source location, as specified in a # line directive.
   # 
@@ -336,7 +329,7 @@ module Clang
   # @return [nil] 
   # @scope class
   attach_function :get_presumed_location, :clang_getPresumedLocation, [SourceLocation.by_value, :pointer, :pointer, :pointer], :void
-
+  
   # Legacy API to retrieve the file, line, column, and offset represented
   # by the given source location.
   # 
@@ -353,7 +346,7 @@ module Clang
   # @return [nil] 
   # @scope class
   attach_function :get_instantiation_location, :clang_getInstantiationLocation, [SourceLocation.by_value, :pointer, :pointer, :pointer, :pointer], :void
-
+  
   # Retrieve the file, line, column, and offset represented by
   # the given source location.
   # 
@@ -374,7 +367,7 @@ module Clang
   # @return [nil] 
   # @scope class
   attach_function :get_spelling_location, :clang_getSpellingLocation, [SourceLocation.by_value, :pointer, :pointer, :pointer, :pointer], :void
-
+  
   # Retrieve a source location representing the first character within a
   # source range.
   # 
@@ -383,7 +376,7 @@ module Clang
   # @return [SourceLocation] 
   # @scope class
   attach_function :get_range_start, :clang_getRangeStart, [SourceRange.by_value], SourceLocation.by_value
-
+  
   # Retrieve a source location representing the last character within a
   # source range.
   # 
@@ -392,7 +385,7 @@ module Clang
   # @return [SourceLocation] 
   # @scope class
   attach_function :get_range_end, :clang_getRangeEnd, [SourceRange.by_value], SourceLocation.by_value
-
+  
   # Describes the severity of a particular diagnostic.
   # 
   # === Options:
@@ -411,7 +404,7 @@ module Clang
   #   This diagnostic indicates that the code is ill-formed such
   #   that future parser recovery is unlikely to produce useful
   #   results.
-  #
+  # 
   # @return [Array<Symbol>]
   def self.diagnostic_severity_enum
     [:ignored, :note, :warning, :error, :fatal]
@@ -423,7 +416,7 @@ module Clang
     :error, 3,
     :fatal, 4
   ]
-
+  
   # Determine the number of diagnostics produced for the given
   # translation unit.
   # 
@@ -432,7 +425,7 @@ module Clang
   # @return [Integer] 
   # @scope class
   attach_function :get_num_diagnostics, :clang_getNumDiagnostics, [:pointer], :uint
-
+  
   # Retrieve a diagnostic associated with the given translation unit.
   # 
   # @method get_diagnostic(unit, index)
@@ -442,7 +435,7 @@ module Clang
   #   via a call to \c clang_disposeDiagnostic().
   # @scope class
   attach_function :get_diagnostic, :clang_getDiagnostic, [:pointer, :uint], :pointer
-
+  
   # Destroy a diagnostic.
   # 
   # @method dispose_diagnostic(diagnostic)
@@ -450,7 +443,7 @@ module Clang
   # @return [nil] 
   # @scope class
   attach_function :dispose_diagnostic, :clang_disposeDiagnostic, [:pointer], :void
-
+  
   # Options to control the display of diagnostics.
   # 
   # The values in this enum are meant to be combined to customize the
@@ -499,7 +492,7 @@ module Clang
   #   The category name is displayed within brackets after the diagnostic text.
   #   This option corresponds to the clang flag 
   #   \c -fdiagnostics-show-category=name.
-  #
+  # 
   # @return [Array<Symbol>]
   def self.diagnostic_display_options_enum
     [:display_source_location, :display_column, :display_source_ranges, :display_option, :display_category_id, :display_category_name]
@@ -512,7 +505,7 @@ module Clang
     :display_category_id, 0x10,
     :display_category_name, 0x20
   ]
-
+  
   # Format the given diagnostic in a manner that is suitable for display.
   # 
   # This routine will format the given diagnostic to a string, rendering
@@ -527,7 +520,7 @@ module Clang
   # @return [String] A new string containing for formatted diagnostic.
   # @scope class
   attach_function :format_diagnostic, :clang_formatDiagnostic, [:pointer, :uint], String.by_value
-
+  
   # Retrieve the set of display options most similar to the
   # default behavior of the clang compiler.
   # 
@@ -536,7 +529,7 @@ module Clang
   #   clang_displayDiagnostic().
   # @scope class
   attach_function :default_diagnostic_display_options, :clang_defaultDiagnosticDisplayOptions, [], :uint
-
+  
   # Determine the severity of the given diagnostic.
   # 
   # @method get_diagnostic_severity(diagnostic)
@@ -544,7 +537,7 @@ module Clang
   # @return [Symbol from diagnostic_severity_enum] 
   # @scope class
   attach_function :get_diagnostic_severity, :clang_getDiagnosticSeverity, [:pointer], :diagnostic_severity
-
+  
   # Retrieve the source location of the given diagnostic.
   # 
   # This location is where Clang would print the caret ('^') when
@@ -555,7 +548,7 @@ module Clang
   # @return [SourceLocation] 
   # @scope class
   attach_function :get_diagnostic_location, :clang_getDiagnosticLocation, [:pointer], SourceLocation.by_value
-
+  
   # Retrieve the text of the given diagnostic.
   # 
   # @method get_diagnostic_spelling(diagnostic)
@@ -563,7 +556,7 @@ module Clang
   # @return [String] 
   # @scope class
   attach_function :get_diagnostic_spelling, :clang_getDiagnosticSpelling, [:pointer], String.by_value
-
+  
   # Retrieve the name of the command-line option that enabled this
   # diagnostic.
   # 
@@ -575,7 +568,7 @@ module Clang
   #   warning, such as "-Wconversion" or "-pedantic". 
   # @scope class
   attach_function :get_diagnostic_option, :clang_getDiagnosticOption, [:pointer, :pointer], String.by_value
-
+  
   # Retrieve the category number for this diagnostic.
   # 
   # Diagnostics can be categorized into groups along with other, related
@@ -588,7 +581,7 @@ module Clang
   #   if this diagnostic is uncategorized.
   # @scope class
   attach_function :get_diagnostic_category, :clang_getDiagnosticCategory, [:pointer], :uint
-
+  
   # Retrieve the name of a particular diagnostic category.
   # 
   # @method get_diagnostic_category_name(category)
@@ -597,7 +590,7 @@ module Clang
   # @return [String] The name of the given diagnostic category.
   # @scope class
   attach_function :get_diagnostic_category_name, :clang_getDiagnosticCategoryName, [:uint], String.by_value
-
+  
   # Determine the number of source ranges associated with the given
   # diagnostic.
   # 
@@ -606,7 +599,7 @@ module Clang
   # @return [Integer] 
   # @scope class
   attach_function :get_diagnostic_num_ranges, :clang_getDiagnosticNumRanges, [:pointer], :uint
-
+  
   # Retrieve a source range associated with the diagnostic.
   # 
   # A diagnostic's source ranges highlight important elements in the source
@@ -619,7 +612,7 @@ module Clang
   # @return [SourceRange] the requested source range.
   # @scope class
   attach_function :get_diagnostic_range, :clang_getDiagnosticRange, [:pointer, :uint], SourceRange.by_value
-
+  
   # Determine the number of fix-it hints associated with the
   # given diagnostic.
   # 
@@ -628,7 +621,7 @@ module Clang
   # @return [Integer] 
   # @scope class
   attach_function :get_diagnostic_num_fix_its, :clang_getDiagnosticNumFixIts, [:pointer], :uint
-
+  
   # Retrieve the replacement information for a given fix-it.
   # 
   # Fix-its are described in terms of a source range whose contents
@@ -652,7 +645,7 @@ module Clang
   #   code indicated by the \c ReplacementRange.
   # @scope class
   attach_function :get_diagnostic_fix_it, :clang_getDiagnosticFixIt, [:pointer, :uint, :pointer], String.by_value
-
+  
   # Get the original translation unit source file name.
   # 
   # @method get_translation_unit_spelling(ct_unit)
@@ -660,7 +653,7 @@ module Clang
   # @return [String] 
   # @scope class
   attach_function :get_translation_unit_spelling, :clang_getTranslationUnitSpelling, [:pointer], String.by_value
-
+  
   # Return the CXTranslationUnit for a given source file and the provided
   # command line arguments one would pass to the compiler.
   # 
@@ -698,7 +691,7 @@ module Clang
   # @return [FFI::Pointer(TranslationUnit)] 
   # @scope class
   attach_function :create_translation_unit_from_source_file, :clang_createTranslationUnitFromSourceFile, [:pointer, :string, :int, :pointer, :uint, :pointer], :pointer
-
+  
   # Create a translation unit from an AST file (-emit-ast).
   # 
   # @method create_translation_unit(index, ast_filename)
@@ -707,7 +700,7 @@ module Clang
   # @return [FFI::Pointer(TranslationUnit)] 
   # @scope class
   attach_function :create_translation_unit, :clang_createTranslationUnit, [:pointer, :string], :pointer
-
+  
   # Flags that control the creation of translation units.
   # 
   # The enumerators in this enumeration type are meant to be bitwise
@@ -775,7 +768,7 @@ module Clang
   #   inside another macro expansion) can, in some code bases, require
   #   a large amount of storage to due preprocessor metaprogramming. Moreover,
   #   its fairly rare that this information is useful for libclang clients.
-  #
+  # 
   # @return [Array<Symbol>]
   def self.translation_unit_flags_enum
     [:none, :detailed_preprocessing_record, :incomplete, :precompiled_preamble, :cache_completion_results, :x_precompiled_preamble, :x_chained_pch, :nested_macro_expansions]
@@ -790,7 +783,7 @@ module Clang
     :x_chained_pch, 0x20,
     :nested_macro_expansions, 0x40
   ]
-
+  
   # Returns the set of flags that is suitable for parsing a translation
   # unit that is being edited.
   # 
@@ -806,7 +799,7 @@ module Clang
   # @return [Integer] 
   # @scope class
   attach_function :default_editing_translation_unit_options, :clang_defaultEditingTranslationUnitOptions, [], :uint
-
+  
   # Parse the given source file and the translation unit corresponding
   # to that file.
   # 
@@ -843,7 +836,7 @@ module Clang
   #   the compiler cannot recover, returns NULL.
   # @scope class
   attach_function :parse_translation_unit, :clang_parseTranslationUnit, [:pointer, :string, :pointer, :int, :pointer, :uint, :uint], :pointer
-
+  
   # Flags that control how translation units are saved.
   # 
   # The enumerators in this enumeration type are meant to be bitwise
@@ -853,7 +846,7 @@ module Clang
   # === Options:
   # :save_translation_unit_none ::
   #   Used to indicate that no special saving options are needed.
-  #
+  # 
   # @return [Array<Symbol>]
   def self.save_translation_unit_flags_enum
     [:save_translation_unit_none]
@@ -861,7 +854,7 @@ module Clang
   enum :save_translation_unit_flags, [
     :save_translation_unit_none, 0x0
   ]
-
+  
   # Returns the set of flags that is suitable for saving a translation
   # unit.
   # 
@@ -875,7 +868,7 @@ module Clang
   # @return [Integer] 
   # @scope class
   attach_function :default_save_options, :clang_defaultSaveOptions, [:pointer], :uint
-
+  
   # Describes the kind of error that occurred (if any) in a call to
   # \c clang_saveTranslationUnit().
   # 
@@ -897,7 +890,7 @@ module Clang
   # :invalid_tu ::
   #   Indicates that the translation unit to be saved was somehow
   #   invalid (e.g., NULL).
-  #
+  # 
   # @return [Array<Symbol>]
   def self.save_error_enum
     [:none, :unknown, :translation_errors, :invalid_tu]
@@ -908,7 +901,7 @@ module Clang
     :translation_errors, 2,
     :invalid_tu, 3
   ]
-
+  
   # Saves a translation unit into a serialized representation of
   # that translation unit on disk.
   # 
@@ -930,7 +923,7 @@ module Clang
   #   saved successfully, while a non-zero value indicates that a problem occurred.
   # @scope class
   attach_function :save_translation_unit, :clang_saveTranslationUnit, [:pointer, :string, :uint], :int
-
+  
   # Destroy the specified CXTranslationUnit object.
   # 
   # @method dispose_translation_unit(translation_unit)
@@ -938,7 +931,7 @@ module Clang
   # @return [nil] 
   # @scope class
   attach_function :dispose_translation_unit, :clang_disposeTranslationUnit, [:pointer], :void
-
+  
   # Flags that control the reparsing of translation units.
   # 
   # The enumerators in this enumeration type are meant to be bitwise
@@ -948,7 +941,7 @@ module Clang
   # === Options:
   # :reparse_none ::
   #   Used to indicate that no special reparsing options are needed.
-  #
+  # 
   # @return [Array<Symbol>]
   def self.reparse_flags_enum
     [:reparse_none]
@@ -956,7 +949,7 @@ module Clang
   enum :reparse_flags, [
     :reparse_none, 0x0
   ]
-
+  
   # Returns the set of flags that is suitable for reparsing a translation
   # unit.
   # 
@@ -971,7 +964,7 @@ module Clang
   # @return [Integer] 
   # @scope class
   attach_function :default_reparse_options, :clang_defaultReparseOptions, [:pointer], :uint
-
+  
   # Reparse the source files that produced this translation unit.
   # 
   # This routine can be used to re-parse the source files that originally
@@ -1007,7 +1000,7 @@ module Clang
   #   \c clang_disposeTranslationUnit(TU).
   # @scope class
   attach_function :reparse_translation_unit, :clang_reparseTranslationUnit, [:pointer, :uint, :pointer, :uint], :int
-
+  
   # Categorizes how memory is being used by a translation unit.
   # 
   # === Options:
@@ -1039,7 +1032,7 @@ module Clang
   #   
   # :preprocessor_header_search ::
   #   
-  #
+  # 
   # @return [Array<Symbol>]
   def self.tu_resource_usage_kind_enum
     [:ast, :identifiers, :selectors, :global_completion_results, :source_manager_content_cache, :ast_side_tables, :source_manager_membuffer_malloc, :source_manager_membuffer_m_map, :external_ast_source_membuffer_malloc, :external_ast_source_membuffer_m_map, :preprocessor, :preprocessing_record, :source_manager_data_structures, :preprocessor_header_search]
@@ -1060,7 +1053,7 @@ module Clang
     :source_manager_data_structures, 13,
     :preprocessor_header_search, 14
   ]
-
+  
   # Returns the human-readable null-terminated C string that represents
   #  the name of the memory category.  This string should never be freed.
   # 
@@ -1069,7 +1062,7 @@ module Clang
   # @return [String] 
   # @scope class
   attach_function :get_tu_resource_usage_name, :clang_getTUResourceUsageName, [:tu_resource_usage_kind], :string
-
+  
   # (Not documented)
   # 
   # = Fields:
@@ -1078,12 +1071,11 @@ module Clang
   # :amount ::
   #   (Integer) Amount of resources used. 
   #         The units will depend on the resource kind.
-  #
   class TUResourceUsageEntry < FFI::Struct
     layout :kind, :tu_resource_usage_kind,
            :amount, :ulong
   end
-
+  
   # The memory usage of a CXTranslationUnit, broken into categories.
   # 
   # = Fields:
@@ -1094,13 +1086,12 @@ module Clang
   # :entries ::
   #   (FFI::Pointer(*TUResourceUsageEntry)) An array of key-value pairs, representing the breakdown of memory
   #               usage.
-  #
   class TUResourceUsage < FFI::Struct
     layout :data, :pointer,
            :num_entries, :uint,
            :entries, :pointer
   end
-
+  
   # Return the memory usage of a translation unit.  This object
   #  should be released with clang_disposeCXTUResourceUsage().
   # 
@@ -1109,7 +1100,7 @@ module Clang
   # @return [TUResourceUsage] 
   # @scope class
   attach_function :get_cxtu_resource_usage, :clang_getCXTUResourceUsage, [:pointer], TUResourceUsage.by_value
-
+  
   # (Not documented)
   # 
   # @method dispose_cxtu_resource_usage(usage)
@@ -1117,7 +1108,7 @@ module Clang
   # @return [nil] 
   # @scope class
   attach_function :dispose_cxtu_resource_usage, :clang_disposeCXTUResourceUsage, [TUResourceUsage.by_value], :void
-
+  
   # Describes the kind of entity that a cursor refers to.
   # 
   # === Options:
@@ -1558,7 +1549,7 @@ module Clang
   #   
   # :inclusion_directive ::
   #   
-  #
+  # 
   # @return [Array<Symbol>]
   def self.cursor_kind_enum
     [:unexposed_decl, :struct_decl, :union_decl, :class_decl, :enum_decl, :field_decl, :enum_constant_decl, :function_decl, :var_decl, :parm_decl, :obj_c_interface_decl, :obj_c_category_decl, :obj_c_protocol_decl, :obj_c_property_decl, :obj_c_ivar_decl, :obj_c_instance_method_decl, :obj_c_class_method_decl, :obj_c_implementation_decl, :obj_c_category_impl_decl, :typedef_decl, :x_method, :namespace, :linkage_spec, :constructor, :destructor, :conversion_function, :template_type_parameter, :non_type_template_parameter, :template_template_parameter, :function_template, :class_template, :class_template_partial_specialization, :namespace_alias, :using_directive, :using_declaration, :type_alias_decl, :obj_c_synthesize_decl, :obj_c_dynamic_decl, :x_access_specifier, :first_ref, :obj_c_super_class_ref, :obj_c_protocol_ref, :obj_c_class_ref, :type_ref, :x_base_specifier, :template_ref, :namespace_ref, :member_ref, :label_ref, :overloaded_decl_ref, :first_invalid, :invalid_file, :no_decl_found, :not_implemented, :invalid_code, :first_expr, :unexposed_expr, :decl_ref_expr, :member_ref_expr, :call_expr, :obj_c_message_expr, :block_expr, :integer_literal, :floating_literal, :imaginary_literal, :string_literal, :character_literal, :paren_expr, :unary_operator, :array_subscript_expr, :binary_operator, :compound_assign_operator, :conditional_operator, :c_style_cast_expr, :compound_literal_expr, :init_list_expr, :addr_label_expr, :stmt_expr, :generic_selection_expr, :gnu_null_expr, :x_static_cast_expr, :x_dynamic_cast_expr, :x_reinterpret_cast_expr, :x_const_cast_expr, :x_functional_cast_expr, :x_typeid_expr, :x_bool_literal_expr, :x_null_ptr_literal_expr, :x_this_expr, :x_throw_expr, :x_new_expr, :x_delete_expr, :unary_expr, :obj_c_string_literal, :obj_c_encode_expr, :obj_c_selector_expr, :obj_c_protocol_expr, :obj_c_bridged_cast_expr, :pack_expansion_expr, :size_of_pack_expr, :first_stmt, :unexposed_stmt, :label_stmt, :compound_stmt, :case_stmt, :default_stmt, :if_stmt, :switch_stmt, :while_stmt, :do_stmt, :for_stmt, :goto_stmt, :indirect_goto_stmt, :continue_stmt, :break_stmt, :return_stmt, :asm_stmt, :obj_c_at_try_stmt, :obj_c_at_catch_stmt, :obj_c_at_finally_stmt, :obj_c_at_throw_stmt, :obj_c_at_synchronized_stmt, :obj_c_autorelease_pool_stmt, :obj_c_for_collection_stmt, :x_catch_stmt, :x_try_stmt, :x_for_range_stmt, :seh_try_stmt, :seh_except_stmt, :seh_finally_stmt, :null_stmt, :decl_stmt, :translation_unit, :first_attr, :unexposed_attr, :ib_action_attr, :ib_outlet_attr, :ib_outlet_collection_attr, :x_final_attr, :x_override_attr, :annotate_attr, :preprocessing_directive, :macro_definition, :macro_expansion, :inclusion_directive]
@@ -1710,7 +1701,7 @@ module Clang
     :macro_expansion, 502,
     :inclusion_directive, 503
   ]
-
+  
   # A cursor representing some element in the abstract syntax tree for
   # a translation unit.
   # 
@@ -1735,20 +1726,19 @@ module Clang
   #   (Integer) 
   # :data ::
   #   (Array<FFI::Pointer(*Void)>) 
-  #
   class Cursor < FFI::Struct
     layout :kind, :cursor_kind,
            :xdata, :int,
            :data, [:pointer, 3]
   end
-
+  
   # Retrieve the NULL cursor, which represents no entity.
   # 
   # @method get_null_cursor()
   # @return [Cursor] 
   # @scope class
   attach_function :get_null_cursor, :clang_getNullCursor, [], Cursor.by_value
-
+  
   # Retrieve the cursor that represents the given translation unit.
   # 
   # The translation unit cursor can be used to start traversing the
@@ -1759,7 +1749,7 @@ module Clang
   # @return [Cursor] 
   # @scope class
   attach_function :get_translation_unit_cursor, :clang_getTranslationUnitCursor, [:pointer], Cursor.by_value
-
+  
   # Determine whether two cursors are equivalent.
   # 
   # @method equal_cursors(cursor, cursor)
@@ -1768,7 +1758,7 @@ module Clang
   # @return [Integer] 
   # @scope class
   attach_function :equal_cursors, :clang_equalCursors, [Cursor.by_value, Cursor.by_value], :uint
-
+  
   # Returns non-zero if \arg cursor is null.
   # 
   # @method cursor_is_null(cursor)
@@ -1776,7 +1766,7 @@ module Clang
   # @return [Integer] 
   # @scope class
   attach_function :cursor_is_null, :clang_Cursor_isNull, [Cursor.by_value], :int
-
+  
   # Compute a hash value for the given cursor.
   # 
   # @method hash_cursor(cursor)
@@ -1784,7 +1774,7 @@ module Clang
   # @return [Integer] 
   # @scope class
   attach_function :hash_cursor, :clang_hashCursor, [Cursor.by_value], :uint
-
+  
   # Retrieve the kind of the given cursor.
   # 
   # @method get_cursor_kind(cursor)
@@ -1792,7 +1782,7 @@ module Clang
   # @return [Symbol from cursor_kind_enum] 
   # @scope class
   attach_function :get_cursor_kind, :clang_getCursorKind, [Cursor.by_value], :cursor_kind
-
+  
   # Determine whether the given cursor kind represents a declaration.
   # 
   # @method is_declaration(cursor_kind)
@@ -1800,7 +1790,7 @@ module Clang
   # @return [Integer] 
   # @scope class
   attach_function :is_declaration, :clang_isDeclaration, [:cursor_kind], :uint
-
+  
   # Determine whether the given cursor kind represents a simple
   # reference.
   # 
@@ -1813,7 +1803,7 @@ module Clang
   # @return [Integer] 
   # @scope class
   attach_function :is_reference, :clang_isReference, [:cursor_kind], :uint
-
+  
   # Determine whether the given cursor kind represents an expression.
   # 
   # @method is_expression(cursor_kind)
@@ -1821,7 +1811,7 @@ module Clang
   # @return [Integer] 
   # @scope class
   attach_function :is_expression, :clang_isExpression, [:cursor_kind], :uint
-
+  
   # Determine whether the given cursor kind represents a statement.
   # 
   # @method is_statement(cursor_kind)
@@ -1829,7 +1819,7 @@ module Clang
   # @return [Integer] 
   # @scope class
   attach_function :is_statement, :clang_isStatement, [:cursor_kind], :uint
-
+  
   # Determine whether the given cursor kind represents an attribute.
   # 
   # @method is_attribute(cursor_kind)
@@ -1837,7 +1827,7 @@ module Clang
   # @return [Integer] 
   # @scope class
   attach_function :is_attribute, :clang_isAttribute, [:cursor_kind], :uint
-
+  
   # Determine whether the given cursor kind represents an invalid
   # cursor.
   # 
@@ -1846,7 +1836,7 @@ module Clang
   # @return [Integer] 
   # @scope class
   attach_function :is_invalid, :clang_isInvalid, [:cursor_kind], :uint
-
+  
   # Determine whether the given cursor kind represents a translation
   # unit.
   # 
@@ -1855,7 +1845,7 @@ module Clang
   # @return [Integer] 
   # @scope class
   attach_function :is_translation_unit, :clang_isTranslationUnit, [:cursor_kind], :uint
-
+  
   # Determine whether the given cursor represents a preprocessing
   # element, such as a preprocessor directive or macro instantiation.
   # 
@@ -1864,7 +1854,7 @@ module Clang
   # @return [Integer] 
   # @scope class
   attach_function :is_preprocessing, :clang_isPreprocessing, [:cursor_kind], :uint
-
+  
   # Determine whether the given cursor represents a currently
   #  unexposed piece of the AST (e.g., CXCursor_UnexposedStmt).
   # 
@@ -1873,7 +1863,7 @@ module Clang
   # @return [Integer] 
   # @scope class
   attach_function :is_unexposed, :clang_isUnexposed, [:cursor_kind], :uint
-
+  
   # Describe the linkage of the entity referred to by a cursor.
   # 
   # === Options:
@@ -1890,7 +1880,7 @@ module Clang
   #   in C++ anonymous namespaces.
   # :external ::
   #   This is the linkage for entities with true, external linkage.
-  #
+  # 
   # @return [Array<Symbol>]
   def self.linkage_kind_enum
     [:invalid, :no_linkage, :internal, :unique_external, :external]
@@ -1902,7 +1892,7 @@ module Clang
     :unique_external,
     :external
   ]
-
+  
   # Determine the linkage of the entity referred to by a given cursor.
   # 
   # @method get_cursor_linkage(cursor)
@@ -1910,7 +1900,7 @@ module Clang
   # @return [Symbol from linkage_kind_enum] 
   # @scope class
   attach_function :get_cursor_linkage, :clang_getCursorLinkage, [Cursor.by_value], :linkage_kind
-
+  
   # Determine the availability of the entity that this cursor refers to.
   # 
   # @method get_cursor_availability(cursor)
@@ -1918,7 +1908,7 @@ module Clang
   # @return [Symbol from availability_kind_enum] The availability of the cursor.
   # @scope class
   attach_function :get_cursor_availability, :clang_getCursorAvailability, [Cursor.by_value], :availability_kind
-
+  
   # Describe the "language" of the entity referred to by a cursor.
   # 
   # === Options:
@@ -1930,7 +1920,7 @@ module Clang
   #   
   # :c_plus_plus ::
   #   
-  #
+  # 
   # @return [Array<Symbol>]
   def self.language_kind_enum
     [:invalid, :c, :obj_c, :c_plus_plus]
@@ -1941,7 +1931,7 @@ module Clang
     :obj_c,
     :c_plus_plus
   ]
-
+  
   # Determine the "language" of the entity referred to by a given cursor.
   # 
   # @method get_cursor_language(cursor)
@@ -1949,7 +1939,7 @@ module Clang
   # @return [Symbol from language_kind_enum] 
   # @scope class
   attach_function :get_cursor_language, :clang_getCursorLanguage, [Cursor.by_value], :language_kind
-
+  
   # Returns the translation unit that a cursor originated from.
   # 
   # @method cursor_get_translation_unit(cursor)
@@ -1957,21 +1947,18 @@ module Clang
   # @return [FFI::Pointer(TranslationUnit)] 
   # @scope class
   attach_function :cursor_get_translation_unit, :clang_Cursor_getTranslationUnit, [Cursor.by_value], :pointer
-
+  
   # A fast container representing a set of CXCursors.
-  # 
-  # = Fields:
-  #
   class CursorSetImpl < FFI::Struct
   end
-
+  
   # Creates an empty CXCursorSet.
   # 
   # @method create_cx_cursor_set()
   # @return [FFI::Pointer(CursorSet)] 
   # @scope class
   attach_function :create_cx_cursor_set, :clang_createCXCursorSet, [], :pointer
-
+  
   # Disposes a CXCursorSet and releases its associated memory.
   # 
   # @method dispose_cx_cursor_set(cset)
@@ -1979,7 +1966,7 @@ module Clang
   # @return [nil] 
   # @scope class
   attach_function :dispose_cx_cursor_set, :clang_disposeCXCursorSet, [:pointer], :void
-
+  
   # Queries a CXCursorSet to see if it contains a specific CXCursor.
   # 
   # @method cx_cursor_set_contains(cset, cursor)
@@ -1988,7 +1975,7 @@ module Clang
   # @return [Integer] non-zero if the set contains the specified cursor.
   # @scope class
   attach_function :cx_cursor_set_contains, :clang_CXCursorSet_contains, [:pointer, Cursor.by_value], :uint
-
+  
   # Inserts a CXCursor into a CXCursorSet.
   # 
   # @method cx_cursor_set_insert(cset, cursor)
@@ -1997,7 +1984,7 @@ module Clang
   # @return [Integer] zero if the CXCursor was already in the set, and non-zero otherwise.
   # @scope class
   attach_function :cx_cursor_set_insert, :clang_CXCursorSet_insert, [:pointer, Cursor.by_value], :uint
-
+  
   # Determine the semantic parent of the given cursor.
   # 
   # The semantic parent of a cursor is the cursor that semantically contains
@@ -2035,7 +2022,7 @@ module Clang
   # @return [Cursor] 
   # @scope class
   attach_function :get_cursor_semantic_parent, :clang_getCursorSemanticParent, [Cursor.by_value], Cursor.by_value
-
+  
   # Determine the lexical parent of the given cursor.
   # 
   # The lexical parent of a cursor is the cursor in which the given \p cursor
@@ -2074,7 +2061,7 @@ module Clang
   # @return [Cursor] 
   # @scope class
   attach_function :get_cursor_lexical_parent, :clang_getCursorLexicalParent, [Cursor.by_value], Cursor.by_value
-
+  
   # Determine the set of methods that are overridden by the given
   # method.
   # 
@@ -2117,7 +2104,7 @@ module Clang
   # @return [nil] 
   # @scope class
   attach_function :get_overridden_cursors, :clang_getOverriddenCursors, [Cursor.by_value, :pointer, :pointer], :void
-
+  
   # Free the set of overridden cursors returned by \c
   # clang_getOverriddenCursors().
   # 
@@ -2126,7 +2113,7 @@ module Clang
   # @return [nil] 
   # @scope class
   attach_function :dispose_overridden_cursors, :clang_disposeOverriddenCursors, [:pointer], :void
-
+  
   # Retrieve the file that is included by the given inclusion directive
   # cursor.
   # 
@@ -2135,7 +2122,7 @@ module Clang
   # @return [FFI::Pointer(File)] 
   # @scope class
   attach_function :get_included_file, :clang_getIncludedFile, [Cursor.by_value], :pointer
-
+  
   # Map a source location to the cursor that describes the entity at that
   # location in the source code.
   # 
@@ -2154,7 +2141,7 @@ module Clang
   #   a NULL cursor if no such entity can be found.
   # @scope class
   attach_function :get_cursor, :clang_getCursor, [:pointer, SourceLocation.by_value], Cursor.by_value
-
+  
   # Retrieve the physical location of the source constructor referenced
   # by the given cursor.
   # 
@@ -2169,7 +2156,7 @@ module Clang
   # @return [SourceLocation] 
   # @scope class
   attach_function :get_cursor_location, :clang_getCursorLocation, [Cursor.by_value], SourceLocation.by_value
-
+  
   # Retrieve the physical extent of the source construct referenced by
   # the given cursor.
   # 
@@ -2185,7 +2172,7 @@ module Clang
   # @return [SourceRange] 
   # @scope class
   attach_function :get_cursor_extent, :clang_getCursorExtent, [Cursor.by_value], SourceRange.by_value
-
+  
   # Describes the kind of type
   # 
   # === Options:
@@ -2276,7 +2263,7 @@ module Clang
   #   
   # :constant_array ::
   #   
-  #
+  # 
   # @return [Array<Symbol>]
   def self.type_kind_enum
     [:invalid, :unexposed, :void, :bool, :char_u, :u_char, :char16, :char32, :u_short, :u_int, :u_long, :u_long_long, :u_int128, :char_s, :s_char, :w_char, :short, :int, :long, :long_long, :int128, :float, :double, :long_double, :null_ptr, :overload, :dependent, :obj_c_id, :obj_c_class, :obj_c_sel, :complex, :pointer, :block_pointer, :l_value_reference, :r_value_reference, :record, :enum, :typedef, :obj_c_interface, :obj_c_object_pointer, :function_no_proto, :function_proto, :constant_array]
@@ -2326,7 +2313,7 @@ module Clang
     :function_proto, 111,
     :constant_array, 112
   ]
-
+  
   # The type of an element in the abstract syntax tree.
   # 
   # = Fields:
@@ -2334,12 +2321,11 @@ module Clang
   #   (Symbol from type_kind_enum) 
   # :data ::
   #   (Array<FFI::Pointer(*Void)>) 
-  #
   class Type < FFI::Struct
     layout :kind, :type_kind,
            :data, [:pointer, 2]
   end
-
+  
   # Retrieve the type of a CXCursor (if any).
   # 
   # @method get_cursor_type(c)
@@ -2347,7 +2333,7 @@ module Clang
   # @return [Type] 
   # @scope class
   attach_function :get_cursor_type, :clang_getCursorType, [Cursor.by_value], Type.by_value
-
+  
   # Determine whether two CXTypes represent the same type.
   # 
   # @method equal_types(a, b)
@@ -2357,7 +2343,7 @@ module Clang
   #               zero otherwise.
   # @scope class
   attach_function :equal_types, :clang_equalTypes, [Type.by_value, Type.by_value], :uint
-
+  
   # Return the canonical type for a CXType.
   # 
   # Clang's type system explicitly models typedefs and all the ways
@@ -2370,7 +2356,7 @@ module Clang
   # @return [Type] 
   # @scope class
   attach_function :get_canonical_type, :clang_getCanonicalType, [Type.by_value], Type.by_value
-
+  
   #  Determine whether a CXType has the "const" qualifier set, 
   #  without looking through typedefs that may have added "const" at a different level.
   # 
@@ -2379,7 +2365,7 @@ module Clang
   # @return [Integer] 
   # @scope class
   attach_function :is_const_qualified_type, :clang_isConstQualifiedType, [Type.by_value], :uint
-
+  
   #  Determine whether a CXType has the "volatile" qualifier set,
   #  without looking through typedefs that may have added "volatile" at a different level.
   # 
@@ -2388,7 +2374,7 @@ module Clang
   # @return [Integer] 
   # @scope class
   attach_function :is_volatile_qualified_type, :clang_isVolatileQualifiedType, [Type.by_value], :uint
-
+  
   #  Determine whether a CXType has the "restrict" qualifier set,
   #  without looking through typedefs that may have added "restrict" at a different level.
   # 
@@ -2397,7 +2383,7 @@ module Clang
   # @return [Integer] 
   # @scope class
   attach_function :is_restrict_qualified_type, :clang_isRestrictQualifiedType, [Type.by_value], :uint
-
+  
   # For pointer types, returns the type of the pointee.
   # 
   # @method get_pointee_type(t)
@@ -2405,7 +2391,7 @@ module Clang
   # @return [Type] 
   # @scope class
   attach_function :get_pointee_type, :clang_getPointeeType, [Type.by_value], Type.by_value
-
+  
   # Return the cursor for the declaration of the given type.
   # 
   # @method get_type_declaration(t)
@@ -2413,7 +2399,7 @@ module Clang
   # @return [Cursor] 
   # @scope class
   attach_function :get_type_declaration, :clang_getTypeDeclaration, [Type.by_value], Cursor.by_value
-
+  
   # Returns the Objective-C type encoding for the specified declaration.
   # 
   # @method get_decl_obj_c_type_encoding(c)
@@ -2421,7 +2407,7 @@ module Clang
   # @return [String] 
   # @scope class
   attach_function :get_decl_obj_c_type_encoding, :clang_getDeclObjCTypeEncoding, [Cursor.by_value], String.by_value
-
+  
   # Retrieve the spelling of a given CXTypeKind.
   # 
   # @method get_type_kind_spelling(k)
@@ -2429,7 +2415,7 @@ module Clang
   # @return [String] 
   # @scope class
   attach_function :get_type_kind_spelling, :clang_getTypeKindSpelling, [:type_kind], String.by_value
-
+  
   # Retrieve the result type associated with a function type.
   # 
   # @method get_result_type(t)
@@ -2437,7 +2423,7 @@ module Clang
   # @return [Type] 
   # @scope class
   attach_function :get_result_type, :clang_getResultType, [Type.by_value], Type.by_value
-
+  
   # Retrieve the result type associated with a given cursor.  This only
   #  returns a valid type of the cursor refers to a function or method.
   # 
@@ -2446,7 +2432,7 @@ module Clang
   # @return [Type] 
   # @scope class
   attach_function :get_cursor_result_type, :clang_getCursorResultType, [Cursor.by_value], Type.by_value
-
+  
   # Return 1 if the CXType is a POD (plain old data) type, and 0
   #  otherwise.
   # 
@@ -2455,7 +2441,7 @@ module Clang
   # @return [Integer] 
   # @scope class
   attach_function :is_pod_type, :clang_isPODType, [Type.by_value], :uint
-
+  
   # Return the element type of an array type.
   # 
   # If a non-array type is passed in, an invalid type is returned.
@@ -2465,7 +2451,7 @@ module Clang
   # @return [Type] 
   # @scope class
   attach_function :get_array_element_type, :clang_getArrayElementType, [Type.by_value], Type.by_value
-
+  
   # Return the the array size of a constant array.
   # 
   # If a non-array type is passed in, -1 is returned.
@@ -2475,7 +2461,7 @@ module Clang
   # @return [Integer] 
   # @scope class
   attach_function :get_array_size, :clang_getArraySize, [Type.by_value], :long_long
-
+  
   # Returns 1 if the base class specified by the cursor with kind
   #   CX_CXXBaseSpecifier is virtual.
   # 
@@ -2484,7 +2470,7 @@ module Clang
   # @return [Integer] 
   # @scope class
   attach_function :is_virtual_base, :clang_isVirtualBase, [Cursor.by_value], :uint
-
+  
   # Represents the C++ access control level to a base class for a
   # cursor with kind CX_CXXBaseSpecifier.
   # 
@@ -2497,7 +2483,7 @@ module Clang
   #   
   # :x_private ::
   #   
-  #
+  # 
   # @return [Array<Symbol>]
   def self.cxx_access_specifier_enum
     [:x_invalid_access_specifier, :x_public, :x_protected, :x_private]
@@ -2508,7 +2494,7 @@ module Clang
     :x_protected,
     :x_private
   ]
-
+  
   # Returns the access control level for the C++ base specifier
   # represented by a cursor with kind CXCursor_CXXBaseSpecifier or
   # CXCursor_AccessSpecifier.
@@ -2518,7 +2504,7 @@ module Clang
   # @return [Symbol from cxx_access_specifier_enum] 
   # @scope class
   attach_function :get_cxx_access_specifier, :clang_getCXXAccessSpecifier, [Cursor.by_value], :cxx_access_specifier
-
+  
   # Determine the number of overloaded declarations referenced by a 
   # \c CXCursor_OverloadedDeclRef cursor.
   # 
@@ -2528,7 +2514,7 @@ module Clang
   #   is not a \c CXCursor_OverloadedDeclRef cursor, returns 0.
   # @scope class
   attach_function :get_num_overloaded_decls, :clang_getNumOverloadedDecls, [Cursor.by_value], :uint
-
+  
   # Retrieve a cursor for one of the overloaded declarations referenced
   # by a \c CXCursor_OverloadedDeclRef cursor.
   # 
@@ -2542,7 +2528,7 @@ module Clang
   #   returns \c clang_getNullCursor();
   # @scope class
   attach_function :get_overloaded_decl, :clang_getOverloadedDecl, [Cursor.by_value, :uint], Cursor.by_value
-
+  
   # For cursors representing an iboutletcollection attribute,
   #  this function returns the collection element type.
   # 
@@ -2551,7 +2537,7 @@ module Clang
   # @return [Type] 
   # @scope class
   attach_function :get_ib_outlet_collection_type, :clang_getIBOutletCollectionType, [Cursor.by_value], Type.by_value
-
+  
   # Describes how the traversal of the children of a particular
   # cursor should proceed after visiting a particular child cursor.
   # 
@@ -2567,7 +2553,7 @@ module Clang
   # :recurse ::
   #   Recursively traverse the children of this cursor, using
   #   the same visitor and client data.
-  #
+  # 
   # @return [Array<Symbol>]
   def self.child_visit_result_enum
     [:break, :continue, :recurse]
@@ -2577,7 +2563,7 @@ module Clang
     :continue,
     :recurse
   ]
-
+  
   # <em>This is no real method. This entry is only for documentation of the callback.</em>
   # 
   # Visitor invoked for each cursor found by a traversal.
@@ -2598,7 +2584,7 @@ module Clang
   # @return [Symbol from child_visit_result_enum] 
   # @scope class
   callback :cursor_visitor, [Cursor.by_value, Cursor.by_value, :pointer], :child_visit_result
-
+  
   # Visit the children of a particular cursor.
   # 
   # This function visits all the direct children of the given cursor,
@@ -2619,7 +2605,7 @@ module Clang
   #   prematurely by the visitor returning \c CXChildVisit_Break.
   # @scope class
   attach_function :visit_children, :clang_visitChildren, [Cursor.by_value, :cursor_visitor, :pointer], :uint
-
+  
   # Retrieve a Unified Symbol Resolution (USR) for the entity referenced
   # by the given cursor.
   # 
@@ -2633,7 +2619,7 @@ module Clang
   # @return [String] 
   # @scope class
   attach_function :get_cursor_usr, :clang_getCursorUSR, [Cursor.by_value], String.by_value
-
+  
   # Construct a USR for a specified Objective-C class.
   # 
   # @method construct_usr_obj_c_class(class_name)
@@ -2641,7 +2627,7 @@ module Clang
   # @return [String] 
   # @scope class
   attach_function :construct_usr_obj_c_class, :clang_constructUSR_ObjCClass, [:string], String.by_value
-
+  
   # Construct a USR for a specified Objective-C category.
   # 
   # @method construct_usr_obj_c_category(class_name, category_name)
@@ -2650,7 +2636,7 @@ module Clang
   # @return [String] 
   # @scope class
   attach_function :construct_usr_obj_c_category, :clang_constructUSR_ObjCCategory, [:string, :string], String.by_value
-
+  
   # Construct a USR for a specified Objective-C protocol.
   # 
   # @method construct_usr_obj_c_protocol(protocol_name)
@@ -2658,7 +2644,7 @@ module Clang
   # @return [String] 
   # @scope class
   attach_function :construct_usr_obj_c_protocol, :clang_constructUSR_ObjCProtocol, [:string], String.by_value
-
+  
   # Construct a USR for a specified Objective-C instance variable and
   #   the USR for its containing class.
   # 
@@ -2668,7 +2654,7 @@ module Clang
   # @return [String] 
   # @scope class
   attach_function :construct_usr_obj_c_ivar, :clang_constructUSR_ObjCIvar, [:string, String.by_value], String.by_value
-
+  
   # Construct a USR for a specified Objective-C method and
   #   the USR for its containing class.
   # 
@@ -2679,7 +2665,7 @@ module Clang
   # @return [String] 
   # @scope class
   attach_function :construct_usr_obj_c_method, :clang_constructUSR_ObjCMethod, [:string, :uint, String.by_value], String.by_value
-
+  
   # Construct a USR for a specified Objective-C property and the USR
   #  for its containing class.
   # 
@@ -2689,7 +2675,7 @@ module Clang
   # @return [String] 
   # @scope class
   attach_function :construct_usr_obj_c_property, :clang_constructUSR_ObjCProperty, [:string, String.by_value], String.by_value
-
+  
   # Retrieve a name for the entity referenced by this cursor.
   # 
   # @method get_cursor_spelling(cursor)
@@ -2697,7 +2683,7 @@ module Clang
   # @return [String] 
   # @scope class
   attach_function :get_cursor_spelling, :clang_getCursorSpelling, [Cursor.by_value], String.by_value
-
+  
   # Retrieve the display name for the entity referenced by this cursor.
   # 
   # The display name contains extra information that helps identify the cursor,
@@ -2709,7 +2695,7 @@ module Clang
   # @return [String] 
   # @scope class
   attach_function :get_cursor_display_name, :clang_getCursorDisplayName, [Cursor.by_value], String.by_value
-
+  
   # For a cursor that is a reference, retrieve a cursor representing the
   # entity that it references.
   # 
@@ -2725,7 +2711,7 @@ module Clang
   # @return [Cursor] 
   # @scope class
   attach_function :get_cursor_referenced, :clang_getCursorReferenced, [Cursor.by_value], Cursor.by_value
-
+  
   #  For a cursor that is either a reference to or a declaration
   #  of some entity, retrieve a cursor that describes the definition of
   #  that entity.
@@ -2758,7 +2744,7 @@ module Clang
   # @return [Cursor] 
   # @scope class
   attach_function :get_cursor_definition, :clang_getCursorDefinition, [Cursor.by_value], Cursor.by_value
-
+  
   # Determine whether the declaration pointed to by this cursor
   # is also a definition of that entity.
   # 
@@ -2767,7 +2753,7 @@ module Clang
   # @return [Integer] 
   # @scope class
   attach_function :is_cursor_definition, :clang_isCursorDefinition, [Cursor.by_value], :uint
-
+  
   # Retrieve the canonical cursor corresponding to the given cursor.
   # 
   # In the C family of languages, many kinds of entities can be declared several
@@ -2794,7 +2780,7 @@ module Clang
   # @return [Cursor] The canonical cursor for the entity referred to by the given cursor.
   # @scope class
   attach_function :get_canonical_cursor, :clang_getCanonicalCursor, [Cursor.by_value], Cursor.by_value
-
+  
   # Determine if a C++ member function or member function template is 
   # declared 'static'.
   # 
@@ -2803,7 +2789,7 @@ module Clang
   # @return [Integer] 
   # @scope class
   attach_function :cxx_method_is_static, :clang_CXXMethod_isStatic, [Cursor.by_value], :uint
-
+  
   # Determine if a C++ member function or member function template is
   # explicitly declared 'virtual' or if it overrides a virtual method from
   # one of the base classes.
@@ -2813,7 +2799,7 @@ module Clang
   # @return [Integer] 
   # @scope class
   attach_function :cxx_method_is_virtual, :clang_CXXMethod_isVirtual, [Cursor.by_value], :uint
-
+  
   # Given a cursor that represents a template, determine
   # the cursor kind of the specializations would be generated by instantiating
   # the template.
@@ -2831,7 +2817,7 @@ module Clang
   #   \c CXCursor_NoDeclFound.
   # @scope class
   attach_function :get_template_cursor_kind, :clang_getTemplateCursorKind, [Cursor.by_value], :cursor_kind
-
+  
   # Given a cursor that may represent a specialization or instantiation
   # of a template, retrieve the cursor that represents the template that it
   # specializes or from which it was instantiated.
@@ -2860,7 +2846,7 @@ module Clang
   #   from which it was instantiated. Otherwise, returns a NULL cursor.
   # @scope class
   attach_function :get_specialized_cursor_template, :clang_getSpecializedCursorTemplate, [Cursor.by_value], Cursor.by_value
-
+  
   # Given a cursor that references something else, return the source range
   # covering that reference.
   # 
@@ -2879,7 +2865,7 @@ module Clang
   #   name, or if the PieceIndex is out-of-range, a null-cursor will be returned.
   # @scope class
   attach_function :get_cursor_reference_name_range, :clang_getCursorReferenceNameRange, [Cursor.by_value, :uint, :uint], SourceRange.by_value
-
+  
   # (Not documented)
   # 
   # === Options:
@@ -2898,7 +2884,7 @@ module Clang
   #   (object doSomething:here withValue:there); // ObjC
   #   return some_vector(1); // C++
   #   \endcode
-  #
+  # 
   # @return [Array<Symbol>]
   def self.name_ref_flags_enum
     [:want_qualifier, :want_template_args, :want_single_piece]
@@ -2908,7 +2894,7 @@ module Clang
     :want_template_args, 0x2,
     :want_single_piece, 0x4
   ]
-
+  
   # Describes a kind of token.
   # 
   # === Options:
@@ -2922,7 +2908,7 @@ module Clang
   #   A numeric, string, or character literal.
   # :comment ::
   #   A comment.
-  #
+  # 
   # @return [Array<Symbol>]
   def self.token_kind_enum
     [:punctuation, :keyword, :identifier, :literal, :comment]
@@ -2934,7 +2920,7 @@ module Clang
     :literal,
     :comment
   ]
-
+  
   # Describes a single preprocessing token.
   # 
   # = Fields:
@@ -2942,12 +2928,11 @@ module Clang
   #   (Array<Integer>) 
   # :ptr_data ::
   #   (FFI::Pointer(*Void)) 
-  #
   class Token < FFI::Struct
     layout :int_data, [:uint, 4],
            :ptr_data, :pointer
   end
-
+  
   # Determine the kind of the given token.
   # 
   # @method get_token_kind(token)
@@ -2955,7 +2940,7 @@ module Clang
   # @return [Symbol from token_kind_enum] 
   # @scope class
   attach_function :get_token_kind, :clang_getTokenKind, [Token.by_value], :token_kind
-
+  
   # Determine the spelling of the given token.
   # 
   # The spelling of a token is the textual representation of that token, e.g.,
@@ -2967,7 +2952,7 @@ module Clang
   # @return [String] 
   # @scope class
   attach_function :get_token_spelling, :clang_getTokenSpelling, [:pointer, Token.by_value], String.by_value
-
+  
   # Retrieve the source location of the given token.
   # 
   # @method get_token_location(translation_unit, token)
@@ -2976,7 +2961,7 @@ module Clang
   # @return [SourceLocation] 
   # @scope class
   attach_function :get_token_location, :clang_getTokenLocation, [:pointer, Token.by_value], SourceLocation.by_value
-
+  
   # Retrieve a source range that covers the given token.
   # 
   # @method get_token_extent(translation_unit, token)
@@ -2985,7 +2970,7 @@ module Clang
   # @return [SourceRange] 
   # @scope class
   attach_function :get_token_extent, :clang_getTokenExtent, [:pointer, Token.by_value], SourceRange.by_value
-
+  
   # Tokenize the source code described by the given range into raw
   # lexical tokens.
   # 
@@ -3001,7 +2986,7 @@ module Clang
   # @return [nil] 
   # @scope class
   attach_function :tokenize, :clang_tokenize, [:pointer, SourceRange.by_value, :pointer, :pointer], :void
-
+  
   # Annotate the given set of tokens by providing cursors for each token
   # that can be mapped to a specific entity within the abstract syntax tree.
   # 
@@ -3031,7 +3016,7 @@ module Clang
   # @return [nil] 
   # @scope class
   attach_function :annotate_tokens, :clang_annotateTokens, [:pointer, :pointer, :uint, :pointer], :void
-
+  
   # Free the given set of tokens.
   # 
   # @method dispose_tokens(tu, tokens, num_tokens)
@@ -3041,7 +3026,7 @@ module Clang
   # @return [nil] 
   # @scope class
   attach_function :dispose_tokens, :clang_disposeTokens, [:pointer, :pointer, :uint], :void
-
+  
   # for debug/testing
   # 
   # @method get_cursor_kind_spelling(kind)
@@ -3049,7 +3034,7 @@ module Clang
   # @return [String] 
   # @scope class
   attach_function :get_cursor_kind_spelling, :clang_getCursorKindSpelling, [:cursor_kind], String.by_value
-
+  
   # (Not documented)
   # 
   # @method get_definition_spelling_and_extent(cursor, start_buf, end_buf, start_line, start_column, end_line, end_column)
@@ -3063,14 +3048,14 @@ module Clang
   # @return [nil] 
   # @scope class
   attach_function :get_definition_spelling_and_extent, :clang_getDefinitionSpellingAndExtent, [Cursor.by_value, :pointer, :pointer, :pointer, :pointer, :pointer, :pointer], :void
-
+  
   # (Not documented)
   # 
   # @method enable_stack_traces()
   # @return [nil] 
   # @scope class
   attach_function :enable_stack_traces, :clang_enableStackTraces, [], :void
-
+  
   # (Not documented)
   # 
   # @method execute_on_thread(fn, user_data, stack_size)
@@ -3080,7 +3065,7 @@ module Clang
   # @return [nil] 
   # @scope class
   attach_function :execute_on_thread, :clang_executeOnThread, [:pointer, :pointer, :uint], :void
-
+  
   # A single result of code completion.
   # 
   # = Fields:
@@ -3096,12 +3081,11 @@ module Clang
   # :completion_string ::
   #   (FFI::Pointer(CompletionString)) The code-completion string that describes how to insert this
   #   code-completion result into the editing buffer.
-  #
   class CompletionResult < FFI::Struct
     layout :cursor_kind, :cursor_kind,
            :completion_string, :pointer
   end
-
+  
   # Describes a single piece of text within a code-completion string.
   # 
   # Each "chunk" within a code-completion string (\c CXCompletionString) is
@@ -3228,7 +3212,7 @@ module Clang
   # :vertical_space ::
   #   Vertical space ('\n'), after which it is generally a good idea to
   #   perform indentation.
-  #
+  # 
   # @return [Array<Symbol>]
   def self.completion_chunk_kind_enum
     [:optional, :typed_text, :text, :placeholder, :informative, :current_parameter, :left_paren, :right_paren, :left_bracket, :right_bracket, :left_brace, :right_brace, :left_angle, :right_angle, :comma, :result_type, :colon, :semi_colon, :equal, :horizontal_space, :vertical_space]
@@ -3256,7 +3240,7 @@ module Clang
     :horizontal_space,
     :vertical_space
   ]
-
+  
   # Determine the kind of a particular chunk within a completion string.
   # 
   # @method get_completion_chunk_kind(completion_string, chunk_number)
@@ -3265,7 +3249,7 @@ module Clang
   # @return [Symbol from completion_chunk_kind_enum] the kind of the chunk at the index \c chunk_number.
   # @scope class
   attach_function :get_completion_chunk_kind, :clang_getCompletionChunkKind, [:pointer, :uint], :completion_chunk_kind
-
+  
   # Retrieve the text associated with a particular chunk within a
   # completion string.
   # 
@@ -3275,7 +3259,7 @@ module Clang
   # @return [String] the text associated with the chunk at index \c chunk_number.
   # @scope class
   attach_function :get_completion_chunk_text, :clang_getCompletionChunkText, [:pointer, :uint], String.by_value
-
+  
   # Retrieve the completion string associated with a particular chunk
   # within a completion string.
   # 
@@ -3286,7 +3270,7 @@ module Clang
   #   \c chunk_number.
   # @scope class
   attach_function :get_completion_chunk_completion_string, :clang_getCompletionChunkCompletionString, [:pointer, :uint], :pointer
-
+  
   # Retrieve the number of chunks in the given code-completion string.
   # 
   # @method get_num_completion_chunks(completion_string)
@@ -3294,7 +3278,7 @@ module Clang
   # @return [Integer] 
   # @scope class
   attach_function :get_num_completion_chunks, :clang_getNumCompletionChunks, [:pointer], :uint
-
+  
   # Determine the priority of this code completion.
   # 
   # The priority of a code completion indicates how likely it is that this 
@@ -3307,7 +3291,7 @@ module Clang
   #   higher-priority (more likely) completions.
   # @scope class
   attach_function :get_completion_priority, :clang_getCompletionPriority, [:pointer], :uint
-
+  
   # Determine the availability of the entity that this code-completion
   # string refers to.
   # 
@@ -3316,7 +3300,7 @@ module Clang
   # @return [Symbol from availability_kind_enum] The availability of the completion string.
   # @scope class
   attach_function :get_completion_availability, :clang_getCompletionAvailability, [:pointer], :availability_kind
-
+  
   # Retrieve the number of annotations associated with the given
   # completion string.
   # 
@@ -3326,7 +3310,7 @@ module Clang
   #   string.
   # @scope class
   attach_function :get_completion_num_annotations, :clang_getCompletionNumAnnotations, [:pointer], :uint
-
+  
   # Retrieve the annotation associated with the given completion string.
   # 
   # @method get_completion_annotation(completion_string, annotation_number)
@@ -3337,7 +3321,7 @@ module Clang
   #   \c annotation_number, or a NULL string if that annotation is not available.
   # @scope class
   attach_function :get_completion_annotation, :clang_getCompletionAnnotation, [:pointer, :uint], String.by_value
-
+  
   # Retrieve a completion string for an arbitrary declaration or macro
   # definition cursor.
   # 
@@ -3347,7 +3331,7 @@ module Clang
   #   definition cursors, or NULL for other kinds of cursors.
   # @scope class
   attach_function :get_cursor_completion_string, :clang_getCursorCompletionString, [Cursor.by_value], :pointer
-
+  
   # Contains the results of code-completion.
   # 
   # This data structure contains the results of code completion, as
@@ -3360,12 +3344,11 @@ module Clang
   # :num_results ::
   #   (Integer) The number of code-completion results stored in the
   #   \c Results array.
-  #
   class CodeCompleteResults < FFI::Struct
     layout :results, :pointer,
            :num_results, :uint
   end
-
+  
   # Flags that can be passed to \c clang_codeCompleteAt() to
   # modify its behavior.
   # 
@@ -3379,7 +3362,7 @@ module Clang
   # :include_code_patterns ::
   #   Whether to include code patterns for language constructs
   #   within the set of code completions, e.g., for loops.
-  #
+  # 
   # @return [Array<Symbol>]
   def self.code_complete_flags_enum
     [:include_macros, :include_code_patterns]
@@ -3388,7 +3371,7 @@ module Clang
     :include_macros, 0x01,
     :include_code_patterns, 0x02
   ]
-
+  
   # Bits that represent the context under which completion is occurring.
   # 
   # The enumerators in this enumeration may be bitwise-OR'd together if multiple
@@ -3398,7 +3381,7 @@ module Clang
   # :completion_context_unexposed ::
   #   The context for completions is unexposed, as only Clang results
   #   should be included. (This is equivalent to having no context bits set.)
-  #
+  # 
   # @return [Array<Symbol>]
   def self.completion_context_enum
     [:completion_context_unexposed]
@@ -3406,7 +3389,7 @@ module Clang
   enum :completion_context, [
     :completion_context_unexposed, 0
   ]
-
+  
   # Returns a default set of code-completion options that can be
   # passed to\c clang_codeCompleteAt(). 
   # 
@@ -3414,7 +3397,7 @@ module Clang
   # @return [Integer] 
   # @scope class
   attach_function :default_code_complete_options, :clang_defaultCodeCompleteOptions, [], :uint
-
+  
   # Perform code completion at a given location in a translation unit.
   # 
   # This function performs code completion at a particular file, line, and
@@ -3477,7 +3460,7 @@ module Clang
   #   completion fails, returns NULL.
   # @scope class
   attach_function :code_complete_at, :clang_codeCompleteAt, [:pointer, :string, :uint, :uint, :pointer, :uint, :uint], :pointer
-
+  
   # Sort the code-completion results in case-insensitive alphabetical 
   # order.
   # 
@@ -3487,7 +3470,7 @@ module Clang
   # @return [nil] 
   # @scope class
   attach_function :sort_code_completion_results, :clang_sortCodeCompletionResults, [:pointer, :uint], :void
-
+  
   # Free the given set of code-completion results.
   # 
   # @method dispose_code_complete_results(results)
@@ -3495,7 +3478,7 @@ module Clang
   # @return [nil] 
   # @scope class
   attach_function :dispose_code_complete_results, :clang_disposeCodeCompleteResults, [:pointer], :void
-
+  
   # Determine the number of diagnostics produced prior to the
   # location where code completion was performed.
   # 
@@ -3504,7 +3487,7 @@ module Clang
   # @return [Integer] 
   # @scope class
   attach_function :code_complete_get_num_diagnostics, :clang_codeCompleteGetNumDiagnostics, [:pointer], :uint
-
+  
   # Retrieve a diagnostic associated with the given code completion.
   # 
   # Result: 
@@ -3517,7 +3500,7 @@ module Clang
   #   via a call to \c clang_disposeDiagnostic().
   # @scope class
   attach_function :code_complete_get_diagnostic, :clang_codeCompleteGetDiagnostic, [:pointer, :uint], :pointer
-
+  
   # Determines what compeltions are appropriate for the context
   # the given code completion.
   # 
@@ -3527,7 +3510,7 @@ module Clang
   #   along with the given code completion results.
   # @scope class
   attach_function :code_complete_get_contexts, :clang_codeCompleteGetContexts, [:pointer], :ulong_long
-
+  
   # Returns the cursor kind for the container for the current code
   # completion context. The container is only guaranteed to be set for
   # contexts where a container exists (i.e. member accesses or Objective-C
@@ -3543,7 +3526,7 @@ module Clang
   #   container
   # @scope class
   attach_function :code_complete_get_container_kind, :clang_codeCompleteGetContainerKind, [:pointer, :pointer], :cursor_kind
-
+  
   # Returns the USR for the container for the current code completion
   # context. If there is not a container for the current context, this
   # function will return the empty string.
@@ -3553,7 +3536,7 @@ module Clang
   # @return [String] the USR for the container
   # @scope class
   attach_function :code_complete_get_container_usr, :clang_codeCompleteGetContainerUSR, [:pointer], String.by_value
-
+  
   # Returns the currently-entered selector for an Objective-C message
   # send, formatted like "initWithFoo:bar:". Only guaranteed to return a
   # non-empty string for CXCompletionContext_ObjCInstanceMessage and
@@ -3565,7 +3548,7 @@ module Clang
   #   for an Objective-C message send.
   # @scope class
   attach_function :code_complete_get_obj_c_selector, :clang_codeCompleteGetObjCSelector, [:pointer], String.by_value
-
+  
   # Return a version string, suitable for showing to a user, but not
   #        intended to be parsed (the format is not guaranteed to be stable).
   # 
@@ -3573,7 +3556,7 @@ module Clang
   # @return [String] 
   # @scope class
   attach_function :get_clang_version, :clang_getClangVersion, [], String.by_value
-
+  
   # Enable/disable crash recovery.
   # 
   # Flag: 
@@ -3585,7 +3568,7 @@ module Clang
   # @return [nil] 
   # @scope class
   attach_function :toggle_crash_recovery, :clang_toggleCrashRecovery, [:uint], :void
-
+  
   # <em>This is no real method. This entry is only for documentation of the callback.</em>
   # 
   # Visitor invoked for each file in a translation unit
@@ -3605,7 +3588,7 @@ module Clang
   # @return [FFI::Pointer(File)] 
   # @scope class
   callback :inclusion_visitor, [:pointer, :uint, :pointer], :pointer
-
+  
   # Visit the set of preprocessor inclusions in a translation unit.
   #   The visitor function is called with the provided data for every included
   #   file.  This does not include headers included by the PCH file (unless one
@@ -3618,7 +3601,7 @@ module Clang
   # @return [nil] 
   # @scope class
   attach_function :get_inclusions, :clang_getInclusions, [:pointer, :inclusion_visitor, :pointer], :void
-
+  
   # Retrieve a remapping.
   # 
   # @method get_remappings(path)
@@ -3627,7 +3610,7 @@ module Clang
   #   via a call to \c clang_remap_dispose(). Can return NULL if an error occurred.
   # @scope class
   attach_function :get_remappings, :clang_getRemappings, [:string], :pointer
-
+  
   # Determine the number of remappings.
   # 
   # @method remap_get_num_files(remapping)
@@ -3635,7 +3618,7 @@ module Clang
   # @return [Integer] 
   # @scope class
   attach_function :remap_get_num_files, :clang_remap_getNumFiles, [:pointer], :uint
-
+  
   # Get the original and the associated filename from the remapping.
   # 
   # @method remap_get_filenames(remapping, index, original, transformed)
@@ -3647,7 +3630,7 @@ module Clang
   # @return [nil] 
   # @scope class
   attach_function :remap_get_filenames, :clang_remap_getFilenames, [:pointer, :uint, :pointer, :pointer], :void
-
+  
   # Dispose the remapping.
   # 
   # @method remap_dispose(remapping)
@@ -3655,7 +3638,7 @@ module Clang
   # @return [nil] 
   # @scope class
   attach_function :remap_dispose, :clang_remap_dispose, [:pointer], :void
-
+  
   # \defgroup CINDEX_HIGH Higher level API functions
   # 
   # @{
@@ -3665,7 +3648,7 @@ module Clang
   #   
   # :continue ::
   #   
-  #
+  # 
   # @return [Array<Symbol>]
   def self.visitor_result_enum
     [:break, :continue]
@@ -3674,7 +3657,7 @@ module Clang
     :break,
     :continue
   ]
-
+  
   # \defgroup CINDEX_HIGH Higher level API functions
   # 
   # @{
@@ -3684,12 +3667,11 @@ module Clang
   #   (FFI::Pointer(*Void)) 
   # :visit ::
   #   (FFI::Pointer(*)) 
-  #
   class CursorAndRangeVisitor < FFI::Struct
     layout :context, :pointer,
            :visit, :pointer
   end
-
+  
   # Find references of a declaration in a specific file.
   # 
   # @method find_references_in_file(cursor, file, visitor)
@@ -3702,5 +3684,5 @@ module Clang
   # @return [nil] 
   # @scope class
   attach_function :find_references_in_file, :clang_findReferencesInFile, [Cursor.by_value, :pointer, CursorAndRangeVisitor.by_value], :void
-
+  
 end

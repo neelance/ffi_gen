@@ -5,7 +5,7 @@ require 'ffi'
 module LLVM::C
   extend FFI::Library
   ffi_lib 'LLVM-3.0'
-
+  
   # (Not documented)
   # 
   # === Options:
@@ -13,7 +13,7 @@ module LLVM::C
   #   
   # :little ::
   #   
-  #
+  # 
   # @return [Array<Symbol>]
   def self.byte_ordering_enum
     [:big, :little]
@@ -22,28 +22,19 @@ module LLVM::C
     :big,
     :little
   ]
-
+  
   # (Not documented)
-  # 
-  # = Fields:
-  #
   class OpaqueTargetData < FFI::Struct
   end
-
+  
   # (Not documented)
-  # 
-  # = Fields:
-  #
   class OpaqueTargetLibraryInfotData < FFI::Struct
   end
-
+  
   # (Not documented)
-  # 
-  # = Fields:
-  #
   class StructLayout < FFI::Struct
   end
-
+  
   # Creates target data from a target layout string.
   #     See the constructor llvm::TargetData::TargetData.
   # 
@@ -52,7 +43,7 @@ module LLVM::C
   # @return [FFI::Pointer(TargetDataRef)] 
   # @scope class
   attach_function :create_target_data, :LLVMCreateTargetData, [:string], :pointer
-
+  
   # Adds target data information to a pass manager. This does not take ownership
   #     of the target data.
   #     See the method llvm::PassManagerBase::add.
@@ -63,7 +54,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :add_target_data, :LLVMAddTargetData, [:pointer, :pointer], :void
-
+  
   # Adds target library information to a pass manager. This does not take
   #     ownership of the target library info.
   #     See the method llvm::PassManagerBase::add.
@@ -74,7 +65,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :add_target_library_info, :LLVMAddTargetLibraryInfo, [:pointer, :pointer], :void
-
+  
   # Converts target data to a target layout string. The string must be disposed
   #     with LLVMDisposeMessage.
   #     See the constructor llvm::TargetData::TargetData.
@@ -84,7 +75,7 @@ module LLVM::C
   # @return [String] 
   # @scope class
   attach_function :copy_string_rep_of_target_data, :LLVMCopyStringRepOfTargetData, [:pointer], :string
-
+  
   # Returns the byte order of a target, either LLVMBigEndian or
   #     LLVMLittleEndian.
   #     See the method llvm::TargetData::isLittleEndian.
@@ -94,7 +85,7 @@ module LLVM::C
   # @return [Symbol from byte_ordering_enum] 
   # @scope class
   attach_function :byte_order, :LLVMByteOrder, [:pointer], :byte_ordering
-
+  
   # Returns the pointer size in bytes for a target.
   #     See the method llvm::TargetData::getPointerSize.
   # 
@@ -103,7 +94,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :pointer_size, :LLVMPointerSize, [:pointer], :uint
-
+  
   # Returns the integer type that is the same size as a pointer on a target.
   #     See the method llvm::TargetData::getIntPtrType.
   # 
@@ -112,7 +103,7 @@ module LLVM::C
   # @return [FFI::Pointer(TypeRef)] 
   # @scope class
   attach_function :int_ptr_type, :LLVMIntPtrType, [:pointer], :pointer
-
+  
   # Computes the size of a type in bytes for a target.
   #     See the method llvm::TargetData::getTypeSizeInBits.
   # 
@@ -122,7 +113,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :size_of_type_in_bits, :LLVMSizeOfTypeInBits, [:pointer, :pointer], :ulong_long
-
+  
   # Computes the storage size of a type in bytes for a target.
   #     See the method llvm::TargetData::getTypeStoreSize.
   # 
@@ -132,7 +123,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :store_size_of_type, :LLVMStoreSizeOfType, [:pointer, :pointer], :ulong_long
-
+  
   # Computes the ABI size of a type in bytes for a target.
   #     See the method llvm::TargetData::getTypeAllocSize.
   # 
@@ -142,7 +133,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :abi_size_of_type, :LLVMABISizeOfType, [:pointer, :pointer], :ulong_long
-
+  
   # Computes the ABI alignment of a type in bytes for a target.
   #     See the method llvm::TargetData::getTypeABISize.
   # 
@@ -152,7 +143,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :abi_alignment_of_type, :LLVMABIAlignmentOfType, [:pointer, :pointer], :uint
-
+  
   # Computes the call frame alignment of a type in bytes for a target.
   #     See the method llvm::TargetData::getTypeABISize.
   # 
@@ -162,7 +153,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :call_frame_alignment_of_type, :LLVMCallFrameAlignmentOfType, [:pointer, :pointer], :uint
-
+  
   # Computes the preferred alignment of a type in bytes for a target.
   #     See the method llvm::TargetData::getTypeABISize.
   # 
@@ -172,7 +163,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :preferred_alignment_of_type, :LLVMPreferredAlignmentOfType, [:pointer, :pointer], :uint
-
+  
   # Computes the preferred alignment of a global variable in bytes for a target.
   #     See the method llvm::TargetData::getPreferredAlignment.
   # 
@@ -182,7 +173,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :preferred_alignment_of_global, :LLVMPreferredAlignmentOfGlobal, [:pointer, :pointer], :uint
-
+  
   # Computes the structure element that contains the byte offset for a target.
   #     See the method llvm::StructLayout::getElementContainingOffset.
   # 
@@ -193,7 +184,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :element_at_offset, :LLVMElementAtOffset, [:pointer, :pointer, :ulong_long], :uint
-
+  
   # Computes the byte offset of the indexed struct element for a target.
   #     See the method llvm::StructLayout::getElementContainingOffset.
   # 
@@ -204,7 +195,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :offset_of_element, :LLVMOffsetOfElement, [:pointer, :pointer, :uint], :ulong_long
-
+  
   # Deallocates a TargetData.
   #     See the destructor llvm::TargetData::~TargetData.
   # 
@@ -213,5 +204,5 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :dispose_target_data, :LLVMDisposeTargetData, [:pointer], :void
-
+  
 end

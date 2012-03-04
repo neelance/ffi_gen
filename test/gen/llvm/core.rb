@@ -5,101 +5,67 @@ require 'ffi'
 module LLVM::C
   extend FFI::Library
   ffi_lib 'LLVM-3.0'
-
+  
   # The top-level container for all LLVM global data.  See the LLVMContext class.
-  # 
-  # = Fields:
-  #
   class OpaqueContext < FFI::Struct
   end
-
+  
   # The top-level container for all other LLVM Intermediate Representation (IR)
   # objects. See the llvm::Module class.
-  # 
-  # = Fields:
-  #
   class OpaqueModule < FFI::Struct
   end
-
+  
   # Each value in the LLVM IR has a type, an LLVMTypeRef. See the llvm::Type
   # class.
-  # 
-  # = Fields:
-  #
   class OpaqueType < FFI::Struct
   end
-
+  
   # (Not documented)
-  # 
-  # = Fields:
-  #
   class OpaqueValue < FFI::Struct
   end
-
+  
   # (Not documented)
-  # 
-  # = Fields:
-  #
   class OpaqueBasicBlock < FFI::Struct
   end
-
+  
   # (Not documented)
-  # 
-  # = Fields:
-  #
   class OpaqueBuilder < FFI::Struct
   end
-
+  
   # Interface used to provide a module to JIT or interpreter.  This is now just a
   # synonym for llvm::Module, but we have to keep using the different type to
   # keep binary compatibility.
-  # 
-  # = Fields:
-  #
   class OpaqueModuleProvider < FFI::Struct
   end
-
+  
   # Used to provide a module to JIT or interpreter.
   # See the llvm::MemoryBuffer class.
-  # 
-  # = Fields:
-  #
   class OpaqueMemoryBuffer < FFI::Struct
   end
-
+  
   # See the llvm::PassManagerBase class.
-  # 
-  # = Fields:
-  #
   class OpaquePassManager < FFI::Struct
   end
-
+  
   # See the llvm::PassRegistry class.
-  # 
-  # = Fields:
-  #
   class OpaquePassRegistry < FFI::Struct
   end
-
+  
   # Used to get the users and usees of a Value. See the llvm::Use class.
-  # 
-  # = Fields:
-  #
   class OpaqueUse < FFI::Struct
   end
-
+  
   # (Not documented)
   # 
   # === Options:
-  #
+  # 
   # @return [Array<Symbol>]
   def self.attribute_enum
     []
   end
   enum :attribute, [
-
   ]
-
+  
   # (Not documented)
   # 
   # === Options:
@@ -221,7 +187,7 @@ module LLVM::C
   #   
   # :unwind ::
   #   
-  #
+  # 
   # @return [Array<Symbol>]
   def self.opcode_enum
     [:ret, :br, :switch, :indirect_br, :invoke, :unreachable, :add, :f_add, :sub, :f_sub, :mul, :f_mul, :u_div, :s_div, :f_div, :u_rem, :s_rem, :f_rem, :shl, :l_shr, :a_shr, :and, :or, :xor, :alloca, :load, :store, :get_element_ptr, :trunc, :z_ext, :s_ext, :fp_to_ui, :fp_to_si, :ui_to_fp, :si_to_fp, :fp_trunc, :fp_ext, :ptr_to_int, :int_to_ptr, :bit_cast, :i_cmp, :f_cmp, :phi, :call, :select, :user_op1, :user_op2, :va_arg, :extract_element, :insert_element, :shuffle_vector, :extract_value, :insert_value, :fence, :atomic_cmp_xchg, :atomic_rmw, :resume, :landing_pad, :unwind]
@@ -287,7 +253,7 @@ module LLVM::C
     :landing_pad, 59,
     :unwind, 60
   ]
-
+  
   # (Not documented)
   # 
   # === Options:
@@ -321,7 +287,7 @@ module LLVM::C
   #   < SIMD 'packed' format, or other vector type
   # :x86_mmx ::
   #   < Metadata
-  #
+  # 
   # @return [Array<Symbol>]
   def self.type_kind_enum
     [:void, :float, :double, :x86_fp80, :fp128, :ppc_fp128, :label, :integer, :function, :struct, :array, :pointer, :vector, :metadata, :x86_mmx]
@@ -343,7 +309,7 @@ module LLVM::C
     :metadata,
     :x86_mmx
   ]
-
+  
   # (Not documented)
   # 
   # === Options:
@@ -384,7 +350,7 @@ module LLVM::C
   #   < Like Private, but linker removes.
   # :linker_private_weak_def_auto ::
   #   < Like LinkerPrivate, but is weak.
-  #
+  # 
   # @return [Array<Symbol>]
   def self.linkage_enum
     [:external, :available_externally, :link_once_any, :link_once_odr, :weak_any, :weak_odr, :appending, :internal, :private, :dll_import, :dll_export, :external_weak, :ghost, :common, :linker_private, :linker_private_weak, :linker_private_weak_def_auto]
@@ -408,7 +374,7 @@ module LLVM::C
     :linker_private_weak,
     :linker_private_weak_def_auto
   ]
-
+  
   # (Not documented)
   # 
   # === Options:
@@ -418,7 +384,7 @@ module LLVM::C
   #   < The GV is visible
   # :protected ::
   #   < The GV is hidden
-  #
+  # 
   # @return [Array<Symbol>]
   def self.visibility_enum
     [:default, :hidden, :protected]
@@ -428,7 +394,7 @@ module LLVM::C
     :hidden,
     :protected
   ]
-
+  
   # (Not documented)
   # 
   # === Options:
@@ -442,7 +408,7 @@ module LLVM::C
   #   
   # :x86_fastcall ::
   #   
-  #
+  # 
   # @return [Array<Symbol>]
   def self.call_conv_enum
     [:c, :fast, :cold, :x86_stdcall, :x86_fastcall]
@@ -454,7 +420,7 @@ module LLVM::C
     :x86_stdcall, 64,
     :x86_fastcall, 65
   ]
-
+  
   # (Not documented)
   # 
   # === Options:
@@ -478,7 +444,7 @@ module LLVM::C
   #   < signed greater or equal
   # :sle ::
   #   < signed less than
-  #
+  # 
   # @return [Array<Symbol>]
   def self.int_predicate_enum
     [:eq, :ne, :ugt, :uge, :ult, :ule, :sgt, :sge, :slt, :sle]
@@ -495,7 +461,7 @@ module LLVM::C
     :slt,
     :sle
   ]
-
+  
   # (Not documented)
   # 
   # === Options:
@@ -531,7 +497,7 @@ module LLVM::C
   #   < True if unordered, less than, or equal
   # :predicate_true ::
   #   < True if unordered or not equal
-  #
+  # 
   # @return [Array<Symbol>]
   def self.real_predicate_enum
     [:predicate_false, :oeq, :ogt, :oge, :olt, :ole, :one, :ord, :uno, :ueq, :ugt, :uge, :ult, :ule, :une, :predicate_true]
@@ -554,7 +520,7 @@ module LLVM::C
     :une,
     :predicate_true
   ]
-
+  
   # (Not documented)
   # 
   # === Options:
@@ -562,7 +528,7 @@ module LLVM::C
   #   
   # :filter ::
   #   < A catch clause  
-  #
+  # 
   # @return [Array<Symbol>]
   def self.landing_pad_clause_ty_enum
     [:catch, :filter]
@@ -571,7 +537,7 @@ module LLVM::C
     :catch,
     :filter
   ]
-
+  
   # (Not documented)
   # 
   # @method initialize_core(r)
@@ -579,7 +545,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :initialize_core, :LLVMInitializeCore, [:pointer], :void
-
+  
   # ===-- Error handling ----------------------------------------------------===
   # 
   # @method dispose_message(message)
@@ -587,21 +553,21 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :dispose_message, :LLVMDisposeMessage, [:string], :void
-
+  
   # Create and destroy contexts.
   # 
   # @method context_create()
   # @return [FFI::Pointer(ContextRef)] 
   # @scope class
   attach_function :context_create, :LLVMContextCreate, [], :pointer
-
+  
   # (Not documented)
   # 
   # @method get_global_context()
   # @return [FFI::Pointer(ContextRef)] 
   # @scope class
   attach_function :get_global_context, :LLVMGetGlobalContext, [], :pointer
-
+  
   # (Not documented)
   # 
   # @method context_dispose(c)
@@ -609,7 +575,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :context_dispose, :LLVMContextDispose, [:pointer], :void
-
+  
   # (Not documented)
   # 
   # @method get_md_kind_id_in_context(c, name, s_len)
@@ -619,7 +585,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :get_md_kind_id_in_context, :LLVMGetMDKindIDInContext, [:pointer, :string, :uint], :uint
-
+  
   # (Not documented)
   # 
   # @method get_md_kind_id(name, s_len)
@@ -628,7 +594,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :get_md_kind_id, :LLVMGetMDKindID, [:string, :uint], :uint
-
+  
   # See llvm::Module::Module.
   # 
   # @method module_create_with_name(module_id)
@@ -636,7 +602,7 @@ module LLVM::C
   # @return [FFI::Pointer(ModuleRef)] 
   # @scope class
   attach_function :module_create_with_name, :LLVMModuleCreateWithName, [:string], :pointer
-
+  
   # (Not documented)
   # 
   # @method module_create_with_name_in_context(module_id, c)
@@ -645,7 +611,7 @@ module LLVM::C
   # @return [FFI::Pointer(ModuleRef)] 
   # @scope class
   attach_function :module_create_with_name_in_context, :LLVMModuleCreateWithNameInContext, [:string, :pointer], :pointer
-
+  
   # See llvm::Module::~Module.
   # 
   # @method dispose_module(m)
@@ -653,7 +619,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :dispose_module, :LLVMDisposeModule, [:pointer], :void
-
+  
   # Data layout. See Module::getDataLayout.
   # 
   # @method get_data_layout(m)
@@ -661,7 +627,7 @@ module LLVM::C
   # @return [String] 
   # @scope class
   attach_function :get_data_layout, :LLVMGetDataLayout, [:pointer], :string
-
+  
   # (Not documented)
   # 
   # @method set_data_layout(m, triple)
@@ -670,7 +636,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :set_data_layout, :LLVMSetDataLayout, [:pointer, :string], :void
-
+  
   # Target triple. See Module::getTargetTriple.
   # 
   # @method get_target(m)
@@ -678,7 +644,7 @@ module LLVM::C
   # @return [String] 
   # @scope class
   attach_function :get_target, :LLVMGetTarget, [:pointer], :string
-
+  
   # (Not documented)
   # 
   # @method set_target(m, triple)
@@ -687,7 +653,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :set_target, :LLVMSetTarget, [:pointer, :string], :void
-
+  
   # See Module::dump.
   # 
   # @method dump_module(m)
@@ -695,7 +661,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :dump_module, :LLVMDumpModule, [:pointer], :void
-
+  
   # See Module::setModuleInlineAsm.
   # 
   # @method set_module_inline_asm(m, asm)
@@ -704,7 +670,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :set_module_inline_asm, :LLVMSetModuleInlineAsm, [:pointer, :string], :void
-
+  
   # See Module::getContext.
   # 
   # @method get_module_context(m)
@@ -712,7 +678,7 @@ module LLVM::C
   # @return [FFI::Pointer(ContextRef)] 
   # @scope class
   attach_function :get_module_context, :LLVMGetModuleContext, [:pointer], :pointer
-
+  
   # See llvm::LLVMTypeKind::getTypeID.
   # 
   # @method get_type_kind(ty)
@@ -720,7 +686,7 @@ module LLVM::C
   # @return [Symbol from type_kind_enum] 
   # @scope class
   attach_function :get_type_kind, :LLVMGetTypeKind, [:pointer], :type_kind
-
+  
   # (Not documented)
   # 
   # @method type_is_sized(ty)
@@ -728,7 +694,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :type_is_sized, :LLVMTypeIsSized, [:pointer], :int
-
+  
   # See llvm::LLVMType::getContext.
   # 
   # @method get_type_context(ty)
@@ -736,7 +702,7 @@ module LLVM::C
   # @return [FFI::Pointer(ContextRef)] 
   # @scope class
   attach_function :get_type_context, :LLVMGetTypeContext, [:pointer], :pointer
-
+  
   # Operations on integer types
   # 
   # @method int1_type_in_context(c)
@@ -744,7 +710,7 @@ module LLVM::C
   # @return [FFI::Pointer(TypeRef)] 
   # @scope class
   attach_function :int1_type_in_context, :LLVMInt1TypeInContext, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method int8_type_in_context(c)
@@ -752,7 +718,7 @@ module LLVM::C
   # @return [FFI::Pointer(TypeRef)] 
   # @scope class
   attach_function :int8_type_in_context, :LLVMInt8TypeInContext, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method int16_type_in_context(c)
@@ -760,7 +726,7 @@ module LLVM::C
   # @return [FFI::Pointer(TypeRef)] 
   # @scope class
   attach_function :int16_type_in_context, :LLVMInt16TypeInContext, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method int32_type_in_context(c)
@@ -768,7 +734,7 @@ module LLVM::C
   # @return [FFI::Pointer(TypeRef)] 
   # @scope class
   attach_function :int32_type_in_context, :LLVMInt32TypeInContext, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method int64_type_in_context(c)
@@ -776,7 +742,7 @@ module LLVM::C
   # @return [FFI::Pointer(TypeRef)] 
   # @scope class
   attach_function :int64_type_in_context, :LLVMInt64TypeInContext, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method int_type_in_context(c, num_bits)
@@ -785,42 +751,42 @@ module LLVM::C
   # @return [FFI::Pointer(TypeRef)] 
   # @scope class
   attach_function :int_type_in_context, :LLVMIntTypeInContext, [:pointer, :uint], :pointer
-
+  
   # (Not documented)
   # 
   # @method int1_type()
   # @return [FFI::Pointer(TypeRef)] 
   # @scope class
   attach_function :int1_type, :LLVMInt1Type, [], :pointer
-
+  
   # (Not documented)
   # 
   # @method int8_type()
   # @return [FFI::Pointer(TypeRef)] 
   # @scope class
   attach_function :int8_type, :LLVMInt8Type, [], :pointer
-
+  
   # (Not documented)
   # 
   # @method int16_type()
   # @return [FFI::Pointer(TypeRef)] 
   # @scope class
   attach_function :int16_type, :LLVMInt16Type, [], :pointer
-
+  
   # (Not documented)
   # 
   # @method int32_type()
   # @return [FFI::Pointer(TypeRef)] 
   # @scope class
   attach_function :int32_type, :LLVMInt32Type, [], :pointer
-
+  
   # (Not documented)
   # 
   # @method int64_type()
   # @return [FFI::Pointer(TypeRef)] 
   # @scope class
   attach_function :int64_type, :LLVMInt64Type, [], :pointer
-
+  
   # (Not documented)
   # 
   # @method int_type(num_bits)
@@ -828,7 +794,7 @@ module LLVM::C
   # @return [FFI::Pointer(TypeRef)] 
   # @scope class
   attach_function :int_type, :LLVMIntType, [:uint], :pointer
-
+  
   # (Not documented)
   # 
   # @method get_int_type_width(integer_ty)
@@ -836,7 +802,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :get_int_type_width, :LLVMGetIntTypeWidth, [:pointer], :uint
-
+  
   # Operations on real types
   # 
   # @method float_type_in_context(c)
@@ -844,7 +810,7 @@ module LLVM::C
   # @return [FFI::Pointer(TypeRef)] 
   # @scope class
   attach_function :float_type_in_context, :LLVMFloatTypeInContext, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method double_type_in_context(c)
@@ -852,7 +818,7 @@ module LLVM::C
   # @return [FFI::Pointer(TypeRef)] 
   # @scope class
   attach_function :double_type_in_context, :LLVMDoubleTypeInContext, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method x86fp80_type_in_context(c)
@@ -860,7 +826,7 @@ module LLVM::C
   # @return [FFI::Pointer(TypeRef)] 
   # @scope class
   attach_function :x86fp80_type_in_context, :LLVMX86FP80TypeInContext, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method fp128_type_in_context(c)
@@ -868,7 +834,7 @@ module LLVM::C
   # @return [FFI::Pointer(TypeRef)] 
   # @scope class
   attach_function :fp128_type_in_context, :LLVMFP128TypeInContext, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method ppcfp128_type_in_context(c)
@@ -876,42 +842,42 @@ module LLVM::C
   # @return [FFI::Pointer(TypeRef)] 
   # @scope class
   attach_function :ppcfp128_type_in_context, :LLVMPPCFP128TypeInContext, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method float_type()
   # @return [FFI::Pointer(TypeRef)] 
   # @scope class
   attach_function :float_type, :LLVMFloatType, [], :pointer
-
+  
   # (Not documented)
   # 
   # @method double_type()
   # @return [FFI::Pointer(TypeRef)] 
   # @scope class
   attach_function :double_type, :LLVMDoubleType, [], :pointer
-
+  
   # (Not documented)
   # 
   # @method x86fp80_type()
   # @return [FFI::Pointer(TypeRef)] 
   # @scope class
   attach_function :x86fp80_type, :LLVMX86FP80Type, [], :pointer
-
+  
   # (Not documented)
   # 
   # @method fp128_type()
   # @return [FFI::Pointer(TypeRef)] 
   # @scope class
   attach_function :fp128_type, :LLVMFP128Type, [], :pointer
-
+  
   # (Not documented)
   # 
   # @method ppcfp128_type()
   # @return [FFI::Pointer(TypeRef)] 
   # @scope class
   attach_function :ppcfp128_type, :LLVMPPCFP128Type, [], :pointer
-
+  
   # Operations on function types
   # 
   # @method function_type(return_type, param_types, param_count, is_var_arg)
@@ -922,7 +888,7 @@ module LLVM::C
   # @return [FFI::Pointer(TypeRef)] 
   # @scope class
   attach_function :function_type, :LLVMFunctionType, [:pointer, :pointer, :uint, :int], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_function_var_arg(function_ty)
@@ -930,7 +896,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :is_function_var_arg, :LLVMIsFunctionVarArg, [:pointer], :int
-
+  
   # (Not documented)
   # 
   # @method get_return_type(function_ty)
@@ -938,7 +904,7 @@ module LLVM::C
   # @return [FFI::Pointer(TypeRef)] 
   # @scope class
   attach_function :get_return_type, :LLVMGetReturnType, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method count_param_types(function_ty)
@@ -946,7 +912,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :count_param_types, :LLVMCountParamTypes, [:pointer], :uint
-
+  
   # (Not documented)
   # 
   # @method get_param_types(function_ty, dest)
@@ -955,7 +921,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :get_param_types, :LLVMGetParamTypes, [:pointer, :pointer], :void
-
+  
   # Operations on struct types
   # 
   # @method struct_type_in_context(c, element_types, element_count, packed)
@@ -966,7 +932,7 @@ module LLVM::C
   # @return [FFI::Pointer(TypeRef)] 
   # @scope class
   attach_function :struct_type_in_context, :LLVMStructTypeInContext, [:pointer, :pointer, :uint, :int], :pointer
-
+  
   # (Not documented)
   # 
   # @method struct_type(element_types, element_count, packed)
@@ -976,7 +942,7 @@ module LLVM::C
   # @return [FFI::Pointer(TypeRef)] 
   # @scope class
   attach_function :struct_type, :LLVMStructType, [:pointer, :uint, :int], :pointer
-
+  
   # (Not documented)
   # 
   # @method struct_create_named(c, name)
@@ -985,7 +951,7 @@ module LLVM::C
   # @return [FFI::Pointer(TypeRef)] 
   # @scope class
   attach_function :struct_create_named, :LLVMStructCreateNamed, [:pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method get_struct_name(ty)
@@ -993,7 +959,7 @@ module LLVM::C
   # @return [String] 
   # @scope class
   attach_function :get_struct_name, :LLVMGetStructName, [:pointer], :string
-
+  
   # (Not documented)
   # 
   # @method struct_set_body(struct_ty, element_types, element_count, packed)
@@ -1004,7 +970,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :struct_set_body, :LLVMStructSetBody, [:pointer, :pointer, :uint, :int], :void
-
+  
   # (Not documented)
   # 
   # @method count_struct_element_types(struct_ty)
@@ -1012,7 +978,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :count_struct_element_types, :LLVMCountStructElementTypes, [:pointer], :uint
-
+  
   # (Not documented)
   # 
   # @method get_struct_element_types(struct_ty, dest)
@@ -1021,7 +987,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :get_struct_element_types, :LLVMGetStructElementTypes, [:pointer, :pointer], :void
-
+  
   # (Not documented)
   # 
   # @method is_packed_struct(struct_ty)
@@ -1029,7 +995,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :is_packed_struct, :LLVMIsPackedStruct, [:pointer], :int
-
+  
   # (Not documented)
   # 
   # @method is_opaque_struct(struct_ty)
@@ -1037,7 +1003,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :is_opaque_struct, :LLVMIsOpaqueStruct, [:pointer], :int
-
+  
   # (Not documented)
   # 
   # @method get_type_by_name(m, name)
@@ -1046,7 +1012,7 @@ module LLVM::C
   # @return [FFI::Pointer(TypeRef)] 
   # @scope class
   attach_function :get_type_by_name, :LLVMGetTypeByName, [:pointer, :string], :pointer
-
+  
   # Operations on array, pointer, and vector types (sequence types)
   # 
   # @method array_type(element_type, element_count)
@@ -1055,7 +1021,7 @@ module LLVM::C
   # @return [FFI::Pointer(TypeRef)] 
   # @scope class
   attach_function :array_type, :LLVMArrayType, [:pointer, :uint], :pointer
-
+  
   # (Not documented)
   # 
   # @method pointer_type(element_type, address_space)
@@ -1064,7 +1030,7 @@ module LLVM::C
   # @return [FFI::Pointer(TypeRef)] 
   # @scope class
   attach_function :pointer_type, :LLVMPointerType, [:pointer, :uint], :pointer
-
+  
   # (Not documented)
   # 
   # @method vector_type(element_type, element_count)
@@ -1073,7 +1039,7 @@ module LLVM::C
   # @return [FFI::Pointer(TypeRef)] 
   # @scope class
   attach_function :vector_type, :LLVMVectorType, [:pointer, :uint], :pointer
-
+  
   # (Not documented)
   # 
   # @method get_element_type(ty)
@@ -1081,7 +1047,7 @@ module LLVM::C
   # @return [FFI::Pointer(TypeRef)] 
   # @scope class
   attach_function :get_element_type, :LLVMGetElementType, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method get_array_length(array_ty)
@@ -1089,7 +1055,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :get_array_length, :LLVMGetArrayLength, [:pointer], :uint
-
+  
   # (Not documented)
   # 
   # @method get_pointer_address_space(pointer_ty)
@@ -1097,7 +1063,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :get_pointer_address_space, :LLVMGetPointerAddressSpace, [:pointer], :uint
-
+  
   # (Not documented)
   # 
   # @method get_vector_size(vector_ty)
@@ -1105,7 +1071,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :get_vector_size, :LLVMGetVectorSize, [:pointer], :uint
-
+  
   # Operations on other types
   # 
   # @method void_type_in_context(c)
@@ -1113,7 +1079,7 @@ module LLVM::C
   # @return [FFI::Pointer(TypeRef)] 
   # @scope class
   attach_function :void_type_in_context, :LLVMVoidTypeInContext, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method label_type_in_context(c)
@@ -1121,7 +1087,7 @@ module LLVM::C
   # @return [FFI::Pointer(TypeRef)] 
   # @scope class
   attach_function :label_type_in_context, :LLVMLabelTypeInContext, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method x86mmx_type_in_context(c)
@@ -1129,28 +1095,28 @@ module LLVM::C
   # @return [FFI::Pointer(TypeRef)] 
   # @scope class
   attach_function :x86mmx_type_in_context, :LLVMX86MMXTypeInContext, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method void_type()
   # @return [FFI::Pointer(TypeRef)] 
   # @scope class
   attach_function :void_type, :LLVMVoidType, [], :pointer
-
+  
   # (Not documented)
   # 
   # @method label_type()
   # @return [FFI::Pointer(TypeRef)] 
   # @scope class
   attach_function :label_type, :LLVMLabelType, [], :pointer
-
+  
   # (Not documented)
   # 
   # @method x86mmx_type()
   # @return [FFI::Pointer(TypeRef)] 
   # @scope class
   attach_function :x86mmx_type, :LLVMX86MMXType, [], :pointer
-
+  
   # Operations on all values
   # 
   # @method type_of(val)
@@ -1158,7 +1124,7 @@ module LLVM::C
   # @return [FFI::Pointer(TypeRef)] 
   # @scope class
   attach_function :type_of, :LLVMTypeOf, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method get_value_name(val)
@@ -1166,7 +1132,7 @@ module LLVM::C
   # @return [String] 
   # @scope class
   attach_function :get_value_name, :LLVMGetValueName, [:pointer], :string
-
+  
   # (Not documented)
   # 
   # @method set_value_name(val, name)
@@ -1175,7 +1141,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :set_value_name, :LLVMSetValueName, [:pointer, :string], :void
-
+  
   # (Not documented)
   # 
   # @method dump_value(val)
@@ -1183,7 +1149,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :dump_value, :LLVMDumpValue, [:pointer], :void
-
+  
   # (Not documented)
   # 
   # @method replace_all_uses_with(old_val, new_val)
@@ -1192,7 +1158,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :replace_all_uses_with, :LLVMReplaceAllUsesWith, [:pointer, :pointer], :void
-
+  
   # (Not documented)
   # 
   # @method has_metadata(val)
@@ -1200,7 +1166,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :has_metadata, :LLVMHasMetadata, [:pointer], :int
-
+  
   # (Not documented)
   # 
   # @method get_metadata(val, kind_id)
@@ -1209,7 +1175,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :get_metadata, :LLVMGetMetadata, [:pointer, :uint], :pointer
-
+  
   # (Not documented)
   # 
   # @method set_metadata(val, kind_id, node)
@@ -1219,7 +1185,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :set_metadata, :LLVMSetMetadata, [:pointer, :uint, :pointer], :void
-
+  
   # (Not documented)
   # 
   # @method is_a_argument(val)
@@ -1227,7 +1193,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_argument, :LLVMIsAArgument, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_basic_block(val)
@@ -1235,7 +1201,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_basic_block, :LLVMIsABasicBlock, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_inline_asm(val)
@@ -1243,7 +1209,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_inline_asm, :LLVMIsAInlineAsm, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_amd_node(val)
@@ -1251,7 +1217,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_amd_node, :LLVMIsAMDNode, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_amd_string(val)
@@ -1259,7 +1225,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_amd_string, :LLVMIsAMDString, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_user(val)
@@ -1267,7 +1233,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_user, :LLVMIsAUser, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_constant(val)
@@ -1275,7 +1241,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_constant, :LLVMIsAConstant, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_block_address(val)
@@ -1283,7 +1249,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_block_address, :LLVMIsABlockAddress, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_constant_aggregate_zero(val)
@@ -1291,7 +1257,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_constant_aggregate_zero, :LLVMIsAConstantAggregateZero, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_constant_array(val)
@@ -1299,7 +1265,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_constant_array, :LLVMIsAConstantArray, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_constant_expr(val)
@@ -1307,7 +1273,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_constant_expr, :LLVMIsAConstantExpr, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_constant_fp(val)
@@ -1315,7 +1281,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_constant_fp, :LLVMIsAConstantFP, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_constant_int(val)
@@ -1323,7 +1289,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_constant_int, :LLVMIsAConstantInt, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_constant_pointer_null(val)
@@ -1331,7 +1297,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_constant_pointer_null, :LLVMIsAConstantPointerNull, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_constant_struct(val)
@@ -1339,7 +1305,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_constant_struct, :LLVMIsAConstantStruct, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_constant_vector(val)
@@ -1347,7 +1313,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_constant_vector, :LLVMIsAConstantVector, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_global_value(val)
@@ -1355,7 +1321,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_global_value, :LLVMIsAGlobalValue, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_function(val)
@@ -1363,7 +1329,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_function, :LLVMIsAFunction, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_global_alias(val)
@@ -1371,7 +1337,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_global_alias, :LLVMIsAGlobalAlias, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_global_variable(val)
@@ -1379,7 +1345,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_global_variable, :LLVMIsAGlobalVariable, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_undef_value(val)
@@ -1387,7 +1353,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_undef_value, :LLVMIsAUndefValue, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_instruction(val)
@@ -1395,7 +1361,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_instruction, :LLVMIsAInstruction, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_binary_operator(val)
@@ -1403,7 +1369,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_binary_operator, :LLVMIsABinaryOperator, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_call_inst(val)
@@ -1411,7 +1377,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_call_inst, :LLVMIsACallInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_intrinsic_inst(val)
@@ -1419,7 +1385,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_intrinsic_inst, :LLVMIsAIntrinsicInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_dbg_info_intrinsic(val)
@@ -1427,7 +1393,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_dbg_info_intrinsic, :LLVMIsADbgInfoIntrinsic, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_dbg_declare_inst(val)
@@ -1435,7 +1401,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_dbg_declare_inst, :LLVMIsADbgDeclareInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_aeh_exception_inst(val)
@@ -1443,7 +1409,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_aeh_exception_inst, :LLVMIsAEHExceptionInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_aeh_selector_inst(val)
@@ -1451,7 +1417,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_aeh_selector_inst, :LLVMIsAEHSelectorInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_mem_intrinsic(val)
@@ -1459,7 +1425,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_mem_intrinsic, :LLVMIsAMemIntrinsic, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_mem_cpy_inst(val)
@@ -1467,7 +1433,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_mem_cpy_inst, :LLVMIsAMemCpyInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_mem_move_inst(val)
@@ -1475,7 +1441,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_mem_move_inst, :LLVMIsAMemMoveInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_mem_set_inst(val)
@@ -1483,7 +1449,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_mem_set_inst, :LLVMIsAMemSetInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_cmp_inst(val)
@@ -1491,7 +1457,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_cmp_inst, :LLVMIsACmpInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_af_cmp_inst(val)
@@ -1499,7 +1465,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_af_cmp_inst, :LLVMIsAFCmpInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_ai_cmp_inst(val)
@@ -1507,7 +1473,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_ai_cmp_inst, :LLVMIsAICmpInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_extract_element_inst(val)
@@ -1515,7 +1481,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_extract_element_inst, :LLVMIsAExtractElementInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_get_element_ptr_inst(val)
@@ -1523,7 +1489,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_get_element_ptr_inst, :LLVMIsAGetElementPtrInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_insert_element_inst(val)
@@ -1531,7 +1497,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_insert_element_inst, :LLVMIsAInsertElementInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_insert_value_inst(val)
@@ -1539,7 +1505,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_insert_value_inst, :LLVMIsAInsertValueInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_landing_pad_inst(val)
@@ -1547,7 +1513,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_landing_pad_inst, :LLVMIsALandingPadInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_aphi_node(val)
@@ -1555,7 +1521,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_aphi_node, :LLVMIsAPHINode, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_select_inst(val)
@@ -1563,7 +1529,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_select_inst, :LLVMIsASelectInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_shuffle_vector_inst(val)
@@ -1571,7 +1537,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_shuffle_vector_inst, :LLVMIsAShuffleVectorInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_store_inst(val)
@@ -1579,7 +1545,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_store_inst, :LLVMIsAStoreInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_terminator_inst(val)
@@ -1587,7 +1553,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_terminator_inst, :LLVMIsATerminatorInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_branch_inst(val)
@@ -1595,7 +1561,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_branch_inst, :LLVMIsABranchInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_indirect_br_inst(val)
@@ -1603,7 +1569,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_indirect_br_inst, :LLVMIsAIndirectBrInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_invoke_inst(val)
@@ -1611,7 +1577,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_invoke_inst, :LLVMIsAInvokeInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_return_inst(val)
@@ -1619,7 +1585,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_return_inst, :LLVMIsAReturnInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_switch_inst(val)
@@ -1627,7 +1593,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_switch_inst, :LLVMIsASwitchInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_unreachable_inst(val)
@@ -1635,7 +1601,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_unreachable_inst, :LLVMIsAUnreachableInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_resume_inst(val)
@@ -1643,7 +1609,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_resume_inst, :LLVMIsAResumeInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_unary_instruction(val)
@@ -1651,7 +1617,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_unary_instruction, :LLVMIsAUnaryInstruction, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_alloca_inst(val)
@@ -1659,7 +1625,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_alloca_inst, :LLVMIsAAllocaInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_cast_inst(val)
@@ -1667,7 +1633,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_cast_inst, :LLVMIsACastInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_bit_cast_inst(val)
@@ -1675,7 +1641,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_bit_cast_inst, :LLVMIsABitCastInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_afp_ext_inst(val)
@@ -1683,7 +1649,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_afp_ext_inst, :LLVMIsAFPExtInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_afp_to_si_inst(val)
@@ -1691,7 +1657,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_afp_to_si_inst, :LLVMIsAFPToSIInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_afp_to_ui_inst(val)
@@ -1699,7 +1665,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_afp_to_ui_inst, :LLVMIsAFPToUIInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_afp_trunc_inst(val)
@@ -1707,7 +1673,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_afp_trunc_inst, :LLVMIsAFPTruncInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_int_to_ptr_inst(val)
@@ -1715,7 +1681,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_int_to_ptr_inst, :LLVMIsAIntToPtrInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_ptr_to_int_inst(val)
@@ -1723,7 +1689,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_ptr_to_int_inst, :LLVMIsAPtrToIntInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_as_ext_inst(val)
@@ -1731,7 +1697,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_as_ext_inst, :LLVMIsASExtInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_asi_to_fp_inst(val)
@@ -1739,7 +1705,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_asi_to_fp_inst, :LLVMIsASIToFPInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_trunc_inst(val)
@@ -1747,7 +1713,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_trunc_inst, :LLVMIsATruncInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_aui_to_fp_inst(val)
@@ -1755,7 +1721,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_aui_to_fp_inst, :LLVMIsAUIToFPInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_az_ext_inst(val)
@@ -1763,7 +1729,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_az_ext_inst, :LLVMIsAZExtInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_extract_value_inst(val)
@@ -1771,7 +1737,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_extract_value_inst, :LLVMIsAExtractValueInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_a_load_inst(val)
@@ -1779,7 +1745,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_a_load_inst, :LLVMIsALoadInst, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_ava_arg_inst(val)
@@ -1787,7 +1753,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :is_ava_arg_inst, :LLVMIsAVAArgInst, [:pointer], :pointer
-
+  
   # Operations on Uses
   # 
   # @method get_first_use(val)
@@ -1795,7 +1761,7 @@ module LLVM::C
   # @return [FFI::Pointer(UseRef)] 
   # @scope class
   attach_function :get_first_use, :LLVMGetFirstUse, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method get_next_use(u)
@@ -1803,7 +1769,7 @@ module LLVM::C
   # @return [FFI::Pointer(UseRef)] 
   # @scope class
   attach_function :get_next_use, :LLVMGetNextUse, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method get_user(u)
@@ -1811,7 +1777,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :get_user, :LLVMGetUser, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method get_used_value(u)
@@ -1819,7 +1785,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :get_used_value, :LLVMGetUsedValue, [:pointer], :pointer
-
+  
   # Operations on Users
   # 
   # @method get_operand(val, index)
@@ -1828,7 +1794,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :get_operand, :LLVMGetOperand, [:pointer, :uint], :pointer
-
+  
   # (Not documented)
   # 
   # @method set_operand(user, index, val)
@@ -1838,7 +1804,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :set_operand, :LLVMSetOperand, [:pointer, :uint, :pointer], :void
-
+  
   # (Not documented)
   # 
   # @method get_num_operands(val)
@@ -1846,7 +1812,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :get_num_operands, :LLVMGetNumOperands, [:pointer], :int
-
+  
   # Operations on constants of any type
   # 
   # @method const_null(ty)
@@ -1854,7 +1820,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_null, :LLVMConstNull, [:pointer], :pointer
-
+  
   # all zeroes
   # 
   # @method const_all_ones(ty)
@@ -1862,7 +1828,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_all_ones, :LLVMConstAllOnes, [:pointer], :pointer
-
+  
   # only for int/vector
   # 
   # @method get_undef(ty)
@@ -1870,7 +1836,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :get_undef, :LLVMGetUndef, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_constant(val)
@@ -1878,7 +1844,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :is_constant, :LLVMIsConstant, [:pointer], :int
-
+  
   # (Not documented)
   # 
   # @method is_null(val)
@@ -1886,7 +1852,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :is_null, :LLVMIsNull, [:pointer], :int
-
+  
   # (Not documented)
   # 
   # @method is_undef(val)
@@ -1894,7 +1860,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :is_undef, :LLVMIsUndef, [:pointer], :int
-
+  
   # (Not documented)
   # 
   # @method const_pointer_null(ty)
@@ -1902,7 +1868,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_pointer_null, :LLVMConstPointerNull, [:pointer], :pointer
-
+  
   # Operations on metadata
   # 
   # @method md_string_in_context(c, str, s_len)
@@ -1912,7 +1878,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :md_string_in_context, :LLVMMDStringInContext, [:pointer, :string, :uint], :pointer
-
+  
   # (Not documented)
   # 
   # @method md_string(str, s_len)
@@ -1921,7 +1887,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :md_string, :LLVMMDString, [:string, :uint], :pointer
-
+  
   # (Not documented)
   # 
   # @method md_node_in_context(c, vals, count)
@@ -1931,7 +1897,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :md_node_in_context, :LLVMMDNodeInContext, [:pointer, :pointer, :uint], :pointer
-
+  
   # (Not documented)
   # 
   # @method md_node(vals, count)
@@ -1940,7 +1906,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :md_node, :LLVMMDNode, [:pointer, :uint], :pointer
-
+  
   # (Not documented)
   # 
   # @method get_md_string(v, len)
@@ -1949,7 +1915,7 @@ module LLVM::C
   # @return [String] 
   # @scope class
   attach_function :get_md_string, :LLVMGetMDString, [:pointer, :pointer], :string
-
+  
   # (Not documented)
   # 
   # @method get_named_metadata_num_operands(m, name)
@@ -1958,7 +1924,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :get_named_metadata_num_operands, :LLVMGetNamedMetadataNumOperands, [:pointer, :string], :uint
-
+  
   # (Not documented)
   # 
   # @method get_named_metadata_operands(m, name, dest)
@@ -1968,7 +1934,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :get_named_metadata_operands, :LLVMGetNamedMetadataOperands, [:pointer, :string, :pointer], :void
-
+  
   # Operations on scalar constants
   # 
   # @method const_int(int_ty, n, sign_extend)
@@ -1978,7 +1944,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_int, :LLVMConstInt, [:pointer, :ulong_long, :int], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_int_of_arbitrary_precision(int_ty, num_words, words)
@@ -1988,7 +1954,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_int_of_arbitrary_precision, :LLVMConstIntOfArbitraryPrecision, [:pointer, :uint, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_int_of_string(int_ty, text, radix)
@@ -1998,7 +1964,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_int_of_string, :LLVMConstIntOfString, [:pointer, :string, :uchar], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_int_of_string_and_size(int_ty, text, s_len, radix)
@@ -2009,7 +1975,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_int_of_string_and_size, :LLVMConstIntOfStringAndSize, [:pointer, :string, :uint, :uchar], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_real(real_ty, n)
@@ -2018,7 +1984,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_real, :LLVMConstReal, [:pointer, :double], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_real_of_string(real_ty, text)
@@ -2027,7 +1993,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_real_of_string, :LLVMConstRealOfString, [:pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_real_of_string_and_size(real_ty, text, s_len)
@@ -2037,7 +2003,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_real_of_string_and_size, :LLVMConstRealOfStringAndSize, [:pointer, :string, :uint], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_int_get_z_ext_value(constant_val)
@@ -2045,7 +2011,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :const_int_get_z_ext_value, :LLVMConstIntGetZExtValue, [:pointer], :ulong_long
-
+  
   # (Not documented)
   # 
   # @method const_int_get_s_ext_value(constant_val)
@@ -2053,7 +2019,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :const_int_get_s_ext_value, :LLVMConstIntGetSExtValue, [:pointer], :long_long
-
+  
   # Operations on composite constants
   # 
   # @method const_string_in_context(c, str, length, dont_null_terminate)
@@ -2064,7 +2030,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_string_in_context, :LLVMConstStringInContext, [:pointer, :string, :uint, :int], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_struct_in_context(c, constant_vals, count, packed)
@@ -2075,7 +2041,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_struct_in_context, :LLVMConstStructInContext, [:pointer, :pointer, :uint, :int], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_string(str, length, dont_null_terminate)
@@ -2085,7 +2051,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_string, :LLVMConstString, [:string, :uint, :int], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_array(element_ty, constant_vals, length)
@@ -2095,7 +2061,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_array, :LLVMConstArray, [:pointer, :pointer, :uint], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_struct(constant_vals, count, packed)
@@ -2105,7 +2071,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_struct, :LLVMConstStruct, [:pointer, :uint, :int], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_named_struct(struct_ty, constant_vals, count)
@@ -2115,7 +2081,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_named_struct, :LLVMConstNamedStruct, [:pointer, :pointer, :uint], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_vector(scalar_constant_vals, size)
@@ -2124,7 +2090,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_vector, :LLVMConstVector, [:pointer, :uint], :pointer
-
+  
   # Constant expressions
   # 
   # @method get_const_opcode(constant_val)
@@ -2132,7 +2098,7 @@ module LLVM::C
   # @return [Symbol from opcode_enum] 
   # @scope class
   attach_function :get_const_opcode, :LLVMGetConstOpcode, [:pointer], :opcode
-
+  
   # (Not documented)
   # 
   # @method align_of(ty)
@@ -2140,7 +2106,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :align_of, :LLVMAlignOf, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method size_of(ty)
@@ -2148,7 +2114,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :size_of, :LLVMSizeOf, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_neg(constant_val)
@@ -2156,7 +2122,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_neg, :LLVMConstNeg, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_nsw_neg(constant_val)
@@ -2164,7 +2130,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_nsw_neg, :LLVMConstNSWNeg, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_nuw_neg(constant_val)
@@ -2172,7 +2138,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_nuw_neg, :LLVMConstNUWNeg, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_f_neg(constant_val)
@@ -2180,7 +2146,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_f_neg, :LLVMConstFNeg, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_not(constant_val)
@@ -2188,7 +2154,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_not, :LLVMConstNot, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_add(lhs_constant, rhs_constant)
@@ -2197,7 +2163,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_add, :LLVMConstAdd, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_nsw_add(lhs_constant, rhs_constant)
@@ -2206,7 +2172,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_nsw_add, :LLVMConstNSWAdd, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_nuw_add(lhs_constant, rhs_constant)
@@ -2215,7 +2181,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_nuw_add, :LLVMConstNUWAdd, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_f_add(lhs_constant, rhs_constant)
@@ -2224,7 +2190,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_f_add, :LLVMConstFAdd, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_sub(lhs_constant, rhs_constant)
@@ -2233,7 +2199,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_sub, :LLVMConstSub, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_nsw_sub(lhs_constant, rhs_constant)
@@ -2242,7 +2208,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_nsw_sub, :LLVMConstNSWSub, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_nuw_sub(lhs_constant, rhs_constant)
@@ -2251,7 +2217,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_nuw_sub, :LLVMConstNUWSub, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_f_sub(lhs_constant, rhs_constant)
@@ -2260,7 +2226,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_f_sub, :LLVMConstFSub, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_mul(lhs_constant, rhs_constant)
@@ -2269,7 +2235,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_mul, :LLVMConstMul, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_nsw_mul(lhs_constant, rhs_constant)
@@ -2278,7 +2244,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_nsw_mul, :LLVMConstNSWMul, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_nuw_mul(lhs_constant, rhs_constant)
@@ -2287,7 +2253,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_nuw_mul, :LLVMConstNUWMul, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_f_mul(lhs_constant, rhs_constant)
@@ -2296,7 +2262,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_f_mul, :LLVMConstFMul, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_u_div(lhs_constant, rhs_constant)
@@ -2305,7 +2271,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_u_div, :LLVMConstUDiv, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_s_div(lhs_constant, rhs_constant)
@@ -2314,7 +2280,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_s_div, :LLVMConstSDiv, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_exact_s_div(lhs_constant, rhs_constant)
@@ -2323,7 +2289,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_exact_s_div, :LLVMConstExactSDiv, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_f_div(lhs_constant, rhs_constant)
@@ -2332,7 +2298,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_f_div, :LLVMConstFDiv, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_u_rem(lhs_constant, rhs_constant)
@@ -2341,7 +2307,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_u_rem, :LLVMConstURem, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_s_rem(lhs_constant, rhs_constant)
@@ -2350,7 +2316,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_s_rem, :LLVMConstSRem, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_f_rem(lhs_constant, rhs_constant)
@@ -2359,7 +2325,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_f_rem, :LLVMConstFRem, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_and(lhs_constant, rhs_constant)
@@ -2368,7 +2334,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_and, :LLVMConstAnd, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_or(lhs_constant, rhs_constant)
@@ -2377,7 +2343,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_or, :LLVMConstOr, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_xor(lhs_constant, rhs_constant)
@@ -2386,7 +2352,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_xor, :LLVMConstXor, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_i_cmp(predicate, lhs_constant, rhs_constant)
@@ -2396,7 +2362,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_i_cmp, :LLVMConstICmp, [:int_predicate, :pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_f_cmp(predicate, lhs_constant, rhs_constant)
@@ -2406,7 +2372,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_f_cmp, :LLVMConstFCmp, [:real_predicate, :pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_shl(lhs_constant, rhs_constant)
@@ -2415,7 +2381,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_shl, :LLVMConstShl, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_l_shr(lhs_constant, rhs_constant)
@@ -2424,7 +2390,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_l_shr, :LLVMConstLShr, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_a_shr(lhs_constant, rhs_constant)
@@ -2433,7 +2399,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_a_shr, :LLVMConstAShr, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_gep(constant_val, constant_indices, num_indices)
@@ -2443,7 +2409,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_gep, :LLVMConstGEP, [:pointer, :pointer, :uint], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_in_bounds_gep(constant_val, constant_indices, num_indices)
@@ -2453,7 +2419,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_in_bounds_gep, :LLVMConstInBoundsGEP, [:pointer, :pointer, :uint], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_trunc(constant_val, to_type)
@@ -2462,7 +2428,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_trunc, :LLVMConstTrunc, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_s_ext(constant_val, to_type)
@@ -2471,7 +2437,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_s_ext, :LLVMConstSExt, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_z_ext(constant_val, to_type)
@@ -2480,7 +2446,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_z_ext, :LLVMConstZExt, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_fp_trunc(constant_val, to_type)
@@ -2489,7 +2455,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_fp_trunc, :LLVMConstFPTrunc, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_fp_ext(constant_val, to_type)
@@ -2498,7 +2464,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_fp_ext, :LLVMConstFPExt, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_ui_to_fp(constant_val, to_type)
@@ -2507,7 +2473,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_ui_to_fp, :LLVMConstUIToFP, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_si_to_fp(constant_val, to_type)
@@ -2516,7 +2482,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_si_to_fp, :LLVMConstSIToFP, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_fp_to_ui(constant_val, to_type)
@@ -2525,7 +2491,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_fp_to_ui, :LLVMConstFPToUI, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_fp_to_si(constant_val, to_type)
@@ -2534,7 +2500,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_fp_to_si, :LLVMConstFPToSI, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_ptr_to_int(constant_val, to_type)
@@ -2543,7 +2509,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_ptr_to_int, :LLVMConstPtrToInt, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_int_to_ptr(constant_val, to_type)
@@ -2552,7 +2518,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_int_to_ptr, :LLVMConstIntToPtr, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_bit_cast(constant_val, to_type)
@@ -2561,7 +2527,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_bit_cast, :LLVMConstBitCast, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_z_ext_or_bit_cast(constant_val, to_type)
@@ -2570,7 +2536,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_z_ext_or_bit_cast, :LLVMConstZExtOrBitCast, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_s_ext_or_bit_cast(constant_val, to_type)
@@ -2579,7 +2545,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_s_ext_or_bit_cast, :LLVMConstSExtOrBitCast, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_trunc_or_bit_cast(constant_val, to_type)
@@ -2588,7 +2554,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_trunc_or_bit_cast, :LLVMConstTruncOrBitCast, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_pointer_cast(constant_val, to_type)
@@ -2597,7 +2563,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_pointer_cast, :LLVMConstPointerCast, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_int_cast(constant_val, to_type, is_signed)
@@ -2607,7 +2573,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_int_cast, :LLVMConstIntCast, [:pointer, :pointer, :int], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_fp_cast(constant_val, to_type)
@@ -2616,7 +2582,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_fp_cast, :LLVMConstFPCast, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_select(constant_condition, constant_if_true, constant_if_false)
@@ -2626,7 +2592,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_select, :LLVMConstSelect, [:pointer, :pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_extract_element(vector_constant, index_constant)
@@ -2635,7 +2601,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_extract_element, :LLVMConstExtractElement, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_insert_element(vector_constant, element_value_constant, index_constant)
@@ -2645,7 +2611,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_insert_element, :LLVMConstInsertElement, [:pointer, :pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_shuffle_vector(vector_a_constant, vector_b_constant, mask_constant)
@@ -2655,7 +2621,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_shuffle_vector, :LLVMConstShuffleVector, [:pointer, :pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_extract_value(agg_constant, idx_list, num_idx)
@@ -2665,7 +2631,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_extract_value, :LLVMConstExtractValue, [:pointer, :pointer, :uint], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_insert_value(agg_constant, element_value_constant, idx_list, num_idx)
@@ -2676,7 +2642,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_insert_value, :LLVMConstInsertValue, [:pointer, :pointer, :pointer, :uint], :pointer
-
+  
   # (Not documented)
   # 
   # @method const_inline_asm(ty, asm_string, constraints, has_side_effects, is_align_stack)
@@ -2688,7 +2654,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_inline_asm, :LLVMConstInlineAsm, [:pointer, :string, :string, :int, :int], :pointer
-
+  
   # (Not documented)
   # 
   # @method block_address(f, bb)
@@ -2697,7 +2663,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :block_address, :LLVMBlockAddress, [:pointer, :pointer], :pointer
-
+  
   # Operations on global variables, functions, and aliases (globals)
   # 
   # @method get_global_parent(global)
@@ -2705,7 +2671,7 @@ module LLVM::C
   # @return [FFI::Pointer(ModuleRef)] 
   # @scope class
   attach_function :get_global_parent, :LLVMGetGlobalParent, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method is_declaration(global)
@@ -2713,7 +2679,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :is_declaration, :LLVMIsDeclaration, [:pointer], :int
-
+  
   # (Not documented)
   # 
   # @method get_linkage(global)
@@ -2721,7 +2687,7 @@ module LLVM::C
   # @return [Symbol from linkage_enum] 
   # @scope class
   attach_function :get_linkage, :LLVMGetLinkage, [:pointer], :linkage
-
+  
   # (Not documented)
   # 
   # @method set_linkage(global, linkage)
@@ -2730,7 +2696,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :set_linkage, :LLVMSetLinkage, [:pointer, :linkage], :void
-
+  
   # (Not documented)
   # 
   # @method get_section(global)
@@ -2738,7 +2704,7 @@ module LLVM::C
   # @return [String] 
   # @scope class
   attach_function :get_section, :LLVMGetSection, [:pointer], :string
-
+  
   # (Not documented)
   # 
   # @method set_section(global, section)
@@ -2747,7 +2713,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :set_section, :LLVMSetSection, [:pointer, :string], :void
-
+  
   # (Not documented)
   # 
   # @method get_visibility(global)
@@ -2755,7 +2721,7 @@ module LLVM::C
   # @return [Symbol from visibility_enum] 
   # @scope class
   attach_function :get_visibility, :LLVMGetVisibility, [:pointer], :visibility
-
+  
   # (Not documented)
   # 
   # @method set_visibility(global, viz)
@@ -2764,7 +2730,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :set_visibility, :LLVMSetVisibility, [:pointer, :visibility], :void
-
+  
   # (Not documented)
   # 
   # @method get_alignment(global)
@@ -2772,7 +2738,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :get_alignment, :LLVMGetAlignment, [:pointer], :uint
-
+  
   # (Not documented)
   # 
   # @method set_alignment(global, bytes)
@@ -2781,7 +2747,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :set_alignment, :LLVMSetAlignment, [:pointer, :uint], :void
-
+  
   # Operations on global variables
   # 
   # @method add_global(m, ty, name)
@@ -2791,7 +2757,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :add_global, :LLVMAddGlobal, [:pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method add_global_in_address_space(m, ty, name, address_space)
@@ -2802,7 +2768,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :add_global_in_address_space, :LLVMAddGlobalInAddressSpace, [:pointer, :pointer, :string, :uint], :pointer
-
+  
   # (Not documented)
   # 
   # @method get_named_global(m, name)
@@ -2811,7 +2777,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :get_named_global, :LLVMGetNamedGlobal, [:pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method get_first_global(m)
@@ -2819,7 +2785,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :get_first_global, :LLVMGetFirstGlobal, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method get_last_global(m)
@@ -2827,7 +2793,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :get_last_global, :LLVMGetLastGlobal, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method get_next_global(global_var)
@@ -2835,7 +2801,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :get_next_global, :LLVMGetNextGlobal, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method get_previous_global(global_var)
@@ -2843,7 +2809,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :get_previous_global, :LLVMGetPreviousGlobal, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method delete_global(global_var)
@@ -2851,7 +2817,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :delete_global, :LLVMDeleteGlobal, [:pointer], :void
-
+  
   # (Not documented)
   # 
   # @method get_initializer(global_var)
@@ -2859,7 +2825,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :get_initializer, :LLVMGetInitializer, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method set_initializer(global_var, constant_val)
@@ -2868,7 +2834,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :set_initializer, :LLVMSetInitializer, [:pointer, :pointer], :void
-
+  
   # (Not documented)
   # 
   # @method is_thread_local(global_var)
@@ -2876,7 +2842,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :is_thread_local, :LLVMIsThreadLocal, [:pointer], :int
-
+  
   # (Not documented)
   # 
   # @method set_thread_local(global_var, is_thread_local)
@@ -2885,7 +2851,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :set_thread_local, :LLVMSetThreadLocal, [:pointer, :int], :void
-
+  
   # (Not documented)
   # 
   # @method is_global_constant(global_var)
@@ -2893,7 +2859,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :is_global_constant, :LLVMIsGlobalConstant, [:pointer], :int
-
+  
   # (Not documented)
   # 
   # @method set_global_constant(global_var, is_constant)
@@ -2902,7 +2868,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :set_global_constant, :LLVMSetGlobalConstant, [:pointer, :int], :void
-
+  
   # Operations on aliases
   # 
   # @method add_alias(m, ty, aliasee, name)
@@ -2913,7 +2879,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :add_alias, :LLVMAddAlias, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # Operations on functions
   # 
   # @method add_function(m, name, function_ty)
@@ -2923,7 +2889,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :add_function, :LLVMAddFunction, [:pointer, :string, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method get_named_function(m, name)
@@ -2932,7 +2898,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :get_named_function, :LLVMGetNamedFunction, [:pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method get_first_function(m)
@@ -2940,7 +2906,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :get_first_function, :LLVMGetFirstFunction, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method get_last_function(m)
@@ -2948,7 +2914,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :get_last_function, :LLVMGetLastFunction, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method get_next_function(fn)
@@ -2956,7 +2922,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :get_next_function, :LLVMGetNextFunction, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method get_previous_function(fn)
@@ -2964,7 +2930,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :get_previous_function, :LLVMGetPreviousFunction, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method delete_function(fn)
@@ -2972,7 +2938,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :delete_function, :LLVMDeleteFunction, [:pointer], :void
-
+  
   # (Not documented)
   # 
   # @method get_intrinsic_id(fn)
@@ -2980,7 +2946,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :get_intrinsic_id, :LLVMGetIntrinsicID, [:pointer], :uint
-
+  
   # (Not documented)
   # 
   # @method get_function_call_conv(fn)
@@ -2988,7 +2954,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :get_function_call_conv, :LLVMGetFunctionCallConv, [:pointer], :uint
-
+  
   # (Not documented)
   # 
   # @method set_function_call_conv(fn, cc)
@@ -2997,7 +2963,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :set_function_call_conv, :LLVMSetFunctionCallConv, [:pointer, :uint], :void
-
+  
   # (Not documented)
   # 
   # @method get_gc(fn)
@@ -3005,7 +2971,7 @@ module LLVM::C
   # @return [String] 
   # @scope class
   attach_function :get_gc, :LLVMGetGC, [:pointer], :string
-
+  
   # (Not documented)
   # 
   # @method set_gc(fn, name)
@@ -3014,7 +2980,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :set_gc, :LLVMSetGC, [:pointer, :string], :void
-
+  
   # (Not documented)
   # 
   # @method add_function_attr(fn, pa)
@@ -3023,7 +2989,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :add_function_attr, :LLVMAddFunctionAttr, [:pointer, :attribute], :void
-
+  
   # (Not documented)
   # 
   # @method get_function_attr(fn)
@@ -3031,7 +2997,7 @@ module LLVM::C
   # @return [Symbol from attribute_enum] 
   # @scope class
   attach_function :get_function_attr, :LLVMGetFunctionAttr, [:pointer], :attribute
-
+  
   # (Not documented)
   # 
   # @method remove_function_attr(fn, pa)
@@ -3040,7 +3006,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :remove_function_attr, :LLVMRemoveFunctionAttr, [:pointer, :attribute], :void
-
+  
   # Operations on parameters
   # 
   # @method count_params(fn)
@@ -3048,7 +3014,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :count_params, :LLVMCountParams, [:pointer], :uint
-
+  
   # (Not documented)
   # 
   # @method get_params(fn, params)
@@ -3057,7 +3023,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :get_params, :LLVMGetParams, [:pointer, :pointer], :void
-
+  
   # (Not documented)
   # 
   # @method get_param(fn, index)
@@ -3066,7 +3032,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :get_param, :LLVMGetParam, [:pointer, :uint], :pointer
-
+  
   # (Not documented)
   # 
   # @method get_param_parent(inst)
@@ -3074,7 +3040,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :get_param_parent, :LLVMGetParamParent, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method get_first_param(fn)
@@ -3082,7 +3048,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :get_first_param, :LLVMGetFirstParam, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method get_last_param(fn)
@@ -3090,7 +3056,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :get_last_param, :LLVMGetLastParam, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method get_next_param(arg)
@@ -3098,7 +3064,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :get_next_param, :LLVMGetNextParam, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method get_previous_param(arg)
@@ -3106,7 +3072,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :get_previous_param, :LLVMGetPreviousParam, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method add_attribute(arg, pa)
@@ -3115,7 +3081,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :add_attribute, :LLVMAddAttribute, [:pointer, :attribute], :void
-
+  
   # (Not documented)
   # 
   # @method remove_attribute(arg, pa)
@@ -3124,7 +3090,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :remove_attribute, :LLVMRemoveAttribute, [:pointer, :attribute], :void
-
+  
   # (Not documented)
   # 
   # @method get_attribute(arg)
@@ -3132,7 +3098,7 @@ module LLVM::C
   # @return [Symbol from attribute_enum] 
   # @scope class
   attach_function :get_attribute, :LLVMGetAttribute, [:pointer], :attribute
-
+  
   # (Not documented)
   # 
   # @method set_param_alignment(arg, align)
@@ -3141,7 +3107,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :set_param_alignment, :LLVMSetParamAlignment, [:pointer, :uint], :void
-
+  
   # Operations on basic blocks
   # 
   # @method basic_block_as_value(bb)
@@ -3149,7 +3115,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :basic_block_as_value, :LLVMBasicBlockAsValue, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method value_is_basic_block(val)
@@ -3157,7 +3123,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :value_is_basic_block, :LLVMValueIsBasicBlock, [:pointer], :int
-
+  
   # (Not documented)
   # 
   # @method value_as_basic_block(val)
@@ -3165,7 +3131,7 @@ module LLVM::C
   # @return [FFI::Pointer(BasicBlockRef)] 
   # @scope class
   attach_function :value_as_basic_block, :LLVMValueAsBasicBlock, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method get_basic_block_parent(bb)
@@ -3173,7 +3139,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :get_basic_block_parent, :LLVMGetBasicBlockParent, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method get_basic_block_terminator(bb)
@@ -3181,7 +3147,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :get_basic_block_terminator, :LLVMGetBasicBlockTerminator, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method count_basic_blocks(fn)
@@ -3189,7 +3155,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :count_basic_blocks, :LLVMCountBasicBlocks, [:pointer], :uint
-
+  
   # (Not documented)
   # 
   # @method get_basic_blocks(fn, basic_blocks)
@@ -3198,7 +3164,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :get_basic_blocks, :LLVMGetBasicBlocks, [:pointer, :pointer], :void
-
+  
   # (Not documented)
   # 
   # @method get_first_basic_block(fn)
@@ -3206,7 +3172,7 @@ module LLVM::C
   # @return [FFI::Pointer(BasicBlockRef)] 
   # @scope class
   attach_function :get_first_basic_block, :LLVMGetFirstBasicBlock, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method get_last_basic_block(fn)
@@ -3214,7 +3180,7 @@ module LLVM::C
   # @return [FFI::Pointer(BasicBlockRef)] 
   # @scope class
   attach_function :get_last_basic_block, :LLVMGetLastBasicBlock, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method get_next_basic_block(bb)
@@ -3222,7 +3188,7 @@ module LLVM::C
   # @return [FFI::Pointer(BasicBlockRef)] 
   # @scope class
   attach_function :get_next_basic_block, :LLVMGetNextBasicBlock, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method get_previous_basic_block(bb)
@@ -3230,7 +3196,7 @@ module LLVM::C
   # @return [FFI::Pointer(BasicBlockRef)] 
   # @scope class
   attach_function :get_previous_basic_block, :LLVMGetPreviousBasicBlock, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method get_entry_basic_block(fn)
@@ -3238,7 +3204,7 @@ module LLVM::C
   # @return [FFI::Pointer(BasicBlockRef)] 
   # @scope class
   attach_function :get_entry_basic_block, :LLVMGetEntryBasicBlock, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method append_basic_block_in_context(c, fn, name)
@@ -3248,7 +3214,7 @@ module LLVM::C
   # @return [FFI::Pointer(BasicBlockRef)] 
   # @scope class
   attach_function :append_basic_block_in_context, :LLVMAppendBasicBlockInContext, [:pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method insert_basic_block_in_context(c, bb, name)
@@ -3258,7 +3224,7 @@ module LLVM::C
   # @return [FFI::Pointer(BasicBlockRef)] 
   # @scope class
   attach_function :insert_basic_block_in_context, :LLVMInsertBasicBlockInContext, [:pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method append_basic_block(fn, name)
@@ -3267,7 +3233,7 @@ module LLVM::C
   # @return [FFI::Pointer(BasicBlockRef)] 
   # @scope class
   attach_function :append_basic_block, :LLVMAppendBasicBlock, [:pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method insert_basic_block(insert_before_bb, name)
@@ -3276,7 +3242,7 @@ module LLVM::C
   # @return [FFI::Pointer(BasicBlockRef)] 
   # @scope class
   attach_function :insert_basic_block, :LLVMInsertBasicBlock, [:pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method delete_basic_block(bb)
@@ -3284,7 +3250,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :delete_basic_block, :LLVMDeleteBasicBlock, [:pointer], :void
-
+  
   # (Not documented)
   # 
   # @method remove_basic_block_from_parent(bb)
@@ -3292,7 +3258,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :remove_basic_block_from_parent, :LLVMRemoveBasicBlockFromParent, [:pointer], :void
-
+  
   # (Not documented)
   # 
   # @method move_basic_block_before(bb, move_pos)
@@ -3301,7 +3267,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :move_basic_block_before, :LLVMMoveBasicBlockBefore, [:pointer, :pointer], :void
-
+  
   # (Not documented)
   # 
   # @method move_basic_block_after(bb, move_pos)
@@ -3310,7 +3276,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :move_basic_block_after, :LLVMMoveBasicBlockAfter, [:pointer, :pointer], :void
-
+  
   # (Not documented)
   # 
   # @method get_first_instruction(bb)
@@ -3318,7 +3284,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :get_first_instruction, :LLVMGetFirstInstruction, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method get_last_instruction(bb)
@@ -3326,7 +3292,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :get_last_instruction, :LLVMGetLastInstruction, [:pointer], :pointer
-
+  
   # Operations on instructions
   # 
   # @method get_instruction_parent(inst)
@@ -3334,7 +3300,7 @@ module LLVM::C
   # @return [FFI::Pointer(BasicBlockRef)] 
   # @scope class
   attach_function :get_instruction_parent, :LLVMGetInstructionParent, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method get_next_instruction(inst)
@@ -3342,7 +3308,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :get_next_instruction, :LLVMGetNextInstruction, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method get_previous_instruction(inst)
@@ -3350,7 +3316,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :get_previous_instruction, :LLVMGetPreviousInstruction, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method instruction_erase_from_parent(inst)
@@ -3358,7 +3324,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :instruction_erase_from_parent, :LLVMInstructionEraseFromParent, [:pointer], :void
-
+  
   # (Not documented)
   # 
   # @method get_instruction_opcode(inst)
@@ -3366,7 +3332,7 @@ module LLVM::C
   # @return [Symbol from opcode_enum] 
   # @scope class
   attach_function :get_instruction_opcode, :LLVMGetInstructionOpcode, [:pointer], :opcode
-
+  
   # (Not documented)
   # 
   # @method get_i_cmp_predicate(inst)
@@ -3374,7 +3340,7 @@ module LLVM::C
   # @return [Symbol from int_predicate_enum] 
   # @scope class
   attach_function :get_i_cmp_predicate, :LLVMGetICmpPredicate, [:pointer], :int_predicate
-
+  
   # Operations on call sites
   # 
   # @method set_instruction_call_conv(instr, cc)
@@ -3383,7 +3349,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :set_instruction_call_conv, :LLVMSetInstructionCallConv, [:pointer, :uint], :void
-
+  
   # (Not documented)
   # 
   # @method get_instruction_call_conv(instr)
@@ -3391,7 +3357,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :get_instruction_call_conv, :LLVMGetInstructionCallConv, [:pointer], :uint
-
+  
   # (Not documented)
   # 
   # @method add_instr_attribute(instr, index, attribute)
@@ -3401,7 +3367,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :add_instr_attribute, :LLVMAddInstrAttribute, [:pointer, :uint, :attribute], :void
-
+  
   # (Not documented)
   # 
   # @method remove_instr_attribute(instr, index, attribute)
@@ -3411,7 +3377,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :remove_instr_attribute, :LLVMRemoveInstrAttribute, [:pointer, :uint, :attribute], :void
-
+  
   # (Not documented)
   # 
   # @method set_instr_param_alignment(instr, index, align)
@@ -3421,7 +3387,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :set_instr_param_alignment, :LLVMSetInstrParamAlignment, [:pointer, :uint, :uint], :void
-
+  
   # Operations on call instructions (only)
   # 
   # @method is_tail_call(call_inst)
@@ -3429,7 +3395,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :is_tail_call, :LLVMIsTailCall, [:pointer], :int
-
+  
   # (Not documented)
   # 
   # @method set_tail_call(call_inst, is_tail_call)
@@ -3438,7 +3404,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :set_tail_call, :LLVMSetTailCall, [:pointer, :int], :void
-
+  
   # Operations on switch instructions (only)
   # 
   # @method get_switch_default_dest(switch_instr)
@@ -3446,7 +3412,7 @@ module LLVM::C
   # @return [FFI::Pointer(BasicBlockRef)] 
   # @scope class
   attach_function :get_switch_default_dest, :LLVMGetSwitchDefaultDest, [:pointer], :pointer
-
+  
   # Operations on phi nodes
   # 
   # @method add_incoming(phi_node, incoming_values, incoming_blocks, count)
@@ -3457,7 +3423,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :add_incoming, :LLVMAddIncoming, [:pointer, :pointer, :pointer, :uint], :void
-
+  
   # (Not documented)
   # 
   # @method count_incoming(phi_node)
@@ -3465,7 +3431,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :count_incoming, :LLVMCountIncoming, [:pointer], :uint
-
+  
   # (Not documented)
   # 
   # @method get_incoming_value(phi_node, index)
@@ -3474,7 +3440,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :get_incoming_value, :LLVMGetIncomingValue, [:pointer, :uint], :pointer
-
+  
   # (Not documented)
   # 
   # @method get_incoming_block(phi_node, index)
@@ -3483,7 +3449,7 @@ module LLVM::C
   # @return [FFI::Pointer(BasicBlockRef)] 
   # @scope class
   attach_function :get_incoming_block, :LLVMGetIncomingBlock, [:pointer, :uint], :pointer
-
+  
   # An instruction builder represents a point within a basic block, and is the
   # exclusive means of building instructions using the C interface.
   # 
@@ -3492,14 +3458,14 @@ module LLVM::C
   # @return [FFI::Pointer(BuilderRef)] 
   # @scope class
   attach_function :create_builder_in_context, :LLVMCreateBuilderInContext, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method create_builder()
   # @return [FFI::Pointer(BuilderRef)] 
   # @scope class
   attach_function :create_builder, :LLVMCreateBuilder, [], :pointer
-
+  
   # (Not documented)
   # 
   # @method position_builder(builder, block, instr)
@@ -3509,7 +3475,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :position_builder, :LLVMPositionBuilder, [:pointer, :pointer, :pointer], :void
-
+  
   # (Not documented)
   # 
   # @method position_builder_before(builder, instr)
@@ -3518,7 +3484,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :position_builder_before, :LLVMPositionBuilderBefore, [:pointer, :pointer], :void
-
+  
   # (Not documented)
   # 
   # @method position_builder_at_end(builder, block)
@@ -3527,7 +3493,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :position_builder_at_end, :LLVMPositionBuilderAtEnd, [:pointer, :pointer], :void
-
+  
   # (Not documented)
   # 
   # @method get_insert_block(builder)
@@ -3535,7 +3501,7 @@ module LLVM::C
   # @return [FFI::Pointer(BasicBlockRef)] 
   # @scope class
   attach_function :get_insert_block, :LLVMGetInsertBlock, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method clear_insertion_position(builder)
@@ -3543,7 +3509,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :clear_insertion_position, :LLVMClearInsertionPosition, [:pointer], :void
-
+  
   # (Not documented)
   # 
   # @method insert_into_builder(builder, instr)
@@ -3552,7 +3518,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :insert_into_builder, :LLVMInsertIntoBuilder, [:pointer, :pointer], :void
-
+  
   # (Not documented)
   # 
   # @method insert_into_builder_with_name(builder, instr, name)
@@ -3562,7 +3528,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :insert_into_builder_with_name, :LLVMInsertIntoBuilderWithName, [:pointer, :pointer, :string], :void
-
+  
   # (Not documented)
   # 
   # @method dispose_builder(builder)
@@ -3570,7 +3536,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :dispose_builder, :LLVMDisposeBuilder, [:pointer], :void
-
+  
   # Metadata
   # 
   # @method set_current_debug_location(builder, l)
@@ -3579,7 +3545,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :set_current_debug_location, :LLVMSetCurrentDebugLocation, [:pointer, :pointer], :void
-
+  
   # (Not documented)
   # 
   # @method get_current_debug_location(builder)
@@ -3587,7 +3553,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :get_current_debug_location, :LLVMGetCurrentDebugLocation, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method set_inst_debug_location(builder, inst)
@@ -3596,7 +3562,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :set_inst_debug_location, :LLVMSetInstDebugLocation, [:pointer, :pointer], :void
-
+  
   # Terminators
   # 
   # @method build_ret_void(builder_ref)
@@ -3604,7 +3570,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_ret_void, :LLVMBuildRetVoid, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_ret(builder_ref, v)
@@ -3613,7 +3579,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_ret, :LLVMBuildRet, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_aggregate_ret(builder_ref, ret_vals, n)
@@ -3623,7 +3589,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_aggregate_ret, :LLVMBuildAggregateRet, [:pointer, :pointer, :uint], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_br(builder_ref, dest)
@@ -3632,7 +3598,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_br, :LLVMBuildBr, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_cond_br(builder_ref, if, then, else)
@@ -3643,7 +3609,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_cond_br, :LLVMBuildCondBr, [:pointer, :pointer, :pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_switch(builder_ref, v, else, num_cases)
@@ -3654,7 +3620,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_switch, :LLVMBuildSwitch, [:pointer, :pointer, :pointer, :uint], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_indirect_br(b, addr, num_dests)
@@ -3664,7 +3630,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_indirect_br, :LLVMBuildIndirectBr, [:pointer, :pointer, :uint], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_invoke(builder_ref, fn, args, num_args, then, catch, name)
@@ -3678,7 +3644,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_invoke, :LLVMBuildInvoke, [:pointer, :pointer, :pointer, :uint, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_landing_pad(b, ty, pers_fn, num_clauses, name)
@@ -3690,7 +3656,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_landing_pad, :LLVMBuildLandingPad, [:pointer, :pointer, :pointer, :uint, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_resume(b, exn)
@@ -3699,7 +3665,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_resume, :LLVMBuildResume, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_unreachable(builder_ref)
@@ -3707,7 +3673,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_unreachable, :LLVMBuildUnreachable, [:pointer], :pointer
-
+  
   # Add a case to the switch instruction
   # 
   # @method add_case(switch, on_val, dest)
@@ -3717,7 +3683,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :add_case, :LLVMAddCase, [:pointer, :pointer, :pointer], :void
-
+  
   # Add a destination to the indirectbr instruction
   # 
   # @method add_destination(indirect_br, dest)
@@ -3726,7 +3692,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :add_destination, :LLVMAddDestination, [:pointer, :pointer], :void
-
+  
   # Add a catch or filter clause to the landingpad instruction
   # 
   # @method add_clause(landing_pad, clause_val)
@@ -3735,7 +3701,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :add_clause, :LLVMAddClause, [:pointer, :pointer], :void
-
+  
   # Set the 'cleanup' flag in the landingpad instruction
   # 
   # @method set_cleanup(landing_pad, val)
@@ -3744,7 +3710,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :set_cleanup, :LLVMSetCleanup, [:pointer, :int], :void
-
+  
   # Arithmetic
   # 
   # @method build_add(builder_ref, lhs, rhs, name)
@@ -3755,7 +3721,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_add, :LLVMBuildAdd, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_nsw_add(builder_ref, lhs, rhs, name)
@@ -3766,7 +3732,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_nsw_add, :LLVMBuildNSWAdd, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_nuw_add(builder_ref, lhs, rhs, name)
@@ -3777,7 +3743,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_nuw_add, :LLVMBuildNUWAdd, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_f_add(builder_ref, lhs, rhs, name)
@@ -3788,7 +3754,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_f_add, :LLVMBuildFAdd, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_sub(builder_ref, lhs, rhs, name)
@@ -3799,7 +3765,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_sub, :LLVMBuildSub, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_nsw_sub(builder_ref, lhs, rhs, name)
@@ -3810,7 +3776,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_nsw_sub, :LLVMBuildNSWSub, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_nuw_sub(builder_ref, lhs, rhs, name)
@@ -3821,7 +3787,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_nuw_sub, :LLVMBuildNUWSub, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_f_sub(builder_ref, lhs, rhs, name)
@@ -3832,7 +3798,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_f_sub, :LLVMBuildFSub, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_mul(builder_ref, lhs, rhs, name)
@@ -3843,7 +3809,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_mul, :LLVMBuildMul, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_nsw_mul(builder_ref, lhs, rhs, name)
@@ -3854,7 +3820,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_nsw_mul, :LLVMBuildNSWMul, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_nuw_mul(builder_ref, lhs, rhs, name)
@@ -3865,7 +3831,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_nuw_mul, :LLVMBuildNUWMul, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_f_mul(builder_ref, lhs, rhs, name)
@@ -3876,7 +3842,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_f_mul, :LLVMBuildFMul, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_u_div(builder_ref, lhs, rhs, name)
@@ -3887,7 +3853,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_u_div, :LLVMBuildUDiv, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_s_div(builder_ref, lhs, rhs, name)
@@ -3898,7 +3864,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_s_div, :LLVMBuildSDiv, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_exact_s_div(builder_ref, lhs, rhs, name)
@@ -3909,7 +3875,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_exact_s_div, :LLVMBuildExactSDiv, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_f_div(builder_ref, lhs, rhs, name)
@@ -3920,7 +3886,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_f_div, :LLVMBuildFDiv, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_u_rem(builder_ref, lhs, rhs, name)
@@ -3931,7 +3897,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_u_rem, :LLVMBuildURem, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_s_rem(builder_ref, lhs, rhs, name)
@@ -3942,7 +3908,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_s_rem, :LLVMBuildSRem, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_f_rem(builder_ref, lhs, rhs, name)
@@ -3953,7 +3919,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_f_rem, :LLVMBuildFRem, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_shl(builder_ref, lhs, rhs, name)
@@ -3964,7 +3930,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_shl, :LLVMBuildShl, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_l_shr(builder_ref, lhs, rhs, name)
@@ -3975,7 +3941,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_l_shr, :LLVMBuildLShr, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_a_shr(builder_ref, lhs, rhs, name)
@@ -3986,7 +3952,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_a_shr, :LLVMBuildAShr, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_and(builder_ref, lhs, rhs, name)
@@ -3997,7 +3963,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_and, :LLVMBuildAnd, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_or(builder_ref, lhs, rhs, name)
@@ -4008,7 +3974,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_or, :LLVMBuildOr, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_xor(builder_ref, lhs, rhs, name)
@@ -4019,7 +3985,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_xor, :LLVMBuildXor, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_bin_op(b, op, lhs, rhs, name)
@@ -4031,7 +3997,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_bin_op, :LLVMBuildBinOp, [:pointer, :opcode, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_neg(builder_ref, v, name)
@@ -4041,7 +4007,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_neg, :LLVMBuildNeg, [:pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_nsw_neg(b, v, name)
@@ -4051,7 +4017,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_nsw_neg, :LLVMBuildNSWNeg, [:pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_nuw_neg(b, v, name)
@@ -4061,7 +4027,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_nuw_neg, :LLVMBuildNUWNeg, [:pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_f_neg(builder_ref, v, name)
@@ -4071,7 +4037,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_f_neg, :LLVMBuildFNeg, [:pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_not(builder_ref, v, name)
@@ -4081,7 +4047,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_not, :LLVMBuildNot, [:pointer, :pointer, :string], :pointer
-
+  
   # Memory
   # 
   # @method build_malloc(builder_ref, ty, name)
@@ -4091,7 +4057,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_malloc, :LLVMBuildMalloc, [:pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_array_malloc(builder_ref, ty, val, name)
@@ -4102,7 +4068,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_array_malloc, :LLVMBuildArrayMalloc, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_alloca(builder_ref, ty, name)
@@ -4112,7 +4078,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_alloca, :LLVMBuildAlloca, [:pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_array_alloca(builder_ref, ty, val, name)
@@ -4123,7 +4089,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_array_alloca, :LLVMBuildArrayAlloca, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_free(builder_ref, pointer_val)
@@ -4132,7 +4098,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_free, :LLVMBuildFree, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_load(builder_ref, pointer_val, name)
@@ -4142,7 +4108,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_load, :LLVMBuildLoad, [:pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_store(builder_ref, val, ptr)
@@ -4152,7 +4118,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_store, :LLVMBuildStore, [:pointer, :pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_gep(b, pointer, indices, num_indices, name)
@@ -4164,7 +4130,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_gep, :LLVMBuildGEP, [:pointer, :pointer, :pointer, :uint, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_in_bounds_gep(b, pointer, indices, num_indices, name)
@@ -4176,7 +4142,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_in_bounds_gep, :LLVMBuildInBoundsGEP, [:pointer, :pointer, :pointer, :uint, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_struct_gep(b, pointer, idx, name)
@@ -4187,7 +4153,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_struct_gep, :LLVMBuildStructGEP, [:pointer, :pointer, :uint, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_global_string(b, str, name)
@@ -4197,7 +4163,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_global_string, :LLVMBuildGlobalString, [:pointer, :string, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_global_string_ptr(b, str, name)
@@ -4207,7 +4173,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_global_string_ptr, :LLVMBuildGlobalStringPtr, [:pointer, :string, :string], :pointer
-
+  
   # Casts
   # 
   # @method build_trunc(builder_ref, val, dest_ty, name)
@@ -4218,7 +4184,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_trunc, :LLVMBuildTrunc, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_z_ext(builder_ref, val, dest_ty, name)
@@ -4229,7 +4195,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_z_ext, :LLVMBuildZExt, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_s_ext(builder_ref, val, dest_ty, name)
@@ -4240,7 +4206,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_s_ext, :LLVMBuildSExt, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_fp_to_ui(builder_ref, val, dest_ty, name)
@@ -4251,7 +4217,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_fp_to_ui, :LLVMBuildFPToUI, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_fp_to_si(builder_ref, val, dest_ty, name)
@@ -4262,7 +4228,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_fp_to_si, :LLVMBuildFPToSI, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_ui_to_fp(builder_ref, val, dest_ty, name)
@@ -4273,7 +4239,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_ui_to_fp, :LLVMBuildUIToFP, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_si_to_fp(builder_ref, val, dest_ty, name)
@@ -4284,7 +4250,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_si_to_fp, :LLVMBuildSIToFP, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_fp_trunc(builder_ref, val, dest_ty, name)
@@ -4295,7 +4261,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_fp_trunc, :LLVMBuildFPTrunc, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_fp_ext(builder_ref, val, dest_ty, name)
@@ -4306,7 +4272,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_fp_ext, :LLVMBuildFPExt, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_ptr_to_int(builder_ref, val, dest_ty, name)
@@ -4317,7 +4283,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_ptr_to_int, :LLVMBuildPtrToInt, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_int_to_ptr(builder_ref, val, dest_ty, name)
@@ -4328,7 +4294,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_int_to_ptr, :LLVMBuildIntToPtr, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_bit_cast(builder_ref, val, dest_ty, name)
@@ -4339,7 +4305,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_bit_cast, :LLVMBuildBitCast, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_z_ext_or_bit_cast(builder_ref, val, dest_ty, name)
@@ -4350,7 +4316,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_z_ext_or_bit_cast, :LLVMBuildZExtOrBitCast, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_s_ext_or_bit_cast(builder_ref, val, dest_ty, name)
@@ -4361,7 +4327,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_s_ext_or_bit_cast, :LLVMBuildSExtOrBitCast, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_trunc_or_bit_cast(builder_ref, val, dest_ty, name)
@@ -4372,7 +4338,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_trunc_or_bit_cast, :LLVMBuildTruncOrBitCast, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_cast(b, op, val, dest_ty, name)
@@ -4384,7 +4350,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_cast, :LLVMBuildCast, [:pointer, :opcode, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_pointer_cast(builder_ref, val, dest_ty, name)
@@ -4395,7 +4361,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_pointer_cast, :LLVMBuildPointerCast, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_int_cast(builder_ref, val, dest_ty, name)
@@ -4406,7 +4372,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_int_cast, :LLVMBuildIntCast, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_fp_cast(builder_ref, val, dest_ty, name)
@@ -4417,7 +4383,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_fp_cast, :LLVMBuildFPCast, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # Comparisons
   # 
   # @method build_i_cmp(builder_ref, op, lhs, rhs, name)
@@ -4429,7 +4395,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_i_cmp, :LLVMBuildICmp, [:pointer, :int_predicate, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_f_cmp(builder_ref, op, lhs, rhs, name)
@@ -4441,7 +4407,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_f_cmp, :LLVMBuildFCmp, [:pointer, :real_predicate, :pointer, :pointer, :string], :pointer
-
+  
   # Miscellaneous instructions
   # 
   # @method build_phi(builder_ref, ty, name)
@@ -4451,7 +4417,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_phi, :LLVMBuildPhi, [:pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_call(builder_ref, fn, args, num_args, name)
@@ -4463,7 +4429,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_call, :LLVMBuildCall, [:pointer, :pointer, :pointer, :uint, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_select(builder_ref, if, then, else, name)
@@ -4475,7 +4441,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_select, :LLVMBuildSelect, [:pointer, :pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_va_arg(builder_ref, list, ty, name)
@@ -4486,7 +4452,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_va_arg, :LLVMBuildVAArg, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_extract_element(builder_ref, vec_val, index, name)
@@ -4497,7 +4463,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_extract_element, :LLVMBuildExtractElement, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_insert_element(builder_ref, vec_val, elt_val, index, name)
@@ -4509,7 +4475,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_insert_element, :LLVMBuildInsertElement, [:pointer, :pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_shuffle_vector(builder_ref, v1, v2, mask, name)
@@ -4521,7 +4487,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_shuffle_vector, :LLVMBuildShuffleVector, [:pointer, :pointer, :pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_extract_value(builder_ref, agg_val, index, name)
@@ -4532,7 +4498,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_extract_value, :LLVMBuildExtractValue, [:pointer, :pointer, :uint, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_insert_value(builder_ref, agg_val, elt_val, index, name)
@@ -4544,7 +4510,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_insert_value, :LLVMBuildInsertValue, [:pointer, :pointer, :pointer, :uint, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_is_null(builder_ref, val, name)
@@ -4554,7 +4520,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_is_null, :LLVMBuildIsNull, [:pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_is_not_null(builder_ref, val, name)
@@ -4564,7 +4530,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_is_not_null, :LLVMBuildIsNotNull, [:pointer, :pointer, :string], :pointer
-
+  
   # (Not documented)
   # 
   # @method build_ptr_diff(builder_ref, lhs, rhs, name)
@@ -4575,7 +4541,7 @@ module LLVM::C
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :build_ptr_diff, :LLVMBuildPtrDiff, [:pointer, :pointer, :pointer, :string], :pointer
-
+  
   # Changes the type of M so it can be passed to FunctionPassManagers and the
   # JIT.  They take ModuleProviders for historical reasons.
   # 
@@ -4584,7 +4550,7 @@ module LLVM::C
   # @return [FFI::Pointer(ModuleProviderRef)] 
   # @scope class
   attach_function :create_module_provider_for_existing_module, :LLVMCreateModuleProviderForExistingModule, [:pointer], :pointer
-
+  
   # Destroys the module M.
   # 
   # @method dispose_module_provider(m)
@@ -4592,7 +4558,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :dispose_module_provider, :LLVMDisposeModuleProvider, [:pointer], :void
-
+  
   # ===-- Memory buffers ----------------------------------------------------===
   # 
   # @method create_memory_buffer_with_contents_of_file(path, out_mem_buf, out_message)
@@ -4602,7 +4568,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :create_memory_buffer_with_contents_of_file, :LLVMCreateMemoryBufferWithContentsOfFile, [:string, :pointer, :pointer], :int
-
+  
   # (Not documented)
   # 
   # @method create_memory_buffer_with_stdin(out_mem_buf, out_message)
@@ -4611,7 +4577,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :create_memory_buffer_with_stdin, :LLVMCreateMemoryBufferWithSTDIN, [:pointer, :pointer], :int
-
+  
   # (Not documented)
   # 
   # @method dispose_memory_buffer(mem_buf)
@@ -4619,7 +4585,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :dispose_memory_buffer, :LLVMDisposeMemoryBuffer, [:pointer], :void
-
+  
   # Return the global pass registry, for use with initialization functions.
   #     See llvm::PassRegistry::getPassRegistry.
   # 
@@ -4627,7 +4593,7 @@ module LLVM::C
   # @return [FFI::Pointer(PassRegistryRef)] 
   # @scope class
   attach_function :get_global_pass_registry, :LLVMGetGlobalPassRegistry, [], :pointer
-
+  
   # Constructs a new whole-module pass pipeline. This type of pipeline is
   #     suitable for link-time optimization and whole-module transformations.
   #     See llvm::PassManager::PassManager.
@@ -4636,7 +4602,7 @@ module LLVM::C
   # @return [FFI::Pointer(PassManagerRef)] 
   # @scope class
   attach_function :create_pass_manager, :LLVMCreatePassManager, [], :pointer
-
+  
   # Constructs a new function-by-function pass pipeline over the module
   #     provider. It does not take ownership of the module provider. This type of
   #     pipeline is suitable for code generation and JIT compilation tasks.
@@ -4647,7 +4613,7 @@ module LLVM::C
   # @return [FFI::Pointer(PassManagerRef)] 
   # @scope class
   attach_function :create_function_pass_manager_for_module, :LLVMCreateFunctionPassManagerForModule, [:pointer], :pointer
-
+  
   # Deprecated: Use LLVMCreateFunctionPassManagerForModule instead.
   # 
   # @method create_function_pass_manager(mp)
@@ -4655,7 +4621,7 @@ module LLVM::C
   # @return [FFI::Pointer(PassManagerRef)] 
   # @scope class
   attach_function :create_function_pass_manager, :LLVMCreateFunctionPassManager, [:pointer], :pointer
-
+  
   # Initializes, executes on the provided module, and finalizes all of the
   #     passes scheduled in the pass manager. Returns 1 if any of the passes
   #     modified the module, 0 otherwise. See llvm::PassManager::run(Module&).
@@ -4666,7 +4632,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :run_pass_manager, :LLVMRunPassManager, [:pointer, :pointer], :int
-
+  
   # Initializes all of the function passes scheduled in the function pass
   #     manager. Returns 1 if any of the passes modified the module, 0 otherwise.
   #     See llvm::FunctionPassManager::doInitialization.
@@ -4676,7 +4642,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :initialize_function_pass_manager, :LLVMInitializeFunctionPassManager, [:pointer], :int
-
+  
   # Executes all of the function passes scheduled in the function pass manager
   #     on the provided function. Returns 1 if any of the passes modified the
   #     function, false otherwise.
@@ -4688,7 +4654,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :run_function_pass_manager, :LLVMRunFunctionPassManager, [:pointer, :pointer], :int
-
+  
   # Finalizes all of the function passes scheduled in in the function pass
   #     manager. Returns 1 if any of the passes modified the module, 0 otherwise.
   #     See llvm::FunctionPassManager::doFinalization.
@@ -4698,7 +4664,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :finalize_function_pass_manager, :LLVMFinalizeFunctionPassManager, [:pointer], :int
-
+  
   # Frees the memory of a pass pipeline. For function pipelines, does not free
   #     the module provider.
   #     See llvm::PassManagerBase::~PassManagerBase.
@@ -4708,5 +4674,5 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :dispose_pass_manager, :LLVMDisposePassManager, [:pointer], :void
-
+  
 end

@@ -5,7 +5,7 @@ require 'ffi'
 module LLVM::C
   extend FFI::Library
   ffi_lib 'LLVM-3.0'
-
+  
   # (Not documented)
   # 
   # @method initialize_core(r)
@@ -13,7 +13,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :initialize_core, :LLVMInitializeCore, [:pointer], :void
-
+  
   # (Not documented)
   # 
   # @method initialize_transform_utils(r)
@@ -21,7 +21,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :initialize_transform_utils, :LLVMInitializeTransformUtils, [:pointer], :void
-
+  
   # (Not documented)
   # 
   # @method initialize_scalar_opts(r)
@@ -29,7 +29,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :initialize_scalar_opts, :LLVMInitializeScalarOpts, [:pointer], :void
-
+  
   # (Not documented)
   # 
   # @method initialize_inst_combine(r)
@@ -37,7 +37,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :initialize_inst_combine, :LLVMInitializeInstCombine, [:pointer], :void
-
+  
   # (Not documented)
   # 
   # @method initialize_ipo(r)
@@ -45,7 +45,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :initialize_ipo, :LLVMInitializeIPO, [:pointer], :void
-
+  
   # (Not documented)
   # 
   # @method initialize_instrumentation(r)
@@ -53,7 +53,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :initialize_instrumentation, :LLVMInitializeInstrumentation, [:pointer], :void
-
+  
   # (Not documented)
   # 
   # @method initialize_analysis(r)
@@ -61,7 +61,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :initialize_analysis, :LLVMInitializeAnalysis, [:pointer], :void
-
+  
   # (Not documented)
   # 
   # @method initialize_ipa(r)
@@ -69,7 +69,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :initialize_ipa, :LLVMInitializeIPA, [:pointer], :void
-
+  
   # (Not documented)
   # 
   # @method initialize_code_gen(r)
@@ -77,7 +77,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :initialize_code_gen, :LLVMInitializeCodeGen, [:pointer], :void
-
+  
   # (Not documented)
   # 
   # @method initialize_target(r)
@@ -85,5 +85,5 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :initialize_target, :LLVMInitializeTarget, [:pointer], :void
-
+  
 end

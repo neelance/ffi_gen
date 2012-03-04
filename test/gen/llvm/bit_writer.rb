@@ -5,7 +5,7 @@ require 'ffi'
 module LLVM::C
   extend FFI::Library
   ffi_lib 'LLVM-3.0'
-
+  
   # (Not documented)
   # 
   # @method write_bitcode_to_file(m, path)
@@ -14,7 +14,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :write_bitcode_to_file, :LLVMWriteBitcodeToFile, [:pointer, :string], :int
-
+  
   # Writes a module to an open file descriptor. Returns 0 on success.
   # 
   # @method write_bitcode_to_fd(m, fd, should_close, unbuffered)
@@ -25,7 +25,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :write_bitcode_to_fd, :LLVMWriteBitcodeToFD, [:pointer, :int, :int, :int], :int
-
+  
   # Deprecated for LLVMWriteBitcodeToFD. Writes a module to an open file
   #     descriptor. Returns 0 on success. Closes the Handle.
   # 
@@ -35,5 +35,5 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :write_bitcode_to_file_handle, :LLVMWriteBitcodeToFileHandle, [:pointer, :int], :int
-
+  
 end

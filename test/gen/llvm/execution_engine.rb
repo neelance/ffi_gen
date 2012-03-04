@@ -5,35 +5,29 @@ require 'ffi'
 module LLVM::C
   extend FFI::Library
   ffi_lib 'LLVM-3.0'
-
+  
   # (Not documented)
   # 
   # @method link_in_jit()
   # @return [nil] 
   # @scope class
   attach_function :link_in_jit, :LLVMLinkInJIT, [], :void
-
+  
   # (Not documented)
   # 
   # @method link_in_interpreter()
   # @return [nil] 
   # @scope class
   attach_function :link_in_interpreter, :LLVMLinkInInterpreter, [], :void
-
+  
   # (Not documented)
-  # 
-  # = Fields:
-  #
   class OpaqueGenericValue < FFI::Struct
   end
-
+  
   # (Not documented)
-  # 
-  # = Fields:
-  #
   class OpaqueExecutionEngine < FFI::Struct
   end
-
+  
   # ===-- Operations on generic values --------------------------------------===
   # 
   # @method create_generic_value_of_int(ty, n, is_signed)
@@ -43,7 +37,7 @@ module LLVM::C
   # @return [FFI::Pointer(GenericValueRef)] 
   # @scope class
   attach_function :create_generic_value_of_int, :LLVMCreateGenericValueOfInt, [:pointer, :ulong_long, :int], :pointer
-
+  
   # (Not documented)
   # 
   # @method create_generic_value_of_pointer(p)
@@ -51,7 +45,7 @@ module LLVM::C
   # @return [FFI::Pointer(GenericValueRef)] 
   # @scope class
   attach_function :create_generic_value_of_pointer, :LLVMCreateGenericValueOfPointer, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method create_generic_value_of_float(ty, n)
@@ -60,7 +54,7 @@ module LLVM::C
   # @return [FFI::Pointer(GenericValueRef)] 
   # @scope class
   attach_function :create_generic_value_of_float, :LLVMCreateGenericValueOfFloat, [:pointer, :double], :pointer
-
+  
   # (Not documented)
   # 
   # @method generic_value_int_width(gen_val_ref)
@@ -68,7 +62,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :generic_value_int_width, :LLVMGenericValueIntWidth, [:pointer], :uint
-
+  
   # (Not documented)
   # 
   # @method generic_value_to_int(gen_val, is_signed)
@@ -77,7 +71,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :generic_value_to_int, :LLVMGenericValueToInt, [:pointer, :int], :ulong_long
-
+  
   # (Not documented)
   # 
   # @method generic_value_to_pointer(gen_val)
@@ -85,7 +79,7 @@ module LLVM::C
   # @return [FFI::Pointer(*Void)] 
   # @scope class
   attach_function :generic_value_to_pointer, :LLVMGenericValueToPointer, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method generic_value_to_float(ty_ref, gen_val)
@@ -94,7 +88,7 @@ module LLVM::C
   # @return [Float] 
   # @scope class
   attach_function :generic_value_to_float, :LLVMGenericValueToFloat, [:pointer, :pointer], :double
-
+  
   # (Not documented)
   # 
   # @method dispose_generic_value(gen_val)
@@ -102,7 +96,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :dispose_generic_value, :LLVMDisposeGenericValue, [:pointer], :void
-
+  
   # ===-- Operations on execution engines -----------------------------------===
   # 
   # @method create_execution_engine_for_module(out_ee, m, out_error)
@@ -112,7 +106,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :create_execution_engine_for_module, :LLVMCreateExecutionEngineForModule, [:pointer, :pointer, :pointer], :int
-
+  
   # (Not documented)
   # 
   # @method create_interpreter_for_module(out_interp, m, out_error)
@@ -122,7 +116,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :create_interpreter_for_module, :LLVMCreateInterpreterForModule, [:pointer, :pointer, :pointer], :int
-
+  
   # (Not documented)
   # 
   # @method create_jit_compiler_for_module(out_jit, m, opt_level, out_error)
@@ -133,7 +127,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :create_jit_compiler_for_module, :LLVMCreateJITCompilerForModule, [:pointer, :pointer, :uint, :pointer], :int
-
+  
   # Deprecated: Use LLVMCreateExecutionEngineForModule instead.
   # 
   # @method create_execution_engine(out_ee, mp, out_error)
@@ -143,7 +137,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :create_execution_engine, :LLVMCreateExecutionEngine, [:pointer, :pointer, :pointer], :int
-
+  
   # Deprecated: Use LLVMCreateInterpreterForModule instead.
   # 
   # @method create_interpreter(out_interp, mp, out_error)
@@ -153,7 +147,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :create_interpreter, :LLVMCreateInterpreter, [:pointer, :pointer, :pointer], :int
-
+  
   # Deprecated: Use LLVMCreateJITCompilerForModule instead.
   # 
   # @method create_jit_compiler(out_jit, mp, opt_level, out_error)
@@ -164,7 +158,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :create_jit_compiler, :LLVMCreateJITCompiler, [:pointer, :pointer, :uint, :pointer], :int
-
+  
   # (Not documented)
   # 
   # @method dispose_execution_engine(ee)
@@ -172,7 +166,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :dispose_execution_engine, :LLVMDisposeExecutionEngine, [:pointer], :void
-
+  
   # (Not documented)
   # 
   # @method run_static_constructors(ee)
@@ -180,7 +174,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :run_static_constructors, :LLVMRunStaticConstructors, [:pointer], :void
-
+  
   # (Not documented)
   # 
   # @method run_static_destructors(ee)
@@ -188,7 +182,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :run_static_destructors, :LLVMRunStaticDestructors, [:pointer], :void
-
+  
   # (Not documented)
   # 
   # @method run_function_as_main(ee, f, arg_c, arg_v, env_p)
@@ -200,7 +194,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :run_function_as_main, :LLVMRunFunctionAsMain, [:pointer, :pointer, :uint, :pointer, :pointer], :int
-
+  
   # (Not documented)
   # 
   # @method run_function(ee, f, num_args, args)
@@ -211,7 +205,7 @@ module LLVM::C
   # @return [FFI::Pointer(GenericValueRef)] 
   # @scope class
   attach_function :run_function, :LLVMRunFunction, [:pointer, :pointer, :uint, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method free_machine_code_for_function(ee, f)
@@ -220,7 +214,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :free_machine_code_for_function, :LLVMFreeMachineCodeForFunction, [:pointer, :pointer], :void
-
+  
   # (Not documented)
   # 
   # @method add_module(ee, m)
@@ -229,7 +223,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :add_module, :LLVMAddModule, [:pointer, :pointer], :void
-
+  
   # Deprecated: Use LLVMAddModule instead.
   # 
   # @method add_module_provider(ee, mp)
@@ -238,7 +232,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :add_module_provider, :LLVMAddModuleProvider, [:pointer, :pointer], :void
-
+  
   # (Not documented)
   # 
   # @method remove_module(ee, m, out_mod, out_error)
@@ -249,7 +243,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :remove_module, :LLVMRemoveModule, [:pointer, :pointer, :pointer, :pointer], :int
-
+  
   # Deprecated: Use LLVMRemoveModule instead.
   # 
   # @method remove_module_provider(ee, mp, out_mod, out_error)
@@ -260,7 +254,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :remove_module_provider, :LLVMRemoveModuleProvider, [:pointer, :pointer, :pointer, :pointer], :int
-
+  
   # (Not documented)
   # 
   # @method find_function(ee, name, out_fn)
@@ -270,7 +264,7 @@ module LLVM::C
   # @return [Integer] 
   # @scope class
   attach_function :find_function, :LLVMFindFunction, [:pointer, :string, :pointer], :int
-
+  
   # (Not documented)
   # 
   # @method recompile_and_relink_function(ee, fn)
@@ -279,7 +273,7 @@ module LLVM::C
   # @return [FFI::Pointer(*Void)] 
   # @scope class
   attach_function :recompile_and_relink_function, :LLVMRecompileAndRelinkFunction, [:pointer, :pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method get_execution_engine_target_data(ee)
@@ -287,7 +281,7 @@ module LLVM::C
   # @return [FFI::Pointer(TargetDataRef)] 
   # @scope class
   attach_function :get_execution_engine_target_data, :LLVMGetExecutionEngineTargetData, [:pointer], :pointer
-
+  
   # (Not documented)
   # 
   # @method add_global_mapping(ee, global, addr)
@@ -297,7 +291,7 @@ module LLVM::C
   # @return [nil] 
   # @scope class
   attach_function :add_global_mapping, :LLVMAddGlobalMapping, [:pointer, :pointer, :pointer], :void
-
+  
   # (Not documented)
   # 
   # @method get_pointer_to_global(ee, global)
@@ -306,5 +300,5 @@ module LLVM::C
   # @return [FFI::Pointer(*Void)] 
   # @scope class
   attach_function :get_pointer_to_global, :LLVMGetPointerToGlobal, [:pointer, :pointer], :pointer
-
+  
 end
