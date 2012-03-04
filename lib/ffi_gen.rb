@@ -71,7 +71,6 @@ class FFIGen
         writer.puts "", "@return [Array<Symbol>]"
       end
       
-      ruby_name = @generator.to_ruby_lowercase @name
       writer.puts "def self.#{ruby_name}_enum"
       writer.indent do
         writer.puts "[#{@constants.map{ |constant| constant[:symbol] }.join(', ')}]"
@@ -85,12 +84,16 @@ class FFIGen
       writer.puts "]", ""
     end
     
+    def ruby_name
+      @ruby_name ||= @generator.to_ruby_lowercase @name
+    end
+    
     def type_name(short)
-      short ? @name : "Symbol from #{@generator.to_ruby_lowercase @name}_enum"
+      short ? @name : "Symbol from #{ruby_name}_enum"
     end
     
     def reference
-      ":#{@generator.to_ruby_lowercase @name}"
+      ":#{ruby_name}"
     end
   end
   
@@ -120,7 +123,7 @@ class FFIGen
         end
       end
       
-      writer.puts "class #{@generator.to_ruby_camelcase @name} < FFI::Struct"
+      writer.puts "class #{ruby_name} < FFI::Struct"
       writer.indent do
         writer.write_array @fields, ",", "layout ", "       " do |field|
           "#{field[:symbol]}, #{@generator.to_ffi_type field[:type]}"
@@ -129,12 +132,16 @@ class FFIGen
       writer.puts "end", ""
     end
     
+    def ruby_name
+      @ruby_name ||= @generator.to_ruby_camelcase @name
+    end
+    
     def type_name(short)
-      @generator.to_ruby_camelcase @name
+      ruby_name
     end
     
     def reference
-      "#{type_name(false)}.by_value"
+      "#{ruby_name}.by_value"
     end
   end
   
@@ -151,14 +158,11 @@ class FFIGen
     end
     
     def write(writer)
-      ruby_name = @generator.to_ruby_lowercase @name
       @parameters.each do |parameter|
         parameter[:ruby_type] = @generator.to_type_name parameter[:type]
         parameter[:ruby_name] = @generator.to_ruby_lowercase(parameter[:name].empty? ? @generator.to_type_name(parameter[:type], true) : parameter[:name])
         parameter[:description] = []
       end
-      
-      ffi_signature = "[#{@parameters.map{ |parameter| @generator.to_ffi_type parameter[:type] }.join(', ')}], #{@generator.to_ffi_type @return_type}"
       
       function_description = []
       return_value_description = []
@@ -189,6 +193,8 @@ class FFIGen
         writer.write_description return_value_description, false, "@return [#{@generator.to_type_name @return_type}] ", "  "
         writer.puts "@scope class"
       end
+      
+      ffi_signature = "[#{@parameters.map{ |parameter| @generator.to_ffi_type parameter[:type] }.join(', ')}], #{@generator.to_ffi_type @return_type}"
       if @is_callback
         writer.puts "callback :#{ruby_name}, #{ffi_signature}", ""
       else
@@ -196,12 +202,16 @@ class FFIGen
       end
     end
     
+    def ruby_name
+      @ruby_name ||= @generator.to_ruby_lowercase @name
+    end
+    
     def type_name(short)
-      "Proc(#{@generator.to_ruby_lowercase @name}_callback)"
+      "Proc(#{ruby_name}_callback)"
     end
     
     def reference
-      ":#{@generator.to_ruby_lowercase @name}"
+      ":#{ruby_name}"
     end
   end
   
