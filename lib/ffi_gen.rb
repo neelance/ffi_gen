@@ -27,7 +27,7 @@ class FFIGen
   end
   
   class Enum
-    attr_reader :constants
+    attr_reader :constants, :comment
     
     def initialize(generator, name, comment)
       @generator = generator
@@ -89,7 +89,7 @@ class FFIGen
   end
   
   class Struct
-    attr_reader :fields, :written
+    attr_reader :fields, :comment, :written
     
     def initialize(generator, name, comment)
       @generator = generator
@@ -132,7 +132,7 @@ class FFIGen
   end
   
   class Function
-    attr_reader :name, :parameters
+    attr_reader :name, :parameters, :comment
     attr_accessor :return_type
     
     def initialize(generator, name, is_callback, comment)
@@ -376,7 +376,7 @@ class FFIGen
             @declarations[name] = Constant.new self, name, value
           end 
         end
-            
+        
       end
     end
 
@@ -402,6 +402,9 @@ class FFIGen
   end
   
   def read_named_declaration(declaration, name, comment)
+    old_declaration = @declarations.delete name
+    comment = "#{old_declaration.comment}\n#{comment}" if old_declaration
+
     case declaration[:kind]
     when :enum_decl
       enum = Enum.new self, name, comment
@@ -455,7 +458,7 @@ class FFIGen
           read_named_declaration struct_child, child_name, ""
         end
       end
-
+      
       @declarations[name] = struct
       
     end
