@@ -2,7 +2,7 @@
 
 require 'ffi'
 
-module LLVM::C
+module LLVM
   extend FFI::Library
   ffi_lib 'LLVM-3.0'
   
