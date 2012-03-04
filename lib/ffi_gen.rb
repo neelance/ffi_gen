@@ -63,19 +63,16 @@ class FFIGen
       
       writer.comment do
         writer.write_description @comment
+        writer.puts "", "<em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:#{ruby_name}).</em>"
         writer.puts "", "=== Options:"
         @constants.each do |constant|
           writer.puts "#{constant[:symbol]} ::"
           writer.write_description constant[:comment], false, "  ", "  "
         end
-        writer.puts "", "@return [Array<Symbol>]"
+        writer.puts "", "@method _enum_#{ruby_name}_", "@return [Symbol]", "@scope class"
       end
       
-      writer.puts "def self.#{ruby_name}_enum"
-      writer.indent do
-        writer.puts "[#{@constants.map{ |constant| constant[:symbol] }.join(', ')}]"
-      end
-      writer.puts "end", "enum :#{ruby_name}, ["
+      writer.puts "enum :#{ruby_name}, ["
       writer.indent do
         writer.write_array @constants, "," do |constant|
           "#{constant[:symbol]}#{constant[:value] ? ", #{constant[:value]}" : ''}"
@@ -89,7 +86,7 @@ class FFIGen
     end
     
     def type_name(short)
-      short ? @name : "Symbol from #{ruby_name}_enum"
+      short ? @name : "Symbol from _enum_#{ruby_name}_"
     end
     
     def reference
@@ -182,11 +179,9 @@ class FFIGen
       end
       
       writer.comment do
-        if @is_callback
-          writer.puts "<em>This is no real method. This entry is only for documentation of the callback.</em>", ""
-        end
         writer.write_description function_description
-        writer.puts "", "@method #{ruby_name}#{@is_callback ? '_callback' : ''}(#{@parameters.map{ |parameter| parameter[:ruby_name] }.join(', ')})"
+        writer.puts "", "<em>This entry is only for documentation and no real method.</em>" if @is_callback
+        writer.puts "", "@method #{@is_callback ? "_callback_#{ruby_name}_" : ruby_name}(#{@parameters.map{ |parameter| parameter[:ruby_name] }.join(', ')})"
         @parameters.each do |parameter|
           writer.write_description parameter[:description], false, "@param [#{parameter[:ruby_type]}] #{parameter[:ruby_name]} ", "  "
         end
@@ -207,7 +202,7 @@ class FFIGen
     end
     
     def type_name(short)
-      "Proc(#{ruby_name}_callback)"
+      "Proc(_callback_#{ruby_name}_)"
     end
     
     def reference
