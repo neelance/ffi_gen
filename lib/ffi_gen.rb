@@ -24,6 +24,8 @@ class Clang::String
 end
 
 class FFIGen
+  RUBY_KEYWORDS = %w{alias allocate and begin break case class def defined do else elsif end ensure false for if in initialize module next nil not or redo rescue retry return self super then true undef unless until when while yield}
+
   class Enum
     attr_reader :constants
     
@@ -198,7 +200,7 @@ class FFIGen
     end
     
     def ruby_name
-      @ruby_name ||= @generator.to_ruby_lowercase @name
+      @ruby_name ||= @generator.to_ruby_lowercase @name, true
     end
     
     def type_name(short)
@@ -207,6 +209,18 @@ class FFIGen
     
     def reference
       ":#{ruby_name}"
+    end
+  end
+  
+  class Constant
+    def initialize(generator, name, value)
+      @generator = generator
+      @name = name
+      @value = value
+    end
+    
+    def write(writer)
+      writer.puts "#{@generator.to_ruby_lowercase(@name, true).upcase} = #{@value}", ""
     end
   end
   
@@ -296,7 +310,7 @@ class FFIGen
     args_ptr.write_array_of_pointer pointers
     
     index = Clang.create_index 0, 0
-    @translation_unit = Clang.parse_translation_unit index, File.join(File.dirname(__FILE__), "ffi_gen/empty.h"), args_ptr, args.size, nil, 0, 0
+    @translation_unit = Clang.parse_translation_unit index, File.join(File.dirname(__FILE__), "ffi_gen/empty.h"), args_ptr, args.size, nil, 0, Clang.enum_type(:translation_unit_flags)[:detailed_preprocessing_record]
     
     Clang.get_num_diagnostics(@translation_unit).times do |i|
       diag = Clang.get_diagnostic @translation_unit, i
@@ -368,7 +382,22 @@ class FFIGen
             callback.parameters << { name: param_name, type: param_type }
           end
         end
+      
+      when :macro_definition
+        tokens_ptr_ptr = FFI::MemoryPointer.new :pointer
+        num_tokens_ptr = FFI::MemoryPointer.new :uint
+        Clang.tokenize translation_unit, extent, tokens_ptr_ptr, num_tokens_ptr
+        num_tokens = num_tokens_ptr.read_uint
+        tokens_ptr = FFI::Pointer.new Clang::Token, tokens_ptr_ptr.read_pointer
         
+        if num_tokens == 3
+          token = Clang::Token.new tokens_ptr[1]
+          if Clang.get_token_kind(token) == :literal
+            value = Clang.get_token_spelling(translation_unit, token).to_s_and_dispose
+            @declarations[name] = Constant.new self, name, value
+          end 
+        end
+            
       end
     end
 
@@ -536,7 +565,7 @@ class FFIGen
     end
   end
   
-  def to_ruby_lowercase(str)
+  def to_ruby_lowercase(str, avoid_keywords = false)
     str = str.dup
     str.sub! /^(#{@prefixes.join('|')})/, '' # remove prefixes
     str.gsub! /([A-Z][a-z])/, '_\1' # add underscores before word beginnings
@@ -544,6 +573,8 @@ class FFIGen
     str.sub! /^_*/, '' # remove underscores at the beginning
     str.gsub! /__+/, '_' # replace multiple underscores by only one
     str.downcase!
+    str.sub! /^\d/, '_\1' # fix illegal beginnings
+    str = "_#{str}" if avoid_keywords and RUBY_KEYWORDS.include? str
     str
   end
   
