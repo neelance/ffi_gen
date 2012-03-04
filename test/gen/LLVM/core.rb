@@ -1959,7 +1959,7 @@ module LLVM
   # @method const_int_of_arbitrary_precision(int_ty, num_words, words)
   # @param [FFI::Pointer(TypeRef)] int_ty 
   # @param [Integer] num_words 
-  # @param [FFI::Pointer(*uint64_t)] words 
+  # @param [FFI::Pointer(*Uint64T)] words 
   # @return [FFI::Pointer(ValueRef)] 
   # @scope class
   attach_function :const_int_of_arbitrary_precision, :LLVMConstIntOfArbitraryPrecision, [:pointer, :uint, :pointer], :pointer

@@ -117,7 +117,7 @@ module LLVM
   # 
   # @method _callback_symbol_lookup_callback_(reference_value, reference_type, reference_pc, reference_name)
   # @param [Integer] reference_value 
-  # @param [FFI::Pointer(*uint64_t)] reference_type 
+  # @param [FFI::Pointer(*Uint64T)] reference_type 
   # @param [Integer] reference_pc 
   # @param [FFI::Pointer(**Char_S)] reference_name 
   # @return [FFI::Pointer(*Void)] 
@@ -159,7 +159,7 @@ module LLVM
   # 
   # @method disasm_instruction(dc, bytes, bytes_size, pc, out_string, out_string_size)
   # @param [FFI::Pointer(DisasmContextRef)] dc 
-  # @param [FFI::Pointer(*uint8_t)] bytes 
+  # @param [FFI::Pointer(*Uint8T)] bytes 
   # @param [Integer] bytes_size 
   # @param [Integer] pc 
   # @param [String] out_string 

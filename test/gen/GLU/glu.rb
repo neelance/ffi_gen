@@ -641,7 +641,7 @@ module GLU
   # @method nurbs_callback(nurb, which, call_back_func)
   # @param [FFI::Pointer(*GLUnurbs)] nurb 
   # @param [Integer] which 
-  # @param [FFI::Pointer(_GLUfuncptr)] call_back_func 
+  # @param [FFI::Pointer(GLUfuncptr)] call_back_func 
   # @return [nil] 
   # @scope class
   attach_function :nurbs_callback, :gluNurbsCallback, [:pointer, :uint, :pointer], :void
@@ -787,7 +787,7 @@ module GLU
   # @method quadric_callback(quad, which, call_back_func)
   # @param [FFI::Pointer(*GLUquadric)] quad 
   # @param [Integer] which 
-  # @param [FFI::Pointer(_GLUfuncptr)] call_back_func 
+  # @param [FFI::Pointer(GLUfuncptr)] call_back_func 
   # @return [nil] 
   # @scope class
   attach_function :quadric_callback, :gluQuadricCallback, [:pointer, :uint, :pointer], :void
@@ -877,7 +877,7 @@ module GLU
   # @method tess_callback(tess, which, call_back_func)
   # @param [FFI::Pointer(*GLUtesselator)] tess 
   # @param [Integer] which 
-  # @param [FFI::Pointer(_GLUfuncptr)] call_back_func 
+  # @param [FFI::Pointer(GLUfuncptr)] call_back_func 
   # @return [nil] 
   # @scope class
   attach_function :tess_callback, :gluTessCallback, [:pointer, :uint, :pointer], :void

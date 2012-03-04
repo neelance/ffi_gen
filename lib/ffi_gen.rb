@@ -581,6 +581,8 @@ class FFIGen
   def to_ruby_camelcase(str)
     str = str.dup
     str.sub! /^(#{@prefixes.join('|')})/, '' # remove prefixes
+    str.gsub!(/(^|_)[a-z]/) { |match| match.upcase } # make word beginnings upcased
+    str.gsub! '_', '' # remove all underscores
     str
   end
   
