@@ -89,13 +89,14 @@ class FFIGen
   end
   
   class Struct
-    attr_reader :fields
+    attr_reader :fields, :written
     
     def initialize(generator, name, comment)
       @generator = generator
       @name = name
       @comment = comment
       @fields = []
+      @written = false
     end
     
     def write(writer)
@@ -121,6 +122,8 @@ class FFIGen
         end
       end
       writer.puts "end", ""
+      
+      @written = true
     end
     
     def ruby_name
@@ -500,7 +503,7 @@ class FFIGen
       when :record
         pointee_name = Clang.get_cursor_spelling(Clang.get_type_declaration(pointee_type)).to_s_and_dispose
         pointee_declaration = !pointee_name.empty? && @declarations[pointee_name]
-        result = pointee_declaration.ruby_name if pointee_declaration
+        result = pointee_declaration.ruby_name if pointee_declaration and pointee_declaration.written
       when :function_proto
         result = ":#{declaration.ruby_name}" if declaration
       end
@@ -538,7 +541,7 @@ class FFIGen
       when :record
         pointee_name = Clang.get_cursor_spelling(Clang.get_type_declaration(pointee_type)).to_s_and_dispose
         pointee_declaration = !pointee_name.empty? && @declarations[pointee_name]
-        result = pointee_declaration.ruby_name if pointee_declaration
+        result = pointee_declaration.ruby_name if pointee_declaration and pointee_declaration.written
       when :function_proto
         result = "Proc(_callback_#{declaration.ruby_name}_)" if declaration
       end
