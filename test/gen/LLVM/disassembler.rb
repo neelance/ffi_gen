@@ -6,6 +6,24 @@ module LLVM
   extend FFI::Library
   ffi_lib 'LLVM-3.0'
   
+  DISASSEMBLER_VARIANT_KIND_NONE = 0
+  
+  DISASSEMBLER_VARIANT_KIND_ARM_HI16 = 1
+  
+  DISASSEMBLER_VARIANT_KIND_ARM_LO16 = 2
+  
+  DISASSEMBLER_REFERENCE_TYPE_IN_OUT_NONE = 0
+  
+  DISASSEMBLER_REFERENCE_TYPE_IN_BRANCH = 1
+  
+  DISASSEMBLER_REFERENCE_TYPE_IN_P_CREL_LOAD = 2
+  
+  DISASSEMBLER_REFERENCE_TYPE_OUT_SYMBOL_STUB = 1
+  
+  DISASSEMBLER_REFERENCE_TYPE_OUT_LIT_POOL_SYM_ADDR = 2
+  
+  DISASSEMBLER_REFERENCE_TYPE_OUT_LIT_POOL_CSTR_ADDR = 3
+  
   # The type for the operand information call back function.  This is called to
   # get the symbolic information for an operand of an instruction.  Typically
   # this is from the relocation information, symbol table, etc.  That block of
