@@ -331,34 +331,34 @@ module GLU
   # (Not documented)
   # 
   # @method begin_curve(nurb)
-  # @param [FFI::Pointer(*GLUnurbs)] nurb 
+  # @param [GLUnurbs] nurb 
   # @return [nil] 
   # @scope class
-  attach_function :begin_curve, :gluBeginCurve, [:pointer], :void
+  attach_function :begin_curve, :gluBeginCurve, [GLUnurbs], :void
   
   # (Not documented)
   # 
   # @method begin_polygon(tess)
-  # @param [FFI::Pointer(*GLUtesselator)] tess 
+  # @param [GLUtesselator] tess 
   # @return [nil] 
   # @scope class
-  attach_function :begin_polygon, :gluBeginPolygon, [:pointer], :void
+  attach_function :begin_polygon, :gluBeginPolygon, [GLUtesselator], :void
   
   # (Not documented)
   # 
   # @method begin_surface(nurb)
-  # @param [FFI::Pointer(*GLUnurbs)] nurb 
+  # @param [GLUnurbs] nurb 
   # @return [nil] 
   # @scope class
-  attach_function :begin_surface, :gluBeginSurface, [:pointer], :void
+  attach_function :begin_surface, :gluBeginSurface, [GLUnurbs], :void
   
   # (Not documented)
   # 
   # @method begin_trim(nurb)
-  # @param [FFI::Pointer(*GLUnurbs)] nurb 
+  # @param [GLUnurbs] nurb 
   # @return [nil] 
   # @scope class
-  attach_function :begin_trim, :gluBeginTrim, [:pointer], :void
+  attach_function :begin_trim, :gluBeginTrim, [GLUnurbs], :void
   
   # (Not documented)
   # 
@@ -465,7 +465,7 @@ module GLU
   # (Not documented)
   # 
   # @method cylinder(quad, base, top, height, slices, stacks)
-  # @param [FFI::Pointer(*GLUquadric)] quad 
+  # @param [GLUquadric] quad 
   # @param [Float] base 
   # @param [Float] top 
   # @param [Float] height 
@@ -473,75 +473,75 @@ module GLU
   # @param [Integer] stacks 
   # @return [nil] 
   # @scope class
-  attach_function :cylinder, :gluCylinder, [:pointer, :double, :double, :double, :int, :int], :void
+  attach_function :cylinder, :gluCylinder, [GLUquadric, :double, :double, :double, :int, :int], :void
   
   # (Not documented)
   # 
   # @method delete_nurbs_renderer(nurb)
-  # @param [FFI::Pointer(*GLUnurbs)] nurb 
+  # @param [GLUnurbs] nurb 
   # @return [nil] 
   # @scope class
-  attach_function :delete_nurbs_renderer, :gluDeleteNurbsRenderer, [:pointer], :void
+  attach_function :delete_nurbs_renderer, :gluDeleteNurbsRenderer, [GLUnurbs], :void
   
   # (Not documented)
   # 
   # @method delete_quadric(quad)
-  # @param [FFI::Pointer(*GLUquadric)] quad 
+  # @param [GLUquadric] quad 
   # @return [nil] 
   # @scope class
-  attach_function :delete_quadric, :gluDeleteQuadric, [:pointer], :void
+  attach_function :delete_quadric, :gluDeleteQuadric, [GLUquadric], :void
   
   # (Not documented)
   # 
   # @method delete_tess(tess)
-  # @param [FFI::Pointer(*GLUtesselator)] tess 
+  # @param [GLUtesselator] tess 
   # @return [nil] 
   # @scope class
-  attach_function :delete_tess, :gluDeleteTess, [:pointer], :void
+  attach_function :delete_tess, :gluDeleteTess, [GLUtesselator], :void
   
   # (Not documented)
   # 
   # @method disk(quad, inner, outer, slices, loops)
-  # @param [FFI::Pointer(*GLUquadric)] quad 
+  # @param [GLUquadric] quad 
   # @param [Float] inner 
   # @param [Float] outer 
   # @param [Integer] slices 
   # @param [Integer] loops 
   # @return [nil] 
   # @scope class
-  attach_function :disk, :gluDisk, [:pointer, :double, :double, :int, :int], :void
+  attach_function :disk, :gluDisk, [GLUquadric, :double, :double, :int, :int], :void
   
   # (Not documented)
   # 
   # @method end_curve(nurb)
-  # @param [FFI::Pointer(*GLUnurbs)] nurb 
+  # @param [GLUnurbs] nurb 
   # @return [nil] 
   # @scope class
-  attach_function :end_curve, :gluEndCurve, [:pointer], :void
+  attach_function :end_curve, :gluEndCurve, [GLUnurbs], :void
   
   # (Not documented)
   # 
   # @method end_polygon(tess)
-  # @param [FFI::Pointer(*GLUtesselator)] tess 
+  # @param [GLUtesselator] tess 
   # @return [nil] 
   # @scope class
-  attach_function :end_polygon, :gluEndPolygon, [:pointer], :void
+  attach_function :end_polygon, :gluEndPolygon, [GLUtesselator], :void
   
   # (Not documented)
   # 
   # @method end_surface(nurb)
-  # @param [FFI::Pointer(*GLUnurbs)] nurb 
+  # @param [GLUnurbs] nurb 
   # @return [nil] 
   # @scope class
-  attach_function :end_surface, :gluEndSurface, [:pointer], :void
+  attach_function :end_surface, :gluEndSurface, [GLUnurbs], :void
   
   # (Not documented)
   # 
   # @method end_trim(nurb)
-  # @param [FFI::Pointer(*GLUnurbs)] nurb 
+  # @param [GLUnurbs] nurb 
   # @return [nil] 
   # @scope class
-  attach_function :end_trim, :gluEndTrim, [:pointer], :void
+  attach_function :end_trim, :gluEndTrim, [GLUnurbs], :void
   
   # (Not documented)
   # 
@@ -554,12 +554,12 @@ module GLU
   # (Not documented)
   # 
   # @method get_nurbs_property(nurb, property, data)
-  # @param [FFI::Pointer(*GLUnurbs)] nurb 
+  # @param [GLUnurbs] nurb 
   # @param [Integer] property 
   # @param [FFI::Pointer(*GLfloat)] data 
   # @return [nil] 
   # @scope class
-  attach_function :get_nurbs_property, :gluGetNurbsProperty, [:pointer, :uint, :pointer], :void
+  attach_function :get_nurbs_property, :gluGetNurbsProperty, [GLUnurbs, :uint, :pointer], :void
   
   # (Not documented)
   # 
@@ -572,23 +572,23 @@ module GLU
   # (Not documented)
   # 
   # @method get_tess_property(tess, which, data)
-  # @param [FFI::Pointer(*GLUtesselator)] tess 
+  # @param [GLUtesselator] tess 
   # @param [Integer] which 
   # @param [FFI::Pointer(*GLdouble)] data 
   # @return [nil] 
   # @scope class
-  attach_function :get_tess_property, :gluGetTessProperty, [:pointer, :uint, :pointer], :void
+  attach_function :get_tess_property, :gluGetTessProperty, [GLUtesselator, :uint, :pointer], :void
   
   # (Not documented)
   # 
   # @method load_sampling_matrices(nurb, model, perspective, view)
-  # @param [FFI::Pointer(*GLUnurbs)] nurb 
+  # @param [GLUnurbs] nurb 
   # @param [FFI::Pointer(*GLfloat)] model 
   # @param [FFI::Pointer(*GLfloat)] perspective 
   # @param [FFI::Pointer(*GLint)] view 
   # @return [nil] 
   # @scope class
-  attach_function :load_sampling_matrices, :gluLoadSamplingMatrices, [:pointer, :pointer, :pointer, :pointer], :void
+  attach_function :load_sampling_matrices, :gluLoadSamplingMatrices, [GLUnurbs, :pointer, :pointer, :pointer], :void
   
   # (Not documented)
   # 
@@ -609,65 +609,65 @@ module GLU
   # (Not documented)
   # 
   # @method new_nurbs_renderer()
-  # @return [FFI::Pointer(*GLUnurbs)] 
+  # @return [GLUnurbs] 
   # @scope class
-  attach_function :new_nurbs_renderer, :gluNewNurbsRenderer, [], :pointer
+  attach_function :new_nurbs_renderer, :gluNewNurbsRenderer, [], GLUnurbs
   
   # (Not documented)
   # 
   # @method new_quadric()
-  # @return [FFI::Pointer(*GLUquadric)] 
+  # @return [GLUquadric] 
   # @scope class
-  attach_function :new_quadric, :gluNewQuadric, [], :pointer
+  attach_function :new_quadric, :gluNewQuadric, [], GLUquadric
   
   # (Not documented)
   # 
   # @method new_tess()
-  # @return [FFI::Pointer(*GLUtesselator)] 
+  # @return [GLUtesselator] 
   # @scope class
-  attach_function :new_tess, :gluNewTess, [], :pointer
+  attach_function :new_tess, :gluNewTess, [], GLUtesselator
   
   # (Not documented)
   # 
   # @method next_contour(tess, type)
-  # @param [FFI::Pointer(*GLUtesselator)] tess 
+  # @param [GLUtesselator] tess 
   # @param [Integer] type 
   # @return [nil] 
   # @scope class
-  attach_function :next_contour, :gluNextContour, [:pointer, :uint], :void
+  attach_function :next_contour, :gluNextContour, [GLUtesselator, :uint], :void
   
   # (Not documented)
   # 
   # @method nurbs_callback(nurb, which, call_back_func)
-  # @param [FFI::Pointer(*GLUnurbs)] nurb 
+  # @param [GLUnurbs] nurb 
   # @param [Integer] which 
   # @param [FFI::Pointer(GLUfuncptr)] call_back_func 
   # @return [nil] 
   # @scope class
-  attach_function :nurbs_callback, :gluNurbsCallback, [:pointer, :uint, :pointer], :void
+  attach_function :nurbs_callback, :gluNurbsCallback, [GLUnurbs, :uint, :pointer], :void
   
   # (Not documented)
   # 
   # @method nurbs_callback_data(nurb, user_data)
-  # @param [FFI::Pointer(*GLUnurbs)] nurb 
+  # @param [GLUnurbs] nurb 
   # @param [FFI::Pointer(*GLvoid)] user_data 
   # @return [nil] 
   # @scope class
-  attach_function :nurbs_callback_data, :gluNurbsCallbackData, [:pointer, :pointer], :void
+  attach_function :nurbs_callback_data, :gluNurbsCallbackData, [GLUnurbs, :pointer], :void
   
   # (Not documented)
   # 
   # @method nurbs_callback_data_ext(nurb, user_data)
-  # @param [FFI::Pointer(*GLUnurbs)] nurb 
+  # @param [GLUnurbs] nurb 
   # @param [FFI::Pointer(*GLvoid)] user_data 
   # @return [nil] 
   # @scope class
-  attach_function :nurbs_callback_data_ext, :gluNurbsCallbackDataEXT, [:pointer, :pointer], :void
+  attach_function :nurbs_callback_data_ext, :gluNurbsCallbackDataEXT, [GLUnurbs, :pointer], :void
   
   # (Not documented)
   # 
   # @method nurbs_curve(nurb, knot_count, knots, stride, control, order, type)
-  # @param [FFI::Pointer(*GLUnurbs)] nurb 
+  # @param [GLUnurbs] nurb 
   # @param [Integer] knot_count 
   # @param [FFI::Pointer(*GLfloat)] knots 
   # @param [Integer] stride 
@@ -676,22 +676,22 @@ module GLU
   # @param [Integer] type 
   # @return [nil] 
   # @scope class
-  attach_function :nurbs_curve, :gluNurbsCurve, [:pointer, :int, :pointer, :int, :pointer, :int, :uint], :void
+  attach_function :nurbs_curve, :gluNurbsCurve, [GLUnurbs, :int, :pointer, :int, :pointer, :int, :uint], :void
   
   # (Not documented)
   # 
   # @method nurbs_property(nurb, property, value)
-  # @param [FFI::Pointer(*GLUnurbs)] nurb 
+  # @param [GLUnurbs] nurb 
   # @param [Integer] property 
   # @param [Float] value 
   # @return [nil] 
   # @scope class
-  attach_function :nurbs_property, :gluNurbsProperty, [:pointer, :uint, :float], :void
+  attach_function :nurbs_property, :gluNurbsProperty, [GLUnurbs, :uint, :float], :void
   
   # (Not documented)
   # 
   # @method nurbs_surface(nurb, s_knot_count, s_knots, t_knot_count, t_knots, s_stride, t_stride, control, s_order, t_order, type)
-  # @param [FFI::Pointer(*GLUnurbs)] nurb 
+  # @param [GLUnurbs] nurb 
   # @param [Integer] s_knot_count 
   # @param [FFI::Pointer(*GLfloat)] s_knots 
   # @param [Integer] t_knot_count 
@@ -704,7 +704,7 @@ module GLU
   # @param [Integer] type 
   # @return [nil] 
   # @scope class
-  attach_function :nurbs_surface, :gluNurbsSurface, [:pointer, :int, :pointer, :int, :pointer, :int, :int, :pointer, :int, :int, :uint], :void
+  attach_function :nurbs_surface, :gluNurbsSurface, [GLUnurbs, :int, :pointer, :int, :pointer, :int, :int, :pointer, :int, :int, :uint], :void
   
   # (Not documented)
   # 
@@ -720,7 +720,7 @@ module GLU
   # (Not documented)
   # 
   # @method partial_disk(quad, inner, outer, slices, loops, start, sweep)
-  # @param [FFI::Pointer(*GLUquadric)] quad 
+  # @param [GLUquadric] quad 
   # @param [Float] inner 
   # @param [Float] outer 
   # @param [Integer] slices 
@@ -729,7 +729,7 @@ module GLU
   # @param [Float] sweep 
   # @return [nil] 
   # @scope class
-  attach_function :partial_disk, :gluPartialDisk, [:pointer, :double, :double, :int, :int, :double, :double], :void
+  attach_function :partial_disk, :gluPartialDisk, [GLUquadric, :double, :double, :int, :int, :double, :double], :void
   
   # (Not documented)
   # 
@@ -773,60 +773,60 @@ module GLU
   # (Not documented)
   # 
   # @method pwl_curve(nurb, count, data, stride, type)
-  # @param [FFI::Pointer(*GLUnurbs)] nurb 
+  # @param [GLUnurbs] nurb 
   # @param [Integer] count 
   # @param [FFI::Pointer(*GLfloat)] data 
   # @param [Integer] stride 
   # @param [Integer] type 
   # @return [nil] 
   # @scope class
-  attach_function :pwl_curve, :gluPwlCurve, [:pointer, :int, :pointer, :int, :uint], :void
+  attach_function :pwl_curve, :gluPwlCurve, [GLUnurbs, :int, :pointer, :int, :uint], :void
   
   # (Not documented)
   # 
   # @method quadric_callback(quad, which, call_back_func)
-  # @param [FFI::Pointer(*GLUquadric)] quad 
+  # @param [GLUquadric] quad 
   # @param [Integer] which 
   # @param [FFI::Pointer(GLUfuncptr)] call_back_func 
   # @return [nil] 
   # @scope class
-  attach_function :quadric_callback, :gluQuadricCallback, [:pointer, :uint, :pointer], :void
+  attach_function :quadric_callback, :gluQuadricCallback, [GLUquadric, :uint, :pointer], :void
   
   # (Not documented)
   # 
   # @method quadric_draw_style(quad, draw)
-  # @param [FFI::Pointer(*GLUquadric)] quad 
+  # @param [GLUquadric] quad 
   # @param [Integer] draw 
   # @return [nil] 
   # @scope class
-  attach_function :quadric_draw_style, :gluQuadricDrawStyle, [:pointer, :uint], :void
+  attach_function :quadric_draw_style, :gluQuadricDrawStyle, [GLUquadric, :uint], :void
   
   # (Not documented)
   # 
   # @method quadric_normals(quad, normal)
-  # @param [FFI::Pointer(*GLUquadric)] quad 
+  # @param [GLUquadric] quad 
   # @param [Integer] normal 
   # @return [nil] 
   # @scope class
-  attach_function :quadric_normals, :gluQuadricNormals, [:pointer, :uint], :void
+  attach_function :quadric_normals, :gluQuadricNormals, [GLUquadric, :uint], :void
   
   # (Not documented)
   # 
   # @method quadric_orientation(quad, orientation)
-  # @param [FFI::Pointer(*GLUquadric)] quad 
+  # @param [GLUquadric] quad 
   # @param [Integer] orientation 
   # @return [nil] 
   # @scope class
-  attach_function :quadric_orientation, :gluQuadricOrientation, [:pointer, :uint], :void
+  attach_function :quadric_orientation, :gluQuadricOrientation, [GLUquadric, :uint], :void
   
   # (Not documented)
   # 
   # @method quadric_texture(quad, texture)
-  # @param [FFI::Pointer(*GLUquadric)] quad 
+  # @param [GLUquadric] quad 
   # @param [Integer] texture 
   # @return [nil] 
   # @scope class
-  attach_function :quadric_texture, :gluQuadricTexture, [:pointer, :uchar], :void
+  attach_function :quadric_texture, :gluQuadricTexture, [GLUquadric, :uchar], :void
   
   # (Not documented)
   # 
@@ -847,87 +847,87 @@ module GLU
   # (Not documented)
   # 
   # @method sphere(quad, radius, slices, stacks)
-  # @param [FFI::Pointer(*GLUquadric)] quad 
+  # @param [GLUquadric] quad 
   # @param [Float] radius 
   # @param [Integer] slices 
   # @param [Integer] stacks 
   # @return [nil] 
   # @scope class
-  attach_function :sphere, :gluSphere, [:pointer, :double, :int, :int], :void
+  attach_function :sphere, :gluSphere, [GLUquadric, :double, :int, :int], :void
   
   # (Not documented)
   # 
   # @method tess_begin_contour(tess)
-  # @param [FFI::Pointer(*GLUtesselator)] tess 
+  # @param [GLUtesselator] tess 
   # @return [nil] 
   # @scope class
-  attach_function :tess_begin_contour, :gluTessBeginContour, [:pointer], :void
+  attach_function :tess_begin_contour, :gluTessBeginContour, [GLUtesselator], :void
   
   # (Not documented)
   # 
   # @method tess_begin_polygon(tess, data)
-  # @param [FFI::Pointer(*GLUtesselator)] tess 
+  # @param [GLUtesselator] tess 
   # @param [FFI::Pointer(*GLvoid)] data 
   # @return [nil] 
   # @scope class
-  attach_function :tess_begin_polygon, :gluTessBeginPolygon, [:pointer, :pointer], :void
+  attach_function :tess_begin_polygon, :gluTessBeginPolygon, [GLUtesselator, :pointer], :void
   
   # (Not documented)
   # 
   # @method tess_callback(tess, which, call_back_func)
-  # @param [FFI::Pointer(*GLUtesselator)] tess 
+  # @param [GLUtesselator] tess 
   # @param [Integer] which 
   # @param [FFI::Pointer(GLUfuncptr)] call_back_func 
   # @return [nil] 
   # @scope class
-  attach_function :tess_callback, :gluTessCallback, [:pointer, :uint, :pointer], :void
+  attach_function :tess_callback, :gluTessCallback, [GLUtesselator, :uint, :pointer], :void
   
   # (Not documented)
   # 
   # @method tess_end_contour(tess)
-  # @param [FFI::Pointer(*GLUtesselator)] tess 
+  # @param [GLUtesselator] tess 
   # @return [nil] 
   # @scope class
-  attach_function :tess_end_contour, :gluTessEndContour, [:pointer], :void
+  attach_function :tess_end_contour, :gluTessEndContour, [GLUtesselator], :void
   
   # (Not documented)
   # 
   # @method tess_end_polygon(tess)
-  # @param [FFI::Pointer(*GLUtesselator)] tess 
+  # @param [GLUtesselator] tess 
   # @return [nil] 
   # @scope class
-  attach_function :tess_end_polygon, :gluTessEndPolygon, [:pointer], :void
+  attach_function :tess_end_polygon, :gluTessEndPolygon, [GLUtesselator], :void
   
   # (Not documented)
   # 
   # @method tess_normal(tess, value_x, value_y, value_z)
-  # @param [FFI::Pointer(*GLUtesselator)] tess 
+  # @param [GLUtesselator] tess 
   # @param [Float] value_x 
   # @param [Float] value_y 
   # @param [Float] value_z 
   # @return [nil] 
   # @scope class
-  attach_function :tess_normal, :gluTessNormal, [:pointer, :double, :double, :double], :void
+  attach_function :tess_normal, :gluTessNormal, [GLUtesselator, :double, :double, :double], :void
   
   # (Not documented)
   # 
   # @method tess_property(tess, which, data)
-  # @param [FFI::Pointer(*GLUtesselator)] tess 
+  # @param [GLUtesselator] tess 
   # @param [Integer] which 
   # @param [Float] data 
   # @return [nil] 
   # @scope class
-  attach_function :tess_property, :gluTessProperty, [:pointer, :uint, :double], :void
+  attach_function :tess_property, :gluTessProperty, [GLUtesselator, :uint, :double], :void
   
   # (Not documented)
   # 
   # @method tess_vertex(tess, location, data)
-  # @param [FFI::Pointer(*GLUtesselator)] tess 
+  # @param [GLUtesselator] tess 
   # @param [FFI::Pointer(*GLdouble)] location 
   # @param [FFI::Pointer(*GLvoid)] data 
   # @return [nil] 
   # @scope class
-  attach_function :tess_vertex, :gluTessVertex, [:pointer, :pointer, :pointer], :void
+  attach_function :tess_vertex, :gluTessVertex, [GLUtesselator, :pointer, :pointer], :void
   
   # (Not documented)
   # 

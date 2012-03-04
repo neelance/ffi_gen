@@ -18,73 +18,73 @@ module LLVM
   # 
   # @method create_object_file(mem_buf)
   # @param [FFI::Pointer(MemoryBufferRef)] mem_buf 
-  # @return [FFI::Pointer(ObjectFileRef)] 
+  # @return [OpaqueObjectFile] 
   # @scope class
-  attach_function :create_object_file, :LLVMCreateObjectFile, [:pointer], :pointer
+  attach_function :create_object_file, :LLVMCreateObjectFile, [:pointer], OpaqueObjectFile
   
   # (Not documented)
   # 
   # @method dispose_object_file(object_file)
-  # @param [FFI::Pointer(ObjectFileRef)] object_file 
+  # @param [OpaqueObjectFile] object_file 
   # @return [nil] 
   # @scope class
-  attach_function :dispose_object_file, :LLVMDisposeObjectFile, [:pointer], :void
+  attach_function :dispose_object_file, :LLVMDisposeObjectFile, [OpaqueObjectFile], :void
   
   # (Not documented)
   # 
   # @method get_sections(object_file)
-  # @param [FFI::Pointer(ObjectFileRef)] object_file 
-  # @return [FFI::Pointer(SectionIteratorRef)] 
+  # @param [OpaqueObjectFile] object_file 
+  # @return [OpaqueSectionIterator] 
   # @scope class
-  attach_function :get_sections, :LLVMGetSections, [:pointer], :pointer
+  attach_function :get_sections, :LLVMGetSections, [OpaqueObjectFile], OpaqueSectionIterator
   
   # (Not documented)
   # 
   # @method dispose_section_iterator(si)
-  # @param [FFI::Pointer(SectionIteratorRef)] si 
+  # @param [OpaqueSectionIterator] si 
   # @return [nil] 
   # @scope class
-  attach_function :dispose_section_iterator, :LLVMDisposeSectionIterator, [:pointer], :void
+  attach_function :dispose_section_iterator, :LLVMDisposeSectionIterator, [OpaqueSectionIterator], :void
   
   # (Not documented)
   # 
   # @method is_section_iterator_at_end(object_file, si)
-  # @param [FFI::Pointer(ObjectFileRef)] object_file 
-  # @param [FFI::Pointer(SectionIteratorRef)] si 
+  # @param [OpaqueObjectFile] object_file 
+  # @param [OpaqueSectionIterator] si 
   # @return [Integer] 
   # @scope class
-  attach_function :is_section_iterator_at_end, :LLVMIsSectionIteratorAtEnd, [:pointer, :pointer], :int
+  attach_function :is_section_iterator_at_end, :LLVMIsSectionIteratorAtEnd, [OpaqueObjectFile, OpaqueSectionIterator], :int
   
   # (Not documented)
   # 
   # @method move_to_next_section(si)
-  # @param [FFI::Pointer(SectionIteratorRef)] si 
+  # @param [OpaqueSectionIterator] si 
   # @return [nil] 
   # @scope class
-  attach_function :move_to_next_section, :LLVMMoveToNextSection, [:pointer], :void
+  attach_function :move_to_next_section, :LLVMMoveToNextSection, [OpaqueSectionIterator], :void
   
   # (Not documented)
   # 
   # @method get_section_name(si)
-  # @param [FFI::Pointer(SectionIteratorRef)] si 
+  # @param [OpaqueSectionIterator] si 
   # @return [String] 
   # @scope class
-  attach_function :get_section_name, :LLVMGetSectionName, [:pointer], :string
+  attach_function :get_section_name, :LLVMGetSectionName, [OpaqueSectionIterator], :string
   
   # (Not documented)
   # 
   # @method get_section_size(si)
-  # @param [FFI::Pointer(SectionIteratorRef)] si 
+  # @param [OpaqueSectionIterator] si 
   # @return [Integer] 
   # @scope class
-  attach_function :get_section_size, :LLVMGetSectionSize, [:pointer], :ulong
+  attach_function :get_section_size, :LLVMGetSectionSize, [OpaqueSectionIterator], :ulong
   
   # (Not documented)
   # 
   # @method get_section_contents(si)
-  # @param [FFI::Pointer(SectionIteratorRef)] si 
+  # @param [OpaqueSectionIterator] si 
   # @return [String] 
   # @scope class
-  attach_function :get_section_contents, :LLVMGetSectionContents, [:pointer], :string
+  attach_function :get_section_contents, :LLVMGetSectionContents, [OpaqueSectionIterator], :string
   
 end

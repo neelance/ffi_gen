@@ -34,68 +34,68 @@ module LLVM
   # @param [FFI::Pointer(TypeRef)] ty 
   # @param [Integer] n 
   # @param [Integer] is_signed 
-  # @return [FFI::Pointer(GenericValueRef)] 
+  # @return [OpaqueGenericValue] 
   # @scope class
-  attach_function :create_generic_value_of_int, :LLVMCreateGenericValueOfInt, [:pointer, :ulong_long, :int], :pointer
+  attach_function :create_generic_value_of_int, :LLVMCreateGenericValueOfInt, [:pointer, :ulong_long, :int], OpaqueGenericValue
   
   # (Not documented)
   # 
   # @method create_generic_value_of_pointer(p)
   # @param [FFI::Pointer(*Void)] p 
-  # @return [FFI::Pointer(GenericValueRef)] 
+  # @return [OpaqueGenericValue] 
   # @scope class
-  attach_function :create_generic_value_of_pointer, :LLVMCreateGenericValueOfPointer, [:pointer], :pointer
+  attach_function :create_generic_value_of_pointer, :LLVMCreateGenericValueOfPointer, [:pointer], OpaqueGenericValue
   
   # (Not documented)
   # 
   # @method create_generic_value_of_float(ty, n)
   # @param [FFI::Pointer(TypeRef)] ty 
   # @param [Float] n 
-  # @return [FFI::Pointer(GenericValueRef)] 
+  # @return [OpaqueGenericValue] 
   # @scope class
-  attach_function :create_generic_value_of_float, :LLVMCreateGenericValueOfFloat, [:pointer, :double], :pointer
+  attach_function :create_generic_value_of_float, :LLVMCreateGenericValueOfFloat, [:pointer, :double], OpaqueGenericValue
   
   # (Not documented)
   # 
   # @method generic_value_int_width(gen_val_ref)
-  # @param [FFI::Pointer(GenericValueRef)] gen_val_ref 
+  # @param [OpaqueGenericValue] gen_val_ref 
   # @return [Integer] 
   # @scope class
-  attach_function :generic_value_int_width, :LLVMGenericValueIntWidth, [:pointer], :uint
+  attach_function :generic_value_int_width, :LLVMGenericValueIntWidth, [OpaqueGenericValue], :uint
   
   # (Not documented)
   # 
   # @method generic_value_to_int(gen_val, is_signed)
-  # @param [FFI::Pointer(GenericValueRef)] gen_val 
+  # @param [OpaqueGenericValue] gen_val 
   # @param [Integer] is_signed 
   # @return [Integer] 
   # @scope class
-  attach_function :generic_value_to_int, :LLVMGenericValueToInt, [:pointer, :int], :ulong_long
+  attach_function :generic_value_to_int, :LLVMGenericValueToInt, [OpaqueGenericValue, :int], :ulong_long
   
   # (Not documented)
   # 
   # @method generic_value_to_pointer(gen_val)
-  # @param [FFI::Pointer(GenericValueRef)] gen_val 
+  # @param [OpaqueGenericValue] gen_val 
   # @return [FFI::Pointer(*Void)] 
   # @scope class
-  attach_function :generic_value_to_pointer, :LLVMGenericValueToPointer, [:pointer], :pointer
+  attach_function :generic_value_to_pointer, :LLVMGenericValueToPointer, [OpaqueGenericValue], :pointer
   
   # (Not documented)
   # 
   # @method generic_value_to_float(ty_ref, gen_val)
   # @param [FFI::Pointer(TypeRef)] ty_ref 
-  # @param [FFI::Pointer(GenericValueRef)] gen_val 
+  # @param [OpaqueGenericValue] gen_val 
   # @return [Float] 
   # @scope class
-  attach_function :generic_value_to_float, :LLVMGenericValueToFloat, [:pointer, :pointer], :double
+  attach_function :generic_value_to_float, :LLVMGenericValueToFloat, [:pointer, OpaqueGenericValue], :double
   
   # (Not documented)
   # 
   # @method dispose_generic_value(gen_val)
-  # @param [FFI::Pointer(GenericValueRef)] gen_val 
+  # @param [OpaqueGenericValue] gen_val 
   # @return [nil] 
   # @scope class
-  attach_function :dispose_generic_value, :LLVMDisposeGenericValue, [:pointer], :void
+  attach_function :dispose_generic_value, :LLVMDisposeGenericValue, [OpaqueGenericValue], :void
   
   # ===-- Operations on execution engines -----------------------------------===
   # 
@@ -162,143 +162,143 @@ module LLVM
   # (Not documented)
   # 
   # @method dispose_execution_engine(ee)
-  # @param [FFI::Pointer(ExecutionEngineRef)] ee 
+  # @param [OpaqueExecutionEngine] ee 
   # @return [nil] 
   # @scope class
-  attach_function :dispose_execution_engine, :LLVMDisposeExecutionEngine, [:pointer], :void
+  attach_function :dispose_execution_engine, :LLVMDisposeExecutionEngine, [OpaqueExecutionEngine], :void
   
   # (Not documented)
   # 
   # @method run_static_constructors(ee)
-  # @param [FFI::Pointer(ExecutionEngineRef)] ee 
+  # @param [OpaqueExecutionEngine] ee 
   # @return [nil] 
   # @scope class
-  attach_function :run_static_constructors, :LLVMRunStaticConstructors, [:pointer], :void
+  attach_function :run_static_constructors, :LLVMRunStaticConstructors, [OpaqueExecutionEngine], :void
   
   # (Not documented)
   # 
   # @method run_static_destructors(ee)
-  # @param [FFI::Pointer(ExecutionEngineRef)] ee 
+  # @param [OpaqueExecutionEngine] ee 
   # @return [nil] 
   # @scope class
-  attach_function :run_static_destructors, :LLVMRunStaticDestructors, [:pointer], :void
+  attach_function :run_static_destructors, :LLVMRunStaticDestructors, [OpaqueExecutionEngine], :void
   
   # (Not documented)
   # 
   # @method run_function_as_main(ee, f, arg_c, arg_v, env_p)
-  # @param [FFI::Pointer(ExecutionEngineRef)] ee 
+  # @param [OpaqueExecutionEngine] ee 
   # @param [FFI::Pointer(ValueRef)] f 
   # @param [Integer] arg_c 
   # @param [FFI::Pointer(**Char_S)] arg_v 
   # @param [FFI::Pointer(**Char_S)] env_p 
   # @return [Integer] 
   # @scope class
-  attach_function :run_function_as_main, :LLVMRunFunctionAsMain, [:pointer, :pointer, :uint, :pointer, :pointer], :int
+  attach_function :run_function_as_main, :LLVMRunFunctionAsMain, [OpaqueExecutionEngine, :pointer, :uint, :pointer, :pointer], :int
   
   # (Not documented)
   # 
   # @method run_function(ee, f, num_args, args)
-  # @param [FFI::Pointer(ExecutionEngineRef)] ee 
+  # @param [OpaqueExecutionEngine] ee 
   # @param [FFI::Pointer(ValueRef)] f 
   # @param [Integer] num_args 
   # @param [FFI::Pointer(*GenericValueRef)] args 
-  # @return [FFI::Pointer(GenericValueRef)] 
+  # @return [OpaqueGenericValue] 
   # @scope class
-  attach_function :run_function, :LLVMRunFunction, [:pointer, :pointer, :uint, :pointer], :pointer
+  attach_function :run_function, :LLVMRunFunction, [OpaqueExecutionEngine, :pointer, :uint, :pointer], OpaqueGenericValue
   
   # (Not documented)
   # 
   # @method free_machine_code_for_function(ee, f)
-  # @param [FFI::Pointer(ExecutionEngineRef)] ee 
+  # @param [OpaqueExecutionEngine] ee 
   # @param [FFI::Pointer(ValueRef)] f 
   # @return [nil] 
   # @scope class
-  attach_function :free_machine_code_for_function, :LLVMFreeMachineCodeForFunction, [:pointer, :pointer], :void
+  attach_function :free_machine_code_for_function, :LLVMFreeMachineCodeForFunction, [OpaqueExecutionEngine, :pointer], :void
   
   # (Not documented)
   # 
   # @method add_module(ee, m)
-  # @param [FFI::Pointer(ExecutionEngineRef)] ee 
+  # @param [OpaqueExecutionEngine] ee 
   # @param [FFI::Pointer(ModuleRef)] m 
   # @return [nil] 
   # @scope class
-  attach_function :add_module, :LLVMAddModule, [:pointer, :pointer], :void
+  attach_function :add_module, :LLVMAddModule, [OpaqueExecutionEngine, :pointer], :void
   
   # Deprecated: Use LLVMAddModule instead.
   # 
   # @method add_module_provider(ee, mp)
-  # @param [FFI::Pointer(ExecutionEngineRef)] ee 
+  # @param [OpaqueExecutionEngine] ee 
   # @param [FFI::Pointer(ModuleProviderRef)] mp 
   # @return [nil] 
   # @scope class
-  attach_function :add_module_provider, :LLVMAddModuleProvider, [:pointer, :pointer], :void
+  attach_function :add_module_provider, :LLVMAddModuleProvider, [OpaqueExecutionEngine, :pointer], :void
   
   # (Not documented)
   # 
   # @method remove_module(ee, m, out_mod, out_error)
-  # @param [FFI::Pointer(ExecutionEngineRef)] ee 
+  # @param [OpaqueExecutionEngine] ee 
   # @param [FFI::Pointer(ModuleRef)] m 
   # @param [FFI::Pointer(*ModuleRef)] out_mod 
   # @param [FFI::Pointer(**Char_S)] out_error 
   # @return [Integer] 
   # @scope class
-  attach_function :remove_module, :LLVMRemoveModule, [:pointer, :pointer, :pointer, :pointer], :int
+  attach_function :remove_module, :LLVMRemoveModule, [OpaqueExecutionEngine, :pointer, :pointer, :pointer], :int
   
   # Deprecated: Use LLVMRemoveModule instead.
   # 
   # @method remove_module_provider(ee, mp, out_mod, out_error)
-  # @param [FFI::Pointer(ExecutionEngineRef)] ee 
+  # @param [OpaqueExecutionEngine] ee 
   # @param [FFI::Pointer(ModuleProviderRef)] mp 
   # @param [FFI::Pointer(*ModuleRef)] out_mod 
   # @param [FFI::Pointer(**Char_S)] out_error 
   # @return [Integer] 
   # @scope class
-  attach_function :remove_module_provider, :LLVMRemoveModuleProvider, [:pointer, :pointer, :pointer, :pointer], :int
+  attach_function :remove_module_provider, :LLVMRemoveModuleProvider, [OpaqueExecutionEngine, :pointer, :pointer, :pointer], :int
   
   # (Not documented)
   # 
   # @method find_function(ee, name, out_fn)
-  # @param [FFI::Pointer(ExecutionEngineRef)] ee 
+  # @param [OpaqueExecutionEngine] ee 
   # @param [String] name 
   # @param [FFI::Pointer(*ValueRef)] out_fn 
   # @return [Integer] 
   # @scope class
-  attach_function :find_function, :LLVMFindFunction, [:pointer, :string, :pointer], :int
+  attach_function :find_function, :LLVMFindFunction, [OpaqueExecutionEngine, :string, :pointer], :int
   
   # (Not documented)
   # 
   # @method recompile_and_relink_function(ee, fn)
-  # @param [FFI::Pointer(ExecutionEngineRef)] ee 
+  # @param [OpaqueExecutionEngine] ee 
   # @param [FFI::Pointer(ValueRef)] fn 
   # @return [FFI::Pointer(*Void)] 
   # @scope class
-  attach_function :recompile_and_relink_function, :LLVMRecompileAndRelinkFunction, [:pointer, :pointer], :pointer
+  attach_function :recompile_and_relink_function, :LLVMRecompileAndRelinkFunction, [OpaqueExecutionEngine, :pointer], :pointer
   
   # (Not documented)
   # 
   # @method get_execution_engine_target_data(ee)
-  # @param [FFI::Pointer(ExecutionEngineRef)] ee 
+  # @param [OpaqueExecutionEngine] ee 
   # @return [FFI::Pointer(TargetDataRef)] 
   # @scope class
-  attach_function :get_execution_engine_target_data, :LLVMGetExecutionEngineTargetData, [:pointer], :pointer
+  attach_function :get_execution_engine_target_data, :LLVMGetExecutionEngineTargetData, [OpaqueExecutionEngine], :pointer
   
   # (Not documented)
   # 
   # @method add_global_mapping(ee, global, addr)
-  # @param [FFI::Pointer(ExecutionEngineRef)] ee 
+  # @param [OpaqueExecutionEngine] ee 
   # @param [FFI::Pointer(ValueRef)] global 
   # @param [FFI::Pointer(*Void)] addr 
   # @return [nil] 
   # @scope class
-  attach_function :add_global_mapping, :LLVMAddGlobalMapping, [:pointer, :pointer, :pointer], :void
+  attach_function :add_global_mapping, :LLVMAddGlobalMapping, [OpaqueExecutionEngine, :pointer, :pointer], :void
   
   # (Not documented)
   # 
   # @method get_pointer_to_global(ee, global)
-  # @param [FFI::Pointer(ExecutionEngineRef)] ee 
+  # @param [OpaqueExecutionEngine] ee 
   # @param [FFI::Pointer(ValueRef)] global 
   # @return [FFI::Pointer(*Void)] 
   # @scope class
-  attach_function :get_pointer_to_global, :LLVMGetPointerToGlobal, [:pointer, :pointer], :pointer
+  attach_function :get_pointer_to_global, :LLVMGetPointerToGlobal, [OpaqueExecutionEngine, :pointer], :pointer
   
 end

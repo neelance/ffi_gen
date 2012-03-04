@@ -167,21 +167,21 @@ module FFIGen::Clang
   # #ifndef/#define/#endif macro guards or with #pragma once.
   # 
   # @method is_file_multiple_include_guarded(tu, file)
-  # @param [FFI::Pointer(TranslationUnit)] tu 
+  # @param [TranslationUnitImpl] tu 
   # @param [FFI::Pointer(File)] file 
   # @return [Integer] 
   # @scope class
-  attach_function :is_file_multiple_include_guarded, :clang_isFileMultipleIncludeGuarded, [:pointer, :pointer], :uint
+  attach_function :is_file_multiple_include_guarded, :clang_isFileMultipleIncludeGuarded, [TranslationUnitImpl, :pointer], :uint
   
   # Retrieve a file handle within the given translation unit.
   # 
   # @method get_file(tu, file_name)
-  # @param [FFI::Pointer(TranslationUnit)] tu the translation unit
+  # @param [TranslationUnitImpl] tu the translation unit
   # @param [String] file_name the name of the file.
   # @return [FFI::Pointer(File)] the file handle for the named file in the translation unit \p tu,
   #   or a NULL file handle if the file was not a part of this translation unit.
   # @scope class
-  attach_function :get_file, :clang_getFile, [:pointer, :string], :pointer
+  attach_function :get_file, :clang_getFile, [TranslationUnitImpl, :string], :pointer
   
   # Identifies a specific source location within a translation
   # unit.
@@ -240,24 +240,24 @@ module FFIGen::Clang
   # in a particular translation unit.
   # 
   # @method get_location(tu, file, line, column)
-  # @param [FFI::Pointer(TranslationUnit)] tu 
+  # @param [TranslationUnitImpl] tu 
   # @param [FFI::Pointer(File)] file 
   # @param [Integer] line 
   # @param [Integer] column 
   # @return [SourceLocation] 
   # @scope class
-  attach_function :get_location, :clang_getLocation, [:pointer, :pointer, :uint, :uint], SourceLocation.by_value
+  attach_function :get_location, :clang_getLocation, [TranslationUnitImpl, :pointer, :uint, :uint], SourceLocation.by_value
   
   # Retrieves the source location associated with a given character offset
   # in a particular translation unit.
   # 
   # @method get_location_for_offset(tu, file, offset)
-  # @param [FFI::Pointer(TranslationUnit)] tu 
+  # @param [TranslationUnitImpl] tu 
   # @param [FFI::Pointer(File)] file 
   # @param [Integer] offset 
   # @return [SourceLocation] 
   # @scope class
-  attach_function :get_location_for_offset, :clang_getLocationForOffset, [:pointer, :pointer, :uint], SourceLocation.by_value
+  attach_function :get_location_for_offset, :clang_getLocationForOffset, [TranslationUnitImpl, :pointer, :uint], SourceLocation.by_value
   
   # Retrieve a NULL (invalid) source range.
   # 
@@ -423,20 +423,20 @@ module FFIGen::Clang
   # translation unit.
   # 
   # @method get_num_diagnostics(unit)
-  # @param [FFI::Pointer(TranslationUnit)] unit 
+  # @param [TranslationUnitImpl] unit 
   # @return [Integer] 
   # @scope class
-  attach_function :get_num_diagnostics, :clang_getNumDiagnostics, [:pointer], :uint
+  attach_function :get_num_diagnostics, :clang_getNumDiagnostics, [TranslationUnitImpl], :uint
   
   # Retrieve a diagnostic associated with the given translation unit.
   # 
   # @method get_diagnostic(unit, index)
-  # @param [FFI::Pointer(TranslationUnit)] unit the translation unit to query.
+  # @param [TranslationUnitImpl] unit the translation unit to query.
   # @param [Integer] index the zero-based diagnostic number to retrieve.
   # @return [FFI::Pointer(Diagnostic)] the requested diagnostic. This diagnostic must be freed
   #   via a call to \c clang_disposeDiagnostic().
   # @scope class
-  attach_function :get_diagnostic, :clang_getDiagnostic, [:pointer, :uint], :pointer
+  attach_function :get_diagnostic, :clang_getDiagnostic, [TranslationUnitImpl, :uint], :pointer
   
   # Destroy a diagnostic.
   # 
@@ -652,10 +652,10 @@ module FFIGen::Clang
   # Get the original translation unit source file name.
   # 
   # @method get_translation_unit_spelling(ct_unit)
-  # @param [FFI::Pointer(TranslationUnit)] ct_unit 
+  # @param [TranslationUnitImpl] ct_unit 
   # @return [String] 
   # @scope class
-  attach_function :get_translation_unit_spelling, :clang_getTranslationUnitSpelling, [:pointer], String.by_value
+  attach_function :get_translation_unit_spelling, :clang_getTranslationUnitSpelling, [TranslationUnitImpl], String.by_value
   
   # Return the CXTranslationUnit for a given source file and the provided
   # command line arguments one would pass to the compiler.
@@ -686,23 +686,23 @@ module FFIGen::Clang
   #   '-emit-ast', '-fsyntex-only' (which is the default), and '-o <output file>'.
   # @param [Integer] num_unsaved_files the number of unsaved file entries in \p
   #   unsaved_files.
-  # @param [FFI::Pointer(*UnsavedFile)] unsaved_files the files that have not yet been saved to disk
+  # @param [UnsavedFile] unsaved_files the files that have not yet been saved to disk
   #   but may be required for code completion, including the contents of
   #   those files.  The contents and name of these files (as specified by
   #   CXUnsavedFile) are copied when necessary, so the client only needs to
   #   guarantee their validity until the call to this function returns.
-  # @return [FFI::Pointer(TranslationUnit)] 
+  # @return [TranslationUnitImpl] 
   # @scope class
-  attach_function :create_translation_unit_from_source_file, :clang_createTranslationUnitFromSourceFile, [:pointer, :string, :int, :pointer, :uint, :pointer], :pointer
+  attach_function :create_translation_unit_from_source_file, :clang_createTranslationUnitFromSourceFile, [:pointer, :string, :int, :pointer, :uint, UnsavedFile], TranslationUnitImpl
   
   # Create a translation unit from an AST file (-emit-ast).
   # 
   # @method create_translation_unit(index, ast_filename)
   # @param [FFI::Pointer(Index)] index 
   # @param [String] ast_filename 
-  # @return [FFI::Pointer(TranslationUnit)] 
+  # @return [TranslationUnitImpl] 
   # @scope class
-  attach_function :create_translation_unit, :clang_createTranslationUnit, [:pointer, :string], :pointer
+  attach_function :create_translation_unit, :clang_createTranslationUnit, [:pointer, :string], TranslationUnitImpl
   
   # Flags that control the creation of translation units.
   # 
@@ -825,7 +825,7 @@ module FFIGen::Clang
   #   '-emit-ast', '-fsyntex-only' (which is the default), and '-o <output file>'.
   # @param [Integer] num_command_line_args The number of command-line arguments in
   #   \p command_line_args.
-  # @param [FFI::Pointer(*UnsavedFile)] unsaved_files the files that have not yet been saved to disk
+  # @param [UnsavedFile] unsaved_files the files that have not yet been saved to disk
   #   but may be required for parsing, including the contents of
   #   those files.  The contents and name of these files (as specified by
   #   CXUnsavedFile) are copied when necessary, so the client only needs to
@@ -835,11 +835,11 @@ module FFIGen::Clang
   # @param [Integer] options A bitmask of options that affects how the translation unit
   #   is managed but not its compilation. This should be a bitwise OR of the
   #   CXTranslationUnit_XXX flags.
-  # @return [FFI::Pointer(TranslationUnit)] A new translation unit describing the parsed code and containing
+  # @return [TranslationUnitImpl] A new translation unit describing the parsed code and containing
   #   any diagnostics produced by the compiler. If there is a failure from which
   #   the compiler cannot recover, returns NULL.
   # @scope class
-  attach_function :parse_translation_unit, :clang_parseTranslationUnit, [:pointer, :string, :pointer, :int, :pointer, :uint, :uint], :pointer
+  attach_function :parse_translation_unit, :clang_parseTranslationUnit, [:pointer, :string, :pointer, :int, UnsavedFile, :uint, :uint], TranslationUnitImpl
   
   # Flags that control how translation units are saved.
   # 
@@ -869,10 +869,10 @@ module FFIGen::Clang
   # the most commonly-requested data.
   # 
   # @method default_save_options(tu)
-  # @param [FFI::Pointer(TranslationUnit)] tu 
+  # @param [TranslationUnitImpl] tu 
   # @return [Integer] 
   # @scope class
-  attach_function :default_save_options, :clang_defaultSaveOptions, [:pointer], :uint
+  attach_function :default_save_options, :clang_defaultSaveOptions, [TranslationUnitImpl], :uint
   
   # Describes the kind of error that occurred (if any) in a call to
   # \c clang_saveTranslationUnit().
@@ -919,7 +919,7 @@ module FFIGen::Clang
   # units.
   # 
   # @method save_translation_unit(tu, file_name, options)
-  # @param [FFI::Pointer(TranslationUnit)] tu The translation unit to save.
+  # @param [TranslationUnitImpl] tu The translation unit to save.
   # @param [String] file_name The file to which the translation unit will be saved.
   # @param [Integer] options A bitmask of options that affects how the translation unit
   #   is saved. This should be a bitwise OR of the
@@ -928,15 +928,15 @@ module FFIGen::Clang
   #   enumeration. Zero (CXSaveError_None) indicates that the translation unit was 
   #   saved successfully, while a non-zero value indicates that a problem occurred.
   # @scope class
-  attach_function :save_translation_unit, :clang_saveTranslationUnit, [:pointer, :string, :uint], :int
+  attach_function :save_translation_unit, :clang_saveTranslationUnit, [TranslationUnitImpl, :string, :uint], :int
   
   # Destroy the specified CXTranslationUnit object.
   # 
-  # @method dispose_translation_unit(translation_unit)
-  # @param [FFI::Pointer(TranslationUnit)] translation_unit 
+  # @method dispose_translation_unit(translation_unit_impl)
+  # @param [TranslationUnitImpl] translation_unit_impl 
   # @return [nil] 
   # @scope class
-  attach_function :dispose_translation_unit, :clang_disposeTranslationUnit, [:pointer], :void
+  attach_function :dispose_translation_unit, :clang_disposeTranslationUnit, [TranslationUnitImpl], :void
   
   # Flags that control the reparsing of translation units.
   # 
@@ -967,10 +967,10 @@ module FFIGen::Clang
   # to the next.
   # 
   # @method default_reparse_options(tu)
-  # @param [FFI::Pointer(TranslationUnit)] tu 
+  # @param [TranslationUnitImpl] tu 
   # @return [Integer] 
   # @scope class
-  attach_function :default_reparse_options, :clang_defaultReparseOptions, [:pointer], :uint
+  attach_function :default_reparse_options, :clang_defaultReparseOptions, [TranslationUnitImpl], :uint
   
   # Reparse the source files that produced this translation unit.
   # 
@@ -988,12 +988,12 @@ module FFIGen::Clang
   # unit using this routine.
   # 
   # @method reparse_translation_unit(tu, num_unsaved_files, unsaved_files, options)
-  # @param [FFI::Pointer(TranslationUnit)] tu The translation unit whose contents will be re-parsed. The
+  # @param [TranslationUnitImpl] tu The translation unit whose contents will be re-parsed. The
   #   translation unit must originally have been built with 
   #   \c clang_createTranslationUnitFromSourceFile().
   # @param [Integer] num_unsaved_files The number of unsaved file entries in \p
   #   unsaved_files.
-  # @param [FFI::Pointer(*UnsavedFile)] unsaved_files The files that have not yet been saved to disk
+  # @param [UnsavedFile] unsaved_files The files that have not yet been saved to disk
   #   but may be required for parsing, including the contents of
   #   those files.  The contents and name of these files (as specified by
   #   CXUnsavedFile) are copied when necessary, so the client only needs to
@@ -1006,7 +1006,7 @@ module FFIGen::Clang
   #   invalid. In such cases, the only valid call for \p TU is 
   #   \c clang_disposeTranslationUnit(TU).
   # @scope class
-  attach_function :reparse_translation_unit, :clang_reparseTranslationUnit, [:pointer, :uint, :pointer, :uint], :int
+  attach_function :reparse_translation_unit, :clang_reparseTranslationUnit, [TranslationUnitImpl, :uint, UnsavedFile, :uint], :int
   
   # Categorizes how memory is being used by a translation unit.
   # 
@@ -1092,22 +1092,22 @@ module FFIGen::Clang
   # :num_entries ::
   #   (Integer) The number of entries in the 'entries' array.
   # :entries ::
-  #   (FFI::Pointer(*TUResourceUsageEntry)) An array of key-value pairs, representing the breakdown of memory
+  #   (TUResourceUsageEntry) An array of key-value pairs, representing the breakdown of memory
   #               usage.
   class TUResourceUsage < FFI::Struct
     layout :data, :pointer,
            :num_entries, :uint,
-           :entries, :pointer
+           :entries, TUResourceUsageEntry
   end
   
   # Return the memory usage of a translation unit.  This object
   #  should be released with clang_disposeCXTUResourceUsage().
   # 
   # @method get_cxtu_resource_usage(tu)
-  # @param [FFI::Pointer(TranslationUnit)] tu 
+  # @param [TranslationUnitImpl] tu 
   # @return [TUResourceUsage] 
   # @scope class
-  attach_function :get_cxtu_resource_usage, :clang_getCXTUResourceUsage, [:pointer], TUResourceUsage.by_value
+  attach_function :get_cxtu_resource_usage, :clang_getCXTUResourceUsage, [TranslationUnitImpl], TUResourceUsage.by_value
   
   # (Not documented)
   # 
@@ -1753,11 +1753,11 @@ module FFIGen::Clang
   # The translation unit cursor can be used to start traversing the
   # various declarations within the given translation unit.
   # 
-  # @method get_translation_unit_cursor(translation_unit)
-  # @param [FFI::Pointer(TranslationUnit)] translation_unit 
+  # @method get_translation_unit_cursor(translation_unit_impl)
+  # @param [TranslationUnitImpl] translation_unit_impl 
   # @return [Cursor] 
   # @scope class
-  attach_function :get_translation_unit_cursor, :clang_getTranslationUnitCursor, [:pointer], Cursor.by_value
+  attach_function :get_translation_unit_cursor, :clang_getTranslationUnitCursor, [TranslationUnitImpl], Cursor.by_value
   
   # Determine whether two cursors are equivalent.
   # 
@@ -1955,9 +1955,9 @@ module FFIGen::Clang
   # 
   # @method cursor_get_translation_unit(cursor)
   # @param [Cursor] cursor 
-  # @return [FFI::Pointer(TranslationUnit)] 
+  # @return [TranslationUnitImpl] 
   # @scope class
-  attach_function :cursor_get_translation_unit, :clang_Cursor_getTranslationUnit, [Cursor.by_value], :pointer
+  attach_function :cursor_get_translation_unit, :clang_Cursor_getTranslationUnit, [Cursor.by_value], TranslationUnitImpl
   
   # A fast container representing a set of CXCursors.
   class CursorSetImpl < FFI::Struct
@@ -1966,35 +1966,35 @@ module FFIGen::Clang
   # Creates an empty CXCursorSet.
   # 
   # @method create_cx_cursor_set()
-  # @return [FFI::Pointer(CursorSet)] 
+  # @return [CursorSetImpl] 
   # @scope class
-  attach_function :create_cx_cursor_set, :clang_createCXCursorSet, [], :pointer
+  attach_function :create_cx_cursor_set, :clang_createCXCursorSet, [], CursorSetImpl
   
   # Disposes a CXCursorSet and releases its associated memory.
   # 
   # @method dispose_cx_cursor_set(cset)
-  # @param [FFI::Pointer(CursorSet)] cset 
+  # @param [CursorSetImpl] cset 
   # @return [nil] 
   # @scope class
-  attach_function :dispose_cx_cursor_set, :clang_disposeCXCursorSet, [:pointer], :void
+  attach_function :dispose_cx_cursor_set, :clang_disposeCXCursorSet, [CursorSetImpl], :void
   
   # Queries a CXCursorSet to see if it contains a specific CXCursor.
   # 
   # @method cx_cursor_set_contains(cset, cursor)
-  # @param [FFI::Pointer(CursorSet)] cset 
+  # @param [CursorSetImpl] cset 
   # @param [Cursor] cursor 
   # @return [Integer] non-zero if the set contains the specified cursor.
   # @scope class
-  attach_function :cx_cursor_set_contains, :clang_CXCursorSet_contains, [:pointer, Cursor.by_value], :uint
+  attach_function :cx_cursor_set_contains, :clang_CXCursorSet_contains, [CursorSetImpl, Cursor.by_value], :uint
   
   # Inserts a CXCursor into a CXCursorSet.
   # 
   # @method cx_cursor_set_insert(cset, cursor)
-  # @param [FFI::Pointer(CursorSet)] cset 
+  # @param [CursorSetImpl] cset 
   # @param [Cursor] cursor 
   # @return [Integer] zero if the CXCursor was already in the set, and non-zero otherwise.
   # @scope class
-  attach_function :cx_cursor_set_insert, :clang_CXCursorSet_insert, [:pointer, Cursor.by_value], :uint
+  attach_function :cx_cursor_set_insert, :clang_CXCursorSet_insert, [CursorSetImpl, Cursor.by_value], :uint
   
   # Determine the semantic parent of the given cursor.
   # 
@@ -2145,13 +2145,13 @@ module FFIGen::Clang
   # "x" or "y" (e.g., on the + or the whitespace around it), clang_getCursor()
   # will return a cursor referring to the "+" expression.
   # 
-  # @method get_cursor(translation_unit, source_location)
-  # @param [FFI::Pointer(TranslationUnit)] translation_unit 
+  # @method get_cursor(translation_unit_impl, source_location)
+  # @param [TranslationUnitImpl] translation_unit_impl 
   # @param [SourceLocation] source_location 
   # @return [Cursor] a cursor representing the entity at the given source location, or
   #   a NULL cursor if no such entity can be found.
   # @scope class
-  attach_function :get_cursor, :clang_getCursor, [:pointer, SourceLocation.by_value], Cursor.by_value
+  attach_function :get_cursor, :clang_getCursor, [TranslationUnitImpl, SourceLocation.by_value], Cursor.by_value
   
   # Retrieve the physical location of the source constructor referenced
   # by the given cursor.
@@ -2962,36 +2962,36 @@ module FFIGen::Clang
   # The spelling of a token is the textual representation of that token, e.g.,
   # the text of an identifier or keyword.
   # 
-  # @method get_token_spelling(translation_unit, token)
-  # @param [FFI::Pointer(TranslationUnit)] translation_unit 
+  # @method get_token_spelling(translation_unit_impl, token)
+  # @param [TranslationUnitImpl] translation_unit_impl 
   # @param [Token] token 
   # @return [String] 
   # @scope class
-  attach_function :get_token_spelling, :clang_getTokenSpelling, [:pointer, Token.by_value], String.by_value
+  attach_function :get_token_spelling, :clang_getTokenSpelling, [TranslationUnitImpl, Token.by_value], String.by_value
   
   # Retrieve the source location of the given token.
   # 
-  # @method get_token_location(translation_unit, token)
-  # @param [FFI::Pointer(TranslationUnit)] translation_unit 
+  # @method get_token_location(translation_unit_impl, token)
+  # @param [TranslationUnitImpl] translation_unit_impl 
   # @param [Token] token 
   # @return [SourceLocation] 
   # @scope class
-  attach_function :get_token_location, :clang_getTokenLocation, [:pointer, Token.by_value], SourceLocation.by_value
+  attach_function :get_token_location, :clang_getTokenLocation, [TranslationUnitImpl, Token.by_value], SourceLocation.by_value
   
   # Retrieve a source range that covers the given token.
   # 
-  # @method get_token_extent(translation_unit, token)
-  # @param [FFI::Pointer(TranslationUnit)] translation_unit 
+  # @method get_token_extent(translation_unit_impl, token)
+  # @param [TranslationUnitImpl] translation_unit_impl 
   # @param [Token] token 
   # @return [SourceRange] 
   # @scope class
-  attach_function :get_token_extent, :clang_getTokenExtent, [:pointer, Token.by_value], SourceRange.by_value
+  attach_function :get_token_extent, :clang_getTokenExtent, [TranslationUnitImpl, Token.by_value], SourceRange.by_value
   
   # Tokenize the source code described by the given range into raw
   # lexical tokens.
   # 
   # @method tokenize(tu, range, tokens, num_tokens)
-  # @param [FFI::Pointer(TranslationUnit)] tu the translation unit whose text is being tokenized.
+  # @param [TranslationUnitImpl] tu the translation unit whose text is being tokenized.
   # @param [SourceRange] range the source range in which text should be tokenized. All of the
   #   tokens produced by tokenization will fall within this source range,
   # @param [FFI::Pointer(**Token)] tokens this pointer will be set to point to the array of tokens
@@ -3001,7 +3001,7 @@ module FFIGen::Clang
   #   array.
   # @return [nil] 
   # @scope class
-  attach_function :tokenize, :clang_tokenize, [:pointer, SourceRange.by_value, :pointer, :pointer], :void
+  attach_function :tokenize, :clang_tokenize, [TranslationUnitImpl, SourceRange.by_value, :pointer, :pointer], :void
   
   # Annotate the given set of tokens by providing cursors for each token
   # that can be mapped to a specific entity within the abstract syntax tree.
@@ -3024,24 +3024,24 @@ module FFIGen::Clang
   # not provided as an annotation.
   # 
   # @method annotate_tokens(tu, tokens, num_tokens, cursors)
-  # @param [FFI::Pointer(TranslationUnit)] tu the translation unit that owns the given tokens.
+  # @param [TranslationUnitImpl] tu the translation unit that owns the given tokens.
   # @param [FFI::Pointer(*Token)] tokens the set of tokens to annotate.
   # @param [Integer] num_tokens the number of tokens in \p Tokens.
   # @param [FFI::Pointer(*Cursor)] cursors an array of \p NumTokens cursors, whose contents will be
   #   replaced with the cursors corresponding to each token.
   # @return [nil] 
   # @scope class
-  attach_function :annotate_tokens, :clang_annotateTokens, [:pointer, :pointer, :uint, :pointer], :void
+  attach_function :annotate_tokens, :clang_annotateTokens, [TranslationUnitImpl, :pointer, :uint, :pointer], :void
   
   # Free the given set of tokens.
   # 
   # @method dispose_tokens(tu, tokens, num_tokens)
-  # @param [FFI::Pointer(TranslationUnit)] tu 
+  # @param [TranslationUnitImpl] tu 
   # @param [FFI::Pointer(*Token)] tokens 
   # @param [Integer] num_tokens 
   # @return [nil] 
   # @scope class
-  attach_function :dispose_tokens, :clang_disposeTokens, [:pointer, :pointer, :uint], :void
+  attach_function :dispose_tokens, :clang_disposeTokens, [TranslationUnitImpl, :pointer, :uint], :void
   
   # for debug/testing
   # 
@@ -3448,7 +3448,7 @@ module FFIGen::Clang
   # have a lower latency.
   # 
   # @method code_complete_at(tu, complete_filename, complete_line, complete_column, unsaved_files, num_unsaved_files, options)
-  # @param [FFI::Pointer(TranslationUnit)] tu The translation unit in which code-completion should
+  # @param [TranslationUnitImpl] tu The translation unit in which code-completion should
   #   occur. The source files for this translation unit need not be
   #   completely up-to-date (and the contents of those source files may
   #   be overridden via \p unsaved_files). Cursors referring into the
@@ -3460,7 +3460,7 @@ module FFIGen::Clang
   # @param [Integer] complete_column The column at which code-completion should occur.
   #   Note that the column should point just after the syntactic construct that
   #   initiated code completion, and not in the middle of a lexical token.
-  # @param [FFI::Pointer(*UnsavedFile)] unsaved_files the Tiles that have not yet been saved to disk
+  # @param [UnsavedFile] unsaved_files the Tiles that have not yet been saved to disk
   #   but may be required for parsing or code completion, including the
   #   contents of those files.  The contents and name of these files (as
   #   specified by CXUnsavedFile) are copied when necessary, so the
@@ -3478,7 +3478,7 @@ module FFIGen::Clang
   #   freed with \c clang_disposeCodeCompleteResults(). If code
   #   completion fails, returns NULL.
   # @scope class
-  attach_function :code_complete_at, :clang_codeCompleteAt, [:pointer, :string, :uint, :uint, :pointer, :uint, :uint], :pointer
+  attach_function :code_complete_at, :clang_codeCompleteAt, [TranslationUnitImpl, :string, :uint, :uint, UnsavedFile, :uint, :uint], :pointer
   
   # Sort the code-completion results in case-insensitive alphabetical 
   # order.
@@ -3614,12 +3614,12 @@ module FFIGen::Clang
   #   is inspecting the inclusions in the PCH file itself).
   # 
   # @method get_inclusions(tu, visitor, client_data)
-  # @param [FFI::Pointer(TranslationUnit)] tu 
+  # @param [TranslationUnitImpl] tu 
   # @param [Proc(_callback_inclusion_visitor_)] visitor 
   # @param [FFI::Pointer(ClientData)] client_data 
   # @return [nil] 
   # @scope class
-  attach_function :get_inclusions, :clang_getInclusions, [:pointer, :inclusion_visitor, :pointer], :void
+  attach_function :get_inclusions, :clang_getInclusions, [TranslationUnitImpl, :inclusion_visitor, :pointer], :void
   
   # Retrieve a remapping.
   # 
