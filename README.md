@@ -13,6 +13,7 @@ Features
 * Tested with headers of the following libraries:
   * Clang
   * LLVM
+  * OpenGL
 
 
 Requirements
@@ -65,7 +66,6 @@ Roadmap
 -------
 
 * Support for more libraries:
-  * OpenGL
   * Cairo
   * (Write me if you have a whish)
 * Automatic generation of object oriented wrappers
