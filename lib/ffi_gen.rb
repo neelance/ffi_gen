@@ -281,6 +281,9 @@ class FFIGen
     @blacklist   = options.fetch :blacklist, []
     @output      = options.fetch :output, $stdout
     
+    blacklist = @blacklist
+    @blacklist = lambda { |name| blacklist.include? name } if @blacklist.is_a? Array
+    
     @translation_unit = nil
     @declarations = nil
   end
@@ -334,7 +337,7 @@ class FFIGen
       next if not header_files.include? file
       
       name = Clang.get_cursor_spelling(declaration).to_s_and_dispose
-      next if blacklist.include? name
+      next if @blacklist[name]
       
       comment = extract_comment translation_unit, comment_range
       
@@ -474,7 +477,7 @@ class FFIGen
     when :u_int then ":uint"
     when :u_long then ":ulong"
     when :u_long_long then ":ulong_long"
-    when :char_s then ":char"
+    when :char_s, :s_char then ":char"
     when :short then ":short"
     when :int then ":int"
     when :long then ":long"
@@ -502,7 +505,7 @@ class FFIGen
     case canonical_type[:kind]
     when :void then "nil"
     when :bool then "Boolean"
-    when :u_char, :u_short, :u_int, :u_long, :u_long_long, :char_s, :short, :int, :long, :long_long then "Integer"
+    when :u_char, :u_short, :u_int, :u_long, :u_long_long, :char_s, :s_char, :short, :int, :long, :long_long then "Integer"
     when :float, :double then "Float"
     when :pointer
       pointee_type = Clang.get_pointee_type canonical_type
