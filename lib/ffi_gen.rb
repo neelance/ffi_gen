@@ -1,31 +1,31 @@
-require "ffi_gen/clang"
-
-class << Clang
-  def get_children(declaration)
-    children = []
-    visit_children declaration, lambda { |child, child_parent, child_client_data|
-      children << child
-      :continue
-    }, nil
-    children
-  end
-end
-
-class Clang::String
-  def to_s
-    Clang.get_c_string self
-  end
-  
-  def to_s_and_dispose
-    str = to_s
-    Clang.dispose_string self
-    str
-  end
-end
-
 class FFIGen
   RUBY_KEYWORDS = %w{alias allocate and begin break case class def defined do else elsif end ensure false for if in initialize module next nil not or redo rescue retry return self super then true undef unless until when while yield}
-
+  
+  require "ffi_gen/clang"
+  
+  class << Clang
+    def get_children(declaration)
+      children = []
+      visit_children declaration, lambda { |child, child_parent, child_client_data|
+        children << child
+        :continue
+      }, nil
+      children
+    end
+  end
+  
+  class Clang::String
+    def to_s
+      Clang.get_c_string self
+    end
+    
+    def to_s_and_dispose
+      str = to_s
+      Clang.dispose_string self
+      str
+    end
+  end
+  
   class Enum
     attr_reader :constants
     
@@ -594,7 +594,7 @@ end
 
 if __FILE__ == $0
   FFIGen.generate(
-    ruby_module: "Clang",
+    ruby_module: "FFIGen::Clang",
     ffi_lib:     "clang",
     headers:     ["clang-c/Index.h"],
     cflags:      `llvm-config --cflags`.split(" "),
