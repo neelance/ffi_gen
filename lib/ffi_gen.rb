@@ -573,7 +573,7 @@ class FFIGen
     str.sub! /^_*/, '' # remove underscores at the beginning
     str.gsub! /__+/, '_' # replace multiple underscores by only one
     str.downcase!
-    str.sub! /^\d/, '_\1' # fix illegal beginnings
+    str.sub! /^\d/, '_\0' # fix illegal beginnings
     str = "_#{str}" if avoid_keywords and RUBY_KEYWORDS.include? str
     str
   end

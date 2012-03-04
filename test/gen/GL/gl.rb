@@ -32,11 +32,11 @@ module GL
   
   FLOAT = 0x1406
   
-  __BYTES = 0x1407
+  _2_BYTES = 0x1407
   
-  __BYTES = 0x1408
+  _3_BYTES = 0x1408
   
-  __BYTES = 0x1409
+  _4_BYTES = 0x1409
   
   DOUBLE = 0x140A
   
@@ -388,15 +388,15 @@ module GL
   
   SELECT = 0x1C02
   
-  _D = 0x0600
+  _2D = 0x0600
   
-  _D = 0x0601
+  _3D = 0x0601
   
-  _D_COLOR = 0x0602
+  _3D_COLOR = 0x0602
   
-  _D_COLOR_TEXTURE = 0x0603
+  _3D_COLOR_TEXTURE = 0x0603
   
-  _D_COLOR_TEXTURE = 0x0604
+  _4D_COLOR_TEXTURE = 0x0604
   
   POINT_TOKEN = 0x0701
   
