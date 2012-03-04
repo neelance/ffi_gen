@@ -6,8 +6,6 @@ module LLVM
   extend FFI::Library
   ffi_lib 'LLVM-3.0'
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # The type for the operand information call back function.  This is called to
   # get the symbolic information for an operand of an instruction.  Typically
   # this is from the relocation information, symbol table, etc.  That block of
@@ -24,7 +22,9 @@ module LLVM
   # TagType for that Triple.  If symbolic information is returned the function
   # returns 1, otherwise it returns 0.
   # 
-  # @method op_info_callback_callback(pc, offset, size, tag_type, tag_buf)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_op_info_callback_(pc, offset, size, tag_type, tag_buf)
   # @param [Integer] pc 
   # @param [Integer] offset 
   # @param [Integer] size 
@@ -84,8 +84,6 @@ module LLVM
            :variant_kind, :ulong
   end
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # The type for the symbol lookup function.  This may be called by the
   # disassembler for things like adding a comment for a PC plus a constant
   # offset load instruction to use a symbol name instead of a load address value.
@@ -97,7 +95,9 @@ module LLVM
   # indirectly in ReferenceType along with ReferenceName if any, or that is set
   # to NULL.
   # 
-  # @method symbol_lookup_callback_callback(reference_value, reference_type, reference_pc, reference_name)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_symbol_lookup_callback_(reference_value, reference_type, reference_pc, reference_name)
   # @param [Integer] reference_value 
   # @param [FFI::Pointer(*uint64_t)] reference_type 
   # @param [Integer] reference_pc 
@@ -116,8 +116,8 @@ module LLVM
   # @param [String] triple_name 
   # @param [FFI::Pointer(*Void)] dis_info 
   # @param [Integer] tag_type 
-  # @param [Proc(op_info_callback_callback)] get_op_info 
-  # @param [Proc(symbol_lookup_callback_callback)] symbol_look_up 
+  # @param [Proc(_callback_op_info_callback_)] get_op_info 
+  # @param [Proc(_callback_symbol_lookup_callback_)] symbol_look_up 
   # @return [FFI::Pointer(DisasmContextRef)] 
   # @scope class
   attach_function :create_disasm, :LLVMCreateDisasm, [:string, :pointer, :int, :op_info_callback, :symbol_lookup_callback], :pointer

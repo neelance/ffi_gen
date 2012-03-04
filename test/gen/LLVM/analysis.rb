@@ -8,6 +8,8 @@ module LLVM
   
   # (Not documented)
   # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:verifier_failure_action).</em>
+  # 
   # === Options:
   # :abort_process ::
   #   
@@ -16,10 +18,9 @@ module LLVM
   # :return_status ::
   #   verifier will print to stderr and return 1
   # 
-  # @return [Array<Symbol>]
-  def self.verifier_failure_action_enum
-    [:abort_process, :print_message, :return_status]
-  end
+  # @method _enum_verifier_failure_action_
+  # @return [Symbol]
+  # @scope class
   enum :verifier_failure_action, [
     :abort_process,
     :print_message,
@@ -32,7 +33,7 @@ module LLVM
   # 
   # @method verify_module(m, action, out_message)
   # @param [FFI::Pointer(ModuleRef)] m 
-  # @param [Symbol from verifier_failure_action_enum] action 
+  # @param [Symbol from _enum_verifier_failure_action_] action 
   # @param [FFI::Pointer(**Char_S)] out_message 
   # @return [Integer] 
   # @scope class
@@ -43,7 +44,7 @@ module LLVM
   # 
   # @method verify_function(fn, action)
   # @param [FFI::Pointer(ValueRef)] fn 
-  # @param [Symbol from verifier_failure_action_enum] action 
+  # @param [Symbol from _enum_verifier_failure_action_] action 
   # @return [Integer] 
   # @scope class
   attach_function :verify_function, :LLVMVerifyFunction, [:pointer, :verifier_failure_action], :int

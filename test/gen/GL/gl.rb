@@ -3207,11 +3207,11 @@ module GL
   # @scope class
   attach_function :copy_tex_sub_image3d, :glCopyTexSubImage3D, [:uint, :int, :int, :int, :int, :int, :int, :int, :int], :void
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfngldrawrangeelementsproc_callback(start, end, count, type, indices)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfngldrawrangeelementsproc_(start, end, count, type, indices)
   # @param [Integer] start 
   # @param [Integer] end 
   # @param [Integer] count 
@@ -3221,11 +3221,11 @@ module GL
   # @scope class
   callback :pfngldrawrangeelementsproc, [:uint, :uint, :int, :uint, :pointer], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglteximage3dproc_callback(level, internalformat, width, height, depth, border, format, type, pixels)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglteximage3dproc_(level, internalformat, width, height, depth, border, format, type, pixels)
   # @param [Integer] level 
   # @param [Integer] internalformat 
   # @param [Integer] width 
@@ -3239,11 +3239,11 @@ module GL
   # @scope class
   callback :pfnglteximage3dproc, [:int, :int, :int, :int, :int, :int, :uint, :uint, :pointer], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfngltexsubimage3dproc_callback(level, xoffset, yoffset, zoffset, width, height, depth, format, type, pixels)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfngltexsubimage3dproc_(level, xoffset, yoffset, zoffset, width, height, depth, format, type, pixels)
   # @param [Integer] level 
   # @param [Integer] xoffset 
   # @param [Integer] yoffset 
@@ -3258,11 +3258,11 @@ module GL
   # @scope class
   callback :pfngltexsubimage3dproc, [:int, :int, :int, :int, :int, :int, :int, :uint, :uint, :pointer], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglcopytexsubimage3dproc_callback(level, xoffset, yoffset, zoffset, x, y, width, height)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglcopytexsubimage3dproc_(level, xoffset, yoffset, zoffset, x, y, width, height)
   # @param [Integer] level 
   # @param [Integer] xoffset 
   # @param [Integer] yoffset 
@@ -3647,11 +3647,11 @@ module GL
   # @scope class
   attach_function :get_separable_filter, :glGetSeparableFilter, [:uint, :uint, :uint, :pointer, :pointer, :pointer], :void
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglblendcolorproc_callback(green, blue, alpha)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglblendcolorproc_(green, blue, alpha)
   # @param [Float] green 
   # @param [Float] blue 
   # @param [Float] alpha 
@@ -4131,21 +4131,21 @@ module GL
   # @scope class
   attach_function :sample_coverage, :glSampleCoverage, [:float, :uchar], :void
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglsamplecoverageproc_callback(invert)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglsamplecoverageproc_(invert)
   # @param [Integer] invert 
   # @return [Float] 
   # @scope class
   callback :pfnglsamplecoverageproc, [:uchar], :float
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglcompressedteximage3dproc_callback(level, internalformat, width, height, depth, border, image_size, data)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglcompressedteximage3dproc_(level, internalformat, width, height, depth, border, image_size, data)
   # @param [Integer] level 
   # @param [Integer] internalformat 
   # @param [Integer] width 
@@ -4158,11 +4158,11 @@ module GL
   # @scope class
   callback :pfnglcompressedteximage3dproc, [:int, :uint, :int, :int, :int, :int, :int, :pointer], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglcompressedteximage2dproc_callback(level, internalformat, width, height, border, image_size, data)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglcompressedteximage2dproc_(level, internalformat, width, height, border, image_size, data)
   # @param [Integer] level 
   # @param [Integer] internalformat 
   # @param [Integer] width 
@@ -4174,11 +4174,11 @@ module GL
   # @scope class
   callback :pfnglcompressedteximage2dproc, [:int, :uint, :int, :int, :int, :int, :pointer], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglcompressedteximage1dproc_callback(level, internalformat, width, border, image_size, data)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglcompressedteximage1dproc_(level, internalformat, width, border, image_size, data)
   # @param [Integer] level 
   # @param [Integer] internalformat 
   # @param [Integer] width 
@@ -4189,11 +4189,11 @@ module GL
   # @scope class
   callback :pfnglcompressedteximage1dproc, [:int, :uint, :int, :int, :int, :pointer], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglcompressedtexsubimage3dproc_callback(level, xoffset, yoffset, zoffset, width, height, depth, format, image_size, data)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglcompressedtexsubimage3dproc_(level, xoffset, yoffset, zoffset, width, height, depth, format, image_size, data)
   # @param [Integer] level 
   # @param [Integer] xoffset 
   # @param [Integer] yoffset 
@@ -4208,11 +4208,11 @@ module GL
   # @scope class
   callback :pfnglcompressedtexsubimage3dproc, [:int, :int, :int, :int, :int, :int, :int, :uint, :int, :pointer], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglcompressedtexsubimage2dproc_callback(level, xoffset, yoffset, width, height, format, image_size, data)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglcompressedtexsubimage2dproc_(level, xoffset, yoffset, width, height, format, image_size, data)
   # @param [Integer] level 
   # @param [Integer] xoffset 
   # @param [Integer] yoffset 
@@ -4225,11 +4225,11 @@ module GL
   # @scope class
   callback :pfnglcompressedtexsubimage2dproc, [:int, :int, :int, :int, :int, :uint, :int, :pointer], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglcompressedtexsubimage1dproc_callback(level, xoffset, width, format, image_size, data)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglcompressedtexsubimage1dproc_(level, xoffset, width, format, image_size, data)
   # @param [Integer] level 
   # @param [Integer] xoffset 
   # @param [Integer] width 
@@ -4240,11 +4240,11 @@ module GL
   # @scope class
   callback :pfnglcompressedtexsubimage1dproc, [:int, :int, :int, :uint, :int, :pointer], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglgetcompressedteximageproc_callback(level, img)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglgetcompressedteximageproc_(level, img)
   # @param [Integer] level 
   # @param [FFI::Pointer(*GLvoid)] img 
   # @return [Integer] 
@@ -4579,175 +4579,175 @@ module GL
   # @scope class
   attach_function :multi_tex_coord4sv_arb, :glMultiTexCoord4svARB, [:uint, :pointer], :void
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglmultitexcoord1darbproc_callback(s)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglmultitexcoord1darbproc_(s)
   # @param [Float] s 
   # @return [Integer] 
   # @scope class
   callback :pfnglmultitexcoord1darbproc, [:double], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglmultitexcoord1dvarbproc_callback(v)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglmultitexcoord1dvarbproc_(v)
   # @param [FFI::Pointer(*GLdouble)] v 
   # @return [Integer] 
   # @scope class
   callback :pfnglmultitexcoord1dvarbproc, [:pointer], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglmultitexcoord1farbproc_callback(s)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglmultitexcoord1farbproc_(s)
   # @param [Float] s 
   # @return [Integer] 
   # @scope class
   callback :pfnglmultitexcoord1farbproc, [:float], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglmultitexcoord1fvarbproc_callback(v)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglmultitexcoord1fvarbproc_(v)
   # @param [FFI::Pointer(*GLfloat)] v 
   # @return [Integer] 
   # @scope class
   callback :pfnglmultitexcoord1fvarbproc, [:pointer], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglmultitexcoord1iarbproc_callback(s)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglmultitexcoord1iarbproc_(s)
   # @param [Integer] s 
   # @return [Integer] 
   # @scope class
   callback :pfnglmultitexcoord1iarbproc, [:int], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglmultitexcoord1ivarbproc_callback(v)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglmultitexcoord1ivarbproc_(v)
   # @param [FFI::Pointer(*GLint)] v 
   # @return [Integer] 
   # @scope class
   callback :pfnglmultitexcoord1ivarbproc, [:pointer], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglmultitexcoord1sarbproc_callback(s)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglmultitexcoord1sarbproc_(s)
   # @param [Integer] s 
   # @return [Integer] 
   # @scope class
   callback :pfnglmultitexcoord1sarbproc, [:short], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglmultitexcoord1svarbproc_callback(v)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglmultitexcoord1svarbproc_(v)
   # @param [FFI::Pointer(*GLshort)] v 
   # @return [Integer] 
   # @scope class
   callback :pfnglmultitexcoord1svarbproc, [:pointer], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglmultitexcoord2darbproc_callback(s, t)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglmultitexcoord2darbproc_(s, t)
   # @param [Float] s 
   # @param [Float] t 
   # @return [Integer] 
   # @scope class
   callback :pfnglmultitexcoord2darbproc, [:double, :double], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglmultitexcoord2dvarbproc_callback(v)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglmultitexcoord2dvarbproc_(v)
   # @param [FFI::Pointer(*GLdouble)] v 
   # @return [Integer] 
   # @scope class
   callback :pfnglmultitexcoord2dvarbproc, [:pointer], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglmultitexcoord2farbproc_callback(s, t)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglmultitexcoord2farbproc_(s, t)
   # @param [Float] s 
   # @param [Float] t 
   # @return [Integer] 
   # @scope class
   callback :pfnglmultitexcoord2farbproc, [:float, :float], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglmultitexcoord2fvarbproc_callback(v)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglmultitexcoord2fvarbproc_(v)
   # @param [FFI::Pointer(*GLfloat)] v 
   # @return [Integer] 
   # @scope class
   callback :pfnglmultitexcoord2fvarbproc, [:pointer], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglmultitexcoord2iarbproc_callback(s, t)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglmultitexcoord2iarbproc_(s, t)
   # @param [Integer] s 
   # @param [Integer] t 
   # @return [Integer] 
   # @scope class
   callback :pfnglmultitexcoord2iarbproc, [:int, :int], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglmultitexcoord2ivarbproc_callback(v)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglmultitexcoord2ivarbproc_(v)
   # @param [FFI::Pointer(*GLint)] v 
   # @return [Integer] 
   # @scope class
   callback :pfnglmultitexcoord2ivarbproc, [:pointer], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglmultitexcoord2sarbproc_callback(s, t)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglmultitexcoord2sarbproc_(s, t)
   # @param [Integer] s 
   # @param [Integer] t 
   # @return [Integer] 
   # @scope class
   callback :pfnglmultitexcoord2sarbproc, [:short, :short], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglmultitexcoord2svarbproc_callback(v)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglmultitexcoord2svarbproc_(v)
   # @param [FFI::Pointer(*GLshort)] v 
   # @return [Integer] 
   # @scope class
   callback :pfnglmultitexcoord2svarbproc, [:pointer], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglmultitexcoord3darbproc_callback(s, t, r)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglmultitexcoord3darbproc_(s, t, r)
   # @param [Float] s 
   # @param [Float] t 
   # @param [Float] r 
@@ -4755,21 +4755,21 @@ module GL
   # @scope class
   callback :pfnglmultitexcoord3darbproc, [:double, :double, :double], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglmultitexcoord3dvarbproc_callback(v)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglmultitexcoord3dvarbproc_(v)
   # @param [FFI::Pointer(*GLdouble)] v 
   # @return [Integer] 
   # @scope class
   callback :pfnglmultitexcoord3dvarbproc, [:pointer], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglmultitexcoord3farbproc_callback(s, t, r)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglmultitexcoord3farbproc_(s, t, r)
   # @param [Float] s 
   # @param [Float] t 
   # @param [Float] r 
@@ -4777,21 +4777,21 @@ module GL
   # @scope class
   callback :pfnglmultitexcoord3farbproc, [:float, :float, :float], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglmultitexcoord3fvarbproc_callback(v)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglmultitexcoord3fvarbproc_(v)
   # @param [FFI::Pointer(*GLfloat)] v 
   # @return [Integer] 
   # @scope class
   callback :pfnglmultitexcoord3fvarbproc, [:pointer], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglmultitexcoord3iarbproc_callback(s, t, r)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglmultitexcoord3iarbproc_(s, t, r)
   # @param [Integer] s 
   # @param [Integer] t 
   # @param [Integer] r 
@@ -4799,21 +4799,21 @@ module GL
   # @scope class
   callback :pfnglmultitexcoord3iarbproc, [:int, :int, :int], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglmultitexcoord3ivarbproc_callback(v)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglmultitexcoord3ivarbproc_(v)
   # @param [FFI::Pointer(*GLint)] v 
   # @return [Integer] 
   # @scope class
   callback :pfnglmultitexcoord3ivarbproc, [:pointer], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglmultitexcoord3sarbproc_callback(s, t, r)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglmultitexcoord3sarbproc_(s, t, r)
   # @param [Integer] s 
   # @param [Integer] t 
   # @param [Integer] r 
@@ -4821,21 +4821,21 @@ module GL
   # @scope class
   callback :pfnglmultitexcoord3sarbproc, [:short, :short, :short], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglmultitexcoord3svarbproc_callback(v)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglmultitexcoord3svarbproc_(v)
   # @param [FFI::Pointer(*GLshort)] v 
   # @return [Integer] 
   # @scope class
   callback :pfnglmultitexcoord3svarbproc, [:pointer], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglmultitexcoord4darbproc_callback(s, t, r, q)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglmultitexcoord4darbproc_(s, t, r, q)
   # @param [Float] s 
   # @param [Float] t 
   # @param [Float] r 
@@ -4844,21 +4844,21 @@ module GL
   # @scope class
   callback :pfnglmultitexcoord4darbproc, [:double, :double, :double, :double], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglmultitexcoord4dvarbproc_callback(v)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglmultitexcoord4dvarbproc_(v)
   # @param [FFI::Pointer(*GLdouble)] v 
   # @return [Integer] 
   # @scope class
   callback :pfnglmultitexcoord4dvarbproc, [:pointer], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglmultitexcoord4farbproc_callback(s, t, r, q)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglmultitexcoord4farbproc_(s, t, r, q)
   # @param [Float] s 
   # @param [Float] t 
   # @param [Float] r 
@@ -4867,21 +4867,21 @@ module GL
   # @scope class
   callback :pfnglmultitexcoord4farbproc, [:float, :float, :float, :float], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglmultitexcoord4fvarbproc_callback(v)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglmultitexcoord4fvarbproc_(v)
   # @param [FFI::Pointer(*GLfloat)] v 
   # @return [Integer] 
   # @scope class
   callback :pfnglmultitexcoord4fvarbproc, [:pointer], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglmultitexcoord4iarbproc_callback(s, t, r, q)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglmultitexcoord4iarbproc_(s, t, r, q)
   # @param [Integer] s 
   # @param [Integer] t 
   # @param [Integer] r 
@@ -4890,21 +4890,21 @@ module GL
   # @scope class
   callback :pfnglmultitexcoord4iarbproc, [:int, :int, :int, :int], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglmultitexcoord4ivarbproc_callback(v)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglmultitexcoord4ivarbproc_(v)
   # @param [FFI::Pointer(*GLint)] v 
   # @return [Integer] 
   # @scope class
   callback :pfnglmultitexcoord4ivarbproc, [:pointer], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglmultitexcoord4sarbproc_callback(s, t, r, q)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglmultitexcoord4sarbproc_(s, t, r, q)
   # @param [Integer] s 
   # @param [Integer] t 
   # @param [Integer] r 
@@ -4913,41 +4913,41 @@ module GL
   # @scope class
   callback :pfnglmultitexcoord4sarbproc, [:short, :short, :short, :short], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglmultitexcoord4svarbproc_callback(v)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglmultitexcoord4svarbproc_(v)
   # @param [FFI::Pointer(*GLshort)] v 
   # @return [Integer] 
   # @scope class
   callback :pfnglmultitexcoord4svarbproc, [:pointer], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfnglblendequationseparateatiproc_callback(mode_a)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfnglblendequationseparateatiproc_(mode_a)
   # @param [Integer] mode_a 
   # @return [Integer] 
   # @scope class
   callback :pfnglblendequationseparateatiproc, [:uint], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfngleglimagetargettexture2doesproc_callback(image)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfngleglimagetargettexture2doesproc_(image)
   # @param [FFI::Pointer(GLeglImageOES)] image 
   # @return [Integer] 
   # @scope class
   callback :pfngleglimagetargettexture2doesproc, [:pointer], :uint
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # (Not documented)
   # 
-  # @method pfngleglimagetargetrenderbufferstorageoesproc_callback(image)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_pfngleglimagetargetrenderbufferstorageoesproc_(image)
   # @param [FFI::Pointer(GLeglImageOES)] image 
   # @return [Integer] 
   # @scope class

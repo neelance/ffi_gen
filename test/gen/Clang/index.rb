@@ -35,6 +35,8 @@ module Clang
   # whether the use of this entity will result in a warning or error due to
   # it being deprecated or unavailable.
   # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:availability_kind).</em>
+  # 
   # === Options:
   # :available ::
   #   The entity is available.
@@ -47,10 +49,9 @@ module Clang
   #   The entity is available, but not accessible; any use of it will be
   #   an error.
   # 
-  # @return [Array<Symbol>]
-  def self.availability_kind_enum
-    [:available, :deprecated, :not_available, :not_accessible]
-  end
+  # @method _enum_availability_kind_
+  # @return [Symbol]
+  # @scope class
   enum :availability_kind, [
     :available,
     :deprecated,
@@ -388,6 +389,8 @@ module Clang
   
   # Describes the severity of a particular diagnostic.
   # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:diagnostic_severity).</em>
+  # 
   # === Options:
   # :ignored ::
   #   A diagnostic that has been suppressed, e.g., by a command-line
@@ -405,10 +408,9 @@ module Clang
   #   that future parser recovery is unlikely to produce useful
   #   results.
   # 
-  # @return [Array<Symbol>]
-  def self.diagnostic_severity_enum
-    [:ignored, :note, :warning, :error, :fatal]
-  end
+  # @method _enum_diagnostic_severity_
+  # @return [Symbol]
+  # @scope class
   enum :diagnostic_severity, [
     :ignored, 0,
     :note, 1,
@@ -448,6 +450,8 @@ module Clang
   # 
   # The values in this enum are meant to be combined to customize the
   # behavior of \c clang_displayDiagnostic().
+  # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:diagnostic_display_options).</em>
   # 
   # === Options:
   # :display_source_location ::
@@ -493,10 +497,9 @@ module Clang
   #   This option corresponds to the clang flag 
   #   \c -fdiagnostics-show-category=name.
   # 
-  # @return [Array<Symbol>]
-  def self.diagnostic_display_options_enum
-    [:display_source_location, :display_column, :display_source_ranges, :display_option, :display_category_id, :display_category_name]
-  end
+  # @method _enum_diagnostic_display_options_
+  # @return [Symbol]
+  # @scope class
   enum :diagnostic_display_options, [
     :display_source_location, 0x01,
     :display_column, 0x02,
@@ -534,7 +537,7 @@ module Clang
   # 
   # @method get_diagnostic_severity(diagnostic)
   # @param [FFI::Pointer(Diagnostic)] diagnostic 
-  # @return [Symbol from diagnostic_severity_enum] 
+  # @return [Symbol from _enum_diagnostic_severity_] 
   # @scope class
   attach_function :get_diagnostic_severity, :clang_getDiagnosticSeverity, [:pointer], :diagnostic_severity
   
@@ -707,6 +710,8 @@ module Clang
   # ORed together to specify which options should be used when
   # constructing the translation unit.
   # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:translation_unit_flags).</em>
+  # 
   # === Options:
   # :none ::
   #   Used to indicate that no special translation-unit options are
@@ -769,10 +774,9 @@ module Clang
   #   a large amount of storage to due preprocessor metaprogramming. Moreover,
   #   its fairly rare that this information is useful for libclang clients.
   # 
-  # @return [Array<Symbol>]
-  def self.translation_unit_flags_enum
-    [:none, :detailed_preprocessing_record, :incomplete, :precompiled_preamble, :cache_completion_results, :x_precompiled_preamble, :x_chained_pch, :nested_macro_expansions]
-  end
+  # @method _enum_translation_unit_flags_
+  # @return [Symbol]
+  # @scope class
   enum :translation_unit_flags, [
     :none, 0x0,
     :detailed_preprocessing_record, 0x01,
@@ -843,14 +847,15 @@ module Clang
   # ORed together to specify which options should be used when
   # saving the translation unit.
   # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:save_translation_unit_flags).</em>
+  # 
   # === Options:
   # :save_translation_unit_none ::
   #   Used to indicate that no special saving options are needed.
   # 
-  # @return [Array<Symbol>]
-  def self.save_translation_unit_flags_enum
-    [:save_translation_unit_none]
-  end
+  # @method _enum_save_translation_unit_flags_
+  # @return [Symbol]
+  # @scope class
   enum :save_translation_unit_flags, [
     :save_translation_unit_none, 0x0
   ]
@@ -872,6 +877,8 @@ module Clang
   # Describes the kind of error that occurred (if any) in a call to
   # \c clang_saveTranslationUnit().
   # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:save_error).</em>
+  # 
   # === Options:
   # :none ::
   #   Indicates that no error occurred while saving a translation unit.
@@ -891,10 +898,9 @@ module Clang
   #   Indicates that the translation unit to be saved was somehow
   #   invalid (e.g., NULL).
   # 
-  # @return [Array<Symbol>]
-  def self.save_error_enum
-    [:none, :unknown, :translation_errors, :invalid_tu]
-  end
+  # @method _enum_save_error_
+  # @return [Symbol]
+  # @scope class
   enum :save_error, [
     :none, 0,
     :unknown, 1,
@@ -938,14 +944,15 @@ module Clang
   # ORed together to specify which options should be used when
   # reparsing the translation unit.
   # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:reparse_flags).</em>
+  # 
   # === Options:
   # :reparse_none ::
   #   Used to indicate that no special reparsing options are needed.
   # 
-  # @return [Array<Symbol>]
-  def self.reparse_flags_enum
-    [:reparse_none]
-  end
+  # @method _enum_reparse_flags_
+  # @return [Symbol]
+  # @scope class
   enum :reparse_flags, [
     :reparse_none, 0x0
   ]
@@ -1003,6 +1010,8 @@ module Clang
   
   # Categorizes how memory is being used by a translation unit.
   # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:tu_resource_usage_kind).</em>
+  # 
   # === Options:
   # :ast ::
   #   
@@ -1033,10 +1042,9 @@ module Clang
   # :preprocessor_header_search ::
   #   
   # 
-  # @return [Array<Symbol>]
-  def self.tu_resource_usage_kind_enum
-    [:ast, :identifiers, :selectors, :global_completion_results, :source_manager_content_cache, :ast_side_tables, :source_manager_membuffer_malloc, :source_manager_membuffer_m_map, :external_ast_source_membuffer_malloc, :external_ast_source_membuffer_m_map, :preprocessor, :preprocessing_record, :source_manager_data_structures, :preprocessor_header_search]
-  end
+  # @method _enum_tu_resource_usage_kind_
+  # @return [Symbol]
+  # @scope class
   enum :tu_resource_usage_kind, [
     :ast, 1,
     :identifiers, 2,
@@ -1058,7 +1066,7 @@ module Clang
   #  the name of the memory category.  This string should never be freed.
   # 
   # @method get_tu_resource_usage_name(kind)
-  # @param [Symbol from tu_resource_usage_kind_enum] kind 
+  # @param [Symbol from _enum_tu_resource_usage_kind_] kind 
   # @return [String] 
   # @scope class
   attach_function :get_tu_resource_usage_name, :clang_getTUResourceUsageName, [:tu_resource_usage_kind], :string
@@ -1067,7 +1075,7 @@ module Clang
   # 
   # = Fields:
   # :kind ::
-  #   (Symbol from tu_resource_usage_kind_enum) The memory usage category.
+  #   (Symbol from _enum_tu_resource_usage_kind_) The memory usage category.
   # :amount ::
   #   (Integer) Amount of resources used. 
   #         The units will depend on the resource kind.
@@ -1110,6 +1118,8 @@ module Clang
   attach_function :dispose_cxtu_resource_usage, :clang_disposeCXTUResourceUsage, [TUResourceUsage.by_value], :void
   
   # Describes the kind of entity that a cursor refers to.
+  # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cursor_kind).</em>
   # 
   # === Options:
   # :unexposed_decl ::
@@ -1550,10 +1560,9 @@ module Clang
   # :inclusion_directive ::
   #   
   # 
-  # @return [Array<Symbol>]
-  def self.cursor_kind_enum
-    [:unexposed_decl, :struct_decl, :union_decl, :class_decl, :enum_decl, :field_decl, :enum_constant_decl, :function_decl, :var_decl, :parm_decl, :obj_c_interface_decl, :obj_c_category_decl, :obj_c_protocol_decl, :obj_c_property_decl, :obj_c_ivar_decl, :obj_c_instance_method_decl, :obj_c_class_method_decl, :obj_c_implementation_decl, :obj_c_category_impl_decl, :typedef_decl, :x_method, :namespace, :linkage_spec, :constructor, :destructor, :conversion_function, :template_type_parameter, :non_type_template_parameter, :template_template_parameter, :function_template, :class_template, :class_template_partial_specialization, :namespace_alias, :using_directive, :using_declaration, :type_alias_decl, :obj_c_synthesize_decl, :obj_c_dynamic_decl, :x_access_specifier, :first_ref, :obj_c_super_class_ref, :obj_c_protocol_ref, :obj_c_class_ref, :type_ref, :x_base_specifier, :template_ref, :namespace_ref, :member_ref, :label_ref, :overloaded_decl_ref, :first_invalid, :invalid_file, :no_decl_found, :not_implemented, :invalid_code, :first_expr, :unexposed_expr, :decl_ref_expr, :member_ref_expr, :call_expr, :obj_c_message_expr, :block_expr, :integer_literal, :floating_literal, :imaginary_literal, :string_literal, :character_literal, :paren_expr, :unary_operator, :array_subscript_expr, :binary_operator, :compound_assign_operator, :conditional_operator, :c_style_cast_expr, :compound_literal_expr, :init_list_expr, :addr_label_expr, :stmt_expr, :generic_selection_expr, :gnu_null_expr, :x_static_cast_expr, :x_dynamic_cast_expr, :x_reinterpret_cast_expr, :x_const_cast_expr, :x_functional_cast_expr, :x_typeid_expr, :x_bool_literal_expr, :x_null_ptr_literal_expr, :x_this_expr, :x_throw_expr, :x_new_expr, :x_delete_expr, :unary_expr, :obj_c_string_literal, :obj_c_encode_expr, :obj_c_selector_expr, :obj_c_protocol_expr, :obj_c_bridged_cast_expr, :pack_expansion_expr, :size_of_pack_expr, :first_stmt, :unexposed_stmt, :label_stmt, :compound_stmt, :case_stmt, :default_stmt, :if_stmt, :switch_stmt, :while_stmt, :do_stmt, :for_stmt, :goto_stmt, :indirect_goto_stmt, :continue_stmt, :break_stmt, :return_stmt, :asm_stmt, :obj_c_at_try_stmt, :obj_c_at_catch_stmt, :obj_c_at_finally_stmt, :obj_c_at_throw_stmt, :obj_c_at_synchronized_stmt, :obj_c_autorelease_pool_stmt, :obj_c_for_collection_stmt, :x_catch_stmt, :x_try_stmt, :x_for_range_stmt, :seh_try_stmt, :seh_except_stmt, :seh_finally_stmt, :null_stmt, :decl_stmt, :translation_unit, :first_attr, :unexposed_attr, :ib_action_attr, :ib_outlet_attr, :ib_outlet_collection_attr, :x_final_attr, :x_override_attr, :annotate_attr, :preprocessing_directive, :macro_definition, :macro_expansion, :inclusion_directive]
-  end
+  # @method _enum_cursor_kind_
+  # @return [Symbol]
+  # @scope class
   enum :cursor_kind, [
     :unexposed_decl, 1,
     :struct_decl, 2,
@@ -1721,7 +1730,7 @@ module Clang
   # 
   # = Fields:
   # :kind ::
-  #   (Symbol from cursor_kind_enum) 
+  #   (Symbol from _enum_cursor_kind_) 
   # :xdata ::
   #   (Integer) 
   # :data ::
@@ -1779,14 +1788,14 @@ module Clang
   # 
   # @method get_cursor_kind(cursor)
   # @param [Cursor] cursor 
-  # @return [Symbol from cursor_kind_enum] 
+  # @return [Symbol from _enum_cursor_kind_] 
   # @scope class
   attach_function :get_cursor_kind, :clang_getCursorKind, [Cursor.by_value], :cursor_kind
   
   # Determine whether the given cursor kind represents a declaration.
   # 
   # @method is_declaration(cursor_kind)
-  # @param [Symbol from cursor_kind_enum] cursor_kind 
+  # @param [Symbol from _enum_cursor_kind_] cursor_kind 
   # @return [Integer] 
   # @scope class
   attach_function :is_declaration, :clang_isDeclaration, [:cursor_kind], :uint
@@ -1799,7 +1808,7 @@ module Clang
   # particular cursor refers to another entity.
   # 
   # @method is_reference(cursor_kind)
-  # @param [Symbol from cursor_kind_enum] cursor_kind 
+  # @param [Symbol from _enum_cursor_kind_] cursor_kind 
   # @return [Integer] 
   # @scope class
   attach_function :is_reference, :clang_isReference, [:cursor_kind], :uint
@@ -1807,7 +1816,7 @@ module Clang
   # Determine whether the given cursor kind represents an expression.
   # 
   # @method is_expression(cursor_kind)
-  # @param [Symbol from cursor_kind_enum] cursor_kind 
+  # @param [Symbol from _enum_cursor_kind_] cursor_kind 
   # @return [Integer] 
   # @scope class
   attach_function :is_expression, :clang_isExpression, [:cursor_kind], :uint
@@ -1815,7 +1824,7 @@ module Clang
   # Determine whether the given cursor kind represents a statement.
   # 
   # @method is_statement(cursor_kind)
-  # @param [Symbol from cursor_kind_enum] cursor_kind 
+  # @param [Symbol from _enum_cursor_kind_] cursor_kind 
   # @return [Integer] 
   # @scope class
   attach_function :is_statement, :clang_isStatement, [:cursor_kind], :uint
@@ -1823,7 +1832,7 @@ module Clang
   # Determine whether the given cursor kind represents an attribute.
   # 
   # @method is_attribute(cursor_kind)
-  # @param [Symbol from cursor_kind_enum] cursor_kind 
+  # @param [Symbol from _enum_cursor_kind_] cursor_kind 
   # @return [Integer] 
   # @scope class
   attach_function :is_attribute, :clang_isAttribute, [:cursor_kind], :uint
@@ -1832,7 +1841,7 @@ module Clang
   # cursor.
   # 
   # @method is_invalid(cursor_kind)
-  # @param [Symbol from cursor_kind_enum] cursor_kind 
+  # @param [Symbol from _enum_cursor_kind_] cursor_kind 
   # @return [Integer] 
   # @scope class
   attach_function :is_invalid, :clang_isInvalid, [:cursor_kind], :uint
@@ -1841,7 +1850,7 @@ module Clang
   # unit.
   # 
   # @method is_translation_unit(cursor_kind)
-  # @param [Symbol from cursor_kind_enum] cursor_kind 
+  # @param [Symbol from _enum_cursor_kind_] cursor_kind 
   # @return [Integer] 
   # @scope class
   attach_function :is_translation_unit, :clang_isTranslationUnit, [:cursor_kind], :uint
@@ -1850,7 +1859,7 @@ module Clang
   # element, such as a preprocessor directive or macro instantiation.
   # 
   # @method is_preprocessing(cursor_kind)
-  # @param [Symbol from cursor_kind_enum] cursor_kind 
+  # @param [Symbol from _enum_cursor_kind_] cursor_kind 
   # @return [Integer] 
   # @scope class
   attach_function :is_preprocessing, :clang_isPreprocessing, [:cursor_kind], :uint
@@ -1859,12 +1868,14 @@ module Clang
   #  unexposed piece of the AST (e.g., CXCursor_UnexposedStmt).
   # 
   # @method is_unexposed(cursor_kind)
-  # @param [Symbol from cursor_kind_enum] cursor_kind 
+  # @param [Symbol from _enum_cursor_kind_] cursor_kind 
   # @return [Integer] 
   # @scope class
   attach_function :is_unexposed, :clang_isUnexposed, [:cursor_kind], :uint
   
   # Describe the linkage of the entity referred to by a cursor.
+  # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:linkage_kind).</em>
   # 
   # === Options:
   # :invalid ::
@@ -1881,10 +1892,9 @@ module Clang
   # :external ::
   #   This is the linkage for entities with true, external linkage.
   # 
-  # @return [Array<Symbol>]
-  def self.linkage_kind_enum
-    [:invalid, :no_linkage, :internal, :unique_external, :external]
-  end
+  # @method _enum_linkage_kind_
+  # @return [Symbol]
+  # @scope class
   enum :linkage_kind, [
     :invalid,
     :no_linkage,
@@ -1897,7 +1907,7 @@ module Clang
   # 
   # @method get_cursor_linkage(cursor)
   # @param [Cursor] cursor 
-  # @return [Symbol from linkage_kind_enum] 
+  # @return [Symbol from _enum_linkage_kind_] 
   # @scope class
   attach_function :get_cursor_linkage, :clang_getCursorLinkage, [Cursor.by_value], :linkage_kind
   
@@ -1905,11 +1915,13 @@ module Clang
   # 
   # @method get_cursor_availability(cursor)
   # @param [Cursor] cursor The cursor to query.
-  # @return [Symbol from availability_kind_enum] The availability of the cursor.
+  # @return [Symbol from _enum_availability_kind_] The availability of the cursor.
   # @scope class
   attach_function :get_cursor_availability, :clang_getCursorAvailability, [Cursor.by_value], :availability_kind
   
   # Describe the "language" of the entity referred to by a cursor.
+  # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:language_kind).</em>
   # 
   # === Options:
   # :invalid ::
@@ -1921,10 +1933,9 @@ module Clang
   # :c_plus_plus ::
   #   
   # 
-  # @return [Array<Symbol>]
-  def self.language_kind_enum
-    [:invalid, :c, :obj_c, :c_plus_plus]
-  end
+  # @method _enum_language_kind_
+  # @return [Symbol]
+  # @scope class
   enum :language_kind, [
     :invalid, 0,
     :c,
@@ -1936,7 +1947,7 @@ module Clang
   # 
   # @method get_cursor_language(cursor)
   # @param [Cursor] cursor 
-  # @return [Symbol from language_kind_enum] 
+  # @return [Symbol from _enum_language_kind_] 
   # @scope class
   attach_function :get_cursor_language, :clang_getCursorLanguage, [Cursor.by_value], :language_kind
   
@@ -2175,6 +2186,8 @@ module Clang
   
   # Describes the kind of type
   # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:type_kind).</em>
+  # 
   # === Options:
   # :invalid ::
   #   Reprents an invalid type (e.g., where no type is available).
@@ -2264,10 +2277,9 @@ module Clang
   # :constant_array ::
   #   
   # 
-  # @return [Array<Symbol>]
-  def self.type_kind_enum
-    [:invalid, :unexposed, :void, :bool, :char_u, :u_char, :char16, :char32, :u_short, :u_int, :u_long, :u_long_long, :u_int128, :char_s, :s_char, :w_char, :short, :int, :long, :long_long, :int128, :float, :double, :long_double, :null_ptr, :overload, :dependent, :obj_c_id, :obj_c_class, :obj_c_sel, :complex, :pointer, :block_pointer, :l_value_reference, :r_value_reference, :record, :enum, :typedef, :obj_c_interface, :obj_c_object_pointer, :function_no_proto, :function_proto, :constant_array]
-  end
+  # @method _enum_type_kind_
+  # @return [Symbol]
+  # @scope class
   enum :type_kind, [
     :invalid, 0,
     :unexposed, 1,
@@ -2318,7 +2330,7 @@ module Clang
   # 
   # = Fields:
   # :kind ::
-  #   (Symbol from type_kind_enum) 
+  #   (Symbol from _enum_type_kind_) 
   # :data ::
   #   (Array<FFI::Pointer(*Void)>) 
   class Type < FFI::Struct
@@ -2411,7 +2423,7 @@ module Clang
   # Retrieve the spelling of a given CXTypeKind.
   # 
   # @method get_type_kind_spelling(k)
-  # @param [Symbol from type_kind_enum] k 
+  # @param [Symbol from _enum_type_kind_] k 
   # @return [String] 
   # @scope class
   attach_function :get_type_kind_spelling, :clang_getTypeKindSpelling, [:type_kind], String.by_value
@@ -2474,6 +2486,8 @@ module Clang
   # Represents the C++ access control level to a base class for a
   # cursor with kind CX_CXXBaseSpecifier.
   # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cxx_access_specifier).</em>
+  # 
   # === Options:
   # :x_invalid_access_specifier ::
   #   
@@ -2484,10 +2498,9 @@ module Clang
   # :x_private ::
   #   
   # 
-  # @return [Array<Symbol>]
-  def self.cxx_access_specifier_enum
-    [:x_invalid_access_specifier, :x_public, :x_protected, :x_private]
-  end
+  # @method _enum_cxx_access_specifier_
+  # @return [Symbol]
+  # @scope class
   enum :cxx_access_specifier, [
     :x_invalid_access_specifier,
     :x_public,
@@ -2501,7 +2514,7 @@ module Clang
   # 
   # @method get_cxx_access_specifier(cursor)
   # @param [Cursor] cursor 
-  # @return [Symbol from cxx_access_specifier_enum] 
+  # @return [Symbol from _enum_cxx_access_specifier_] 
   # @scope class
   attach_function :get_cxx_access_specifier, :clang_getCXXAccessSpecifier, [Cursor.by_value], :cxx_access_specifier
   
@@ -2544,6 +2557,8 @@ module Clang
   # A value of this enumeration type should be returned by each
   # \c CXCursorVisitor to indicate how clang_visitChildren() proceed.
   # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:child_visit_result).</em>
+  # 
   # === Options:
   # :break ::
   #   Terminates the cursor traversal.
@@ -2554,18 +2569,15 @@ module Clang
   #   Recursively traverse the children of this cursor, using
   #   the same visitor and client data.
   # 
-  # @return [Array<Symbol>]
-  def self.child_visit_result_enum
-    [:break, :continue, :recurse]
-  end
+  # @method _enum_child_visit_result_
+  # @return [Symbol]
+  # @scope class
   enum :child_visit_result, [
     :break,
     :continue,
     :recurse
   ]
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # Visitor invoked for each cursor found by a traversal.
   # 
   # This visitor function will be invoked for each cursor found by
@@ -2577,11 +2589,13 @@ module Clang
   # The visitor should return one of the \c CXChildVisitResult values
   # to direct clang_visitCursorChildren().
   # 
-  # @method cursor_visitor_callback(cursor, parent, client_data)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_cursor_visitor_(cursor, parent, client_data)
   # @param [Cursor] cursor 
   # @param [Cursor] parent 
   # @param [FFI::Pointer(ClientData)] client_data 
-  # @return [Symbol from child_visit_result_enum] 
+  # @return [Symbol from _enum_child_visit_result_] 
   # @scope class
   callback :cursor_visitor, [Cursor.by_value, Cursor.by_value, :pointer], :child_visit_result
   
@@ -2597,7 +2611,7 @@ module Clang
   # @param [Cursor] parent the cursor whose child may be visited. All kinds of
   #   cursors can be visited, including invalid cursors (which, by
   #   definition, have no children).
-  # @param [Proc(cursor_visitor_callback)] visitor the visitor function that will be invoked for each
+  # @param [Proc(_callback_cursor_visitor_)] visitor the visitor function that will be invoked for each
   #   child of \p parent.
   # @param [FFI::Pointer(ClientData)] client_data pointer data supplied by the client, which will
   #   be passed to the visitor each time it is invoked.
@@ -2812,7 +2826,7 @@ module Clang
   # @method get_template_cursor_kind(c)
   # @param [Cursor] c The cursor to query. This cursor should represent a template
   #   declaration.
-  # @return [Symbol from cursor_kind_enum] The cursor kind of the specializations that would be generated
+  # @return [Symbol from _enum_cursor_kind_] The cursor kind of the specializations that would be generated
   #   by instantiating the template \p C. If \p C is not a template, returns
   #   \c CXCursor_NoDeclFound.
   # @scope class
@@ -2868,6 +2882,8 @@ module Clang
   
   # (Not documented)
   # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:name_ref_flags).</em>
+  # 
   # === Options:
   # :want_qualifier ::
   #   Include the nested-name-specifier, e.g. Foo:: in x.Foo::y, in the
@@ -2885,10 +2901,9 @@ module Clang
   #   return some_vector(1); // C++
   #   \endcode
   # 
-  # @return [Array<Symbol>]
-  def self.name_ref_flags_enum
-    [:want_qualifier, :want_template_args, :want_single_piece]
-  end
+  # @method _enum_name_ref_flags_
+  # @return [Symbol]
+  # @scope class
   enum :name_ref_flags, [
     :want_qualifier, 0x1,
     :want_template_args, 0x2,
@@ -2896,6 +2911,8 @@ module Clang
   ]
   
   # Describes a kind of token.
+  # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:token_kind).</em>
   # 
   # === Options:
   # :punctuation ::
@@ -2909,10 +2926,9 @@ module Clang
   # :comment ::
   #   A comment.
   # 
-  # @return [Array<Symbol>]
-  def self.token_kind_enum
-    [:punctuation, :keyword, :identifier, :literal, :comment]
-  end
+  # @method _enum_token_kind_
+  # @return [Symbol]
+  # @scope class
   enum :token_kind, [
     :punctuation,
     :keyword,
@@ -2937,7 +2953,7 @@ module Clang
   # 
   # @method get_token_kind(token)
   # @param [Token] token 
-  # @return [Symbol from token_kind_enum] 
+  # @return [Symbol from _enum_token_kind_] 
   # @scope class
   attach_function :get_token_kind, :clang_getTokenKind, [Token.by_value], :token_kind
   
@@ -3030,7 +3046,7 @@ module Clang
   # for debug/testing
   # 
   # @method get_cursor_kind_spelling(kind)
-  # @param [Symbol from cursor_kind_enum] kind 
+  # @param [Symbol from _enum_cursor_kind_] kind 
   # @return [String] 
   # @scope class
   attach_function :get_cursor_kind_spelling, :clang_getCursorKindSpelling, [:cursor_kind], String.by_value
@@ -3070,7 +3086,7 @@ module Clang
   # 
   # = Fields:
   # :cursor_kind ::
-  #   (Symbol from cursor_kind_enum) The kind of entity that this completion refers to.
+  #   (Symbol from _enum_cursor_kind_) The kind of entity that this completion refers to.
   #   
   #   The cursor kind will be a macro, keyword, or a declaration (one of the
   #   *Decl cursor kinds), describing the entity that the completion is
@@ -3091,6 +3107,8 @@ module Clang
   # Each "chunk" within a code-completion string (\c CXCompletionString) is
   # either a piece of text with a specific "kind" that describes how that text
   # should be interpreted by the client or is another completion string.
+  # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:completion_chunk_kind).</em>
   # 
   # === Options:
   # :optional ::
@@ -3213,10 +3231,9 @@ module Clang
   #   Vertical space ('\n'), after which it is generally a good idea to
   #   perform indentation.
   # 
-  # @return [Array<Symbol>]
-  def self.completion_chunk_kind_enum
-    [:optional, :typed_text, :text, :placeholder, :informative, :current_parameter, :left_paren, :right_paren, :left_bracket, :right_bracket, :left_brace, :right_brace, :left_angle, :right_angle, :comma, :result_type, :colon, :semi_colon, :equal, :horizontal_space, :vertical_space]
-  end
+  # @method _enum_completion_chunk_kind_
+  # @return [Symbol]
+  # @scope class
   enum :completion_chunk_kind, [
     :optional,
     :typed_text,
@@ -3246,7 +3263,7 @@ module Clang
   # @method get_completion_chunk_kind(completion_string, chunk_number)
   # @param [FFI::Pointer(CompletionString)] completion_string the completion string to query.
   # @param [Integer] chunk_number the 0-based index of the chunk in the completion string.
-  # @return [Symbol from completion_chunk_kind_enum] the kind of the chunk at the index \c chunk_number.
+  # @return [Symbol from _enum_completion_chunk_kind_] the kind of the chunk at the index \c chunk_number.
   # @scope class
   attach_function :get_completion_chunk_kind, :clang_getCompletionChunkKind, [:pointer, :uint], :completion_chunk_kind
   
@@ -3297,7 +3314,7 @@ module Clang
   # 
   # @method get_completion_availability(completion_string)
   # @param [FFI::Pointer(CompletionString)] completion_string The completion string to query.
-  # @return [Symbol from availability_kind_enum] The availability of the completion string.
+  # @return [Symbol from _enum_availability_kind_] The availability of the completion string.
   # @scope class
   attach_function :get_completion_availability, :clang_getCompletionAvailability, [:pointer], :availability_kind
   
@@ -3355,6 +3372,8 @@ module Clang
   # The enumerators in this enumeration can be bitwise-OR'd together to
   # provide multiple options to \c clang_codeCompleteAt().
   # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:code_complete_flags).</em>
+  # 
   # === Options:
   # :include_macros ::
   #   Whether to include macros within the set of code
@@ -3363,10 +3382,9 @@ module Clang
   #   Whether to include code patterns for language constructs
   #   within the set of code completions, e.g., for loops.
   # 
-  # @return [Array<Symbol>]
-  def self.code_complete_flags_enum
-    [:include_macros, :include_code_patterns]
-  end
+  # @method _enum_code_complete_flags_
+  # @return [Symbol]
+  # @scope class
   enum :code_complete_flags, [
     :include_macros, 0x01,
     :include_code_patterns, 0x02
@@ -3377,15 +3395,16 @@ module Clang
   # The enumerators in this enumeration may be bitwise-OR'd together if multiple
   # contexts are occurring simultaneously.
   # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:completion_context).</em>
+  # 
   # === Options:
   # :completion_context_unexposed ::
   #   The context for completions is unexposed, as only Clang results
   #   should be included. (This is equivalent to having no context bits set.)
   # 
-  # @return [Array<Symbol>]
-  def self.completion_context_enum
-    [:completion_context_unexposed]
-  end
+  # @method _enum_completion_context_
+  # @return [Symbol]
+  # @scope class
   enum :completion_context, [
     :completion_context_unexposed, 0
   ]
@@ -3522,7 +3541,7 @@ module Clang
   # @param [FFI::Pointer(*UInt)] is_incomplete on return, this value will be false if Clang has complete
   #   information about the container. If Clang does not have complete
   #   information, this value will be true.
-  # @return [Symbol from cursor_kind_enum] the container kind, or CXCursor_InvalidCode if there is not a
+  # @return [Symbol from _enum_cursor_kind_] the container kind, or CXCursor_InvalidCode if there is not a
   #   container
   # @scope class
   attach_function :code_complete_get_container_kind, :clang_codeCompleteGetContainerKind, [:pointer, :pointer], :cursor_kind
@@ -3569,8 +3588,6 @@ module Clang
   # @scope class
   attach_function :toggle_crash_recovery, :clang_toggleCrashRecovery, [:uint], :void
   
-  # <em>This is no real method. This entry is only for documentation of the callback.</em>
-  # 
   # Visitor invoked for each file in a translation unit
   #        (used with clang_getInclusions()).
   # 
@@ -3581,7 +3598,9 @@ module Clang
   # array is sorted in order of immediate inclusion.  For example,
   # the first element refers to the location that included 'included_file'.
   # 
-  # @method inclusion_visitor_callback(inclusion_stack, include_len, client_data)
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_inclusion_visitor_(inclusion_stack, include_len, client_data)
   # @param [FFI::Pointer(*SourceLocation)] inclusion_stack 
   # @param [Integer] include_len 
   # @param [FFI::Pointer(ClientData)] client_data 
@@ -3596,7 +3615,7 @@ module Clang
   # 
   # @method get_inclusions(tu, visitor, client_data)
   # @param [FFI::Pointer(TranslationUnit)] tu 
-  # @param [Proc(inclusion_visitor_callback)] visitor 
+  # @param [Proc(_callback_inclusion_visitor_)] visitor 
   # @param [FFI::Pointer(ClientData)] client_data 
   # @return [nil] 
   # @scope class
@@ -3643,16 +3662,17 @@ module Clang
   # 
   # @{
   # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:visitor_result).</em>
+  # 
   # === Options:
   # :break ::
   #   
   # :continue ::
   #   
   # 
-  # @return [Array<Symbol>]
-  def self.visitor_result_enum
-    [:break, :continue]
-  end
+  # @method _enum_visitor_result_
+  # @return [Symbol]
+  # @scope class
   enum :visitor_result, [
     :break,
     :continue

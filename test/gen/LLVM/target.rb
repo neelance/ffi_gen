@@ -8,16 +8,17 @@ module LLVM
   
   # (Not documented)
   # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:byte_ordering).</em>
+  # 
   # === Options:
   # :big ::
   #   
   # :little ::
   #   
   # 
-  # @return [Array<Symbol>]
-  def self.byte_ordering_enum
-    [:big, :little]
-  end
+  # @method _enum_byte_ordering_
+  # @return [Symbol]
+  # @scope class
   enum :byte_ordering, [
     :big,
     :little
@@ -82,7 +83,7 @@ module LLVM
   # 
   # @method byte_order(target_data_ref)
   # @param [FFI::Pointer(TargetDataRef)] target_data_ref 
-  # @return [Symbol from byte_ordering_enum] 
+  # @return [Symbol from _enum_byte_ordering_] 
   # @scope class
   attach_function :byte_order, :LLVMByteOrder, [:pointer], :byte_ordering
   

@@ -57,16 +57,19 @@ module LLVM
   
   # (Not documented)
   # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:attribute).</em>
+  # 
   # === Options:
   # 
-  # @return [Array<Symbol>]
-  def self.attribute_enum
-    []
-  end
+  # @method _enum_attribute_
+  # @return [Symbol]
+  # @scope class
   enum :attribute, [
   ]
   
   # (Not documented)
+  # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:opcode).</em>
   # 
   # === Options:
   # :ret ::
@@ -188,10 +191,9 @@ module LLVM
   # :unwind ::
   #   
   # 
-  # @return [Array<Symbol>]
-  def self.opcode_enum
-    [:ret, :br, :switch, :indirect_br, :invoke, :unreachable, :add, :f_add, :sub, :f_sub, :mul, :f_mul, :u_div, :s_div, :f_div, :u_rem, :s_rem, :f_rem, :shl, :l_shr, :a_shr, :and, :or, :xor, :alloca, :load, :store, :get_element_ptr, :trunc, :z_ext, :s_ext, :fp_to_ui, :fp_to_si, :ui_to_fp, :si_to_fp, :fp_trunc, :fp_ext, :ptr_to_int, :int_to_ptr, :bit_cast, :i_cmp, :f_cmp, :phi, :call, :select, :user_op1, :user_op2, :va_arg, :extract_element, :insert_element, :shuffle_vector, :extract_value, :insert_value, :fence, :atomic_cmp_xchg, :atomic_rmw, :resume, :landing_pad, :unwind]
-  end
+  # @method _enum_opcode_
+  # @return [Symbol]
+  # @scope class
   enum :opcode, [
     :ret, 1,
     :br, 2,
@@ -256,6 +258,8 @@ module LLVM
   
   # (Not documented)
   # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:type_kind).</em>
+  # 
   # === Options:
   # :void ::
   #   
@@ -288,10 +292,9 @@ module LLVM
   # :x86_mmx ::
   #   < Metadata
   # 
-  # @return [Array<Symbol>]
-  def self.type_kind_enum
-    [:void, :float, :double, :x86_fp80, :fp128, :ppc_fp128, :label, :integer, :function, :struct, :array, :pointer, :vector, :metadata, :x86_mmx]
-  end
+  # @method _enum_type_kind_
+  # @return [Symbol]
+  # @scope class
   enum :type_kind, [
     :void,
     :float,
@@ -311,6 +314,8 @@ module LLVM
   ]
   
   # (Not documented)
+  # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:linkage).</em>
   # 
   # === Options:
   # :external ::
@@ -351,10 +356,9 @@ module LLVM
   # :linker_private_weak_def_auto ::
   #   < Like LinkerPrivate, but is weak.
   # 
-  # @return [Array<Symbol>]
-  def self.linkage_enum
-    [:external, :available_externally, :link_once_any, :link_once_odr, :weak_any, :weak_odr, :appending, :internal, :private, :dll_import, :dll_export, :external_weak, :ghost, :common, :linker_private, :linker_private_weak, :linker_private_weak_def_auto]
-  end
+  # @method _enum_linkage_
+  # @return [Symbol]
+  # @scope class
   enum :linkage, [
     :external,
     :available_externally,
@@ -377,6 +381,8 @@ module LLVM
   
   # (Not documented)
   # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:visibility).</em>
+  # 
   # === Options:
   # :default ::
   #   
@@ -385,10 +391,9 @@ module LLVM
   # :protected ::
   #   < The GV is hidden
   # 
-  # @return [Array<Symbol>]
-  def self.visibility_enum
-    [:default, :hidden, :protected]
-  end
+  # @method _enum_visibility_
+  # @return [Symbol]
+  # @scope class
   enum :visibility, [
     :default,
     :hidden,
@@ -396,6 +401,8 @@ module LLVM
   ]
   
   # (Not documented)
+  # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:call_conv).</em>
   # 
   # === Options:
   # :c ::
@@ -409,10 +416,9 @@ module LLVM
   # :x86_fastcall ::
   #   
   # 
-  # @return [Array<Symbol>]
-  def self.call_conv_enum
-    [:c, :fast, :cold, :x86_stdcall, :x86_fastcall]
-  end
+  # @method _enum_call_conv_
+  # @return [Symbol]
+  # @scope class
   enum :call_conv, [
     :c, 0,
     :fast, 8,
@@ -422,6 +428,8 @@ module LLVM
   ]
   
   # (Not documented)
+  # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:int_predicate).</em>
   # 
   # === Options:
   # :eq ::
@@ -445,10 +453,9 @@ module LLVM
   # :sle ::
   #   < signed less than
   # 
-  # @return [Array<Symbol>]
-  def self.int_predicate_enum
-    [:eq, :ne, :ugt, :uge, :ult, :ule, :sgt, :sge, :slt, :sle]
-  end
+  # @method _enum_int_predicate_
+  # @return [Symbol]
+  # @scope class
   enum :int_predicate, [
     :eq, 32,
     :ne,
@@ -463,6 +470,8 @@ module LLVM
   ]
   
   # (Not documented)
+  # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:real_predicate).</em>
   # 
   # === Options:
   # :predicate_false ::
@@ -498,10 +507,9 @@ module LLVM
   # :predicate_true ::
   #   < True if unordered or not equal
   # 
-  # @return [Array<Symbol>]
-  def self.real_predicate_enum
-    [:predicate_false, :oeq, :ogt, :oge, :olt, :ole, :one, :ord, :uno, :ueq, :ugt, :uge, :ult, :ule, :une, :predicate_true]
-  end
+  # @method _enum_real_predicate_
+  # @return [Symbol]
+  # @scope class
   enum :real_predicate, [
     :predicate_false,
     :oeq,
@@ -523,16 +531,17 @@ module LLVM
   
   # (Not documented)
   # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:landing_pad_clause_ty).</em>
+  # 
   # === Options:
   # :catch ::
   #   
   # :filter ::
   #   < A catch clause  
   # 
-  # @return [Array<Symbol>]
-  def self.landing_pad_clause_ty_enum
-    [:catch, :filter]
-  end
+  # @method _enum_landing_pad_clause_ty_
+  # @return [Symbol]
+  # @scope class
   enum :landing_pad_clause_ty, [
     :catch,
     :filter
@@ -683,7 +692,7 @@ module LLVM
   # 
   # @method get_type_kind(ty)
   # @param [FFI::Pointer(TypeRef)] ty 
-  # @return [Symbol from type_kind_enum] 
+  # @return [Symbol from _enum_type_kind_] 
   # @scope class
   attach_function :get_type_kind, :LLVMGetTypeKind, [:pointer], :type_kind
   
@@ -2095,7 +2104,7 @@ module LLVM
   # 
   # @method get_const_opcode(constant_val)
   # @param [FFI::Pointer(ValueRef)] constant_val 
-  # @return [Symbol from opcode_enum] 
+  # @return [Symbol from _enum_opcode_] 
   # @scope class
   attach_function :get_const_opcode, :LLVMGetConstOpcode, [:pointer], :opcode
   
@@ -2356,7 +2365,7 @@ module LLVM
   # (Not documented)
   # 
   # @method const_i_cmp(predicate, lhs_constant, rhs_constant)
-  # @param [Symbol from int_predicate_enum] predicate 
+  # @param [Symbol from _enum_int_predicate_] predicate 
   # @param [FFI::Pointer(ValueRef)] lhs_constant 
   # @param [FFI::Pointer(ValueRef)] rhs_constant 
   # @return [FFI::Pointer(ValueRef)] 
@@ -2366,7 +2375,7 @@ module LLVM
   # (Not documented)
   # 
   # @method const_f_cmp(predicate, lhs_constant, rhs_constant)
-  # @param [Symbol from real_predicate_enum] predicate 
+  # @param [Symbol from _enum_real_predicate_] predicate 
   # @param [FFI::Pointer(ValueRef)] lhs_constant 
   # @param [FFI::Pointer(ValueRef)] rhs_constant 
   # @return [FFI::Pointer(ValueRef)] 
@@ -2684,7 +2693,7 @@ module LLVM
   # 
   # @method get_linkage(global)
   # @param [FFI::Pointer(ValueRef)] global 
-  # @return [Symbol from linkage_enum] 
+  # @return [Symbol from _enum_linkage_] 
   # @scope class
   attach_function :get_linkage, :LLVMGetLinkage, [:pointer], :linkage
   
@@ -2692,7 +2701,7 @@ module LLVM
   # 
   # @method set_linkage(global, linkage)
   # @param [FFI::Pointer(ValueRef)] global 
-  # @param [Symbol from linkage_enum] linkage 
+  # @param [Symbol from _enum_linkage_] linkage 
   # @return [nil] 
   # @scope class
   attach_function :set_linkage, :LLVMSetLinkage, [:pointer, :linkage], :void
@@ -2718,7 +2727,7 @@ module LLVM
   # 
   # @method get_visibility(global)
   # @param [FFI::Pointer(ValueRef)] global 
-  # @return [Symbol from visibility_enum] 
+  # @return [Symbol from _enum_visibility_] 
   # @scope class
   attach_function :get_visibility, :LLVMGetVisibility, [:pointer], :visibility
   
@@ -2726,7 +2735,7 @@ module LLVM
   # 
   # @method set_visibility(global, viz)
   # @param [FFI::Pointer(ValueRef)] global 
-  # @param [Symbol from visibility_enum] viz 
+  # @param [Symbol from _enum_visibility_] viz 
   # @return [nil] 
   # @scope class
   attach_function :set_visibility, :LLVMSetVisibility, [:pointer, :visibility], :void
@@ -2985,7 +2994,7 @@ module LLVM
   # 
   # @method add_function_attr(fn, pa)
   # @param [FFI::Pointer(ValueRef)] fn 
-  # @param [Symbol from attribute_enum] pa 
+  # @param [Symbol from _enum_attribute_] pa 
   # @return [nil] 
   # @scope class
   attach_function :add_function_attr, :LLVMAddFunctionAttr, [:pointer, :attribute], :void
@@ -2994,7 +3003,7 @@ module LLVM
   # 
   # @method get_function_attr(fn)
   # @param [FFI::Pointer(ValueRef)] fn 
-  # @return [Symbol from attribute_enum] 
+  # @return [Symbol from _enum_attribute_] 
   # @scope class
   attach_function :get_function_attr, :LLVMGetFunctionAttr, [:pointer], :attribute
   
@@ -3002,7 +3011,7 @@ module LLVM
   # 
   # @method remove_function_attr(fn, pa)
   # @param [FFI::Pointer(ValueRef)] fn 
-  # @param [Symbol from attribute_enum] pa 
+  # @param [Symbol from _enum_attribute_] pa 
   # @return [nil] 
   # @scope class
   attach_function :remove_function_attr, :LLVMRemoveFunctionAttr, [:pointer, :attribute], :void
@@ -3077,7 +3086,7 @@ module LLVM
   # 
   # @method add_attribute(arg, pa)
   # @param [FFI::Pointer(ValueRef)] arg 
-  # @param [Symbol from attribute_enum] pa 
+  # @param [Symbol from _enum_attribute_] pa 
   # @return [nil] 
   # @scope class
   attach_function :add_attribute, :LLVMAddAttribute, [:pointer, :attribute], :void
@@ -3086,7 +3095,7 @@ module LLVM
   # 
   # @method remove_attribute(arg, pa)
   # @param [FFI::Pointer(ValueRef)] arg 
-  # @param [Symbol from attribute_enum] pa 
+  # @param [Symbol from _enum_attribute_] pa 
   # @return [nil] 
   # @scope class
   attach_function :remove_attribute, :LLVMRemoveAttribute, [:pointer, :attribute], :void
@@ -3095,7 +3104,7 @@ module LLVM
   # 
   # @method get_attribute(arg)
   # @param [FFI::Pointer(ValueRef)] arg 
-  # @return [Symbol from attribute_enum] 
+  # @return [Symbol from _enum_attribute_] 
   # @scope class
   attach_function :get_attribute, :LLVMGetAttribute, [:pointer], :attribute
   
@@ -3329,7 +3338,7 @@ module LLVM
   # 
   # @method get_instruction_opcode(inst)
   # @param [FFI::Pointer(ValueRef)] inst 
-  # @return [Symbol from opcode_enum] 
+  # @return [Symbol from _enum_opcode_] 
   # @scope class
   attach_function :get_instruction_opcode, :LLVMGetInstructionOpcode, [:pointer], :opcode
   
@@ -3337,7 +3346,7 @@ module LLVM
   # 
   # @method get_i_cmp_predicate(inst)
   # @param [FFI::Pointer(ValueRef)] inst 
-  # @return [Symbol from int_predicate_enum] 
+  # @return [Symbol from _enum_int_predicate_] 
   # @scope class
   attach_function :get_i_cmp_predicate, :LLVMGetICmpPredicate, [:pointer], :int_predicate
   
@@ -3363,7 +3372,7 @@ module LLVM
   # @method add_instr_attribute(instr, index, attribute)
   # @param [FFI::Pointer(ValueRef)] instr 
   # @param [Integer] index 
-  # @param [Symbol from attribute_enum] attribute 
+  # @param [Symbol from _enum_attribute_] attribute 
   # @return [nil] 
   # @scope class
   attach_function :add_instr_attribute, :LLVMAddInstrAttribute, [:pointer, :uint, :attribute], :void
@@ -3373,7 +3382,7 @@ module LLVM
   # @method remove_instr_attribute(instr, index, attribute)
   # @param [FFI::Pointer(ValueRef)] instr 
   # @param [Integer] index 
-  # @param [Symbol from attribute_enum] attribute 
+  # @param [Symbol from _enum_attribute_] attribute 
   # @return [nil] 
   # @scope class
   attach_function :remove_instr_attribute, :LLVMRemoveInstrAttribute, [:pointer, :uint, :attribute], :void
@@ -3990,7 +3999,7 @@ module LLVM
   # 
   # @method build_bin_op(b, op, lhs, rhs, name)
   # @param [FFI::Pointer(BuilderRef)] b 
-  # @param [Symbol from opcode_enum] op 
+  # @param [Symbol from _enum_opcode_] op 
   # @param [FFI::Pointer(ValueRef)] lhs 
   # @param [FFI::Pointer(ValueRef)] rhs 
   # @param [String] name 
@@ -4343,7 +4352,7 @@ module LLVM
   # 
   # @method build_cast(b, op, val, dest_ty, name)
   # @param [FFI::Pointer(BuilderRef)] b 
-  # @param [Symbol from opcode_enum] op 
+  # @param [Symbol from _enum_opcode_] op 
   # @param [FFI::Pointer(ValueRef)] val 
   # @param [FFI::Pointer(TypeRef)] dest_ty 
   # @param [String] name 
@@ -4388,7 +4397,7 @@ module LLVM
   # 
   # @method build_i_cmp(builder_ref, op, lhs, rhs, name)
   # @param [FFI::Pointer(BuilderRef)] builder_ref 
-  # @param [Symbol from int_predicate_enum] op 
+  # @param [Symbol from _enum_int_predicate_] op 
   # @param [FFI::Pointer(ValueRef)] lhs 
   # @param [FFI::Pointer(ValueRef)] rhs 
   # @param [String] name 
@@ -4400,7 +4409,7 @@ module LLVM
   # 
   # @method build_f_cmp(builder_ref, op, lhs, rhs, name)
   # @param [FFI::Pointer(BuilderRef)] builder_ref 
-  # @param [Symbol from real_predicate_enum] op 
+  # @param [Symbol from _enum_real_predicate_] op 
   # @param [FFI::Pointer(ValueRef)] lhs 
   # @param [FFI::Pointer(ValueRef)] rhs 
   # @param [String] name 
