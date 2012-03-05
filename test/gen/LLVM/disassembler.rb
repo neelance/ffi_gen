@@ -73,11 +73,11 @@ module LLVM
   # 
   # = Fields:
   # :present ::
-  #   (Integer) 
+  #   (Integer) 1 if this symbol is present
   # :name ::
-  #   (String) 1 if this symbol is present
+  #   (String) symbol name if not NULL
   # :value ::
-  #   (Integer) symbol name if not NULL
+  #   (Integer) symbol value if name is NULL
   class OpInfoSymbol1 < FFI::Struct
     layout :present, :ulong,
            :name, :string,

@@ -691,7 +691,7 @@ module SQLite3
   # 
   # = Fields:
   # :p_methods ::
-  #   (FFI::Pointer(*IoMethods)) 
+  #   (FFI::Pointer(*IoMethods)) Methods for an open file
   class File < FFI::Struct
     layout :p_methods, :pointer
   end
@@ -922,19 +922,19 @@ module SQLite3
   # 
   # = Fields:
   # :i_version ::
-  #   (Integer) 
-  # :sz_os_file ::
   #   (Integer) Structure version number (currently 3)
-  # :mx_pathname ::
+  # :sz_os_file ::
   #   (Integer) Size of subclassed sqlite3_file
+  # :mx_pathname ::
+  #   (Integer) Maximum file pathname length
   # :p_next ::
-  #   (FFI::Pointer(*Vfs)) Maximum file pathname length
+  #   (FFI::Pointer(*Vfs)) Next registered VFS
   # :z_name ::
-  #   (String) Next registered VFS
+  #   (String) Name of this virtual file system
   # :p_app_data ::
-  #   (FFI::Pointer(*Void)) Name of this virtual file system
+  #   (FFI::Pointer(*Void)) Pointer to application-specific data
   # :x_open ::
-  #   (FFI::Pointer(*)) Pointer to application-specific data
+  #   (FFI::Pointer(*)) 
   # :x_delete ::
   #   (FFI::Pointer(*)) 
   # :x_access ::
@@ -1218,21 +1218,21 @@ module SQLite3
   # 
   # = Fields:
   # :x_malloc ::
-  #   (FFI::Pointer(*)) 
-  # :x_free ::
   #   (FFI::Pointer(*)) Memory allocation function
-  # :x_realloc ::
+  # :x_free ::
   #   (FFI::Pointer(*)) Free a prior allocation
-  # :x_size ::
+  # :x_realloc ::
   #   (FFI::Pointer(*)) Resize an allocation
-  # :x_roundup ::
+  # :x_size ::
   #   (FFI::Pointer(*)) Return the size of an allocation
-  # :x_init ::
+  # :x_roundup ::
   #   (FFI::Pointer(*)) Round up request size to allocation size
-  # :x_shutdown ::
+  # :x_init ::
   #   (FFI::Pointer(*)) Initialize the memory allocator
+  # :x_shutdown ::
+  #   (FFI::Pointer(*)) Deinitialize the memory allocator
   # :p_app_data ::
-  #   (FFI::Pointer(*Void)) Deinitialize the memory allocator
+  #   (FFI::Pointer(*Void)) Argument to xInit() and xShutdown()
   class MemMethods < FFI::Struct
     layout :x_malloc, :pointer,
            :x_free, :pointer,
@@ -5028,13 +5028,13 @@ module SQLite3
   # 
   # = Fields:
   # :i_column ::
-  #   (Integer) 
-  # :op ::
   #   (Integer) Column on left-hand side of constraint
-  # :usable ::
+  # :op ::
   #   (Integer) Constraint operator
-  # :i_term_offset ::
+  # :usable ::
   #   (Integer) True if this constraint is usable
+  # :i_term_offset ::
+  #   (Integer) Used internally - xBestIndex should ignore
   class IndexConstraint < FFI::Struct
     layout :i_column, :int,
            :op, :uchar,
@@ -5046,21 +5046,21 @@ module SQLite3
   # 
   # = Fields:
   # :i_column ::
-  #   (Integer) 
-  # :desc ::
   #   (Integer) Column number
+  # :desc ::
+  #   (Integer) True for DESC.  False for ASC.
   class IndexOrderby < FFI::Struct
     layout :i_column, :int,
            :desc, :uchar
   end
   
-  # (Not documented)
+  # Outputs
   # 
   # = Fields:
   # :argv_index ::
-  #   (Integer) 
-  # :omit ::
   #   (Integer) if >0, constraint is part of argv to xFilter
+  # :omit ::
+  #   (Integer) Do not code a test for this constraint
   class IndexConstraintUsage < FFI::Struct
     layout :argv_index, :int,
            :omit, :uchar
@@ -5120,25 +5120,25 @@ module SQLite3
   # 
   # = Fields:
   # :n_constraint ::
-  #   (Integer) Inputs
+  #   (Integer) Number of entries in aConstraint
   # :a_constraint ::
-  #   (IndexConstraint) Used internally - xBestIndex should ignore
+  #   (IndexConstraint) Table of WHERE clause constraints
   # :n_order_by ::
-  #   (Integer) Table of WHERE clause constraints
+  #   (Integer) Number of terms in the ORDER BY clause
   # :a_order_by ::
-  #   (IndexOrderby) True for DESC.  False for ASC.
+  #   (IndexOrderby) The ORDER BY clause
   # :a_constraint_usage ::
-  #   (IndexConstraintUsage) Do not code a test for this constraint
+  #   (IndexConstraintUsage) 
   # :idx_num ::
-  #   (Integer) 
+  #   (Integer) Number used to identify the index
   # :idx_str ::
-  #   (String) Number used to identify the index
+  #   (String) String, possibly obtained from sqlite3_malloc
   # :need_to_free_idx_str ::
-  #   (Integer) String, possibly obtained from sqlite3_malloc
-  # :order_by_consumed ::
   #   (Integer) Free idxStr using sqlite3_free() if true
+  # :order_by_consumed ::
+  #   (Integer) True if output is already ordered
   # :estimated_cost ::
-  #   (Float) True if output is already ordered
+  #   (Float) Estimated cost of using this index
   class IndexInfo < FFI::Struct
     layout :n_constraint, :int,
            :a_constraint, IndexConstraint,
@@ -5219,11 +5219,11 @@ module SQLite3
   # 
   # = Fields:
   # :p_module ::
-  #   (Module) 
+  #   (Module) The module for this virtual table
   # :n_ref ::
-  #   (Integer) The module for this virtual table
+  #   (Integer) NO LONGER USED
   # :z_err_msg ::
-  #   (String) NO LONGER USED
+  #   (String) Error message from sqlite3_mprintf()
   class Vtab < FFI::Struct
     layout :p_module, Module,
            :n_ref, :int,
@@ -5248,7 +5248,7 @@ module SQLite3
   # 
   # = Fields:
   # :p_vtab ::
-  #   (Vtab) 
+  #   (Vtab) Virtual table of this cursor
   class VtabCursor < FFI::Struct
     layout :p_vtab, Vtab
   end
@@ -6827,15 +6827,15 @@ module SQLite3
   # 
   # = Fields:
   # :p_context ::
-  #   (FFI::Pointer(*Void)) 
+  #   (FFI::Pointer(*Void)) Copy of pContext passed to s_r_g_c()
   # :n_param ::
-  #   (Integer) Copy of pContext passed to s_r_g_c()
+  #   (Integer) Size of array aParam()
   # :a_param ::
-  #   (FFI::Pointer(*Double)) Size of array aParam()
+  #   (FFI::Pointer(*Double)) Parameters passed to SQL geom function
   # :p_user ::
-  #   (FFI::Pointer(*Void)) Parameters passed to SQL geom function
+  #   (FFI::Pointer(*Void)) Callback implementation user data
   # :x_del_user ::
-  #   (FFI::Pointer(*)) Callback implementation user data
+  #   (FFI::Pointer(*)) Called by SQLite to clean up pUser
   class RtreeGeometry < FFI::Struct
     layout :p_context, :pointer,
            :n_param, :int,
