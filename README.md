@@ -14,6 +14,7 @@ Features
   * Clang
   * LLVM
   * OpenGL
+  * SQLite3
 
 
 Requirements
