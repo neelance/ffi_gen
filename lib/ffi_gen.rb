@@ -12,6 +12,15 @@ class FFIGen
       }, nil
       children
     end
+    
+    def get_spelling_location_data(location)
+      file_ptr = FFI::MemoryPointer.new :pointer
+      line_ptr = FFI::MemoryPointer.new :uint
+      column_ptr = FFI::MemoryPointer.new :uint
+      offset_ptr = FFI::MemoryPointer.new :uint
+      get_spelling_location location, file_ptr, line_ptr, column_ptr, offset_ptr
+      { file: file_ptr.read_pointer, line: line_ptr.read_uint, column: column_ptr.read_uint, offset: offset_ptr.read_uint }
+    end
   end
   
   class Clang::String
@@ -332,9 +341,7 @@ class FFIGen
     unit_cursor = Clang.get_translation_unit_cursor translation_unit
     previous_declaration_end = Clang.get_cursor_location unit_cursor
     Clang.get_children(unit_cursor).each do |declaration|
-      file_ptr = FFI::MemoryPointer.new :pointer
-      Clang.get_spelling_location Clang.get_cursor_location(declaration), file_ptr, nil, nil, nil
-      file = file_ptr.read_pointer
+      file = Clang.get_spelling_location_data(Clang.get_cursor_location(declaration))[:file]
       
       extent = Clang.get_cursor_extent declaration
       comment_range = Clang.get_range previous_declaration_end, Clang.get_range_start(extent)
@@ -442,22 +449,33 @@ class FFIGen
     when :struct_decl
       struct = Struct.new self, name, comment
       
-      previous_field_location = Clang.get_cursor_location declaration
-      Clang.get_children(declaration).each do |struct_child|
+      struct_children = Clang.get_children declaration
+      previous_child_end = Clang.get_cursor_location declaration
+      struct_children.each_with_index do |struct_child, index|
         child_name = Clang.get_cursor_spelling(struct_child).to_s_and_dispose
+        child_extent = Clang.get_cursor_extent struct_child
+        
+        child_comment_range = Clang.get_range previous_child_end, Clang.get_range_start(child_extent)
+        child_comment = extract_comment translation_unit, child_comment_range
+        
+        # check for comment starting on same line
+        next_child_start = index < struct_children.size - 1 ? Clang.get_cursor_location(struct_children[index + 1]) : Clang.get_range_end(Clang.get_cursor_extent(declaration))
+        following_comment_range = Clang.get_range Clang.get_range_end(child_extent), next_child_start
+        following_comment_token = extract_comment translation_unit, following_comment_range, false, false
+        if following_comment_token and Clang.get_spelling_location_data(Clang.get_token_location(translation_unit, following_comment_token))[:line] == Clang.get_spelling_location_data(Clang.get_range_end(child_extent))[:line]
+          child_comment = Clang.get_token_spelling(translation_unit, following_comment_token).to_s_and_dispose
+          previous_child_end = Clang.get_range_end Clang.get_token_extent(translation_unit, following_comment_token)
+        else
+          previous_child_end = Clang.get_range_end child_extent
+        end
         
         case struct_child[:kind]
         when :field_decl
           field_type = Clang.get_cursor_type struct_child
   
-          field_location = Clang.get_cursor_location struct_child
-          field_comment_range = Clang.get_range previous_field_location, field_location
-          field_comment = extract_comment translation_unit, field_comment_range
-          previous_field_location = field_location
-  
-          struct.fields << { name: child_name, type: field_type, comment: field_comment }
+          struct.fields << { name: child_name, type: field_type, comment: child_comment }
         when :struct_decl
-          read_named_declaration struct_child, child_name, ""
+          read_named_declaration struct_child, child_name, child_comment
         end
       end
       
@@ -466,15 +484,18 @@ class FFIGen
     end
   end
   
-  def extract_comment(translation_unit, range)
+  def extract_comment(translation_unit, range, search_backwards = true, return_spelling = true)
     tokens_ptr_ptr = FFI::MemoryPointer.new :pointer
     num_tokens_ptr = FFI::MemoryPointer.new :uint
     Clang.tokenize translation_unit, range, tokens_ptr_ptr, num_tokens_ptr
     num_tokens = num_tokens_ptr.read_uint
     tokens_ptr = FFI::Pointer.new Clang::Token, tokens_ptr_ptr.read_pointer
-    (num_tokens - 1).downto(0) do |i|
+    indices = search_backwards ? (num_tokens - 1).downto(0) : 0.upto(num_tokens - 1)
+    indices.each do |i|
       token = Clang::Token.new tokens_ptr[i]
-      return Clang.get_token_spelling(translation_unit, token).to_s_and_dispose if Clang.get_token_kind(token) == :comment
+      if Clang.get_token_kind(token) == :comment
+        return return_spelling ? Clang.get_token_spelling(translation_unit, token).to_s_and_dispose : token
+      end
     end
     ""
   end
