@@ -102,6 +102,7 @@ class FFIGen
     def write(writer)
       @fields.each do |field|
         field[:symbol] = ":#{@generator.to_ruby_lowercase field[:name]}"
+        field[:type_data] = @generator.map_type field[:type]
       end
       
       writer.comment do
@@ -110,7 +111,7 @@ class FFIGen
           writer.puts "", "= Fields:"
           @fields.each do |field|
             writer.puts "#{field[:symbol]} ::"
-            writer.write_description field[:comment], false, "  (#{@generator.to_type_name field[:type]}) ", "  "
+            writer.write_description field[:comment], false, "  (#{field[:type_data][:description]}) ", "  "
           end
         end
       end
@@ -118,7 +119,7 @@ class FFIGen
       writer.puts "class #{ruby_name} < FFI::Struct"
       writer.indent do
         writer.write_array @fields, ",", "layout ", "       " do |field|
-          "#{field[:symbol]}, #{@generator.to_ffi_type field[:type]}"
+          "#{field[:symbol]}, #{field[:type_data][:ffi_type]}"
         end
       end
       writer.puts "end", ""
@@ -145,10 +146,11 @@ class FFIGen
     
     def write(writer)
       @parameters.each do |parameter|
-        parameter[:ruby_type] = @generator.to_type_name parameter[:type]
-        parameter[:ruby_name] = @generator.to_ruby_lowercase(parameter[:name].empty? ? @generator.to_type_name(parameter[:type], true) : parameter[:name])
+        parameter[:type_data] = @generator.map_type parameter[:type]
+        parameter[:ruby_name] = !parameter[:name].empty? ? @generator.to_ruby_lowercase(parameter[:name]) : parameter[:type_data][:parameter_name]
         parameter[:description] = []
       end
+      return_type_data = @generator.map_type @return_type
       
       function_description = []
       return_value_description = []
@@ -172,13 +174,13 @@ class FFIGen
         writer.puts "", "<em>This entry is only for documentation and no real method.</em>" if @is_callback
         writer.puts "", "@method #{@is_callback ? "_callback_#{ruby_name}_" : ruby_name}(#{@parameters.map{ |parameter| parameter[:ruby_name] }.join(', ')})"
         @parameters.each do |parameter|
-          writer.write_description parameter[:description], false, "@param [#{parameter[:ruby_type]}] #{parameter[:ruby_name]} ", "  "
+          writer.write_description parameter[:description], false, "@param [#{parameter[:type_data][:description]}] #{parameter[:ruby_name]} ", "  "
         end
-        writer.write_description return_value_description, false, "@return [#{@generator.to_type_name @return_type}] ", "  "
+        writer.write_description return_value_description, false, "@return [#{return_type_data[:description]}] ", "  "
         writer.puts "@scope class"
       end
       
-      ffi_signature = "[#{@parameters.map{ |parameter| @generator.to_ffi_type parameter[:type] }.join(', ')}], #{@generator.to_ffi_type @return_type}"
+      ffi_signature = "[#{@parameters.map{ |parameter| parameter[:type_data][:ffi_type] }.join(', ')}], #{return_type_data[:ffi_type]}"
       if @is_callback
         writer.puts "callback :#{ruby_name}, #{ffi_signature}", ""
       else
@@ -477,76 +479,38 @@ class FFIGen
     ""
   end
   
-  def to_ffi_type(full_type)
+  def map_type(full_type)
     name = Clang.get_cursor_spelling(Clang.get_type_declaration(full_type)).to_s_and_dispose
     declaration = !name.empty? && @declarations[name]
     
     canonical_type = Clang.get_canonical_type full_type
-    case canonical_type[:kind]
-    when :void then ":void"
-    when :bool then ":bool"
-    when :u_char then ":uchar"
-    when :u_short then ":ushort"
-    when :u_int then ":uint"
-    when :u_long then ":ulong"
-    when :u_long_long then ":ulong_long"
-    when :char_s, :s_char then ":char"
-    when :short then ":short"
-    when :int then ":int"
-    when :long then ":long"
-    when :long_long then ":long_long"
-    when :float then ":float"
-    when :double then ":double"
-    when :pointer
-      pointee_type = Clang.get_pointee_type canonical_type
-      result = ":pointer"
-      case pointee_type[:kind]
-      when :char_s
-        result = ":string"
-      when :record
-        pointee_name = Clang.get_cursor_spelling(Clang.get_type_declaration(pointee_type)).to_s_and_dispose
-        pointee_declaration = !pointee_name.empty? && @declarations[pointee_name]
-        result = pointee_declaration.ruby_name if pointee_declaration and pointee_declaration.written
-      when :function_proto
-        result = ":#{declaration.ruby_name}" if declaration
-      end
-      result
-    when :record
-      "#{declaration.ruby_name}.by_value"
-    when :enum
-      ":#{declaration.ruby_name}"
-    when :constant_array
-      element_type = Clang.get_array_element_type canonical_type
-      size = Clang.get_array_size canonical_type
-      "[#{to_ffi_type element_type}, #{size}]"
-    else
-      raise NotImplementedError, "No translation for values of type #{canonical_type[:kind]}"
-    end
-  end
-  
-  def to_type_name(full_type, short = false)
-    name = Clang.get_cursor_spelling(Clang.get_type_declaration(full_type)).to_s_and_dispose
-    declaration = !name.empty? && @declarations[name]
-    
-    canonical_type = Clang.get_canonical_type full_type
-    case canonical_type[:kind]
-    when :void then "nil"
-    when :bool then "Boolean"
-    when :u_char, :u_short, :u_int, :u_long, :u_long_long, :char_s, :s_char, :short, :int, :long, :long_long then "Integer"
-    when :float, :double then "Float"
+    data_array = case canonical_type[:kind]
+    when :void            then [":void",       "nil"]
+    when :bool            then [":bool",       "Boolean"]
+    when :u_char          then [":uchar",      "Integer"]
+    when :u_short         then [":ushort",     "Integer"]
+    when :u_int           then [":uint",       "Integer"]
+    when :u_long          then [":ulong",      "Integer"]
+    when :u_long_long     then [":ulong_long", "Integer"]
+    when :char_s, :s_char then [":char",       "Integer"]
+    when :short           then [":short",      "Integer"]
+    when :int             then [":int",        "Integer"]
+    when :long            then [":long",       "Integer"]
+    when :long_long       then [":long_long",  "Integer"]
+    when :float           then [":float",      "Float"]
+    when :double          then [":double",     "Float"]
     when :pointer
       pointee_type = Clang.get_pointee_type canonical_type
       result = nil
-      
       case pointee_type[:kind]
       when :char_s
-        result = "String"
+        result = [":string", "String"]
       when :record
         pointee_name = Clang.get_cursor_spelling(Clang.get_type_declaration(pointee_type)).to_s_and_dispose
         pointee_declaration = !pointee_name.empty? && @declarations[pointee_name]
-        result = pointee_declaration.ruby_name if pointee_declaration and pointee_declaration.written
+        result = [pointee_declaration.ruby_name, pointee_declaration.ruby_name] if pointee_declaration and pointee_declaration.written
       when :function_proto
-        result = "Proc(_callback_#{declaration.ruby_name}_)" if declaration
+        result = [":#{declaration.ruby_name}", "Proc(_callback_#{declaration.ruby_name}_)"] if declaration
       end
       
       if result.nil?
@@ -569,20 +533,23 @@ class FFIGen
             break
           end
         end
-        result = short ? pointer_target_name : "FFI::Pointer(#{'*' * pointer_depth}#{pointer_target_name})"
+        result = [":pointer", "FFI::Pointer(#{'*' * pointer_depth}#{pointer_target_name})", pointer_target_name]
       end
       
       result
     when :record
-      declaration.ruby_name
+      ["#{declaration.ruby_name}.by_value", declaration.ruby_name]
     when :enum
-      short ? declaration.ruby_name : "Symbol from _enum_#{declaration.ruby_name}_"
+      [":#{declaration.ruby_name}", "Symbol from _enum_#{declaration.ruby_name}_", declaration.ruby_name]
     when :constant_array
-      element_type = Clang.get_array_element_type canonical_type
-      "Array<#{to_type_name element_type}>"
+      element_type_data = map_type Clang.get_array_element_type(canonical_type)
+      size = Clang.get_array_size canonical_type
+      ["[#{element_type_data[:ffi_type]}, #{size}]", "Array<#{element_type_data[:description]}>"]
     else
-      raise NotImplementedError, "No type name for type #{canonical_type[:kind]}"
+      raise NotImplementedError, "No translation for values of type #{canonical_type[:kind]}"
     end
+    
+    { ffi_type: data_array[0], description: data_array[1], parameter_name: to_ruby_lowercase(data_array[2] || data_array[1]) }
   end
   
   def to_ruby_lowercase(str, avoid_keywords = false)
