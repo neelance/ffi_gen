@@ -39,10 +39,12 @@ Use the following interface in a script or Rake task:
       cflags:      `llvm-config --cflags`.split(" "),
       prefixes:    ["clang_", "CX"],
       blacklist:   ["clang_getExpansionLocation"],
-      output:      "clang.rb"
+      output:      "Clang/index.rb"
     )
 
-Output: [clang.rb](https://github.com/neelance/ffi_gen/blob/master/lib/ffi_gen/clang.rb)
+Output: [Clang/index.rb](https://github.com/neelance/ffi_gen/blob/master/test/gen/Clang/index.rb)
+
+Other generated files can be found in the [test/gen](https://github.com/neelance/ffi_gen/tree/master/test/gen) directory.
 
 
 Hints
