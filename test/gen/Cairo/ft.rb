@@ -8,44 +8,44 @@ module Cairo
   
   # (Not documented)
   # 
-  # @method cairo_ft_font_face_create_for_ft_face(face, load_flags)
+  # @method ft_font_face_create_for_ft_face(face, load_flags)
   # @param [FFI::Pointer(FTFace)] face 
   # @param [Integer] load_flags 
-  # @return [FFI::Pointer(*CairoFontFaceT)] 
+  # @return [FFI::Pointer(*FontFaceT)] 
   # @scope class
-  attach_function :cairo_ft_font_face_create_for_ft_face, :cairo_ft_font_face_create_for_ft_face, [:pointer, :int], :pointer
+  attach_function :ft_font_face_create_for_ft_face, :cairo_ft_font_face_create_for_ft_face, [:pointer, :int], :pointer
   
   # (Not documented)
   # 
-  # @method cairo_ft_scaled_font_lock_face(scaled_font)
-  # @param [FFI::Pointer(*CairoScaledFontT)] scaled_font 
+  # @method ft_scaled_font_lock_face(scaled_font)
+  # @param [FFI::Pointer(*ScaledFontT)] scaled_font 
   # @return [FFI::Pointer(FTFace)] 
   # @scope class
-  attach_function :cairo_ft_scaled_font_lock_face, :cairo_ft_scaled_font_lock_face, [:pointer], :pointer
+  attach_function :ft_scaled_font_lock_face, :cairo_ft_scaled_font_lock_face, [:pointer], :pointer
   
   # (Not documented)
   # 
-  # @method cairo_ft_scaled_font_unlock_face(scaled_font)
-  # @param [FFI::Pointer(*CairoScaledFontT)] scaled_font 
+  # @method ft_scaled_font_unlock_face(scaled_font)
+  # @param [FFI::Pointer(*ScaledFontT)] scaled_font 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_ft_scaled_font_unlock_face, :cairo_ft_scaled_font_unlock_face, [:pointer], :void
+  attach_function :ft_scaled_font_unlock_face, :cairo_ft_scaled_font_unlock_face, [:pointer], :void
   
   # (Not documented)
   # 
-  # @method cairo_ft_font_face_create_for_pattern(pattern)
+  # @method ft_font_face_create_for_pattern(pattern)
   # @param [FFI::Pointer(*FcPattern)] pattern 
-  # @return [FFI::Pointer(*CairoFontFaceT)] 
+  # @return [FFI::Pointer(*FontFaceT)] 
   # @scope class
-  attach_function :cairo_ft_font_face_create_for_pattern, :cairo_ft_font_face_create_for_pattern, [:pointer], :pointer
+  attach_function :ft_font_face_create_for_pattern, :cairo_ft_font_face_create_for_pattern, [:pointer], :pointer
   
   # (Not documented)
   # 
-  # @method cairo_ft_font_options_substitute(options, pattern)
-  # @param [FFI::Pointer(*CairoFontOptionsT)] options 
+  # @method ft_font_options_substitute(options, pattern)
+  # @param [FFI::Pointer(*FontOptionsT)] options 
   # @param [FFI::Pointer(*FcPattern)] pattern 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_ft_font_options_substitute, :cairo_ft_font_options_substitute, [:pointer, :pointer], :void
+  attach_function :ft_font_options_substitute, :cairo_ft_font_options_substitute, [:pointer, :pointer], :void
   
 end

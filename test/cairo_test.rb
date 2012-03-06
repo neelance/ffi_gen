@@ -4,7 +4,7 @@ run_test(
   library_name:  "Cairo",
   ffi_lib:       "cairo",
   cflags:        ["-I/usr/include/cairo", "-I/usr/include/freetype2", "-I/usr/include/glib-2.0"],
-  prefixes:      [],
+  prefixes:      ["cairo_", "_cairo_", "CAIRO_"],
   blacklist:     [],
   file_mappings: {
     "cairo-deprecated.h"         => "deprecated.rb",

@@ -8,7 +8,7 @@ module Cairo
   
   # (Not documented)
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_svg_version).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:svg_version).</em>
   # 
   # === Options:
   # :_1 ::
@@ -16,17 +16,17 @@ module Cairo
   # :_2 ::
   #   
   # 
-  # @method _enum_cairo_svg_version_
+  # @method _enum_svg_version_
   # @return [Symbol]
   # @scope class
-  enum :cairo_svg_version, [
+  enum :svg_version, [
     :_1,
     :_2
   ]
   
   # (Not documented)
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_svg_version_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:svg_version_t).</em>
   # 
   # === Options:
   # :_1 ::
@@ -34,59 +34,59 @@ module Cairo
   # :_2 ::
   #   
   # 
-  # @method _enum_cairo_svg_version_t_
+  # @method _enum_svg_version_t_
   # @return [Symbol]
   # @scope class
-  enum :cairo_svg_version_t, [
+  enum :svg_version_t, [
     :_1,
     :_2
   ]
   
   # (Not documented)
   # 
-  # @method cairo_svg_surface_create(filename, width_in_points, height_in_points)
+  # @method svg_surface_create(filename, width_in_points, height_in_points)
   # @param [String] filename 
   # @param [Float] width_in_points 
   # @param [Float] height_in_points 
-  # @return [FFI::Pointer(*CairoSurfaceT)] 
+  # @return [FFI::Pointer(*SurfaceT)] 
   # @scope class
-  attach_function :cairo_svg_surface_create, :cairo_svg_surface_create, [:string, :double, :double], :pointer
+  attach_function :svg_surface_create, :cairo_svg_surface_create, [:string, :double, :double], :pointer
   
   # (Not documented)
   # 
-  # @method cairo_svg_surface_create_for_stream(write_func, closure, width_in_points, height_in_points)
-  # @param [FFI::Pointer(CairoWriteFuncT)] write_func 
+  # @method svg_surface_create_for_stream(write_func, closure, width_in_points, height_in_points)
+  # @param [FFI::Pointer(WriteFuncT)] write_func 
   # @param [FFI::Pointer(*Void)] closure 
   # @param [Float] width_in_points 
   # @param [Float] height_in_points 
-  # @return [FFI::Pointer(*CairoSurfaceT)] 
+  # @return [FFI::Pointer(*SurfaceT)] 
   # @scope class
-  attach_function :cairo_svg_surface_create_for_stream, :cairo_svg_surface_create_for_stream, [:pointer, :pointer, :double, :double], :pointer
+  attach_function :svg_surface_create_for_stream, :cairo_svg_surface_create_for_stream, [:pointer, :pointer, :double, :double], :pointer
   
   # (Not documented)
   # 
-  # @method cairo_svg_surface_restrict_to_version(surface, version)
-  # @param [FFI::Pointer(*CairoSurfaceT)] surface 
-  # @param [Symbol from _enum_cairo_svg_version_t_] version 
+  # @method svg_surface_restrict_to_version(surface, version)
+  # @param [FFI::Pointer(*SurfaceT)] surface 
+  # @param [Symbol from _enum_svg_version_t_] version 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_svg_surface_restrict_to_version, :cairo_svg_surface_restrict_to_version, [:pointer, :cairo_svg_version_t], :void
+  attach_function :svg_surface_restrict_to_version, :cairo_svg_surface_restrict_to_version, [:pointer, :svg_version_t], :void
   
   # (Not documented)
   # 
-  # @method cairo_svg_get_versions(versions, num_versions)
-  # @param [FFI::Pointer(**CairoSvgVersionT)] versions 
+  # @method svg_get_versions(versions, num_versions)
+  # @param [FFI::Pointer(**SvgVersionT)] versions 
   # @param [FFI::Pointer(*Int)] num_versions 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_svg_get_versions, :cairo_svg_get_versions, [:pointer, :pointer], :void
+  attach_function :svg_get_versions, :cairo_svg_get_versions, [:pointer, :pointer], :void
   
   # (Not documented)
   # 
-  # @method cairo_svg_version_to_string(version)
-  # @param [Symbol from _enum_cairo_svg_version_t_] version 
+  # @method svg_version_to_string(version)
+  # @param [Symbol from _enum_svg_version_t_] version 
   # @return [String] 
   # @scope class
-  attach_function :cairo_svg_version_to_string, :cairo_svg_version_to_string, [:cairo_svg_version_t], :string
+  attach_function :svg_version_to_string, :cairo_svg_version_to_string, [:svg_version_t], :string
   
 end

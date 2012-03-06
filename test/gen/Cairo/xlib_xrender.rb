@@ -8,23 +8,23 @@ module Cairo
   
   # (Not documented)
   # 
-  # @method cairo_xlib_surface_create_with_xrender_format(dpy, drawable, screen, format, width, height)
+  # @method xlib_surface_create_with_xrender_format(dpy, drawable, screen, format, width, height)
   # @param [FFI::Pointer(*Display)] dpy 
   # @param [Integer] drawable 
   # @param [FFI::Pointer(*Screen)] screen 
   # @param [FFI::Pointer(*XRenderPictFormat)] format 
   # @param [Integer] width 
   # @param [Integer] height 
-  # @return [FFI::Pointer(*CairoSurfaceT)] 
+  # @return [FFI::Pointer(*SurfaceT)] 
   # @scope class
-  attach_function :cairo_xlib_surface_create_with_xrender_format, :cairo_xlib_surface_create_with_xrender_format, [:pointer, :ulong, :pointer, :pointer, :int, :int], :pointer
+  attach_function :xlib_surface_create_with_xrender_format, :cairo_xlib_surface_create_with_xrender_format, [:pointer, :ulong, :pointer, :pointer, :int, :int], :pointer
   
   # (Not documented)
   # 
-  # @method cairo_xlib_surface_get_xrender_format(surface)
-  # @param [FFI::Pointer(*CairoSurfaceT)] surface 
+  # @method xlib_surface_get_xrender_format(surface)
+  # @param [FFI::Pointer(*SurfaceT)] surface 
   # @return [FFI::Pointer(*XRenderPictFormat)] 
   # @scope class
-  attach_function :cairo_xlib_surface_get_xrender_format, :cairo_xlib_surface_get_xrender_format, [:pointer], :pointer
+  attach_function :xlib_surface_get_xrender_format, :cairo_xlib_surface_get_xrender_format, [:pointer], :pointer
   
 end

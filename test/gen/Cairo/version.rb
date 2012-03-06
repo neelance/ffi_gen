@@ -6,10 +6,10 @@ module Cairo
   extend FFI::Library
   ffi_lib 'cairo'
   
-  CAIRO_VERSION_MAJOR = 1
+  VERSION_MAJOR = 1
   
-  CAIRO_VERSION_MINOR = 10
+  VERSION_MINOR = 10
   
-  CAIRO_VERSION_MICRO = 2
+  VERSION_MICRO = 2
   
 end

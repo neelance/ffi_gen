@@ -8,7 +8,7 @@ module Cairo
   
   # (Not documented)
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_ps_level).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:ps_level).</em>
   # 
   # === Options:
   # :_2 ::
@@ -16,17 +16,17 @@ module Cairo
   # :_3 ::
   #   
   # 
-  # @method _enum_cairo_ps_level_
+  # @method _enum_ps_level_
   # @return [Symbol]
   # @scope class
-  enum :cairo_ps_level, [
+  enum :ps_level, [
     :_2,
     :_3
   ]
   
   # (Not documented)
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_ps_level_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:ps_level_t).</em>
   # 
   # === Options:
   # :_2 ::
@@ -34,111 +34,111 @@ module Cairo
   # :_3 ::
   #   
   # 
-  # @method _enum_cairo_ps_level_t_
+  # @method _enum_ps_level_t_
   # @return [Symbol]
   # @scope class
-  enum :cairo_ps_level_t, [
+  enum :ps_level_t, [
     :_2,
     :_3
   ]
   
   # (Not documented)
   # 
-  # @method cairo_ps_surface_create(filename, width_in_points, height_in_points)
+  # @method ps_surface_create(filename, width_in_points, height_in_points)
   # @param [String] filename 
   # @param [Float] width_in_points 
   # @param [Float] height_in_points 
-  # @return [FFI::Pointer(*CairoSurfaceT)] 
+  # @return [FFI::Pointer(*SurfaceT)] 
   # @scope class
-  attach_function :cairo_ps_surface_create, :cairo_ps_surface_create, [:string, :double, :double], :pointer
+  attach_function :ps_surface_create, :cairo_ps_surface_create, [:string, :double, :double], :pointer
   
   # (Not documented)
   # 
-  # @method cairo_ps_surface_create_for_stream(write_func, closure, width_in_points, height_in_points)
-  # @param [FFI::Pointer(CairoWriteFuncT)] write_func 
+  # @method ps_surface_create_for_stream(write_func, closure, width_in_points, height_in_points)
+  # @param [FFI::Pointer(WriteFuncT)] write_func 
   # @param [FFI::Pointer(*Void)] closure 
   # @param [Float] width_in_points 
   # @param [Float] height_in_points 
-  # @return [FFI::Pointer(*CairoSurfaceT)] 
+  # @return [FFI::Pointer(*SurfaceT)] 
   # @scope class
-  attach_function :cairo_ps_surface_create_for_stream, :cairo_ps_surface_create_for_stream, [:pointer, :pointer, :double, :double], :pointer
+  attach_function :ps_surface_create_for_stream, :cairo_ps_surface_create_for_stream, [:pointer, :pointer, :double, :double], :pointer
   
   # (Not documented)
   # 
-  # @method cairo_ps_surface_restrict_to_level(surface, level)
-  # @param [FFI::Pointer(*CairoSurfaceT)] surface 
-  # @param [Symbol from _enum_cairo_ps_level_t_] level 
+  # @method ps_surface_restrict_to_level(surface, level)
+  # @param [FFI::Pointer(*SurfaceT)] surface 
+  # @param [Symbol from _enum_ps_level_t_] level 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_ps_surface_restrict_to_level, :cairo_ps_surface_restrict_to_level, [:pointer, :cairo_ps_level_t], :void
+  attach_function :ps_surface_restrict_to_level, :cairo_ps_surface_restrict_to_level, [:pointer, :ps_level_t], :void
   
   # (Not documented)
   # 
-  # @method cairo_ps_get_levels(levels, num_levels)
-  # @param [FFI::Pointer(**CairoPsLevelT)] levels 
+  # @method ps_get_levels(levels, num_levels)
+  # @param [FFI::Pointer(**PsLevelT)] levels 
   # @param [FFI::Pointer(*Int)] num_levels 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_ps_get_levels, :cairo_ps_get_levels, [:pointer, :pointer], :void
+  attach_function :ps_get_levels, :cairo_ps_get_levels, [:pointer, :pointer], :void
   
   # (Not documented)
   # 
-  # @method cairo_ps_level_to_string(level)
-  # @param [Symbol from _enum_cairo_ps_level_t_] level 
+  # @method ps_level_to_string(level)
+  # @param [Symbol from _enum_ps_level_t_] level 
   # @return [String] 
   # @scope class
-  attach_function :cairo_ps_level_to_string, :cairo_ps_level_to_string, [:cairo_ps_level_t], :string
+  attach_function :ps_level_to_string, :cairo_ps_level_to_string, [:ps_level_t], :string
   
   # (Not documented)
   # 
-  # @method cairo_ps_surface_set_eps(surface, eps)
-  # @param [FFI::Pointer(*CairoSurfaceT)] surface 
+  # @method ps_surface_set_eps(surface, eps)
+  # @param [FFI::Pointer(*SurfaceT)] surface 
   # @param [Integer] eps 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_ps_surface_set_eps, :cairo_ps_surface_set_eps, [:pointer, :int], :void
+  attach_function :ps_surface_set_eps, :cairo_ps_surface_set_eps, [:pointer, :int], :void
   
   # (Not documented)
   # 
-  # @method cairo_ps_surface_get_eps(surface)
-  # @param [FFI::Pointer(*CairoSurfaceT)] surface 
+  # @method ps_surface_get_eps(surface)
+  # @param [FFI::Pointer(*SurfaceT)] surface 
   # @return [Integer] 
   # @scope class
-  attach_function :cairo_ps_surface_get_eps, :cairo_ps_surface_get_eps, [:pointer], :int
+  attach_function :ps_surface_get_eps, :cairo_ps_surface_get_eps, [:pointer], :int
   
   # (Not documented)
   # 
-  # @method cairo_ps_surface_set_size(surface, width_in_points, height_in_points)
-  # @param [FFI::Pointer(*CairoSurfaceT)] surface 
+  # @method ps_surface_set_size(surface, width_in_points, height_in_points)
+  # @param [FFI::Pointer(*SurfaceT)] surface 
   # @param [Float] width_in_points 
   # @param [Float] height_in_points 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_ps_surface_set_size, :cairo_ps_surface_set_size, [:pointer, :double, :double], :void
+  attach_function :ps_surface_set_size, :cairo_ps_surface_set_size, [:pointer, :double, :double], :void
   
   # (Not documented)
   # 
-  # @method cairo_ps_surface_dsc_comment(surface, comment)
-  # @param [FFI::Pointer(*CairoSurfaceT)] surface 
+  # @method ps_surface_dsc_comment(surface, comment)
+  # @param [FFI::Pointer(*SurfaceT)] surface 
   # @param [String] comment 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_ps_surface_dsc_comment, :cairo_ps_surface_dsc_comment, [:pointer, :string], :void
+  attach_function :ps_surface_dsc_comment, :cairo_ps_surface_dsc_comment, [:pointer, :string], :void
   
   # (Not documented)
   # 
-  # @method cairo_ps_surface_dsc_begin_setup(surface)
-  # @param [FFI::Pointer(*CairoSurfaceT)] surface 
+  # @method ps_surface_dsc_begin_setup(surface)
+  # @param [FFI::Pointer(*SurfaceT)] surface 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_ps_surface_dsc_begin_setup, :cairo_ps_surface_dsc_begin_setup, [:pointer], :void
+  attach_function :ps_surface_dsc_begin_setup, :cairo_ps_surface_dsc_begin_setup, [:pointer], :void
   
   # (Not documented)
   # 
-  # @method cairo_ps_surface_dsc_begin_page_setup(surface)
-  # @param [FFI::Pointer(*CairoSurfaceT)] surface 
+  # @method ps_surface_dsc_begin_page_setup(surface)
+  # @param [FFI::Pointer(*SurfaceT)] surface 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_ps_surface_dsc_begin_page_setup, :cairo_ps_surface_dsc_begin_page_setup, [:pointer], :void
+  attach_function :ps_surface_dsc_begin_page_setup, :cairo_ps_surface_dsc_begin_page_setup, [:pointer], :void
   
 end

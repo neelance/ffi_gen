@@ -6,27 +6,27 @@ module Cairo
   extend FFI::Library
   ffi_lib 'cairo'
   
-  CAIRO_MIME_TYPE_JPEG = "image/jpeg"
+  MIME_TYPE_JPEG = "image/jpeg"
   
-  CAIRO_MIME_TYPE_PNG = "image/png"
+  MIME_TYPE_PNG = "image/png"
   
-  CAIRO_MIME_TYPE_JP2 = "image/jp2"
+  MIME_TYPE_JP2 = "image/jp2"
   
-  CAIRO_MIME_TYPE_URI = "text/x-uri"
+  MIME_TYPE_URI = "text/x-uri"
   
   # (Not documented)
   # 
-  # @method cairo_version()
+  # @method version()
   # @return [Integer] 
   # @scope class
-  attach_function :cairo_version, :cairo_version, [], :int
+  attach_function :version, :cairo_version, [], :int
   
   # (Not documented)
   # 
-  # @method cairo_version_string()
+  # @method version_string()
   # @return [String] 
   # @scope class
-  attach_function :cairo_version_string, :cairo_version_string, [], :string
+  attach_function :version_string, :cairo_version_string, [], :string
   
   # cairo_t:
   # 
@@ -65,7 +65,7 @@ module Cairo
   # 
   # Memory management of #cairo_surface_t is done with
   # cairo_surface_reference() and cairo_surface_destroy().
-  class CairoSurface < FFI::Struct
+  class Surface < FFI::Struct
   end
   
   # cairo_device_t:
@@ -82,7 +82,7 @@ module Cairo
   # cairo_device_reference() and cairo_device_destroy().
   # 
   # Since: 1.10
-  class CairoDevice < FFI::Struct
+  class Device < FFI::Struct
   end
   
   # cairo_matrix_t:
@@ -114,7 +114,7 @@ module Cairo
   #   (Float) 
   # :y0 ::
   #   (Float) 
-  class CairoMatrix < FFI::Struct
+  class Matrix < FFI::Struct
     layout :xx, :double,
            :yx, :double,
            :xy, :double,
@@ -152,7 +152,7 @@ module Cairo
   #   (Float) 
   # :y0 ::
   #   (Float) 
-  class CairoMatrixT < FFI::Struct
+  class MatrixT < FFI::Struct
     layout :xx, :double,
            :yx, :double,
            :xy, :double,
@@ -178,7 +178,7 @@ module Cairo
   # 
   # Memory management of #cairo_pattern_t is done with
   # cairo_pattern_reference() and cairo_pattern_destroy().
-  class CairoPattern < FFI::Struct
+  class Pattern < FFI::Struct
   end
   
   # cairo_user_data_key_t:
@@ -193,7 +193,7 @@ module Cairo
   # = Fields:
   # :unused ::
   #   (Integer) 
-  class CairoUserDataKey < FFI::Struct
+  class UserDataKey < FFI::Struct
     layout :unused, :int
   end
   
@@ -209,7 +209,7 @@ module Cairo
   # = Fields:
   # :unused ::
   #   (Integer) 
-  class CairoUserDataKeyT < FFI::Struct
+  class UserDataKeyT < FFI::Struct
     layout :unused, :int
   end
   
@@ -263,7 +263,7 @@ module Cairo
   # New entries may be added in future versions.  Use cairo_status_to_string()
   # to get a human-readable representation of an error message.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_status).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:status).</em>
   # 
   # === Options:
   # :success ::
@@ -341,10 +341,10 @@ module Cairo
   # :last_status ::
   #   
   # 
-  # @method _enum_cairo_status_
+  # @method _enum_status_
   # @return [Symbol]
   # @scope class
-  enum :cairo_status, [
+  enum :status, [
     :success, 0,
     :no_memory,
     :invalid_restore,
@@ -434,7 +434,7 @@ module Cairo
   # New entries may be added in future versions.  Use cairo_status_to_string()
   # to get a human-readable representation of an error message.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_status_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:status_t).</em>
   # 
   # === Options:
   # :success ::
@@ -512,10 +512,10 @@ module Cairo
   # :last_status ::
   #   
   # 
-  # @method _enum_cairo_status_t_
+  # @method _enum_status_t_
   # @return [Symbol]
   # @scope class
-  enum :cairo_status_t, [
+  enum :status_t, [
     :success, 0,
     :no_memory,
     :invalid_restore,
@@ -568,7 +568,7 @@ module Cairo
   # values distinct from #cairo_format_t values so that the
   # implementation can detect the error if users confuse the two types.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_content).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:content).</em>
   # 
   # === Options:
   # :color ::
@@ -578,10 +578,10 @@ module Cairo
   # :color_alpha ::
   #   
   # 
-  # @method _enum_cairo_content_
+  # @method _enum_content_
   # @return [Symbol]
   # @scope class
-  enum :cairo_content, [
+  enum :content, [
     :color, 0x1000,
     :alpha, 0x2000,
     :color_alpha, 0x3000
@@ -600,7 +600,7 @@ module Cairo
   # values distinct from #cairo_format_t values so that the
   # implementation can detect the error if users confuse the two types.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_content_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:content_t).</em>
   # 
   # === Options:
   # :color ::
@@ -610,10 +610,10 @@ module Cairo
   # :color_alpha ::
   #   
   # 
-  # @method _enum_cairo_content_t_
+  # @method _enum_content_t_
   # @return [Symbol]
   # @scope class
-  enum :cairo_content_t, [
+  enum :content_t, [
     :color, 0x1000,
     :alpha, 0x2000,
     :color_alpha, 0x3000
@@ -636,13 +636,13 @@ module Cairo
   # 
   # <em>This entry is only for documentation and no real method.</em>
   # 
-  # @method _callback_cairo_write_func_t_(closure, data, length)
+  # @method _callback_write_func_t_(closure, data, length)
   # @param [FFI::Pointer(*Void)] closure 
   # @param [FFI::Pointer(*UChar)] data 
   # @param [Integer] length 
-  # @return [Symbol from _enum_cairo_status_t_] 
+  # @return [Symbol from _enum_status_t_] 
   # @scope class
-  callback :cairo_write_func_t, [:pointer, :pointer, :uint], :cairo_status_t
+  callback :write_func_t, [:pointer, :pointer, :uint], :status_t
   
   # cairo_read_func_t:
   # @closure: the input closure
@@ -661,114 +661,114 @@ module Cairo
   # 
   # <em>This entry is only for documentation and no real method.</em>
   # 
-  # @method _callback_cairo_read_func_t_(closure, data, length)
+  # @method _callback_read_func_t_(closure, data, length)
   # @param [FFI::Pointer(*Void)] closure 
   # @param [FFI::Pointer(*UChar)] data 
   # @param [Integer] length 
-  # @return [Symbol from _enum_cairo_status_t_] 
+  # @return [Symbol from _enum_status_t_] 
   # @scope class
-  callback :cairo_read_func_t, [:pointer, :pointer, :uint], :cairo_status_t
+  callback :read_func_t, [:pointer, :pointer, :uint], :status_t
   
   # Functions for manipulating state objects
   # 
-  # @method cairo_create(target)
-  # @param [CairoSurface] target 
+  # @method create(target)
+  # @param [Surface] target 
   # @return [Cairo] 
   # @scope class
-  attach_function :cairo_create, :cairo_create, [CairoSurface], Cairo
+  attach_function :create, :cairo_create, [Surface], Cairo
   
   # (Not documented)
   # 
-  # @method cairo_reference(cr)
+  # @method reference(cr)
   # @param [Cairo] cr 
   # @return [Cairo] 
   # @scope class
-  attach_function :cairo_reference, :cairo_reference, [Cairo], Cairo
+  attach_function :reference, :cairo_reference, [Cairo], Cairo
   
   # (Not documented)
   # 
-  # @method cairo_destroy(cr)
+  # @method destroy(cr)
   # @param [Cairo] cr 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_destroy, :cairo_destroy, [Cairo], :void
+  attach_function :destroy, :cairo_destroy, [Cairo], :void
   
   # (Not documented)
   # 
-  # @method cairo_get_reference_count(cr)
+  # @method get_reference_count(cr)
   # @param [Cairo] cr 
   # @return [Integer] 
   # @scope class
-  attach_function :cairo_get_reference_count, :cairo_get_reference_count, [Cairo], :uint
+  attach_function :get_reference_count, :cairo_get_reference_count, [Cairo], :uint
   
   # (Not documented)
   # 
-  # @method cairo_get_user_data(cr, key)
+  # @method get_user_data(cr, key)
   # @param [Cairo] cr 
-  # @param [CairoUserDataKey] key 
+  # @param [UserDataKey] key 
   # @return [FFI::Pointer(*Void)] 
   # @scope class
-  attach_function :cairo_get_user_data, :cairo_get_user_data, [Cairo, CairoUserDataKey], :pointer
+  attach_function :get_user_data, :cairo_get_user_data, [Cairo, UserDataKey], :pointer
   
   # (Not documented)
   # 
-  # @method cairo_set_user_data(cr, key, user_data, destroy)
+  # @method set_user_data(cr, key, user_data, destroy)
   # @param [Cairo] cr 
-  # @param [CairoUserDataKey] key 
+  # @param [UserDataKey] key 
   # @param [FFI::Pointer(*Void)] user_data 
-  # @param [FFI::Pointer(CairoDestroyFuncT)] destroy 
-  # @return [Symbol from _enum_cairo_status_t_] 
+  # @param [FFI::Pointer(DestroyFuncT)] destroy 
+  # @return [Symbol from _enum_status_t_] 
   # @scope class
-  attach_function :cairo_set_user_data, :cairo_set_user_data, [Cairo, CairoUserDataKey, :pointer, :pointer], :cairo_status_t
+  attach_function :set_user_data, :cairo_set_user_data, [Cairo, UserDataKey, :pointer, :pointer], :status_t
   
   # (Not documented)
   # 
-  # @method cairo_save(cr)
+  # @method save(cr)
   # @param [Cairo] cr 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_save, :cairo_save, [Cairo], :void
+  attach_function :save, :cairo_save, [Cairo], :void
   
   # (Not documented)
   # 
-  # @method cairo_restore(cr)
+  # @method restore(cr)
   # @param [Cairo] cr 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_restore, :cairo_restore, [Cairo], :void
+  attach_function :restore, :cairo_restore, [Cairo], :void
   
   # (Not documented)
   # 
-  # @method cairo_push_group(cr)
+  # @method push_group(cr)
   # @param [Cairo] cr 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_push_group, :cairo_push_group, [Cairo], :void
+  attach_function :push_group, :cairo_push_group, [Cairo], :void
   
   # (Not documented)
   # 
-  # @method cairo_push_group_with_content(cr, content)
+  # @method push_group_with_content(cr, content)
   # @param [Cairo] cr 
-  # @param [Symbol from _enum_cairo_content_t_] content 
+  # @param [Symbol from _enum_content_t_] content 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_push_group_with_content, :cairo_push_group_with_content, [Cairo, :cairo_content_t], :void
+  attach_function :push_group_with_content, :cairo_push_group_with_content, [Cairo, :content_t], :void
   
   # (Not documented)
   # 
-  # @method cairo_pop_group(cr)
+  # @method pop_group(cr)
   # @param [Cairo] cr 
-  # @return [CairoPattern] 
+  # @return [Pattern] 
   # @scope class
-  attach_function :cairo_pop_group, :cairo_pop_group, [Cairo], CairoPattern
+  attach_function :pop_group, :cairo_pop_group, [Cairo], Pattern
   
   # (Not documented)
   # 
-  # @method cairo_pop_group_to_source(cr)
+  # @method pop_group_to_source(cr)
   # @param [Cairo] cr 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_pop_group_to_source, :cairo_pop_group_to_source, [Cairo], :void
+  attach_function :pop_group_to_source, :cairo_pop_group_to_source, [Cairo], :void
   
   # cairo_operator_t:
   # @CAIRO_OPERATOR_CLEAR: clear destination layer (bounded)
@@ -848,7 +848,7 @@ module Cairo
   # the mathematical definitions, see
   # <ulink url="http://cairographics.org/operators/">http://cairographics.org/operators/</ulink>.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_operator).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:operator).</em>
   # 
   # === Options:
   # :clear ::
@@ -910,10 +910,10 @@ module Cairo
   # :hsl_luminosity ::
   #   
   # 
-  # @method _enum_cairo_operator_
+  # @method _enum_operator_
   # @return [Symbol]
   # @scope class
-  enum :cairo_operator, [
+  enum :operator, [
     :clear,
     :source,
     :over,
@@ -1023,7 +1023,7 @@ module Cairo
   # the mathematical definitions, see
   # <ulink url="http://cairographics.org/operators/">http://cairographics.org/operators/</ulink>.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_operator_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:operator_t).</em>
   # 
   # === Options:
   # :clear ::
@@ -1085,10 +1085,10 @@ module Cairo
   # :hsl_luminosity ::
   #   
   # 
-  # @method _enum_cairo_operator_t_
+  # @method _enum_operator_t_
   # @return [Symbol]
   # @scope class
-  enum :cairo_operator_t, [
+  enum :operator_t, [
     :clear,
     :source,
     :over,
@@ -1122,36 +1122,36 @@ module Cairo
   
   # (Not documented)
   # 
-  # @method cairo_set_operator(cr, op)
+  # @method set_operator(cr, op)
   # @param [Cairo] cr 
-  # @param [Symbol from _enum_cairo_operator_t_] op 
+  # @param [Symbol from _enum_operator_t_] op 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_set_operator, :cairo_set_operator, [Cairo, :cairo_operator_t], :void
+  attach_function :set_operator, :cairo_set_operator, [Cairo, :operator_t], :void
   
   # (Not documented)
   # 
-  # @method cairo_set_source(cr, source)
+  # @method set_source(cr, source)
   # @param [Cairo] cr 
-  # @param [CairoPattern] source 
+  # @param [Pattern] source 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_set_source, :cairo_set_source, [Cairo, CairoPattern], :void
+  attach_function :set_source, :cairo_set_source, [Cairo, Pattern], :void
   
   # (Not documented)
   # 
-  # @method cairo_set_source_rgb(cr, red, green, blue)
+  # @method set_source_rgb(cr, red, green, blue)
   # @param [Cairo] cr 
   # @param [Float] red 
   # @param [Float] green 
   # @param [Float] blue 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_set_source_rgb, :cairo_set_source_rgb, [Cairo, :double, :double, :double], :void
+  attach_function :set_source_rgb, :cairo_set_source_rgb, [Cairo, :double, :double, :double], :void
   
   # (Not documented)
   # 
-  # @method cairo_set_source_rgba(cr, red, green, blue, alpha)
+  # @method set_source_rgba(cr, red, green, blue, alpha)
   # @param [Cairo] cr 
   # @param [Float] red 
   # @param [Float] green 
@@ -1159,27 +1159,27 @@ module Cairo
   # @param [Float] alpha 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_set_source_rgba, :cairo_set_source_rgba, [Cairo, :double, :double, :double, :double], :void
+  attach_function :set_source_rgba, :cairo_set_source_rgba, [Cairo, :double, :double, :double, :double], :void
   
   # (Not documented)
   # 
-  # @method cairo_set_source_surface(cr, surface, x, y)
+  # @method set_source_surface(cr, surface, x, y)
   # @param [Cairo] cr 
-  # @param [CairoSurface] surface 
+  # @param [Surface] surface 
   # @param [Float] x 
   # @param [Float] y 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_set_source_surface, :cairo_set_source_surface, [Cairo, CairoSurface, :double, :double], :void
+  attach_function :set_source_surface, :cairo_set_source_surface, [Cairo, Surface, :double, :double], :void
   
   # (Not documented)
   # 
-  # @method cairo_set_tolerance(cr, tolerance)
+  # @method set_tolerance(cr, tolerance)
   # @param [Cairo] cr 
   # @param [Float] tolerance 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_set_tolerance, :cairo_set_tolerance, [Cairo, :double], :void
+  attach_function :set_tolerance, :cairo_set_tolerance, [Cairo, :double], :void
   
   # cairo_antialias_t:
   # @CAIRO_ANTIALIAS_DEFAULT: Use the default antialiasing for
@@ -1193,7 +1193,7 @@ module Cairo
   # 
   # Specifies the type of antialiasing to do when rendering text or shapes.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_antialias).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:antialias).</em>
   # 
   # === Options:
   # :default ::
@@ -1205,10 +1205,10 @@ module Cairo
   # :subpixel ::
   #   
   # 
-  # @method _enum_cairo_antialias_
+  # @method _enum_antialias_
   # @return [Symbol]
   # @scope class
-  enum :cairo_antialias, [
+  enum :antialias, [
     :default,
     :none,
     :gray,
@@ -1227,7 +1227,7 @@ module Cairo
   # 
   # Specifies the type of antialiasing to do when rendering text or shapes.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_antialias_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:antialias_t).</em>
   # 
   # === Options:
   # :default ::
@@ -1239,10 +1239,10 @@ module Cairo
   # :subpixel ::
   #   
   # 
-  # @method _enum_cairo_antialias_t_
+  # @method _enum_antialias_t_
   # @return [Symbol]
   # @scope class
-  enum :cairo_antialias_t, [
+  enum :antialias_t, [
     :default,
     :none,
     :gray,
@@ -1251,12 +1251,12 @@ module Cairo
   
   # (Not documented)
   # 
-  # @method cairo_set_antialias(cr, antialias)
+  # @method set_antialias(cr, antialias)
   # @param [Cairo] cr 
-  # @param [Symbol from _enum_cairo_antialias_t_] antialias 
+  # @param [Symbol from _enum_antialias_t_] antialias 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_set_antialias, :cairo_set_antialias, [Cairo, :cairo_antialias_t], :void
+  attach_function :set_antialias, :cairo_set_antialias, [Cairo, :antialias_t], :void
   
   # cairo_fill_rule_t:
   # @CAIRO_FILL_RULE_WINDING: If the path crosses the ray from
@@ -1282,7 +1282,7 @@ module Cairo
   # 
   # New entries may be added in future versions.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_fill_rule).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:fill_rule).</em>
   # 
   # === Options:
   # :winding ::
@@ -1290,10 +1290,10 @@ module Cairo
   # :even_odd ::
   #   
   # 
-  # @method _enum_cairo_fill_rule_
+  # @method _enum_fill_rule_
   # @return [Symbol]
   # @scope class
-  enum :cairo_fill_rule, [
+  enum :fill_rule, [
     :winding,
     :even_odd
   ]
@@ -1322,7 +1322,7 @@ module Cairo
   # 
   # New entries may be added in future versions.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_fill_rule_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:fill_rule_t).</em>
   # 
   # === Options:
   # :winding ::
@@ -1330,31 +1330,31 @@ module Cairo
   # :even_odd ::
   #   
   # 
-  # @method _enum_cairo_fill_rule_t_
+  # @method _enum_fill_rule_t_
   # @return [Symbol]
   # @scope class
-  enum :cairo_fill_rule_t, [
+  enum :fill_rule_t, [
     :winding,
     :even_odd
   ]
   
   # (Not documented)
   # 
-  # @method cairo_set_fill_rule(cr, fill_rule)
+  # @method set_fill_rule(cr, fill_rule)
   # @param [Cairo] cr 
-  # @param [Symbol from _enum_cairo_fill_rule_t_] fill_rule 
+  # @param [Symbol from _enum_fill_rule_t_] fill_rule 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_set_fill_rule, :cairo_set_fill_rule, [Cairo, :cairo_fill_rule_t], :void
+  attach_function :set_fill_rule, :cairo_set_fill_rule, [Cairo, :fill_rule_t], :void
   
   # (Not documented)
   # 
-  # @method cairo_set_line_width(cr, width)
+  # @method set_line_width(cr, width)
   # @param [Cairo] cr 
   # @param [Float] width 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_set_line_width, :cairo_set_line_width, [Cairo, :double], :void
+  attach_function :set_line_width, :cairo_set_line_width, [Cairo, :double], :void
   
   # cairo_line_cap_t:
   # @CAIRO_LINE_CAP_BUTT: start(stop) the line exactly at the start(end) point
@@ -1365,7 +1365,7 @@ module Cairo
   # 
   # The default line cap style is %CAIRO_LINE_CAP_BUTT.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_line_cap).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:line_cap).</em>
   # 
   # === Options:
   # :butt ::
@@ -1375,10 +1375,10 @@ module Cairo
   # :square ::
   #   
   # 
-  # @method _enum_cairo_line_cap_
+  # @method _enum_line_cap_
   # @return [Symbol]
   # @scope class
-  enum :cairo_line_cap, [
+  enum :line_cap, [
     :butt,
     :round,
     :square
@@ -1393,7 +1393,7 @@ module Cairo
   # 
   # The default line cap style is %CAIRO_LINE_CAP_BUTT.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_line_cap_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:line_cap_t).</em>
   # 
   # === Options:
   # :butt ::
@@ -1403,10 +1403,10 @@ module Cairo
   # :square ::
   #   
   # 
-  # @method _enum_cairo_line_cap_t_
+  # @method _enum_line_cap_t_
   # @return [Symbol]
   # @scope class
-  enum :cairo_line_cap_t, [
+  enum :line_cap_t, [
     :butt,
     :round,
     :square
@@ -1414,12 +1414,12 @@ module Cairo
   
   # (Not documented)
   # 
-  # @method cairo_set_line_cap(cr, line_cap)
+  # @method set_line_cap(cr, line_cap)
   # @param [Cairo] cr 
-  # @param [Symbol from _enum_cairo_line_cap_t_] line_cap 
+  # @param [Symbol from _enum_line_cap_t_] line_cap 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_set_line_cap, :cairo_set_line_cap, [Cairo, :cairo_line_cap_t], :void
+  attach_function :set_line_cap, :cairo_set_line_cap, [Cairo, :line_cap_t], :void
   
   # cairo_line_join_t:
   # @CAIRO_LINE_JOIN_MITER: use a sharp (angled) corner, see
@@ -1433,7 +1433,7 @@ module Cairo
   # 
   # The default line join style is %CAIRO_LINE_JOIN_MITER.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_line_join).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:line_join).</em>
   # 
   # === Options:
   # :miter ::
@@ -1443,10 +1443,10 @@ module Cairo
   # :bevel ::
   #   
   # 
-  # @method _enum_cairo_line_join_
+  # @method _enum_line_join_
   # @return [Symbol]
   # @scope class
-  enum :cairo_line_join, [
+  enum :line_join, [
     :miter,
     :round,
     :bevel
@@ -1464,7 +1464,7 @@ module Cairo
   # 
   # The default line join style is %CAIRO_LINE_JOIN_MITER.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_line_join_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:line_join_t).</em>
   # 
   # === Options:
   # :miter ::
@@ -1474,10 +1474,10 @@ module Cairo
   # :bevel ::
   #   
   # 
-  # @method _enum_cairo_line_join_t_
+  # @method _enum_line_join_t_
   # @return [Symbol]
   # @scope class
-  enum :cairo_line_join_t, [
+  enum :line_join_t, [
     :miter,
     :round,
     :bevel
@@ -1485,167 +1485,167 @@ module Cairo
   
   # (Not documented)
   # 
-  # @method cairo_set_line_join(cr, line_join)
+  # @method set_line_join(cr, line_join)
   # @param [Cairo] cr 
-  # @param [Symbol from _enum_cairo_line_join_t_] line_join 
+  # @param [Symbol from _enum_line_join_t_] line_join 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_set_line_join, :cairo_set_line_join, [Cairo, :cairo_line_join_t], :void
+  attach_function :set_line_join, :cairo_set_line_join, [Cairo, :line_join_t], :void
   
   # (Not documented)
   # 
-  # @method cairo_set_dash(cr, dashes, num_dashes, offset)
+  # @method set_dash(cr, dashes, num_dashes, offset)
   # @param [Cairo] cr 
   # @param [FFI::Pointer(*Double)] dashes 
   # @param [Integer] num_dashes 
   # @param [Float] offset 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_set_dash, :cairo_set_dash, [Cairo, :pointer, :int, :double], :void
+  attach_function :set_dash, :cairo_set_dash, [Cairo, :pointer, :int, :double], :void
   
   # (Not documented)
   # 
-  # @method cairo_set_miter_limit(cr, limit)
+  # @method set_miter_limit(cr, limit)
   # @param [Cairo] cr 
   # @param [Float] limit 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_set_miter_limit, :cairo_set_miter_limit, [Cairo, :double], :void
+  attach_function :set_miter_limit, :cairo_set_miter_limit, [Cairo, :double], :void
   
   # (Not documented)
   # 
-  # @method cairo_translate(cr, tx, ty)
+  # @method translate(cr, tx, ty)
   # @param [Cairo] cr 
   # @param [Float] tx 
   # @param [Float] ty 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_translate, :cairo_translate, [Cairo, :double, :double], :void
+  attach_function :translate, :cairo_translate, [Cairo, :double, :double], :void
   
   # (Not documented)
   # 
-  # @method cairo_scale(cr, sx, sy)
+  # @method scale(cr, sx, sy)
   # @param [Cairo] cr 
   # @param [Float] sx 
   # @param [Float] sy 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_scale, :cairo_scale, [Cairo, :double, :double], :void
+  attach_function :scale, :cairo_scale, [Cairo, :double, :double], :void
   
   # (Not documented)
   # 
-  # @method cairo_rotate(cr, angle)
+  # @method rotate(cr, angle)
   # @param [Cairo] cr 
   # @param [Float] angle 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_rotate, :cairo_rotate, [Cairo, :double], :void
+  attach_function :rotate, :cairo_rotate, [Cairo, :double], :void
   
   # (Not documented)
   # 
-  # @method cairo_transform(cr, matrix)
+  # @method transform(cr, matrix)
   # @param [Cairo] cr 
-  # @param [CairoMatrix] matrix 
+  # @param [Matrix] matrix 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_transform, :cairo_transform, [Cairo, CairoMatrix], :void
+  attach_function :transform, :cairo_transform, [Cairo, Matrix], :void
   
   # (Not documented)
   # 
-  # @method cairo_set_matrix(cr, matrix)
+  # @method set_matrix(cr, matrix)
   # @param [Cairo] cr 
-  # @param [CairoMatrix] matrix 
+  # @param [Matrix] matrix 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_set_matrix, :cairo_set_matrix, [Cairo, CairoMatrix], :void
+  attach_function :set_matrix, :cairo_set_matrix, [Cairo, Matrix], :void
   
   # (Not documented)
   # 
-  # @method cairo_identity_matrix(cr)
+  # @method identity_matrix(cr)
   # @param [Cairo] cr 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_identity_matrix, :cairo_identity_matrix, [Cairo], :void
+  attach_function :identity_matrix, :cairo_identity_matrix, [Cairo], :void
   
   # (Not documented)
   # 
-  # @method cairo_user_to_device(cr, x, y)
-  # @param [Cairo] cr 
-  # @param [FFI::Pointer(*Double)] x 
-  # @param [FFI::Pointer(*Double)] y 
-  # @return [nil] 
-  # @scope class
-  attach_function :cairo_user_to_device, :cairo_user_to_device, [Cairo, :pointer, :pointer], :void
-  
-  # (Not documented)
-  # 
-  # @method cairo_user_to_device_distance(cr, dx, dy)
-  # @param [Cairo] cr 
-  # @param [FFI::Pointer(*Double)] dx 
-  # @param [FFI::Pointer(*Double)] dy 
-  # @return [nil] 
-  # @scope class
-  attach_function :cairo_user_to_device_distance, :cairo_user_to_device_distance, [Cairo, :pointer, :pointer], :void
-  
-  # (Not documented)
-  # 
-  # @method cairo_device_to_user(cr, x, y)
+  # @method user_to_device(cr, x, y)
   # @param [Cairo] cr 
   # @param [FFI::Pointer(*Double)] x 
   # @param [FFI::Pointer(*Double)] y 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_device_to_user, :cairo_device_to_user, [Cairo, :pointer, :pointer], :void
+  attach_function :user_to_device, :cairo_user_to_device, [Cairo, :pointer, :pointer], :void
   
   # (Not documented)
   # 
-  # @method cairo_device_to_user_distance(cr, dx, dy)
+  # @method user_to_device_distance(cr, dx, dy)
   # @param [Cairo] cr 
   # @param [FFI::Pointer(*Double)] dx 
   # @param [FFI::Pointer(*Double)] dy 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_device_to_user_distance, :cairo_device_to_user_distance, [Cairo, :pointer, :pointer], :void
+  attach_function :user_to_device_distance, :cairo_user_to_device_distance, [Cairo, :pointer, :pointer], :void
+  
+  # (Not documented)
+  # 
+  # @method device_to_user(cr, x, y)
+  # @param [Cairo] cr 
+  # @param [FFI::Pointer(*Double)] x 
+  # @param [FFI::Pointer(*Double)] y 
+  # @return [nil] 
+  # @scope class
+  attach_function :device_to_user, :cairo_device_to_user, [Cairo, :pointer, :pointer], :void
+  
+  # (Not documented)
+  # 
+  # @method device_to_user_distance(cr, dx, dy)
+  # @param [Cairo] cr 
+  # @param [FFI::Pointer(*Double)] dx 
+  # @param [FFI::Pointer(*Double)] dy 
+  # @return [nil] 
+  # @scope class
+  attach_function :device_to_user_distance, :cairo_device_to_user_distance, [Cairo, :pointer, :pointer], :void
   
   # Path creation functions
   # 
-  # @method cairo_new_path(cr)
+  # @method new_path(cr)
   # @param [Cairo] cr 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_new_path, :cairo_new_path, [Cairo], :void
+  attach_function :new_path, :cairo_new_path, [Cairo], :void
   
   # (Not documented)
   # 
-  # @method cairo_move_to(cr, x, y)
-  # @param [Cairo] cr 
-  # @param [Float] x 
-  # @param [Float] y 
-  # @return [nil] 
-  # @scope class
-  attach_function :cairo_move_to, :cairo_move_to, [Cairo, :double, :double], :void
-  
-  # (Not documented)
-  # 
-  # @method cairo_new_sub_path(cr)
-  # @param [Cairo] cr 
-  # @return [nil] 
-  # @scope class
-  attach_function :cairo_new_sub_path, :cairo_new_sub_path, [Cairo], :void
-  
-  # (Not documented)
-  # 
-  # @method cairo_line_to(cr, x, y)
+  # @method move_to(cr, x, y)
   # @param [Cairo] cr 
   # @param [Float] x 
   # @param [Float] y 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_line_to, :cairo_line_to, [Cairo, :double, :double], :void
+  attach_function :move_to, :cairo_move_to, [Cairo, :double, :double], :void
   
   # (Not documented)
   # 
-  # @method cairo_curve_to(cr, x1, y1, x2, y2, x3, y3)
+  # @method new_sub_path(cr)
+  # @param [Cairo] cr 
+  # @return [nil] 
+  # @scope class
+  attach_function :new_sub_path, :cairo_new_sub_path, [Cairo], :void
+  
+  # (Not documented)
+  # 
+  # @method line_to(cr, x, y)
+  # @param [Cairo] cr 
+  # @param [Float] x 
+  # @param [Float] y 
+  # @return [nil] 
+  # @scope class
+  attach_function :line_to, :cairo_line_to, [Cairo, :double, :double], :void
+  
+  # (Not documented)
+  # 
+  # @method curve_to(cr, x1, y1, x2, y2, x3, y3)
   # @param [Cairo] cr 
   # @param [Float] x1 
   # @param [Float] y1 
@@ -1655,11 +1655,11 @@ module Cairo
   # @param [Float] y3 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_curve_to, :cairo_curve_to, [Cairo, :double, :double, :double, :double, :double, :double], :void
+  attach_function :curve_to, :cairo_curve_to, [Cairo, :double, :double, :double, :double, :double, :double], :void
   
   # (Not documented)
   # 
-  # @method cairo_arc(cr, xc, yc, radius, angle1, angle2)
+  # @method arc(cr, xc, yc, radius, angle1, angle2)
   # @param [Cairo] cr 
   # @param [Float] xc 
   # @param [Float] yc 
@@ -1668,11 +1668,11 @@ module Cairo
   # @param [Float] angle2 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_arc, :cairo_arc, [Cairo, :double, :double, :double, :double, :double], :void
+  attach_function :arc, :cairo_arc, [Cairo, :double, :double, :double, :double, :double], :void
   
   # (Not documented)
   # 
-  # @method cairo_arc_negative(cr, xc, yc, radius, angle1, angle2)
+  # @method arc_negative(cr, xc, yc, radius, angle1, angle2)
   # @param [Cairo] cr 
   # @param [Float] xc 
   # @param [Float] yc 
@@ -1681,7 +1681,7 @@ module Cairo
   # @param [Float] angle2 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_arc_negative, :cairo_arc_negative, [Cairo, :double, :double, :double, :double, :double], :void
+  attach_function :arc_negative, :cairo_arc_negative, [Cairo, :double, :double, :double, :double, :double], :void
   
   # XXX: NYI
   # cairo_public void
@@ -1690,27 +1690,27 @@ module Cairo
   # 	      double x2, double y2,
   # 	      double radius);
   # 
-  # @method cairo_rel_move_to(cr, dx, dy)
+  # @method rel_move_to(cr, dx, dy)
   # @param [Cairo] cr 
   # @param [Float] dx 
   # @param [Float] dy 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_rel_move_to, :cairo_rel_move_to, [Cairo, :double, :double], :void
+  attach_function :rel_move_to, :cairo_rel_move_to, [Cairo, :double, :double], :void
   
   # (Not documented)
   # 
-  # @method cairo_rel_line_to(cr, dx, dy)
+  # @method rel_line_to(cr, dx, dy)
   # @param [Cairo] cr 
   # @param [Float] dx 
   # @param [Float] dy 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_rel_line_to, :cairo_rel_line_to, [Cairo, :double, :double], :void
+  attach_function :rel_line_to, :cairo_rel_line_to, [Cairo, :double, :double], :void
   
   # (Not documented)
   # 
-  # @method cairo_rel_curve_to(cr, dx1, dy1, dx2, dy2, dx3, dy3)
+  # @method rel_curve_to(cr, dx1, dy1, dx2, dy2, dx3, dy3)
   # @param [Cairo] cr 
   # @param [Float] dx1 
   # @param [Float] dy1 
@@ -1720,11 +1720,11 @@ module Cairo
   # @param [Float] dy3 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_rel_curve_to, :cairo_rel_curve_to, [Cairo, :double, :double, :double, :double, :double, :double], :void
+  attach_function :rel_curve_to, :cairo_rel_curve_to, [Cairo, :double, :double, :double, :double, :double, :double], :void
   
   # (Not documented)
   # 
-  # @method cairo_rectangle(cr, x, y, width, height)
+  # @method rectangle(cr, x, y, width, height)
   # @param [Cairo] cr 
   # @param [Float] x 
   # @param [Float] y 
@@ -1732,21 +1732,21 @@ module Cairo
   # @param [Float] height 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_rectangle, :cairo_rectangle, [Cairo, :double, :double, :double, :double], :void
+  attach_function :rectangle, :cairo_rectangle, [Cairo, :double, :double, :double, :double], :void
   
   # XXX: NYI
   # cairo_public void
   # cairo_stroke_to_path (cairo_t *cr);
   # 
-  # @method cairo_close_path(cr)
+  # @method close_path(cr)
   # @param [Cairo] cr 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_close_path, :cairo_close_path, [Cairo], :void
+  attach_function :close_path, :cairo_close_path, [Cairo], :void
   
   # (Not documented)
   # 
-  # @method cairo_path_extents(cr, x1, y1, x2, y2)
+  # @method path_extents(cr, x1, y1, x2, y2)
   # @param [Cairo] cr 
   # @param [FFI::Pointer(*Double)] x1 
   # @param [FFI::Pointer(*Double)] y1 
@@ -1754,126 +1754,126 @@ module Cairo
   # @param [FFI::Pointer(*Double)] y2 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_path_extents, :cairo_path_extents, [Cairo, :pointer, :pointer, :pointer, :pointer], :void
+  attach_function :path_extents, :cairo_path_extents, [Cairo, :pointer, :pointer, :pointer, :pointer], :void
   
   # Painting functions
   # 
-  # @method cairo_paint(cr)
+  # @method paint(cr)
   # @param [Cairo] cr 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_paint, :cairo_paint, [Cairo], :void
+  attach_function :paint, :cairo_paint, [Cairo], :void
   
   # (Not documented)
   # 
-  # @method cairo_paint_with_alpha(cr, alpha)
+  # @method paint_with_alpha(cr, alpha)
   # @param [Cairo] cr 
   # @param [Float] alpha 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_paint_with_alpha, :cairo_paint_with_alpha, [Cairo, :double], :void
+  attach_function :paint_with_alpha, :cairo_paint_with_alpha, [Cairo, :double], :void
   
   # (Not documented)
   # 
-  # @method cairo_mask(cr, pattern)
+  # @method mask(cr, pattern)
   # @param [Cairo] cr 
-  # @param [CairoPattern] pattern 
+  # @param [Pattern] pattern 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_mask, :cairo_mask, [Cairo, CairoPattern], :void
+  attach_function :mask, :cairo_mask, [Cairo, Pattern], :void
   
   # (Not documented)
   # 
-  # @method cairo_mask_surface(cr, surface, surface_x, surface_y)
+  # @method mask_surface(cr, surface, surface_x, surface_y)
   # @param [Cairo] cr 
-  # @param [CairoSurface] surface 
+  # @param [Surface] surface 
   # @param [Float] surface_x 
   # @param [Float] surface_y 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_mask_surface, :cairo_mask_surface, [Cairo, CairoSurface, :double, :double], :void
+  attach_function :mask_surface, :cairo_mask_surface, [Cairo, Surface, :double, :double], :void
   
   # (Not documented)
   # 
-  # @method cairo_stroke(cr)
+  # @method stroke(cr)
   # @param [Cairo] cr 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_stroke, :cairo_stroke, [Cairo], :void
+  attach_function :stroke, :cairo_stroke, [Cairo], :void
   
   # (Not documented)
   # 
-  # @method cairo_stroke_preserve(cr)
+  # @method stroke_preserve(cr)
   # @param [Cairo] cr 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_stroke_preserve, :cairo_stroke_preserve, [Cairo], :void
+  attach_function :stroke_preserve, :cairo_stroke_preserve, [Cairo], :void
   
   # (Not documented)
   # 
-  # @method cairo_fill(cr)
+  # @method fill(cr)
   # @param [Cairo] cr 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_fill, :cairo_fill, [Cairo], :void
+  attach_function :fill, :cairo_fill, [Cairo], :void
   
   # (Not documented)
   # 
-  # @method cairo_fill_preserve(cr)
+  # @method fill_preserve(cr)
   # @param [Cairo] cr 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_fill_preserve, :cairo_fill_preserve, [Cairo], :void
+  attach_function :fill_preserve, :cairo_fill_preserve, [Cairo], :void
   
   # (Not documented)
   # 
-  # @method cairo_copy_page(cr)
+  # @method copy_page(cr)
   # @param [Cairo] cr 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_copy_page, :cairo_copy_page, [Cairo], :void
+  attach_function :copy_page, :cairo_copy_page, [Cairo], :void
   
   # (Not documented)
   # 
-  # @method cairo_show_page(cr)
+  # @method show_page(cr)
   # @param [Cairo] cr 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_show_page, :cairo_show_page, [Cairo], :void
+  attach_function :show_page, :cairo_show_page, [Cairo], :void
   
   # Insideness testing
   # 
-  # @method cairo_in_stroke(cr, x, y)
+  # @method in_stroke(cr, x, y)
   # @param [Cairo] cr 
   # @param [Float] x 
   # @param [Float] y 
   # @return [Integer] 
   # @scope class
-  attach_function :cairo_in_stroke, :cairo_in_stroke, [Cairo, :double, :double], :int
+  attach_function :in_stroke, :cairo_in_stroke, [Cairo, :double, :double], :int
   
   # (Not documented)
   # 
-  # @method cairo_in_fill(cr, x, y)
+  # @method in_fill(cr, x, y)
   # @param [Cairo] cr 
   # @param [Float] x 
   # @param [Float] y 
   # @return [Integer] 
   # @scope class
-  attach_function :cairo_in_fill, :cairo_in_fill, [Cairo, :double, :double], :int
+  attach_function :in_fill, :cairo_in_fill, [Cairo, :double, :double], :int
   
   # (Not documented)
   # 
-  # @method cairo_in_clip(cr, x, y)
+  # @method in_clip(cr, x, y)
   # @param [Cairo] cr 
   # @param [Float] x 
   # @param [Float] y 
   # @return [Integer] 
   # @scope class
-  attach_function :cairo_in_clip, :cairo_in_clip, [Cairo, :double, :double], :int
+  attach_function :in_clip, :cairo_in_clip, [Cairo, :double, :double], :int
   
   # Rectangular extents
   # 
-  # @method cairo_stroke_extents(cr, x1, y1, x2, y2)
+  # @method stroke_extents(cr, x1, y1, x2, y2)
   # @param [Cairo] cr 
   # @param [FFI::Pointer(*Double)] x1 
   # @param [FFI::Pointer(*Double)] y1 
@@ -1881,11 +1881,11 @@ module Cairo
   # @param [FFI::Pointer(*Double)] y2 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_stroke_extents, :cairo_stroke_extents, [Cairo, :pointer, :pointer, :pointer, :pointer], :void
+  attach_function :stroke_extents, :cairo_stroke_extents, [Cairo, :pointer, :pointer, :pointer, :pointer], :void
   
   # (Not documented)
   # 
-  # @method cairo_fill_extents(cr, x1, y1, x2, y2)
+  # @method fill_extents(cr, x1, y1, x2, y2)
   # @param [Cairo] cr 
   # @param [FFI::Pointer(*Double)] x1 
   # @param [FFI::Pointer(*Double)] y1 
@@ -1893,35 +1893,35 @@ module Cairo
   # @param [FFI::Pointer(*Double)] y2 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_fill_extents, :cairo_fill_extents, [Cairo, :pointer, :pointer, :pointer, :pointer], :void
+  attach_function :fill_extents, :cairo_fill_extents, [Cairo, :pointer, :pointer, :pointer, :pointer], :void
   
   # Clipping
   # 
-  # @method cairo_reset_clip(cr)
+  # @method reset_clip(cr)
   # @param [Cairo] cr 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_reset_clip, :cairo_reset_clip, [Cairo], :void
+  attach_function :reset_clip, :cairo_reset_clip, [Cairo], :void
   
   # (Not documented)
   # 
-  # @method cairo_clip(cr)
+  # @method clip(cr)
   # @param [Cairo] cr 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_clip, :cairo_clip, [Cairo], :void
+  attach_function :clip, :cairo_clip, [Cairo], :void
   
   # (Not documented)
   # 
-  # @method cairo_clip_preserve(cr)
+  # @method clip_preserve(cr)
   # @param [Cairo] cr 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_clip_preserve, :cairo_clip_preserve, [Cairo], :void
+  attach_function :clip_preserve, :cairo_clip_preserve, [Cairo], :void
   
   # (Not documented)
   # 
-  # @method cairo_clip_extents(cr, x1, y1, x2, y2)
+  # @method clip_extents(cr, x1, y1, x2, y2)
   # @param [Cairo] cr 
   # @param [FFI::Pointer(*Double)] x1 
   # @param [FFI::Pointer(*Double)] y1 
@@ -1929,7 +1929,7 @@ module Cairo
   # @param [FFI::Pointer(*Double)] y2 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_clip_extents, :cairo_clip_extents, [Cairo, :pointer, :pointer, :pointer, :pointer], :void
+  attach_function :clip_extents, :cairo_clip_extents, [Cairo, :pointer, :pointer, :pointer, :pointer], :void
   
   # cairo_rectangle_t:
   # @x: X coordinate of the left side of the rectangle
@@ -1950,7 +1950,7 @@ module Cairo
   #   (Float) 
   # :height ::
   #   (Float) 
-  class CairoRectangle < FFI::Struct
+  class Rectangle < FFI::Struct
     layout :x, :double,
            :y, :double,
            :width, :double,
@@ -1976,7 +1976,7 @@ module Cairo
   #   (Float) 
   # :height ::
   #   (Float) 
-  class CairoRectangleT < FFI::Struct
+  class RectangleT < FFI::Struct
     layout :x, :double,
            :y, :double,
            :width, :double,
@@ -1995,14 +1995,14 @@ module Cairo
   # 
   # = Fields:
   # :status ::
-  #   (Symbol from _enum_cairo_status_t_) 
+  #   (Symbol from _enum_status_t_) 
   # :rectangles ::
-  #   (CairoRectangle) 
+  #   (Rectangle) 
   # :num_rectangles ::
   #   (Integer) 
-  class CairoRectangleList < FFI::Struct
-    layout :status, :cairo_status_t,
-           :rectangles, CairoRectangle,
+  class RectangleList < FFI::Struct
+    layout :status, :status_t,
+           :rectangles, Rectangle,
            :num_rectangles, :int
   end
   
@@ -2018,32 +2018,32 @@ module Cairo
   # 
   # = Fields:
   # :status ::
-  #   (Symbol from _enum_cairo_status_t_) 
+  #   (Symbol from _enum_status_t_) 
   # :rectangles ::
-  #   (CairoRectangle) 
+  #   (Rectangle) 
   # :num_rectangles ::
   #   (Integer) 
-  class CairoRectangleListT < FFI::Struct
-    layout :status, :cairo_status_t,
-           :rectangles, CairoRectangle,
+  class RectangleListT < FFI::Struct
+    layout :status, :status_t,
+           :rectangles, Rectangle,
            :num_rectangles, :int
   end
   
   # (Not documented)
   # 
-  # @method cairo_copy_clip_rectangle_list(cr)
+  # @method copy_clip_rectangle_list(cr)
   # @param [Cairo] cr 
-  # @return [CairoRectangleList] 
+  # @return [RectangleList] 
   # @scope class
-  attach_function :cairo_copy_clip_rectangle_list, :cairo_copy_clip_rectangle_list, [Cairo], CairoRectangleList
+  attach_function :copy_clip_rectangle_list, :cairo_copy_clip_rectangle_list, [Cairo], RectangleList
   
   # (Not documented)
   # 
-  # @method cairo_rectangle_list_destroy(rectangle_list)
-  # @param [CairoRectangleList] rectangle_list 
+  # @method rectangle_list_destroy(rectangle_list)
+  # @param [RectangleList] rectangle_list 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_rectangle_list_destroy, :cairo_rectangle_list_destroy, [CairoRectangleList], :void
+  attach_function :rectangle_list_destroy, :cairo_rectangle_list_destroy, [RectangleList], :void
   
   # cairo_scaled_font_t:
   # 
@@ -2058,7 +2058,7 @@ module Cairo
   # 
   # Memory management of #cairo_scaled_font_t is done with
   # cairo_scaled_font_reference() and cairo_scaled_font_destroy().
-  class CairoScaledFont < FFI::Struct
+  class ScaledFont < FFI::Struct
   end
   
   # cairo_font_face_t:
@@ -2076,7 +2076,7 @@ module Cairo
   # 
   # Memory management of #cairo_font_face_t is done with
   # cairo_font_face_reference() and cairo_font_face_destroy().
-  class CairoFontFace < FFI::Struct
+  class FontFace < FFI::Struct
   end
   
   # cairo_glyph_t:
@@ -2109,7 +2109,7 @@ module Cairo
   #   (Float) 
   # :y ::
   #   (Float) 
-  class CairoGlyphT < FFI::Struct
+  class GlyphT < FFI::Struct
     layout :index, :ulong,
            :x, :double,
            :y, :double
@@ -2117,19 +2117,19 @@ module Cairo
   
   # (Not documented)
   # 
-  # @method cairo_glyph_allocate(num_glyphs)
+  # @method glyph_allocate(num_glyphs)
   # @param [Integer] num_glyphs 
-  # @return [FFI::Pointer(*CairoGlyphT)] 
+  # @return [FFI::Pointer(*GlyphT)] 
   # @scope class
-  attach_function :cairo_glyph_allocate, :cairo_glyph_allocate, [:int], :pointer
+  attach_function :glyph_allocate, :cairo_glyph_allocate, [:int], :pointer
   
   # (Not documented)
   # 
-  # @method cairo_glyph_free(glyphs)
-  # @param [FFI::Pointer(*CairoGlyphT)] glyphs 
+  # @method glyph_free(glyphs)
+  # @param [FFI::Pointer(*GlyphT)] glyphs 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_glyph_free, :cairo_glyph_free, [:pointer], :void
+  attach_function :glyph_free, :cairo_glyph_free, [:pointer], :void
   
   # cairo_text_cluster_t:
   # @num_bytes: the number of bytes of UTF-8 text covered by cluster
@@ -2155,26 +2155,26 @@ module Cairo
   #   (Integer) 
   # :num_glyphs ::
   #   (Integer) 
-  class CairoTextClusterT < FFI::Struct
+  class TextClusterT < FFI::Struct
     layout :num_bytes, :int,
            :num_glyphs, :int
   end
   
   # (Not documented)
   # 
-  # @method cairo_text_cluster_allocate(num_clusters)
+  # @method text_cluster_allocate(num_clusters)
   # @param [Integer] num_clusters 
-  # @return [FFI::Pointer(*CairoTextClusterT)] 
+  # @return [FFI::Pointer(*TextClusterT)] 
   # @scope class
-  attach_function :cairo_text_cluster_allocate, :cairo_text_cluster_allocate, [:int], :pointer
+  attach_function :text_cluster_allocate, :cairo_text_cluster_allocate, [:int], :pointer
   
   # (Not documented)
   # 
-  # @method cairo_text_cluster_free(clusters)
-  # @param [FFI::Pointer(*CairoTextClusterT)] clusters 
+  # @method text_cluster_free(clusters)
+  # @param [FFI::Pointer(*TextClusterT)] clusters 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_text_cluster_free, :cairo_text_cluster_free, [:pointer], :void
+  attach_function :text_cluster_free, :cairo_text_cluster_free, [:pointer], :void
   
   # cairo_text_cluster_flags_t:
   # @CAIRO_TEXT_CLUSTER_FLAG_BACKWARD: The clusters in the cluster array
@@ -2184,17 +2184,17 @@ module Cairo
   # 
   # Since: 1.8
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_text_cluster_flags).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:text_cluster_flags).</em>
   # 
   # === Options:
-  # :cairo_text_cluster_flag_backward ::
+  # :text_cluster_flag_backward ::
   #   
   # 
-  # @method _enum_cairo_text_cluster_flags_
+  # @method _enum_text_cluster_flags_
   # @return [Symbol]
   # @scope class
-  enum :cairo_text_cluster_flags, [
-    :cairo_text_cluster_flag_backward, 0x00000001
+  enum :text_cluster_flags, [
+    :text_cluster_flag_backward, 0x00000001
   ]
   
   # cairo_text_cluster_flags_t:
@@ -2205,17 +2205,17 @@ module Cairo
   # 
   # Since: 1.8
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_text_cluster_flags_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:text_cluster_flags_t).</em>
   # 
   # === Options:
-  # :cairo_text_cluster_flag_backward ::
+  # :text_cluster_flag_backward ::
   #   
   # 
-  # @method _enum_cairo_text_cluster_flags_t_
+  # @method _enum_text_cluster_flags_t_
   # @return [Symbol]
   # @scope class
-  enum :cairo_text_cluster_flags_t, [
-    :cairo_text_cluster_flag_backward, 0x00000001
+  enum :text_cluster_flags_t, [
+    :text_cluster_flag_backward, 0x00000001
   ]
   
   # cairo_text_extents_t:
@@ -2257,7 +2257,7 @@ module Cairo
   #   (Float) 
   # :y_advance ::
   #   (Float) 
-  class CairoTextExtentsT < FFI::Struct
+  class TextExtentsT < FFI::Struct
     layout :x_bearing, :double,
            :y_bearing, :double,
            :width, :double,
@@ -2317,7 +2317,7 @@ module Cairo
   #   (Float) 
   # :max_y_advance ::
   #   (Float) 
-  class CairoFontExtentsT < FFI::Struct
+  class FontExtentsT < FFI::Struct
     layout :ascent, :double,
            :descent, :double,
            :height, :double,
@@ -2332,7 +2332,7 @@ module Cairo
   # 
   # Specifies variants of a font face based on their slant.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_font_slant).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:font_slant).</em>
   # 
   # === Options:
   # :normal ::
@@ -2342,10 +2342,10 @@ module Cairo
   # :oblique ::
   #   
   # 
-  # @method _enum_cairo_font_slant_
+  # @method _enum_font_slant_
   # @return [Symbol]
   # @scope class
-  enum :cairo_font_slant, [
+  enum :font_slant, [
     :normal,
     :italic,
     :oblique
@@ -2358,7 +2358,7 @@ module Cairo
   # 
   # Specifies variants of a font face based on their slant.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_font_slant_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:font_slant_t).</em>
   # 
   # === Options:
   # :normal ::
@@ -2368,10 +2368,10 @@ module Cairo
   # :oblique ::
   #   
   # 
-  # @method _enum_cairo_font_slant_t_
+  # @method _enum_font_slant_t_
   # @return [Symbol]
   # @scope class
-  enum :cairo_font_slant_t, [
+  enum :font_slant_t, [
     :normal,
     :italic,
     :oblique
@@ -2383,7 +2383,7 @@ module Cairo
   # 
   # Specifies variants of a font face based on their weight.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_font_weight).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:font_weight).</em>
   # 
   # === Options:
   # :normal ::
@@ -2391,10 +2391,10 @@ module Cairo
   # :bold ::
   #   
   # 
-  # @method _enum_cairo_font_weight_
+  # @method _enum_font_weight_
   # @return [Symbol]
   # @scope class
-  enum :cairo_font_weight, [
+  enum :font_weight, [
     :normal,
     :bold
   ]
@@ -2405,7 +2405,7 @@ module Cairo
   # 
   # Specifies variants of a font face based on their weight.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_font_weight_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:font_weight_t).</em>
   # 
   # === Options:
   # :normal ::
@@ -2413,10 +2413,10 @@ module Cairo
   # :bold ::
   #   
   # 
-  # @method _enum_cairo_font_weight_t_
+  # @method _enum_font_weight_t_
   # @return [Symbol]
   # @scope class
-  enum :cairo_font_weight_t, [
+  enum :font_weight_t, [
     :normal,
     :bold
   ]
@@ -2437,7 +2437,7 @@ module Cairo
   # each pixel on the display device when rendering with an
   # antialiasing mode of %CAIRO_ANTIALIAS_SUBPIXEL.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_subpixel_order).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:subpixel_order).</em>
   # 
   # === Options:
   # :default ::
@@ -2451,10 +2451,10 @@ module Cairo
   # :vbgr ::
   #   
   # 
-  # @method _enum_cairo_subpixel_order_
+  # @method _enum_subpixel_order_
   # @return [Symbol]
   # @scope class
-  enum :cairo_subpixel_order, [
+  enum :subpixel_order, [
     :default,
     :rgb,
     :bgr,
@@ -2478,7 +2478,7 @@ module Cairo
   # each pixel on the display device when rendering with an
   # antialiasing mode of %CAIRO_ANTIALIAS_SUBPIXEL.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_subpixel_order_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:subpixel_order_t).</em>
   # 
   # === Options:
   # :default ::
@@ -2492,10 +2492,10 @@ module Cairo
   # :vbgr ::
   #   
   # 
-  # @method _enum_cairo_subpixel_order_t_
+  # @method _enum_subpixel_order_t_
   # @return [Symbol]
   # @scope class
-  enum :cairo_subpixel_order_t, [
+  enum :subpixel_order_t, [
     :default,
     :rgb,
     :bgr,
@@ -2524,7 +2524,7 @@ module Cairo
   # 
   # New entries may be added in future versions.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_hint_style).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:hint_style).</em>
   # 
   # === Options:
   # :default ::
@@ -2538,10 +2538,10 @@ module Cairo
   # :full ::
   #   
   # 
-  # @method _enum_cairo_hint_style_
+  # @method _enum_hint_style_
   # @return [Symbol]
   # @scope class
-  enum :cairo_hint_style, [
+  enum :hint_style, [
     :default,
     :none,
     :slight,
@@ -2570,7 +2570,7 @@ module Cairo
   # 
   # New entries may be added in future versions.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_hint_style_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:hint_style_t).</em>
   # 
   # === Options:
   # :default ::
@@ -2584,10 +2584,10 @@ module Cairo
   # :full ::
   #   
   # 
-  # @method _enum_cairo_hint_style_t_
+  # @method _enum_hint_style_t_
   # @return [Symbol]
   # @scope class
-  enum :cairo_hint_style_t, [
+  enum :hint_style_t, [
     :default,
     :none,
     :slight,
@@ -2607,7 +2607,7 @@ module Cairo
   # letter and line spacing, however it also means that text
   # will be laid out differently at different zoom factors.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_hint_metrics).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:hint_metrics).</em>
   # 
   # === Options:
   # :default ::
@@ -2617,10 +2617,10 @@ module Cairo
   # :on ::
   #   
   # 
-  # @method _enum_cairo_hint_metrics_
+  # @method _enum_hint_metrics_
   # @return [Symbol]
   # @scope class
-  enum :cairo_hint_metrics, [
+  enum :hint_metrics, [
     :default,
     :off,
     :on
@@ -2638,7 +2638,7 @@ module Cairo
   # letter and line spacing, however it also means that text
   # will be laid out differently at different zoom factors.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_hint_metrics_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:hint_metrics_t).</em>
   # 
   # === Options:
   # :default ::
@@ -2648,10 +2648,10 @@ module Cairo
   # :on ::
   #   
   # 
-  # @method _enum_cairo_hint_metrics_t_
+  # @method _enum_hint_metrics_t_
   # @return [Symbol]
   # @scope class
-  enum :cairo_hint_metrics_t, [
+  enum :hint_metrics_t, [
     :default,
     :off,
     :on
@@ -2675,339 +2675,339 @@ module Cairo
   # cairo_font_options_hash() should be used to copy, check
   # for equality, merge, or compute a hash value of
   # #cairo_font_options_t objects.
-  class CairoFontOptions < FFI::Struct
+  class FontOptions < FFI::Struct
   end
   
   # (Not documented)
   # 
-  # @method cairo_font_options_create()
-  # @return [CairoFontOptions] 
+  # @method font_options_create()
+  # @return [FontOptions] 
   # @scope class
-  attach_function :cairo_font_options_create, :cairo_font_options_create, [], CairoFontOptions
+  attach_function :font_options_create, :cairo_font_options_create, [], FontOptions
   
   # (Not documented)
   # 
-  # @method cairo_font_options_copy(original)
-  # @param [CairoFontOptions] original 
-  # @return [CairoFontOptions] 
+  # @method font_options_copy(original)
+  # @param [FontOptions] original 
+  # @return [FontOptions] 
   # @scope class
-  attach_function :cairo_font_options_copy, :cairo_font_options_copy, [CairoFontOptions], CairoFontOptions
+  attach_function :font_options_copy, :cairo_font_options_copy, [FontOptions], FontOptions
   
   # (Not documented)
   # 
-  # @method cairo_font_options_destroy(options)
-  # @param [CairoFontOptions] options 
+  # @method font_options_destroy(options)
+  # @param [FontOptions] options 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_font_options_destroy, :cairo_font_options_destroy, [CairoFontOptions], :void
+  attach_function :font_options_destroy, :cairo_font_options_destroy, [FontOptions], :void
   
   # (Not documented)
   # 
-  # @method cairo_font_options_status(options)
-  # @param [CairoFontOptions] options 
-  # @return [Symbol from _enum_cairo_status_t_] 
+  # @method font_options_status(options)
+  # @param [FontOptions] options 
+  # @return [Symbol from _enum_status_t_] 
   # @scope class
-  attach_function :cairo_font_options_status, :cairo_font_options_status, [CairoFontOptions], :cairo_status_t
+  attach_function :font_options_status, :cairo_font_options_status, [FontOptions], :status_t
   
   # (Not documented)
   # 
-  # @method cairo_font_options_merge(options, other)
-  # @param [CairoFontOptions] options 
-  # @param [CairoFontOptions] other 
+  # @method font_options_merge(options, other)
+  # @param [FontOptions] options 
+  # @param [FontOptions] other 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_font_options_merge, :cairo_font_options_merge, [CairoFontOptions, CairoFontOptions], :void
+  attach_function :font_options_merge, :cairo_font_options_merge, [FontOptions, FontOptions], :void
   
   # (Not documented)
   # 
-  # @method cairo_font_options_equal(options, other)
-  # @param [CairoFontOptions] options 
-  # @param [CairoFontOptions] other 
+  # @method font_options_equal(options, other)
+  # @param [FontOptions] options 
+  # @param [FontOptions] other 
   # @return [Integer] 
   # @scope class
-  attach_function :cairo_font_options_equal, :cairo_font_options_equal, [CairoFontOptions, CairoFontOptions], :int
+  attach_function :font_options_equal, :cairo_font_options_equal, [FontOptions, FontOptions], :int
   
   # (Not documented)
   # 
-  # @method cairo_font_options_hash(options)
-  # @param [CairoFontOptions] options 
+  # @method font_options_hash(options)
+  # @param [FontOptions] options 
   # @return [Integer] 
   # @scope class
-  attach_function :cairo_font_options_hash, :cairo_font_options_hash, [CairoFontOptions], :ulong
+  attach_function :font_options_hash, :cairo_font_options_hash, [FontOptions], :ulong
   
   # (Not documented)
   # 
-  # @method cairo_font_options_set_antialias(options, antialias)
-  # @param [CairoFontOptions] options 
-  # @param [Symbol from _enum_cairo_antialias_t_] antialias 
+  # @method font_options_set_antialias(options, antialias)
+  # @param [FontOptions] options 
+  # @param [Symbol from _enum_antialias_t_] antialias 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_font_options_set_antialias, :cairo_font_options_set_antialias, [CairoFontOptions, :cairo_antialias_t], :void
+  attach_function :font_options_set_antialias, :cairo_font_options_set_antialias, [FontOptions, :antialias_t], :void
   
   # (Not documented)
   # 
-  # @method cairo_font_options_get_antialias(options)
-  # @param [CairoFontOptions] options 
-  # @return [Symbol from _enum_cairo_antialias_t_] 
+  # @method font_options_get_antialias(options)
+  # @param [FontOptions] options 
+  # @return [Symbol from _enum_antialias_t_] 
   # @scope class
-  attach_function :cairo_font_options_get_antialias, :cairo_font_options_get_antialias, [CairoFontOptions], :cairo_antialias_t
+  attach_function :font_options_get_antialias, :cairo_font_options_get_antialias, [FontOptions], :antialias_t
   
   # (Not documented)
   # 
-  # @method cairo_font_options_set_subpixel_order(options, subpixel_order)
-  # @param [CairoFontOptions] options 
-  # @param [Symbol from _enum_cairo_subpixel_order_t_] subpixel_order 
+  # @method font_options_set_subpixel_order(options, subpixel_order)
+  # @param [FontOptions] options 
+  # @param [Symbol from _enum_subpixel_order_t_] subpixel_order 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_font_options_set_subpixel_order, :cairo_font_options_set_subpixel_order, [CairoFontOptions, :cairo_subpixel_order_t], :void
+  attach_function :font_options_set_subpixel_order, :cairo_font_options_set_subpixel_order, [FontOptions, :subpixel_order_t], :void
   
   # (Not documented)
   # 
-  # @method cairo_font_options_get_subpixel_order(options)
-  # @param [CairoFontOptions] options 
-  # @return [Symbol from _enum_cairo_subpixel_order_t_] 
+  # @method font_options_get_subpixel_order(options)
+  # @param [FontOptions] options 
+  # @return [Symbol from _enum_subpixel_order_t_] 
   # @scope class
-  attach_function :cairo_font_options_get_subpixel_order, :cairo_font_options_get_subpixel_order, [CairoFontOptions], :cairo_subpixel_order_t
+  attach_function :font_options_get_subpixel_order, :cairo_font_options_get_subpixel_order, [FontOptions], :subpixel_order_t
   
   # (Not documented)
   # 
-  # @method cairo_font_options_set_hint_style(options, hint_style)
-  # @param [CairoFontOptions] options 
-  # @param [Symbol from _enum_cairo_hint_style_t_] hint_style 
+  # @method font_options_set_hint_style(options, hint_style)
+  # @param [FontOptions] options 
+  # @param [Symbol from _enum_hint_style_t_] hint_style 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_font_options_set_hint_style, :cairo_font_options_set_hint_style, [CairoFontOptions, :cairo_hint_style_t], :void
+  attach_function :font_options_set_hint_style, :cairo_font_options_set_hint_style, [FontOptions, :hint_style_t], :void
   
   # (Not documented)
   # 
-  # @method cairo_font_options_get_hint_style(options)
-  # @param [CairoFontOptions] options 
-  # @return [Symbol from _enum_cairo_hint_style_t_] 
+  # @method font_options_get_hint_style(options)
+  # @param [FontOptions] options 
+  # @return [Symbol from _enum_hint_style_t_] 
   # @scope class
-  attach_function :cairo_font_options_get_hint_style, :cairo_font_options_get_hint_style, [CairoFontOptions], :cairo_hint_style_t
+  attach_function :font_options_get_hint_style, :cairo_font_options_get_hint_style, [FontOptions], :hint_style_t
   
   # (Not documented)
   # 
-  # @method cairo_font_options_set_hint_metrics(options, hint_metrics)
-  # @param [CairoFontOptions] options 
-  # @param [Symbol from _enum_cairo_hint_metrics_t_] hint_metrics 
+  # @method font_options_set_hint_metrics(options, hint_metrics)
+  # @param [FontOptions] options 
+  # @param [Symbol from _enum_hint_metrics_t_] hint_metrics 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_font_options_set_hint_metrics, :cairo_font_options_set_hint_metrics, [CairoFontOptions, :cairo_hint_metrics_t], :void
+  attach_function :font_options_set_hint_metrics, :cairo_font_options_set_hint_metrics, [FontOptions, :hint_metrics_t], :void
   
   # (Not documented)
   # 
-  # @method cairo_font_options_get_hint_metrics(options)
-  # @param [CairoFontOptions] options 
-  # @return [Symbol from _enum_cairo_hint_metrics_t_] 
+  # @method font_options_get_hint_metrics(options)
+  # @param [FontOptions] options 
+  # @return [Symbol from _enum_hint_metrics_t_] 
   # @scope class
-  attach_function :cairo_font_options_get_hint_metrics, :cairo_font_options_get_hint_metrics, [CairoFontOptions], :cairo_hint_metrics_t
+  attach_function :font_options_get_hint_metrics, :cairo_font_options_get_hint_metrics, [FontOptions], :hint_metrics_t
   
   # This interface is for dealing with text as text, not caring about the
   #    font object inside the the cairo_t.
   # 
-  # @method cairo_select_font_face(cr, family, slant, weight)
+  # @method select_font_face(cr, family, slant, weight)
   # @param [Cairo] cr 
   # @param [String] family 
-  # @param [Symbol from _enum_cairo_font_slant_t_] slant 
-  # @param [Symbol from _enum_cairo_font_weight_t_] weight 
+  # @param [Symbol from _enum_font_slant_t_] slant 
+  # @param [Symbol from _enum_font_weight_t_] weight 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_select_font_face, :cairo_select_font_face, [Cairo, :string, :cairo_font_slant_t, :cairo_font_weight_t], :void
+  attach_function :select_font_face, :cairo_select_font_face, [Cairo, :string, :font_slant_t, :font_weight_t], :void
   
   # (Not documented)
   # 
-  # @method cairo_set_font_size(cr, size)
+  # @method set_font_size(cr, size)
   # @param [Cairo] cr 
   # @param [Float] size 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_set_font_size, :cairo_set_font_size, [Cairo, :double], :void
+  attach_function :set_font_size, :cairo_set_font_size, [Cairo, :double], :void
   
   # (Not documented)
   # 
-  # @method cairo_set_font_matrix(cr, matrix)
+  # @method set_font_matrix(cr, matrix)
   # @param [Cairo] cr 
-  # @param [CairoMatrix] matrix 
+  # @param [Matrix] matrix 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_set_font_matrix, :cairo_set_font_matrix, [Cairo, CairoMatrix], :void
+  attach_function :set_font_matrix, :cairo_set_font_matrix, [Cairo, Matrix], :void
   
   # (Not documented)
   # 
-  # @method cairo_get_font_matrix(cr, matrix)
+  # @method get_font_matrix(cr, matrix)
   # @param [Cairo] cr 
-  # @param [CairoMatrix] matrix 
+  # @param [Matrix] matrix 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_get_font_matrix, :cairo_get_font_matrix, [Cairo, CairoMatrix], :void
+  attach_function :get_font_matrix, :cairo_get_font_matrix, [Cairo, Matrix], :void
   
   # (Not documented)
   # 
-  # @method cairo_set_font_options(cr, options)
+  # @method set_font_options(cr, options)
   # @param [Cairo] cr 
-  # @param [CairoFontOptions] options 
+  # @param [FontOptions] options 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_set_font_options, :cairo_set_font_options, [Cairo, CairoFontOptions], :void
+  attach_function :set_font_options, :cairo_set_font_options, [Cairo, FontOptions], :void
   
   # (Not documented)
   # 
-  # @method cairo_get_font_options(cr, options)
+  # @method get_font_options(cr, options)
   # @param [Cairo] cr 
-  # @param [CairoFontOptions] options 
+  # @param [FontOptions] options 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_get_font_options, :cairo_get_font_options, [Cairo, CairoFontOptions], :void
+  attach_function :get_font_options, :cairo_get_font_options, [Cairo, FontOptions], :void
   
   # (Not documented)
   # 
-  # @method cairo_set_font_face(cr, font_face)
+  # @method set_font_face(cr, font_face)
   # @param [Cairo] cr 
-  # @param [CairoFontFace] font_face 
+  # @param [FontFace] font_face 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_set_font_face, :cairo_set_font_face, [Cairo, CairoFontFace], :void
+  attach_function :set_font_face, :cairo_set_font_face, [Cairo, FontFace], :void
   
   # (Not documented)
   # 
-  # @method cairo_get_font_face(cr)
+  # @method get_font_face(cr)
   # @param [Cairo] cr 
-  # @return [CairoFontFace] 
+  # @return [FontFace] 
   # @scope class
-  attach_function :cairo_get_font_face, :cairo_get_font_face, [Cairo], CairoFontFace
+  attach_function :get_font_face, :cairo_get_font_face, [Cairo], FontFace
   
   # (Not documented)
   # 
-  # @method cairo_set_scaled_font(cr, scaled_font)
+  # @method set_scaled_font(cr, scaled_font)
   # @param [Cairo] cr 
-  # @param [CairoScaledFont] scaled_font 
+  # @param [ScaledFont] scaled_font 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_set_scaled_font, :cairo_set_scaled_font, [Cairo, CairoScaledFont], :void
+  attach_function :set_scaled_font, :cairo_set_scaled_font, [Cairo, ScaledFont], :void
   
   # (Not documented)
   # 
-  # @method cairo_get_scaled_font(cr)
+  # @method get_scaled_font(cr)
   # @param [Cairo] cr 
-  # @return [CairoScaledFont] 
+  # @return [ScaledFont] 
   # @scope class
-  attach_function :cairo_get_scaled_font, :cairo_get_scaled_font, [Cairo], CairoScaledFont
+  attach_function :get_scaled_font, :cairo_get_scaled_font, [Cairo], ScaledFont
   
   # (Not documented)
   # 
-  # @method cairo_show_text(cr, utf8)
+  # @method show_text(cr, utf8)
   # @param [Cairo] cr 
   # @param [String] utf8 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_show_text, :cairo_show_text, [Cairo, :string], :void
+  attach_function :show_text, :cairo_show_text, [Cairo, :string], :void
   
   # (Not documented)
   # 
-  # @method cairo_show_glyphs(cr, glyphs, num_glyphs)
+  # @method show_glyphs(cr, glyphs, num_glyphs)
   # @param [Cairo] cr 
-  # @param [FFI::Pointer(*CairoGlyphT)] glyphs 
+  # @param [FFI::Pointer(*GlyphT)] glyphs 
   # @param [Integer] num_glyphs 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_show_glyphs, :cairo_show_glyphs, [Cairo, :pointer, :int], :void
+  attach_function :show_glyphs, :cairo_show_glyphs, [Cairo, :pointer, :int], :void
   
   # (Not documented)
   # 
-  # @method cairo_show_text_glyphs(cr, utf8, utf8_len, glyphs, num_glyphs, clusters, num_clusters, cluster_flags)
+  # @method show_text_glyphs(cr, utf8, utf8_len, glyphs, num_glyphs, clusters, num_clusters, cluster_flags)
   # @param [Cairo] cr 
   # @param [String] utf8 
   # @param [Integer] utf8_len 
-  # @param [FFI::Pointer(*CairoGlyphT)] glyphs 
+  # @param [FFI::Pointer(*GlyphT)] glyphs 
   # @param [Integer] num_glyphs 
-  # @param [FFI::Pointer(*CairoTextClusterT)] clusters 
+  # @param [FFI::Pointer(*TextClusterT)] clusters 
   # @param [Integer] num_clusters 
-  # @param [Symbol from _enum_cairo_text_cluster_flags_t_] cluster_flags 
+  # @param [Symbol from _enum_text_cluster_flags_t_] cluster_flags 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_show_text_glyphs, :cairo_show_text_glyphs, [Cairo, :string, :int, :pointer, :int, :pointer, :int, :cairo_text_cluster_flags_t], :void
+  attach_function :show_text_glyphs, :cairo_show_text_glyphs, [Cairo, :string, :int, :pointer, :int, :pointer, :int, :text_cluster_flags_t], :void
   
   # (Not documented)
   # 
-  # @method cairo_text_path(cr, utf8)
+  # @method text_path(cr, utf8)
   # @param [Cairo] cr 
   # @param [String] utf8 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_text_path, :cairo_text_path, [Cairo, :string], :void
+  attach_function :text_path, :cairo_text_path, [Cairo, :string], :void
   
   # (Not documented)
   # 
-  # @method cairo_glyph_path(cr, glyphs, num_glyphs)
+  # @method glyph_path(cr, glyphs, num_glyphs)
   # @param [Cairo] cr 
-  # @param [FFI::Pointer(*CairoGlyphT)] glyphs 
+  # @param [FFI::Pointer(*GlyphT)] glyphs 
   # @param [Integer] num_glyphs 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_glyph_path, :cairo_glyph_path, [Cairo, :pointer, :int], :void
+  attach_function :glyph_path, :cairo_glyph_path, [Cairo, :pointer, :int], :void
   
   # (Not documented)
   # 
-  # @method cairo_text_extents(cr, utf8, extents)
+  # @method text_extents(cr, utf8, extents)
   # @param [Cairo] cr 
   # @param [String] utf8 
-  # @param [FFI::Pointer(*CairoTextExtentsT)] extents 
+  # @param [FFI::Pointer(*TextExtentsT)] extents 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_text_extents, :cairo_text_extents, [Cairo, :string, :pointer], :void
+  attach_function :text_extents, :cairo_text_extents, [Cairo, :string, :pointer], :void
   
   # (Not documented)
   # 
-  # @method cairo_glyph_extents(cr, glyphs, num_glyphs, extents)
+  # @method glyph_extents(cr, glyphs, num_glyphs, extents)
   # @param [Cairo] cr 
-  # @param [FFI::Pointer(*CairoGlyphT)] glyphs 
+  # @param [FFI::Pointer(*GlyphT)] glyphs 
   # @param [Integer] num_glyphs 
-  # @param [FFI::Pointer(*CairoTextExtentsT)] extents 
+  # @param [FFI::Pointer(*TextExtentsT)] extents 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_glyph_extents, :cairo_glyph_extents, [Cairo, :pointer, :int, :pointer], :void
+  attach_function :glyph_extents, :cairo_glyph_extents, [Cairo, :pointer, :int, :pointer], :void
   
   # (Not documented)
   # 
-  # @method cairo_font_extents(cr, extents)
+  # @method font_extents(cr, extents)
   # @param [Cairo] cr 
-  # @param [FFI::Pointer(*CairoFontExtentsT)] extents 
+  # @param [FFI::Pointer(*FontExtentsT)] extents 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_font_extents, :cairo_font_extents, [Cairo, :pointer], :void
+  attach_function :font_extents, :cairo_font_extents, [Cairo, :pointer], :void
   
   # Generic identifier for a font style
   # 
-  # @method cairo_font_face_reference(font_face)
-  # @param [CairoFontFace] font_face 
-  # @return [CairoFontFace] 
+  # @method font_face_reference(font_face)
+  # @param [FontFace] font_face 
+  # @return [FontFace] 
   # @scope class
-  attach_function :cairo_font_face_reference, :cairo_font_face_reference, [CairoFontFace], CairoFontFace
+  attach_function :font_face_reference, :cairo_font_face_reference, [FontFace], FontFace
   
   # (Not documented)
   # 
-  # @method cairo_font_face_destroy(font_face)
-  # @param [CairoFontFace] font_face 
+  # @method font_face_destroy(font_face)
+  # @param [FontFace] font_face 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_font_face_destroy, :cairo_font_face_destroy, [CairoFontFace], :void
+  attach_function :font_face_destroy, :cairo_font_face_destroy, [FontFace], :void
   
   # (Not documented)
   # 
-  # @method cairo_font_face_get_reference_count(font_face)
-  # @param [CairoFontFace] font_face 
+  # @method font_face_get_reference_count(font_face)
+  # @param [FontFace] font_face 
   # @return [Integer] 
   # @scope class
-  attach_function :cairo_font_face_get_reference_count, :cairo_font_face_get_reference_count, [CairoFontFace], :uint
+  attach_function :font_face_get_reference_count, :cairo_font_face_get_reference_count, [FontFace], :uint
   
   # (Not documented)
   # 
-  # @method cairo_font_face_status(font_face)
-  # @param [CairoFontFace] font_face 
-  # @return [Symbol from _enum_cairo_status_t_] 
+  # @method font_face_status(font_face)
+  # @param [FontFace] font_face 
+  # @return [Symbol from _enum_status_t_] 
   # @scope class
-  attach_function :cairo_font_face_status, :cairo_font_face_status, [CairoFontFace], :cairo_status_t
+  attach_function :font_face_status, :cairo_font_face_status, [FontFace], :status_t
   
   # cairo_font_type_t:
   # @CAIRO_FONT_TYPE_TOY: The font was created using cairo's toy font api
@@ -3045,7 +3045,7 @@ module Cairo
   # 
   # Since: 1.2
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_font_type).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:font_type).</em>
   # 
   # === Options:
   # :toy ::
@@ -3059,10 +3059,10 @@ module Cairo
   # :user ::
   #   
   # 
-  # @method _enum_cairo_font_type_
+  # @method _enum_font_type_
   # @return [Symbol]
   # @scope class
-  enum :cairo_font_type, [
+  enum :font_type, [
     :toy,
     :ft,
     :win32,
@@ -3106,7 +3106,7 @@ module Cairo
   # 
   # Since: 1.2
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_font_type_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:font_type_t).</em>
   # 
   # === Options:
   # :toy ::
@@ -3120,10 +3120,10 @@ module Cairo
   # :user ::
   #   
   # 
-  # @method _enum_cairo_font_type_t_
+  # @method _enum_font_type_t_
   # @return [Symbol]
   # @scope class
-  enum :cairo_font_type_t, [
+  enum :font_type_t, [
     :toy,
     :ft,
     :win32,
@@ -3133,234 +3133,234 @@ module Cairo
   
   # (Not documented)
   # 
-  # @method cairo_font_face_get_type(font_face)
-  # @param [CairoFontFace] font_face 
-  # @return [Symbol from _enum_cairo_font_type_t_] 
+  # @method font_face_get_type(font_face)
+  # @param [FontFace] font_face 
+  # @return [Symbol from _enum_font_type_t_] 
   # @scope class
-  attach_function :cairo_font_face_get_type, :cairo_font_face_get_type, [CairoFontFace], :cairo_font_type_t
+  attach_function :font_face_get_type, :cairo_font_face_get_type, [FontFace], :font_type_t
   
   # (Not documented)
   # 
-  # @method cairo_font_face_get_user_data(font_face, key)
-  # @param [CairoFontFace] font_face 
-  # @param [CairoUserDataKey] key 
+  # @method font_face_get_user_data(font_face, key)
+  # @param [FontFace] font_face 
+  # @param [UserDataKey] key 
   # @return [FFI::Pointer(*Void)] 
   # @scope class
-  attach_function :cairo_font_face_get_user_data, :cairo_font_face_get_user_data, [CairoFontFace, CairoUserDataKey], :pointer
+  attach_function :font_face_get_user_data, :cairo_font_face_get_user_data, [FontFace, UserDataKey], :pointer
   
   # (Not documented)
   # 
-  # @method cairo_font_face_set_user_data(font_face, key, user_data, destroy)
-  # @param [CairoFontFace] font_face 
-  # @param [CairoUserDataKey] key 
+  # @method font_face_set_user_data(font_face, key, user_data, destroy)
+  # @param [FontFace] font_face 
+  # @param [UserDataKey] key 
   # @param [FFI::Pointer(*Void)] user_data 
-  # @param [FFI::Pointer(CairoDestroyFuncT)] destroy 
-  # @return [Symbol from _enum_cairo_status_t_] 
+  # @param [FFI::Pointer(DestroyFuncT)] destroy 
+  # @return [Symbol from _enum_status_t_] 
   # @scope class
-  attach_function :cairo_font_face_set_user_data, :cairo_font_face_set_user_data, [CairoFontFace, CairoUserDataKey, :pointer, :pointer], :cairo_status_t
+  attach_function :font_face_set_user_data, :cairo_font_face_set_user_data, [FontFace, UserDataKey, :pointer, :pointer], :status_t
   
   # Portable interface to general font features.
   # 
-  # @method cairo_scaled_font_create(font_face, font_matrix, ctm, options)
-  # @param [CairoFontFace] font_face 
-  # @param [CairoMatrix] font_matrix 
-  # @param [CairoMatrix] ctm 
-  # @param [CairoFontOptions] options 
-  # @return [CairoScaledFont] 
+  # @method scaled_font_create(font_face, font_matrix, ctm, options)
+  # @param [FontFace] font_face 
+  # @param [Matrix] font_matrix 
+  # @param [Matrix] ctm 
+  # @param [FontOptions] options 
+  # @return [ScaledFont] 
   # @scope class
-  attach_function :cairo_scaled_font_create, :cairo_scaled_font_create, [CairoFontFace, CairoMatrix, CairoMatrix, CairoFontOptions], CairoScaledFont
+  attach_function :scaled_font_create, :cairo_scaled_font_create, [FontFace, Matrix, Matrix, FontOptions], ScaledFont
   
   # (Not documented)
   # 
-  # @method cairo_scaled_font_reference(scaled_font)
-  # @param [CairoScaledFont] scaled_font 
-  # @return [CairoScaledFont] 
+  # @method scaled_font_reference(scaled_font)
+  # @param [ScaledFont] scaled_font 
+  # @return [ScaledFont] 
   # @scope class
-  attach_function :cairo_scaled_font_reference, :cairo_scaled_font_reference, [CairoScaledFont], CairoScaledFont
+  attach_function :scaled_font_reference, :cairo_scaled_font_reference, [ScaledFont], ScaledFont
   
   # (Not documented)
   # 
-  # @method cairo_scaled_font_destroy(scaled_font)
-  # @param [CairoScaledFont] scaled_font 
+  # @method scaled_font_destroy(scaled_font)
+  # @param [ScaledFont] scaled_font 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_scaled_font_destroy, :cairo_scaled_font_destroy, [CairoScaledFont], :void
+  attach_function :scaled_font_destroy, :cairo_scaled_font_destroy, [ScaledFont], :void
   
   # (Not documented)
   # 
-  # @method cairo_scaled_font_get_reference_count(scaled_font)
-  # @param [CairoScaledFont] scaled_font 
+  # @method scaled_font_get_reference_count(scaled_font)
+  # @param [ScaledFont] scaled_font 
   # @return [Integer] 
   # @scope class
-  attach_function :cairo_scaled_font_get_reference_count, :cairo_scaled_font_get_reference_count, [CairoScaledFont], :uint
+  attach_function :scaled_font_get_reference_count, :cairo_scaled_font_get_reference_count, [ScaledFont], :uint
   
   # (Not documented)
   # 
-  # @method cairo_scaled_font_status(scaled_font)
-  # @param [CairoScaledFont] scaled_font 
-  # @return [Symbol from _enum_cairo_status_t_] 
+  # @method scaled_font_status(scaled_font)
+  # @param [ScaledFont] scaled_font 
+  # @return [Symbol from _enum_status_t_] 
   # @scope class
-  attach_function :cairo_scaled_font_status, :cairo_scaled_font_status, [CairoScaledFont], :cairo_status_t
+  attach_function :scaled_font_status, :cairo_scaled_font_status, [ScaledFont], :status_t
   
   # (Not documented)
   # 
-  # @method cairo_scaled_font_get_type(scaled_font)
-  # @param [CairoScaledFont] scaled_font 
-  # @return [Symbol from _enum_cairo_font_type_t_] 
+  # @method scaled_font_get_type(scaled_font)
+  # @param [ScaledFont] scaled_font 
+  # @return [Symbol from _enum_font_type_t_] 
   # @scope class
-  attach_function :cairo_scaled_font_get_type, :cairo_scaled_font_get_type, [CairoScaledFont], :cairo_font_type_t
+  attach_function :scaled_font_get_type, :cairo_scaled_font_get_type, [ScaledFont], :font_type_t
   
   # (Not documented)
   # 
-  # @method cairo_scaled_font_get_user_data(scaled_font, key)
-  # @param [CairoScaledFont] scaled_font 
-  # @param [CairoUserDataKey] key 
+  # @method scaled_font_get_user_data(scaled_font, key)
+  # @param [ScaledFont] scaled_font 
+  # @param [UserDataKey] key 
   # @return [FFI::Pointer(*Void)] 
   # @scope class
-  attach_function :cairo_scaled_font_get_user_data, :cairo_scaled_font_get_user_data, [CairoScaledFont, CairoUserDataKey], :pointer
+  attach_function :scaled_font_get_user_data, :cairo_scaled_font_get_user_data, [ScaledFont, UserDataKey], :pointer
   
   # (Not documented)
   # 
-  # @method cairo_scaled_font_set_user_data(scaled_font, key, user_data, destroy)
-  # @param [CairoScaledFont] scaled_font 
-  # @param [CairoUserDataKey] key 
+  # @method scaled_font_set_user_data(scaled_font, key, user_data, destroy)
+  # @param [ScaledFont] scaled_font 
+  # @param [UserDataKey] key 
   # @param [FFI::Pointer(*Void)] user_data 
-  # @param [FFI::Pointer(CairoDestroyFuncT)] destroy 
-  # @return [Symbol from _enum_cairo_status_t_] 
+  # @param [FFI::Pointer(DestroyFuncT)] destroy 
+  # @return [Symbol from _enum_status_t_] 
   # @scope class
-  attach_function :cairo_scaled_font_set_user_data, :cairo_scaled_font_set_user_data, [CairoScaledFont, CairoUserDataKey, :pointer, :pointer], :cairo_status_t
+  attach_function :scaled_font_set_user_data, :cairo_scaled_font_set_user_data, [ScaledFont, UserDataKey, :pointer, :pointer], :status_t
   
   # (Not documented)
   # 
-  # @method cairo_scaled_font_extents(scaled_font, extents)
-  # @param [CairoScaledFont] scaled_font 
-  # @param [FFI::Pointer(*CairoFontExtentsT)] extents 
+  # @method scaled_font_extents(scaled_font, extents)
+  # @param [ScaledFont] scaled_font 
+  # @param [FFI::Pointer(*FontExtentsT)] extents 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_scaled_font_extents, :cairo_scaled_font_extents, [CairoScaledFont, :pointer], :void
+  attach_function :scaled_font_extents, :cairo_scaled_font_extents, [ScaledFont, :pointer], :void
   
   # (Not documented)
   # 
-  # @method cairo_scaled_font_text_extents(scaled_font, utf8, extents)
-  # @param [CairoScaledFont] scaled_font 
+  # @method scaled_font_text_extents(scaled_font, utf8, extents)
+  # @param [ScaledFont] scaled_font 
   # @param [String] utf8 
-  # @param [FFI::Pointer(*CairoTextExtentsT)] extents 
+  # @param [FFI::Pointer(*TextExtentsT)] extents 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_scaled_font_text_extents, :cairo_scaled_font_text_extents, [CairoScaledFont, :string, :pointer], :void
+  attach_function :scaled_font_text_extents, :cairo_scaled_font_text_extents, [ScaledFont, :string, :pointer], :void
   
   # (Not documented)
   # 
-  # @method cairo_scaled_font_glyph_extents(scaled_font, glyphs, num_glyphs, extents)
-  # @param [CairoScaledFont] scaled_font 
-  # @param [FFI::Pointer(*CairoGlyphT)] glyphs 
+  # @method scaled_font_glyph_extents(scaled_font, glyphs, num_glyphs, extents)
+  # @param [ScaledFont] scaled_font 
+  # @param [FFI::Pointer(*GlyphT)] glyphs 
   # @param [Integer] num_glyphs 
-  # @param [FFI::Pointer(*CairoTextExtentsT)] extents 
+  # @param [FFI::Pointer(*TextExtentsT)] extents 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_scaled_font_glyph_extents, :cairo_scaled_font_glyph_extents, [CairoScaledFont, :pointer, :int, :pointer], :void
+  attach_function :scaled_font_glyph_extents, :cairo_scaled_font_glyph_extents, [ScaledFont, :pointer, :int, :pointer], :void
   
   # (Not documented)
   # 
-  # @method cairo_scaled_font_text_to_glyphs(scaled_font, x, y, utf8, utf8_len, glyphs, num_glyphs, clusters, num_clusters, cluster_flags)
-  # @param [CairoScaledFont] scaled_font 
+  # @method scaled_font_text_to_glyphs(scaled_font, x, y, utf8, utf8_len, glyphs, num_glyphs, clusters, num_clusters, cluster_flags)
+  # @param [ScaledFont] scaled_font 
   # @param [Float] x 
   # @param [Float] y 
   # @param [String] utf8 
   # @param [Integer] utf8_len 
-  # @param [FFI::Pointer(**CairoGlyphT)] glyphs 
+  # @param [FFI::Pointer(**GlyphT)] glyphs 
   # @param [FFI::Pointer(*Int)] num_glyphs 
-  # @param [FFI::Pointer(**CairoTextClusterT)] clusters 
+  # @param [FFI::Pointer(**TextClusterT)] clusters 
   # @param [FFI::Pointer(*Int)] num_clusters 
-  # @param [FFI::Pointer(*CairoTextClusterFlagsT)] cluster_flags 
-  # @return [Symbol from _enum_cairo_status_t_] 
+  # @param [FFI::Pointer(*TextClusterFlagsT)] cluster_flags 
+  # @return [Symbol from _enum_status_t_] 
   # @scope class
-  attach_function :cairo_scaled_font_text_to_glyphs, :cairo_scaled_font_text_to_glyphs, [CairoScaledFont, :double, :double, :string, :int, :pointer, :pointer, :pointer, :pointer, :pointer], :cairo_status_t
+  attach_function :scaled_font_text_to_glyphs, :cairo_scaled_font_text_to_glyphs, [ScaledFont, :double, :double, :string, :int, :pointer, :pointer, :pointer, :pointer, :pointer], :status_t
   
   # (Not documented)
   # 
-  # @method cairo_scaled_font_get_font_face(scaled_font)
-  # @param [CairoScaledFont] scaled_font 
-  # @return [CairoFontFace] 
+  # @method scaled_font_get_font_face(scaled_font)
+  # @param [ScaledFont] scaled_font 
+  # @return [FontFace] 
   # @scope class
-  attach_function :cairo_scaled_font_get_font_face, :cairo_scaled_font_get_font_face, [CairoScaledFont], CairoFontFace
+  attach_function :scaled_font_get_font_face, :cairo_scaled_font_get_font_face, [ScaledFont], FontFace
   
   # (Not documented)
   # 
-  # @method cairo_scaled_font_get_font_matrix(scaled_font, font_matrix)
-  # @param [CairoScaledFont] scaled_font 
-  # @param [CairoMatrix] font_matrix 
+  # @method scaled_font_get_font_matrix(scaled_font, font_matrix)
+  # @param [ScaledFont] scaled_font 
+  # @param [Matrix] font_matrix 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_scaled_font_get_font_matrix, :cairo_scaled_font_get_font_matrix, [CairoScaledFont, CairoMatrix], :void
+  attach_function :scaled_font_get_font_matrix, :cairo_scaled_font_get_font_matrix, [ScaledFont, Matrix], :void
   
   # (Not documented)
   # 
-  # @method cairo_scaled_font_get_ctm(scaled_font, ctm)
-  # @param [CairoScaledFont] scaled_font 
-  # @param [CairoMatrix] ctm 
+  # @method scaled_font_get_ctm(scaled_font, ctm)
+  # @param [ScaledFont] scaled_font 
+  # @param [Matrix] ctm 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_scaled_font_get_ctm, :cairo_scaled_font_get_ctm, [CairoScaledFont, CairoMatrix], :void
+  attach_function :scaled_font_get_ctm, :cairo_scaled_font_get_ctm, [ScaledFont, Matrix], :void
   
   # (Not documented)
   # 
-  # @method cairo_scaled_font_get_scale_matrix(scaled_font, scale_matrix)
-  # @param [CairoScaledFont] scaled_font 
-  # @param [CairoMatrix] scale_matrix 
+  # @method scaled_font_get_scale_matrix(scaled_font, scale_matrix)
+  # @param [ScaledFont] scaled_font 
+  # @param [Matrix] scale_matrix 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_scaled_font_get_scale_matrix, :cairo_scaled_font_get_scale_matrix, [CairoScaledFont, CairoMatrix], :void
+  attach_function :scaled_font_get_scale_matrix, :cairo_scaled_font_get_scale_matrix, [ScaledFont, Matrix], :void
   
   # (Not documented)
   # 
-  # @method cairo_scaled_font_get_font_options(scaled_font, options)
-  # @param [CairoScaledFont] scaled_font 
-  # @param [CairoFontOptions] options 
+  # @method scaled_font_get_font_options(scaled_font, options)
+  # @param [ScaledFont] scaled_font 
+  # @param [FontOptions] options 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_scaled_font_get_font_options, :cairo_scaled_font_get_font_options, [CairoScaledFont, CairoFontOptions], :void
+  attach_function :scaled_font_get_font_options, :cairo_scaled_font_get_font_options, [ScaledFont, FontOptions], :void
   
   # Toy fonts
   # 
-  # @method cairo_toy_font_face_create(family, slant, weight)
+  # @method toy_font_face_create(family, slant, weight)
   # @param [String] family 
-  # @param [Symbol from _enum_cairo_font_slant_t_] slant 
-  # @param [Symbol from _enum_cairo_font_weight_t_] weight 
-  # @return [CairoFontFace] 
+  # @param [Symbol from _enum_font_slant_t_] slant 
+  # @param [Symbol from _enum_font_weight_t_] weight 
+  # @return [FontFace] 
   # @scope class
-  attach_function :cairo_toy_font_face_create, :cairo_toy_font_face_create, [:string, :cairo_font_slant_t, :cairo_font_weight_t], CairoFontFace
+  attach_function :toy_font_face_create, :cairo_toy_font_face_create, [:string, :font_slant_t, :font_weight_t], FontFace
   
   # (Not documented)
   # 
-  # @method cairo_toy_font_face_get_family(font_face)
-  # @param [CairoFontFace] font_face 
+  # @method toy_font_face_get_family(font_face)
+  # @param [FontFace] font_face 
   # @return [String] 
   # @scope class
-  attach_function :cairo_toy_font_face_get_family, :cairo_toy_font_face_get_family, [CairoFontFace], :string
+  attach_function :toy_font_face_get_family, :cairo_toy_font_face_get_family, [FontFace], :string
   
   # (Not documented)
   # 
-  # @method cairo_toy_font_face_get_slant(font_face)
-  # @param [CairoFontFace] font_face 
-  # @return [Symbol from _enum_cairo_font_slant_t_] 
+  # @method toy_font_face_get_slant(font_face)
+  # @param [FontFace] font_face 
+  # @return [Symbol from _enum_font_slant_t_] 
   # @scope class
-  attach_function :cairo_toy_font_face_get_slant, :cairo_toy_font_face_get_slant, [CairoFontFace], :cairo_font_slant_t
+  attach_function :toy_font_face_get_slant, :cairo_toy_font_face_get_slant, [FontFace], :font_slant_t
   
   # (Not documented)
   # 
-  # @method cairo_toy_font_face_get_weight(font_face)
-  # @param [CairoFontFace] font_face 
-  # @return [Symbol from _enum_cairo_font_weight_t_] 
+  # @method toy_font_face_get_weight(font_face)
+  # @param [FontFace] font_face 
+  # @return [Symbol from _enum_font_weight_t_] 
   # @scope class
-  attach_function :cairo_toy_font_face_get_weight, :cairo_toy_font_face_get_weight, [CairoFontFace], :cairo_font_weight_t
+  attach_function :toy_font_face_get_weight, :cairo_toy_font_face_get_weight, [FontFace], :font_weight_t
   
   # User fonts
   # 
-  # @method cairo_user_font_face_create()
-  # @return [CairoFontFace] 
+  # @method user_font_face_create()
+  # @return [FontFace] 
   # @scope class
-  attach_function :cairo_user_font_face_create, :cairo_user_font_face_create, [], CairoFontFace
+  attach_function :user_font_face_create, :cairo_user_font_face_create, [], FontFace
   
   # cairo_user_scaled_font_init_func_t:
   # @scaled_font: the scaled-font being created
@@ -3395,13 +3395,13 @@ module Cairo
   # 
   # <em>This entry is only for documentation and no real method.</em>
   # 
-  # @method _callback_cairo_user_scaled_font_init_func_t_(scaled_font, cr, extents)
-  # @param [CairoScaledFont] scaled_font 
+  # @method _callback_user_scaled_font_init_func_t_(scaled_font, cr, extents)
+  # @param [ScaledFont] scaled_font 
   # @param [Cairo] cr 
-  # @param [FFI::Pointer(*CairoFontExtentsT)] extents 
-  # @return [Symbol from _enum_cairo_status_t_] 
+  # @param [FFI::Pointer(*FontExtentsT)] extents 
+  # @return [Symbol from _enum_status_t_] 
   # @scope class
-  callback :cairo_user_scaled_font_init_func_t, [CairoScaledFont, Cairo, :pointer], :cairo_status_t
+  callback :user_scaled_font_init_func_t, [ScaledFont, Cairo, :pointer], :status_t
   
   # cairo_user_scaled_font_render_glyph_func_t:
   # @scaled_font: user scaled-font
@@ -3447,14 +3447,14 @@ module Cairo
   # 
   # <em>This entry is only for documentation and no real method.</em>
   # 
-  # @method _callback_cairo_user_scaled_font_render_glyph_func_t_(scaled_font, glyph, cr, extents)
-  # @param [CairoScaledFont] scaled_font 
+  # @method _callback_user_scaled_font_render_glyph_func_t_(scaled_font, glyph, cr, extents)
+  # @param [ScaledFont] scaled_font 
   # @param [Integer] glyph 
   # @param [Cairo] cr 
-  # @param [FFI::Pointer(*CairoTextExtentsT)] extents 
-  # @return [Symbol from _enum_cairo_status_t_] 
+  # @param [FFI::Pointer(*TextExtentsT)] extents 
+  # @return [Symbol from _enum_status_t_] 
   # @scope class
-  callback :cairo_user_scaled_font_render_glyph_func_t, [CairoScaledFont, :ulong, Cairo, :pointer], :cairo_status_t
+  callback :user_scaled_font_render_glyph_func_t, [ScaledFont, :ulong, Cairo, :pointer], :status_t
   
   # cairo_user_scaled_font_text_to_glyphs_func_t:
   # @scaled_font: the scaled-font being created
@@ -3520,18 +3520,18 @@ module Cairo
   # 
   # <em>This entry is only for documentation and no real method.</em>
   # 
-  # @method _callback_cairo_user_scaled_font_text_to_glyphs_func_t_(scaled_font, utf8, utf8_len, glyphs, num_glyphs, clusters, num_clusters, cluster_flags)
-  # @param [CairoScaledFont] scaled_font 
+  # @method _callback_user_scaled_font_text_to_glyphs_func_t_(scaled_font, utf8, utf8_len, glyphs, num_glyphs, clusters, num_clusters, cluster_flags)
+  # @param [ScaledFont] scaled_font 
   # @param [String] utf8 
   # @param [Integer] utf8_len 
-  # @param [FFI::Pointer(**CairoGlyphT)] glyphs 
+  # @param [FFI::Pointer(**GlyphT)] glyphs 
   # @param [FFI::Pointer(*Int)] num_glyphs 
-  # @param [FFI::Pointer(**CairoTextClusterT)] clusters 
+  # @param [FFI::Pointer(**TextClusterT)] clusters 
   # @param [FFI::Pointer(*Int)] num_clusters 
-  # @param [FFI::Pointer(*CairoTextClusterFlagsT)] cluster_flags 
-  # @return [Symbol from _enum_cairo_status_t_] 
+  # @param [FFI::Pointer(*TextClusterFlagsT)] cluster_flags 
+  # @return [Symbol from _enum_status_t_] 
   # @scope class
-  callback :cairo_user_scaled_font_text_to_glyphs_func_t, [CairoScaledFont, :string, :int, :pointer, :pointer, :pointer, :pointer, :pointer], :cairo_status_t
+  callback :user_scaled_font_text_to_glyphs_func_t, [ScaledFont, :string, :int, :pointer, :pointer, :pointer, :pointer, :pointer], :status_t
   
   # cairo_user_scaled_font_unicode_to_glyph_func_t:
   # @scaled_font: the scaled-font being created
@@ -3572,214 +3572,214 @@ module Cairo
   # 
   # <em>This entry is only for documentation and no real method.</em>
   # 
-  # @method _callback_cairo_user_scaled_font_unicode_to_glyph_func_t_(scaled_font, unicode, glyph_index)
-  # @param [CairoScaledFont] scaled_font 
+  # @method _callback_user_scaled_font_unicode_to_glyph_func_t_(scaled_font, unicode, glyph_index)
+  # @param [ScaledFont] scaled_font 
   # @param [Integer] unicode 
   # @param [FFI::Pointer(*ULong)] glyph_index 
-  # @return [Symbol from _enum_cairo_status_t_] 
+  # @return [Symbol from _enum_status_t_] 
   # @scope class
-  callback :cairo_user_scaled_font_unicode_to_glyph_func_t, [CairoScaledFont, :ulong, :pointer], :cairo_status_t
+  callback :user_scaled_font_unicode_to_glyph_func_t, [ScaledFont, :ulong, :pointer], :status_t
   
   # User-font method setters
   # 
-  # @method cairo_user_font_face_set_init_func(font_face, init_func)
-  # @param [CairoFontFace] font_face 
-  # @param [Proc(_callback_cairo_user_scaled_font_init_func_t_)] init_func 
+  # @method user_font_face_set_init_func(font_face, init_func)
+  # @param [FontFace] font_face 
+  # @param [Proc(_callback_user_scaled_font_init_func_t_)] init_func 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_user_font_face_set_init_func, :cairo_user_font_face_set_init_func, [CairoFontFace, :cairo_user_scaled_font_init_func_t], :void
+  attach_function :user_font_face_set_init_func, :cairo_user_font_face_set_init_func, [FontFace, :user_scaled_font_init_func_t], :void
   
   # (Not documented)
   # 
-  # @method cairo_user_font_face_set_render_glyph_func(font_face, render_glyph_func)
-  # @param [CairoFontFace] font_face 
-  # @param [Proc(_callback_cairo_user_scaled_font_render_glyph_func_t_)] render_glyph_func 
+  # @method user_font_face_set_render_glyph_func(font_face, render_glyph_func)
+  # @param [FontFace] font_face 
+  # @param [Proc(_callback_user_scaled_font_render_glyph_func_t_)] render_glyph_func 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_user_font_face_set_render_glyph_func, :cairo_user_font_face_set_render_glyph_func, [CairoFontFace, :cairo_user_scaled_font_render_glyph_func_t], :void
+  attach_function :user_font_face_set_render_glyph_func, :cairo_user_font_face_set_render_glyph_func, [FontFace, :user_scaled_font_render_glyph_func_t], :void
   
   # (Not documented)
   # 
-  # @method cairo_user_font_face_set_text_to_glyphs_func(font_face, text_to_glyphs_func)
-  # @param [CairoFontFace] font_face 
-  # @param [Proc(_callback_cairo_user_scaled_font_text_to_glyphs_func_t_)] text_to_glyphs_func 
+  # @method user_font_face_set_text_to_glyphs_func(font_face, text_to_glyphs_func)
+  # @param [FontFace] font_face 
+  # @param [Proc(_callback_user_scaled_font_text_to_glyphs_func_t_)] text_to_glyphs_func 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_user_font_face_set_text_to_glyphs_func, :cairo_user_font_face_set_text_to_glyphs_func, [CairoFontFace, :cairo_user_scaled_font_text_to_glyphs_func_t], :void
+  attach_function :user_font_face_set_text_to_glyphs_func, :cairo_user_font_face_set_text_to_glyphs_func, [FontFace, :user_scaled_font_text_to_glyphs_func_t], :void
   
   # (Not documented)
   # 
-  # @method cairo_user_font_face_set_unicode_to_glyph_func(font_face, unicode_to_glyph_func)
-  # @param [CairoFontFace] font_face 
-  # @param [Proc(_callback_cairo_user_scaled_font_unicode_to_glyph_func_t_)] unicode_to_glyph_func 
+  # @method user_font_face_set_unicode_to_glyph_func(font_face, unicode_to_glyph_func)
+  # @param [FontFace] font_face 
+  # @param [Proc(_callback_user_scaled_font_unicode_to_glyph_func_t_)] unicode_to_glyph_func 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_user_font_face_set_unicode_to_glyph_func, :cairo_user_font_face_set_unicode_to_glyph_func, [CairoFontFace, :cairo_user_scaled_font_unicode_to_glyph_func_t], :void
+  attach_function :user_font_face_set_unicode_to_glyph_func, :cairo_user_font_face_set_unicode_to_glyph_func, [FontFace, :user_scaled_font_unicode_to_glyph_func_t], :void
   
   # User-font method getters
   # 
-  # @method cairo_user_font_face_get_init_func(font_face)
-  # @param [CairoFontFace] font_face 
-  # @return [Proc(_callback_cairo_user_scaled_font_init_func_t_)] 
+  # @method user_font_face_get_init_func(font_face)
+  # @param [FontFace] font_face 
+  # @return [Proc(_callback_user_scaled_font_init_func_t_)] 
   # @scope class
-  attach_function :cairo_user_font_face_get_init_func, :cairo_user_font_face_get_init_func, [CairoFontFace], :cairo_user_scaled_font_init_func_t
+  attach_function :user_font_face_get_init_func, :cairo_user_font_face_get_init_func, [FontFace], :user_scaled_font_init_func_t
   
   # (Not documented)
   # 
-  # @method cairo_user_font_face_get_render_glyph_func(font_face)
-  # @param [CairoFontFace] font_face 
-  # @return [Proc(_callback_cairo_user_scaled_font_render_glyph_func_t_)] 
+  # @method user_font_face_get_render_glyph_func(font_face)
+  # @param [FontFace] font_face 
+  # @return [Proc(_callback_user_scaled_font_render_glyph_func_t_)] 
   # @scope class
-  attach_function :cairo_user_font_face_get_render_glyph_func, :cairo_user_font_face_get_render_glyph_func, [CairoFontFace], :cairo_user_scaled_font_render_glyph_func_t
+  attach_function :user_font_face_get_render_glyph_func, :cairo_user_font_face_get_render_glyph_func, [FontFace], :user_scaled_font_render_glyph_func_t
   
   # (Not documented)
   # 
-  # @method cairo_user_font_face_get_text_to_glyphs_func(font_face)
-  # @param [CairoFontFace] font_face 
-  # @return [Proc(_callback_cairo_user_scaled_font_text_to_glyphs_func_t_)] 
+  # @method user_font_face_get_text_to_glyphs_func(font_face)
+  # @param [FontFace] font_face 
+  # @return [Proc(_callback_user_scaled_font_text_to_glyphs_func_t_)] 
   # @scope class
-  attach_function :cairo_user_font_face_get_text_to_glyphs_func, :cairo_user_font_face_get_text_to_glyphs_func, [CairoFontFace], :cairo_user_scaled_font_text_to_glyphs_func_t
+  attach_function :user_font_face_get_text_to_glyphs_func, :cairo_user_font_face_get_text_to_glyphs_func, [FontFace], :user_scaled_font_text_to_glyphs_func_t
   
   # (Not documented)
   # 
-  # @method cairo_user_font_face_get_unicode_to_glyph_func(font_face)
-  # @param [CairoFontFace] font_face 
-  # @return [Proc(_callback_cairo_user_scaled_font_unicode_to_glyph_func_t_)] 
+  # @method user_font_face_get_unicode_to_glyph_func(font_face)
+  # @param [FontFace] font_face 
+  # @return [Proc(_callback_user_scaled_font_unicode_to_glyph_func_t_)] 
   # @scope class
-  attach_function :cairo_user_font_face_get_unicode_to_glyph_func, :cairo_user_font_face_get_unicode_to_glyph_func, [CairoFontFace], :cairo_user_scaled_font_unicode_to_glyph_func_t
+  attach_function :user_font_face_get_unicode_to_glyph_func, :cairo_user_font_face_get_unicode_to_glyph_func, [FontFace], :user_scaled_font_unicode_to_glyph_func_t
   
   # Query functions
   # 
-  # @method cairo_get_operator(cr)
+  # @method get_operator(cr)
   # @param [Cairo] cr 
-  # @return [Symbol from _enum_cairo_operator_t_] 
+  # @return [Symbol from _enum_operator_t_] 
   # @scope class
-  attach_function :cairo_get_operator, :cairo_get_operator, [Cairo], :cairo_operator_t
+  attach_function :get_operator, :cairo_get_operator, [Cairo], :operator_t
   
   # (Not documented)
   # 
-  # @method cairo_get_source(cr)
+  # @method get_source(cr)
   # @param [Cairo] cr 
-  # @return [CairoPattern] 
+  # @return [Pattern] 
   # @scope class
-  attach_function :cairo_get_source, :cairo_get_source, [Cairo], CairoPattern
+  attach_function :get_source, :cairo_get_source, [Cairo], Pattern
   
   # (Not documented)
   # 
-  # @method cairo_get_tolerance(cr)
+  # @method get_tolerance(cr)
   # @param [Cairo] cr 
   # @return [Float] 
   # @scope class
-  attach_function :cairo_get_tolerance, :cairo_get_tolerance, [Cairo], :double
+  attach_function :get_tolerance, :cairo_get_tolerance, [Cairo], :double
   
   # (Not documented)
   # 
-  # @method cairo_get_antialias(cr)
+  # @method get_antialias(cr)
   # @param [Cairo] cr 
-  # @return [Symbol from _enum_cairo_antialias_t_] 
+  # @return [Symbol from _enum_antialias_t_] 
   # @scope class
-  attach_function :cairo_get_antialias, :cairo_get_antialias, [Cairo], :cairo_antialias_t
+  attach_function :get_antialias, :cairo_get_antialias, [Cairo], :antialias_t
   
   # (Not documented)
   # 
-  # @method cairo_has_current_point(cr)
+  # @method has_current_point(cr)
   # @param [Cairo] cr 
   # @return [Integer] 
   # @scope class
-  attach_function :cairo_has_current_point, :cairo_has_current_point, [Cairo], :int
+  attach_function :has_current_point, :cairo_has_current_point, [Cairo], :int
   
   # (Not documented)
   # 
-  # @method cairo_get_current_point(cr, x, y)
+  # @method get_current_point(cr, x, y)
   # @param [Cairo] cr 
   # @param [FFI::Pointer(*Double)] x 
   # @param [FFI::Pointer(*Double)] y 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_get_current_point, :cairo_get_current_point, [Cairo, :pointer, :pointer], :void
+  attach_function :get_current_point, :cairo_get_current_point, [Cairo, :pointer, :pointer], :void
   
   # (Not documented)
   # 
-  # @method cairo_get_fill_rule(cr)
+  # @method get_fill_rule(cr)
   # @param [Cairo] cr 
-  # @return [Symbol from _enum_cairo_fill_rule_t_] 
+  # @return [Symbol from _enum_fill_rule_t_] 
   # @scope class
-  attach_function :cairo_get_fill_rule, :cairo_get_fill_rule, [Cairo], :cairo_fill_rule_t
+  attach_function :get_fill_rule, :cairo_get_fill_rule, [Cairo], :fill_rule_t
   
   # (Not documented)
   # 
-  # @method cairo_get_line_width(cr)
-  # @param [Cairo] cr 
-  # @return [Float] 
-  # @scope class
-  attach_function :cairo_get_line_width, :cairo_get_line_width, [Cairo], :double
-  
-  # (Not documented)
-  # 
-  # @method cairo_get_line_cap(cr)
-  # @param [Cairo] cr 
-  # @return [Symbol from _enum_cairo_line_cap_t_] 
-  # @scope class
-  attach_function :cairo_get_line_cap, :cairo_get_line_cap, [Cairo], :cairo_line_cap_t
-  
-  # (Not documented)
-  # 
-  # @method cairo_get_line_join(cr)
-  # @param [Cairo] cr 
-  # @return [Symbol from _enum_cairo_line_join_t_] 
-  # @scope class
-  attach_function :cairo_get_line_join, :cairo_get_line_join, [Cairo], :cairo_line_join_t
-  
-  # (Not documented)
-  # 
-  # @method cairo_get_miter_limit(cr)
+  # @method get_line_width(cr)
   # @param [Cairo] cr 
   # @return [Float] 
   # @scope class
-  attach_function :cairo_get_miter_limit, :cairo_get_miter_limit, [Cairo], :double
+  attach_function :get_line_width, :cairo_get_line_width, [Cairo], :double
   
   # (Not documented)
   # 
-  # @method cairo_get_dash_count(cr)
+  # @method get_line_cap(cr)
+  # @param [Cairo] cr 
+  # @return [Symbol from _enum_line_cap_t_] 
+  # @scope class
+  attach_function :get_line_cap, :cairo_get_line_cap, [Cairo], :line_cap_t
+  
+  # (Not documented)
+  # 
+  # @method get_line_join(cr)
+  # @param [Cairo] cr 
+  # @return [Symbol from _enum_line_join_t_] 
+  # @scope class
+  attach_function :get_line_join, :cairo_get_line_join, [Cairo], :line_join_t
+  
+  # (Not documented)
+  # 
+  # @method get_miter_limit(cr)
+  # @param [Cairo] cr 
+  # @return [Float] 
+  # @scope class
+  attach_function :get_miter_limit, :cairo_get_miter_limit, [Cairo], :double
+  
+  # (Not documented)
+  # 
+  # @method get_dash_count(cr)
   # @param [Cairo] cr 
   # @return [Integer] 
   # @scope class
-  attach_function :cairo_get_dash_count, :cairo_get_dash_count, [Cairo], :int
+  attach_function :get_dash_count, :cairo_get_dash_count, [Cairo], :int
   
   # (Not documented)
   # 
-  # @method cairo_get_dash(cr, dashes, offset)
+  # @method get_dash(cr, dashes, offset)
   # @param [Cairo] cr 
   # @param [FFI::Pointer(*Double)] dashes 
   # @param [FFI::Pointer(*Double)] offset 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_get_dash, :cairo_get_dash, [Cairo, :pointer, :pointer], :void
+  attach_function :get_dash, :cairo_get_dash, [Cairo, :pointer, :pointer], :void
   
   # (Not documented)
   # 
-  # @method cairo_get_matrix(cr, matrix)
+  # @method get_matrix(cr, matrix)
   # @param [Cairo] cr 
-  # @param [CairoMatrix] matrix 
+  # @param [Matrix] matrix 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_get_matrix, :cairo_get_matrix, [Cairo, CairoMatrix], :void
+  attach_function :get_matrix, :cairo_get_matrix, [Cairo, Matrix], :void
   
   # (Not documented)
   # 
-  # @method cairo_get_target(cr)
+  # @method get_target(cr)
   # @param [Cairo] cr 
-  # @return [CairoSurface] 
+  # @return [Surface] 
   # @scope class
-  attach_function :cairo_get_target, :cairo_get_target, [Cairo], CairoSurface
+  attach_function :get_target, :cairo_get_target, [Cairo], Surface
   
   # (Not documented)
   # 
-  # @method cairo_get_group_target(cr)
+  # @method get_group_target(cr)
   # @param [Cairo] cr 
-  # @return [CairoSurface] 
+  # @return [Surface] 
   # @scope class
-  attach_function :cairo_get_group_target, :cairo_get_group_target, [Cairo], CairoSurface
+  attach_function :get_group_target, :cairo_get_group_target, [Cairo], Surface
   
   # cairo_path_data_type_t:
   # @CAIRO_PATH_MOVE_TO: A move-to operation
@@ -3791,7 +3791,7 @@ module Cairo
   # of a path when represented as a #cairo_path_t.
   # See #cairo_path_data_t for details.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_path_data_type).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:path_data_type).</em>
   # 
   # === Options:
   # :move_to ::
@@ -3803,10 +3803,10 @@ module Cairo
   # :close_path ::
   #   
   # 
-  # @method _enum_cairo_path_data_type_
+  # @method _enum_path_data_type_
   # @return [Symbol]
   # @scope class
-  enum :cairo_path_data_type, [
+  enum :path_data_type, [
     :move_to,
     :line_to,
     :curve_to,
@@ -3823,7 +3823,7 @@ module Cairo
   # of a path when represented as a #cairo_path_t.
   # See #cairo_path_data_t for details.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_path_data_type_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:path_data_type_t).</em>
   # 
   # === Options:
   # :move_to ::
@@ -3835,10 +3835,10 @@ module Cairo
   # :close_path ::
   #   
   # 
-  # @method _enum_cairo_path_data_type_t_
+  # @method _enum_path_data_type_t_
   # @return [Symbol]
   # @scope class
-  enum :cairo_path_data_type_t, [
+  enum :path_data_type_t, [
     :move_to,
     :line_to,
     :curve_to,
@@ -3865,13 +3865,13 @@ module Cairo
   # 
   # = Fields:
   # :status ::
-  #   (Symbol from _enum_cairo_status_t_) 
+  #   (Symbol from _enum_status_t_) 
   # :data ::
-  #   (FFI::Pointer(*CairoPathDataT)) 
+  #   (FFI::Pointer(*PathDataT)) 
   # :num_data ::
   #   (Integer) 
-  class CairoPath < FFI::Struct
-    layout :status, :cairo_status_t,
+  class Path < FFI::Struct
+    layout :status, :status_t,
            :data, :pointer,
            :num_data, :int
   end
@@ -3896,73 +3896,73 @@ module Cairo
   # 
   # = Fields:
   # :status ::
-  #   (Symbol from _enum_cairo_status_t_) 
+  #   (Symbol from _enum_status_t_) 
   # :data ::
-  #   (FFI::Pointer(*CairoPathDataT)) 
+  #   (FFI::Pointer(*PathDataT)) 
   # :num_data ::
   #   (Integer) 
-  class CairoPathT < FFI::Struct
-    layout :status, :cairo_status_t,
+  class PathT < FFI::Struct
+    layout :status, :status_t,
            :data, :pointer,
            :num_data, :int
   end
   
   # (Not documented)
   # 
-  # @method cairo_copy_path(cr)
+  # @method copy_path(cr)
   # @param [Cairo] cr 
-  # @return [CairoPath] 
+  # @return [Path] 
   # @scope class
-  attach_function :cairo_copy_path, :cairo_copy_path, [Cairo], CairoPath
+  attach_function :copy_path, :cairo_copy_path, [Cairo], Path
   
   # (Not documented)
   # 
-  # @method cairo_copy_path_flat(cr)
+  # @method copy_path_flat(cr)
   # @param [Cairo] cr 
-  # @return [CairoPath] 
+  # @return [Path] 
   # @scope class
-  attach_function :cairo_copy_path_flat, :cairo_copy_path_flat, [Cairo], CairoPath
+  attach_function :copy_path_flat, :cairo_copy_path_flat, [Cairo], Path
   
   # (Not documented)
   # 
-  # @method cairo_append_path(cr, path)
+  # @method append_path(cr, path)
   # @param [Cairo] cr 
-  # @param [CairoPath] path 
+  # @param [Path] path 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_append_path, :cairo_append_path, [Cairo, CairoPath], :void
+  attach_function :append_path, :cairo_append_path, [Cairo, Path], :void
   
   # (Not documented)
   # 
-  # @method cairo_path_destroy(path)
-  # @param [CairoPath] path 
+  # @method path_destroy(path)
+  # @param [Path] path 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_path_destroy, :cairo_path_destroy, [CairoPath], :void
+  attach_function :path_destroy, :cairo_path_destroy, [Path], :void
   
   # Error status queries
   # 
-  # @method cairo_status(cr)
+  # @method status(cr)
   # @param [Cairo] cr 
-  # @return [Symbol from _enum_cairo_status_t_] 
+  # @return [Symbol from _enum_status_t_] 
   # @scope class
-  attach_function :cairo_status, :cairo_status, [Cairo], :cairo_status_t
+  attach_function :status, :cairo_status, [Cairo], :status_t
   
   # (Not documented)
   # 
-  # @method cairo_status_to_string(status)
-  # @param [Symbol from _enum_cairo_status_t_] status 
+  # @method status_to_string(status)
+  # @param [Symbol from _enum_status_t_] status 
   # @return [String] 
   # @scope class
-  attach_function :cairo_status_to_string, :cairo_status_to_string, [:cairo_status_t], :string
+  attach_function :status_to_string, :cairo_status_to_string, [:status_t], :string
   
   # Backend device manipulation
   # 
-  # @method cairo_device_reference(device)
-  # @param [CairoDevice] device 
-  # @return [CairoDevice] 
+  # @method device_reference(device)
+  # @param [Device] device 
+  # @return [Device] 
   # @scope class
-  attach_function :cairo_device_reference, :cairo_device_reference, [CairoDevice], CairoDevice
+  attach_function :device_reference, :cairo_device_reference, [Device], Device
   
   # cairo_device_type_t:
   # @CAIRO_DEVICE_TYPE_DRM: The surface is of type Direct Render Manager
@@ -3991,7 +3991,7 @@ module Cairo
   # 
   # Since: 1.10
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_device_type).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:device_type).</em>
   # 
   # === Options:
   # :drm ::
@@ -4007,10 +4007,10 @@ module Cairo
   # :xml ::
   #   
   # 
-  # @method _enum_cairo_device_type_
+  # @method _enum_device_type_
   # @return [Symbol]
   # @scope class
-  enum :cairo_device_type, [
+  enum :device_type, [
     :drm,
     :gl,
     :script,
@@ -4046,7 +4046,7 @@ module Cairo
   # 
   # Since: 1.10
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_device_type_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:device_type_t).</em>
   # 
   # === Options:
   # :drm ::
@@ -4062,10 +4062,10 @@ module Cairo
   # :xml ::
   #   
   # 
-  # @method _enum_cairo_device_type_t_
+  # @method _enum_device_type_t_
   # @return [Symbol]
   # @scope class
-  enum :cairo_device_type_t, [
+  enum :device_type_t, [
     :drm,
     :gl,
     :script,
@@ -4076,158 +4076,158 @@ module Cairo
   
   # (Not documented)
   # 
-  # @method cairo_device_get_type(device)
-  # @param [CairoDevice] device 
-  # @return [Symbol from _enum_cairo_device_type_t_] 
+  # @method device_get_type(device)
+  # @param [Device] device 
+  # @return [Symbol from _enum_device_type_t_] 
   # @scope class
-  attach_function :cairo_device_get_type, :cairo_device_get_type, [CairoDevice], :cairo_device_type_t
+  attach_function :device_get_type, :cairo_device_get_type, [Device], :device_type_t
   
   # (Not documented)
   # 
-  # @method cairo_device_status(device)
-  # @param [CairoDevice] device 
-  # @return [Symbol from _enum_cairo_status_t_] 
+  # @method device_status(device)
+  # @param [Device] device 
+  # @return [Symbol from _enum_status_t_] 
   # @scope class
-  attach_function :cairo_device_status, :cairo_device_status, [CairoDevice], :cairo_status_t
+  attach_function :device_status, :cairo_device_status, [Device], :status_t
   
   # (Not documented)
   # 
-  # @method cairo_device_acquire(device)
-  # @param [CairoDevice] device 
-  # @return [Symbol from _enum_cairo_status_t_] 
+  # @method device_acquire(device)
+  # @param [Device] device 
+  # @return [Symbol from _enum_status_t_] 
   # @scope class
-  attach_function :cairo_device_acquire, :cairo_device_acquire, [CairoDevice], :cairo_status_t
+  attach_function :device_acquire, :cairo_device_acquire, [Device], :status_t
   
   # (Not documented)
   # 
-  # @method cairo_device_release(device)
-  # @param [CairoDevice] device 
+  # @method device_release(device)
+  # @param [Device] device 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_device_release, :cairo_device_release, [CairoDevice], :void
+  attach_function :device_release, :cairo_device_release, [Device], :void
   
   # (Not documented)
   # 
-  # @method cairo_device_flush(device)
-  # @param [CairoDevice] device 
+  # @method device_flush(device)
+  # @param [Device] device 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_device_flush, :cairo_device_flush, [CairoDevice], :void
+  attach_function :device_flush, :cairo_device_flush, [Device], :void
   
   # (Not documented)
   # 
-  # @method cairo_device_finish(device)
-  # @param [CairoDevice] device 
+  # @method device_finish(device)
+  # @param [Device] device 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_device_finish, :cairo_device_finish, [CairoDevice], :void
+  attach_function :device_finish, :cairo_device_finish, [Device], :void
   
   # (Not documented)
   # 
-  # @method cairo_device_destroy(device)
-  # @param [CairoDevice] device 
+  # @method device_destroy(device)
+  # @param [Device] device 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_device_destroy, :cairo_device_destroy, [CairoDevice], :void
+  attach_function :device_destroy, :cairo_device_destroy, [Device], :void
   
   # (Not documented)
   # 
-  # @method cairo_device_get_reference_count(device)
-  # @param [CairoDevice] device 
+  # @method device_get_reference_count(device)
+  # @param [Device] device 
   # @return [Integer] 
   # @scope class
-  attach_function :cairo_device_get_reference_count, :cairo_device_get_reference_count, [CairoDevice], :uint
+  attach_function :device_get_reference_count, :cairo_device_get_reference_count, [Device], :uint
   
   # (Not documented)
   # 
-  # @method cairo_device_get_user_data(device, key)
-  # @param [CairoDevice] device 
-  # @param [CairoUserDataKey] key 
+  # @method device_get_user_data(device, key)
+  # @param [Device] device 
+  # @param [UserDataKey] key 
   # @return [FFI::Pointer(*Void)] 
   # @scope class
-  attach_function :cairo_device_get_user_data, :cairo_device_get_user_data, [CairoDevice, CairoUserDataKey], :pointer
+  attach_function :device_get_user_data, :cairo_device_get_user_data, [Device, UserDataKey], :pointer
   
   # (Not documented)
   # 
-  # @method cairo_device_set_user_data(device, key, user_data, destroy)
-  # @param [CairoDevice] device 
-  # @param [CairoUserDataKey] key 
+  # @method device_set_user_data(device, key, user_data, destroy)
+  # @param [Device] device 
+  # @param [UserDataKey] key 
   # @param [FFI::Pointer(*Void)] user_data 
-  # @param [FFI::Pointer(CairoDestroyFuncT)] destroy 
-  # @return [Symbol from _enum_cairo_status_t_] 
+  # @param [FFI::Pointer(DestroyFuncT)] destroy 
+  # @return [Symbol from _enum_status_t_] 
   # @scope class
-  attach_function :cairo_device_set_user_data, :cairo_device_set_user_data, [CairoDevice, CairoUserDataKey, :pointer, :pointer], :cairo_status_t
+  attach_function :device_set_user_data, :cairo_device_set_user_data, [Device, UserDataKey, :pointer, :pointer], :status_t
   
   # Surface manipulation
   # 
-  # @method cairo_surface_create_similar(other, content, width, height)
-  # @param [CairoSurface] other 
-  # @param [Symbol from _enum_cairo_content_t_] content 
+  # @method surface_create_similar(other, content, width, height)
+  # @param [Surface] other 
+  # @param [Symbol from _enum_content_t_] content 
   # @param [Integer] width 
   # @param [Integer] height 
-  # @return [CairoSurface] 
+  # @return [Surface] 
   # @scope class
-  attach_function :cairo_surface_create_similar, :cairo_surface_create_similar, [CairoSurface, :cairo_content_t, :int, :int], CairoSurface
+  attach_function :surface_create_similar, :cairo_surface_create_similar, [Surface, :content_t, :int, :int], Surface
   
   # (Not documented)
   # 
-  # @method cairo_surface_create_for_rectangle(target, x, y, width, height)
-  # @param [CairoSurface] target 
+  # @method surface_create_for_rectangle(target, x, y, width, height)
+  # @param [Surface] target 
   # @param [Float] x 
   # @param [Float] y 
   # @param [Float] width 
   # @param [Float] height 
-  # @return [CairoSurface] 
+  # @return [Surface] 
   # @scope class
-  attach_function :cairo_surface_create_for_rectangle, :cairo_surface_create_for_rectangle, [CairoSurface, :double, :double, :double, :double], CairoSurface
+  attach_function :surface_create_for_rectangle, :cairo_surface_create_for_rectangle, [Surface, :double, :double, :double, :double], Surface
   
   # (Not documented)
   # 
-  # @method cairo_surface_reference(surface)
-  # @param [CairoSurface] surface 
-  # @return [CairoSurface] 
+  # @method surface_reference(surface)
+  # @param [Surface] surface 
+  # @return [Surface] 
   # @scope class
-  attach_function :cairo_surface_reference, :cairo_surface_reference, [CairoSurface], CairoSurface
+  attach_function :surface_reference, :cairo_surface_reference, [Surface], Surface
   
   # (Not documented)
   # 
-  # @method cairo_surface_finish(surface)
-  # @param [CairoSurface] surface 
+  # @method surface_finish(surface)
+  # @param [Surface] surface 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_surface_finish, :cairo_surface_finish, [CairoSurface], :void
+  attach_function :surface_finish, :cairo_surface_finish, [Surface], :void
   
   # (Not documented)
   # 
-  # @method cairo_surface_destroy(surface)
-  # @param [CairoSurface] surface 
+  # @method surface_destroy(surface)
+  # @param [Surface] surface 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_surface_destroy, :cairo_surface_destroy, [CairoSurface], :void
+  attach_function :surface_destroy, :cairo_surface_destroy, [Surface], :void
   
   # (Not documented)
   # 
-  # @method cairo_surface_get_device(surface)
-  # @param [CairoSurface] surface 
-  # @return [CairoDevice] 
+  # @method surface_get_device(surface)
+  # @param [Surface] surface 
+  # @return [Device] 
   # @scope class
-  attach_function :cairo_surface_get_device, :cairo_surface_get_device, [CairoSurface], CairoDevice
+  attach_function :surface_get_device, :cairo_surface_get_device, [Surface], Device
   
   # (Not documented)
   # 
-  # @method cairo_surface_get_reference_count(surface)
-  # @param [CairoSurface] surface 
+  # @method surface_get_reference_count(surface)
+  # @param [Surface] surface 
   # @return [Integer] 
   # @scope class
-  attach_function :cairo_surface_get_reference_count, :cairo_surface_get_reference_count, [CairoSurface], :uint
+  attach_function :surface_get_reference_count, :cairo_surface_get_reference_count, [Surface], :uint
   
   # (Not documented)
   # 
-  # @method cairo_surface_status(surface)
-  # @param [CairoSurface] surface 
-  # @return [Symbol from _enum_cairo_status_t_] 
+  # @method surface_status(surface)
+  # @param [Surface] surface 
+  # @return [Symbol from _enum_status_t_] 
   # @scope class
-  attach_function :cairo_surface_status, :cairo_surface_status, [CairoSurface], :cairo_status_t
+  attach_function :surface_status, :cairo_surface_status, [Surface], :status_t
   
   # cairo_surface_type_t:
   # @CAIRO_SURFACE_TYPE_IMAGE: The surface is of type image
@@ -4279,7 +4279,7 @@ module Cairo
   # 
   # Since: 1.2
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_surface_type).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:surface_type).</em>
   # 
   # === Options:
   # :image ::
@@ -4331,10 +4331,10 @@ module Cairo
   # :subsurface ::
   #   
   # 
-  # @method _enum_cairo_surface_type_
+  # @method _enum_surface_type_
   # @return [Symbol]
   # @scope class
-  enum :cairo_surface_type, [
+  enum :surface_type, [
     :image,
     :pdf,
     :ps,
@@ -4411,7 +4411,7 @@ module Cairo
   # 
   # Since: 1.2
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_surface_type_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:surface_type_t).</em>
   # 
   # === Options:
   # :image ::
@@ -4463,10 +4463,10 @@ module Cairo
   # :subsurface ::
   #   
   # 
-  # @method _enum_cairo_surface_type_t_
+  # @method _enum_surface_type_t_
   # @return [Symbol]
   # @scope class
-  enum :cairo_surface_type_t, [
+  enum :surface_type_t, [
     :image,
     :pdf,
     :ps,
@@ -4495,183 +4495,183 @@ module Cairo
   
   # (Not documented)
   # 
-  # @method cairo_surface_get_type(surface)
-  # @param [CairoSurface] surface 
-  # @return [Symbol from _enum_cairo_surface_type_t_] 
+  # @method surface_get_type(surface)
+  # @param [Surface] surface 
+  # @return [Symbol from _enum_surface_type_t_] 
   # @scope class
-  attach_function :cairo_surface_get_type, :cairo_surface_get_type, [CairoSurface], :cairo_surface_type_t
+  attach_function :surface_get_type, :cairo_surface_get_type, [Surface], :surface_type_t
   
   # (Not documented)
   # 
-  # @method cairo_surface_get_content(surface)
-  # @param [CairoSurface] surface 
-  # @return [Symbol from _enum_cairo_content_t_] 
+  # @method surface_get_content(surface)
+  # @param [Surface] surface 
+  # @return [Symbol from _enum_content_t_] 
   # @scope class
-  attach_function :cairo_surface_get_content, :cairo_surface_get_content, [CairoSurface], :cairo_content_t
+  attach_function :surface_get_content, :cairo_surface_get_content, [Surface], :content_t
   
   # (Not documented)
   # 
-  # @method cairo_surface_write_to_png(surface, filename)
-  # @param [CairoSurface] surface 
+  # @method surface_write_to_png(surface, filename)
+  # @param [Surface] surface 
   # @param [String] filename 
-  # @return [Symbol from _enum_cairo_status_t_] 
+  # @return [Symbol from _enum_status_t_] 
   # @scope class
-  attach_function :cairo_surface_write_to_png, :cairo_surface_write_to_png, [CairoSurface, :string], :cairo_status_t
+  attach_function :surface_write_to_png, :cairo_surface_write_to_png, [Surface, :string], :status_t
   
   # (Not documented)
   # 
-  # @method cairo_surface_write_to_png_stream(surface, write_func, closure)
-  # @param [CairoSurface] surface 
-  # @param [Proc(_callback_cairo_write_func_t_)] write_func 
+  # @method surface_write_to_png_stream(surface, write_func, closure)
+  # @param [Surface] surface 
+  # @param [Proc(_callback_write_func_t_)] write_func 
   # @param [FFI::Pointer(*Void)] closure 
-  # @return [Symbol from _enum_cairo_status_t_] 
+  # @return [Symbol from _enum_status_t_] 
   # @scope class
-  attach_function :cairo_surface_write_to_png_stream, :cairo_surface_write_to_png_stream, [CairoSurface, :cairo_write_func_t, :pointer], :cairo_status_t
+  attach_function :surface_write_to_png_stream, :cairo_surface_write_to_png_stream, [Surface, :write_func_t, :pointer], :status_t
   
   # (Not documented)
   # 
-  # @method cairo_surface_get_user_data(surface, key)
-  # @param [CairoSurface] surface 
-  # @param [CairoUserDataKey] key 
+  # @method surface_get_user_data(surface, key)
+  # @param [Surface] surface 
+  # @param [UserDataKey] key 
   # @return [FFI::Pointer(*Void)] 
   # @scope class
-  attach_function :cairo_surface_get_user_data, :cairo_surface_get_user_data, [CairoSurface, CairoUserDataKey], :pointer
+  attach_function :surface_get_user_data, :cairo_surface_get_user_data, [Surface, UserDataKey], :pointer
   
   # (Not documented)
   # 
-  # @method cairo_surface_set_user_data(surface, key, user_data, destroy)
-  # @param [CairoSurface] surface 
-  # @param [CairoUserDataKey] key 
+  # @method surface_set_user_data(surface, key, user_data, destroy)
+  # @param [Surface] surface 
+  # @param [UserDataKey] key 
   # @param [FFI::Pointer(*Void)] user_data 
-  # @param [FFI::Pointer(CairoDestroyFuncT)] destroy 
-  # @return [Symbol from _enum_cairo_status_t_] 
+  # @param [FFI::Pointer(DestroyFuncT)] destroy 
+  # @return [Symbol from _enum_status_t_] 
   # @scope class
-  attach_function :cairo_surface_set_user_data, :cairo_surface_set_user_data, [CairoSurface, CairoUserDataKey, :pointer, :pointer], :cairo_status_t
+  attach_function :surface_set_user_data, :cairo_surface_set_user_data, [Surface, UserDataKey, :pointer, :pointer], :status_t
   
   # (Not documented)
   # 
-  # @method cairo_surface_get_mime_data(surface, mime_type, data, length)
-  # @param [CairoSurface] surface 
+  # @method surface_get_mime_data(surface, mime_type, data, length)
+  # @param [Surface] surface 
   # @param [String] mime_type 
   # @param [FFI::Pointer(**UChar)] data 
   # @param [FFI::Pointer(*ULong)] length 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_surface_get_mime_data, :cairo_surface_get_mime_data, [CairoSurface, :string, :pointer, :pointer], :void
+  attach_function :surface_get_mime_data, :cairo_surface_get_mime_data, [Surface, :string, :pointer, :pointer], :void
   
   # (Not documented)
   # 
-  # @method cairo_surface_set_mime_data(surface, mime_type, data, length, destroy, closure)
-  # @param [CairoSurface] surface 
+  # @method surface_set_mime_data(surface, mime_type, data, length, destroy, closure)
+  # @param [Surface] surface 
   # @param [String] mime_type 
   # @param [FFI::Pointer(*UChar)] data 
   # @param [Integer] length 
-  # @param [FFI::Pointer(CairoDestroyFuncT)] destroy 
+  # @param [FFI::Pointer(DestroyFuncT)] destroy 
   # @param [FFI::Pointer(*Void)] closure 
-  # @return [Symbol from _enum_cairo_status_t_] 
+  # @return [Symbol from _enum_status_t_] 
   # @scope class
-  attach_function :cairo_surface_set_mime_data, :cairo_surface_set_mime_data, [CairoSurface, :string, :pointer, :ulong, :pointer, :pointer], :cairo_status_t
+  attach_function :surface_set_mime_data, :cairo_surface_set_mime_data, [Surface, :string, :pointer, :ulong, :pointer, :pointer], :status_t
   
   # (Not documented)
   # 
-  # @method cairo_surface_get_font_options(surface, options)
-  # @param [CairoSurface] surface 
-  # @param [CairoFontOptions] options 
+  # @method surface_get_font_options(surface, options)
+  # @param [Surface] surface 
+  # @param [FontOptions] options 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_surface_get_font_options, :cairo_surface_get_font_options, [CairoSurface, CairoFontOptions], :void
+  attach_function :surface_get_font_options, :cairo_surface_get_font_options, [Surface, FontOptions], :void
   
   # (Not documented)
   # 
-  # @method cairo_surface_flush(surface)
-  # @param [CairoSurface] surface 
+  # @method surface_flush(surface)
+  # @param [Surface] surface 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_surface_flush, :cairo_surface_flush, [CairoSurface], :void
+  attach_function :surface_flush, :cairo_surface_flush, [Surface], :void
   
   # (Not documented)
   # 
-  # @method cairo_surface_mark_dirty(surface)
-  # @param [CairoSurface] surface 
+  # @method surface_mark_dirty(surface)
+  # @param [Surface] surface 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_surface_mark_dirty, :cairo_surface_mark_dirty, [CairoSurface], :void
+  attach_function :surface_mark_dirty, :cairo_surface_mark_dirty, [Surface], :void
   
   # (Not documented)
   # 
-  # @method cairo_surface_mark_dirty_rectangle(surface, x, y, width, height)
-  # @param [CairoSurface] surface 
+  # @method surface_mark_dirty_rectangle(surface, x, y, width, height)
+  # @param [Surface] surface 
   # @param [Integer] x 
   # @param [Integer] y 
   # @param [Integer] width 
   # @param [Integer] height 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_surface_mark_dirty_rectangle, :cairo_surface_mark_dirty_rectangle, [CairoSurface, :int, :int, :int, :int], :void
+  attach_function :surface_mark_dirty_rectangle, :cairo_surface_mark_dirty_rectangle, [Surface, :int, :int, :int, :int], :void
   
   # (Not documented)
   # 
-  # @method cairo_surface_set_device_offset(surface, x_offset, y_offset)
-  # @param [CairoSurface] surface 
+  # @method surface_set_device_offset(surface, x_offset, y_offset)
+  # @param [Surface] surface 
   # @param [Float] x_offset 
   # @param [Float] y_offset 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_surface_set_device_offset, :cairo_surface_set_device_offset, [CairoSurface, :double, :double], :void
+  attach_function :surface_set_device_offset, :cairo_surface_set_device_offset, [Surface, :double, :double], :void
   
   # (Not documented)
   # 
-  # @method cairo_surface_get_device_offset(surface, x_offset, y_offset)
-  # @param [CairoSurface] surface 
+  # @method surface_get_device_offset(surface, x_offset, y_offset)
+  # @param [Surface] surface 
   # @param [FFI::Pointer(*Double)] x_offset 
   # @param [FFI::Pointer(*Double)] y_offset 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_surface_get_device_offset, :cairo_surface_get_device_offset, [CairoSurface, :pointer, :pointer], :void
+  attach_function :surface_get_device_offset, :cairo_surface_get_device_offset, [Surface, :pointer, :pointer], :void
   
   # (Not documented)
   # 
-  # @method cairo_surface_set_fallback_resolution(surface, x_pixels_per_inch, y_pixels_per_inch)
-  # @param [CairoSurface] surface 
+  # @method surface_set_fallback_resolution(surface, x_pixels_per_inch, y_pixels_per_inch)
+  # @param [Surface] surface 
   # @param [Float] x_pixels_per_inch 
   # @param [Float] y_pixels_per_inch 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_surface_set_fallback_resolution, :cairo_surface_set_fallback_resolution, [CairoSurface, :double, :double], :void
+  attach_function :surface_set_fallback_resolution, :cairo_surface_set_fallback_resolution, [Surface, :double, :double], :void
   
   # (Not documented)
   # 
-  # @method cairo_surface_get_fallback_resolution(surface, x_pixels_per_inch, y_pixels_per_inch)
-  # @param [CairoSurface] surface 
+  # @method surface_get_fallback_resolution(surface, x_pixels_per_inch, y_pixels_per_inch)
+  # @param [Surface] surface 
   # @param [FFI::Pointer(*Double)] x_pixels_per_inch 
   # @param [FFI::Pointer(*Double)] y_pixels_per_inch 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_surface_get_fallback_resolution, :cairo_surface_get_fallback_resolution, [CairoSurface, :pointer, :pointer], :void
+  attach_function :surface_get_fallback_resolution, :cairo_surface_get_fallback_resolution, [Surface, :pointer, :pointer], :void
   
   # (Not documented)
   # 
-  # @method cairo_surface_copy_page(surface)
-  # @param [CairoSurface] surface 
+  # @method surface_copy_page(surface)
+  # @param [Surface] surface 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_surface_copy_page, :cairo_surface_copy_page, [CairoSurface], :void
+  attach_function :surface_copy_page, :cairo_surface_copy_page, [Surface], :void
   
   # (Not documented)
   # 
-  # @method cairo_surface_show_page(surface)
-  # @param [CairoSurface] surface 
+  # @method surface_show_page(surface)
+  # @param [Surface] surface 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_surface_show_page, :cairo_surface_show_page, [CairoSurface], :void
+  attach_function :surface_show_page, :cairo_surface_show_page, [Surface], :void
   
   # (Not documented)
   # 
-  # @method cairo_surface_has_show_text_glyphs(surface)
-  # @param [CairoSurface] surface 
+  # @method surface_has_show_text_glyphs(surface)
+  # @param [Surface] surface 
   # @return [Integer] 
   # @scope class
-  attach_function :cairo_surface_has_show_text_glyphs, :cairo_surface_has_show_text_glyphs, [CairoSurface], :int
+  attach_function :surface_has_show_text_glyphs, :cairo_surface_has_show_text_glyphs, [Surface], :int
   
   # cairo_format_t:
   # @CAIRO_FORMAT_INVALID: no such format exists or is supported.
@@ -4700,7 +4700,7 @@ module Cairo
   # 
   # New entries may be added in future versions.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_format).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:format).</em>
   # 
   # === Options:
   # :argb32 ::
@@ -4714,10 +4714,10 @@ module Cairo
   # :rgb16_565 ::
   #   
   # 
-  # @method _enum_cairo_format_
+  # @method _enum_format_
   # @return [Symbol]
   # @scope class
-  enum :cairo_format, [
+  enum :format, [
     :argb32, 0,
     :rgb24, 1,
     :a8, 2,
@@ -4752,7 +4752,7 @@ module Cairo
   # 
   # New entries may be added in future versions.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_format_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:format_t).</em>
   # 
   # === Options:
   # :argb32 ::
@@ -4766,10 +4766,10 @@ module Cairo
   # :rgb16_565 ::
   #   
   # 
-  # @method _enum_cairo_format_t_
+  # @method _enum_format_t_
   # @return [Symbol]
   # @scope class
-  enum :cairo_format_t, [
+  enum :format_t, [
     :argb32, 0,
     :rgb24, 1,
     :a8, 2,
@@ -4779,217 +4779,217 @@ module Cairo
   
   # (Not documented)
   # 
-  # @method cairo_image_surface_create(format, width, height)
-  # @param [Symbol from _enum_cairo_format_t_] format 
+  # @method image_surface_create(format, width, height)
+  # @param [Symbol from _enum_format_t_] format 
   # @param [Integer] width 
   # @param [Integer] height 
-  # @return [CairoSurface] 
+  # @return [Surface] 
   # @scope class
-  attach_function :cairo_image_surface_create, :cairo_image_surface_create, [:cairo_format_t, :int, :int], CairoSurface
+  attach_function :image_surface_create, :cairo_image_surface_create, [:format_t, :int, :int], Surface
   
   # (Not documented)
   # 
-  # @method cairo_format_stride_for_width(format, width)
-  # @param [Symbol from _enum_cairo_format_t_] format 
+  # @method format_stride_for_width(format, width)
+  # @param [Symbol from _enum_format_t_] format 
   # @param [Integer] width 
   # @return [Integer] 
   # @scope class
-  attach_function :cairo_format_stride_for_width, :cairo_format_stride_for_width, [:cairo_format_t, :int], :int
+  attach_function :format_stride_for_width, :cairo_format_stride_for_width, [:format_t, :int], :int
   
   # (Not documented)
   # 
-  # @method cairo_image_surface_create_for_data(data, format, width, height, stride)
+  # @method image_surface_create_for_data(data, format, width, height, stride)
   # @param [FFI::Pointer(*UChar)] data 
-  # @param [Symbol from _enum_cairo_format_t_] format 
+  # @param [Symbol from _enum_format_t_] format 
   # @param [Integer] width 
   # @param [Integer] height 
   # @param [Integer] stride 
-  # @return [CairoSurface] 
+  # @return [Surface] 
   # @scope class
-  attach_function :cairo_image_surface_create_for_data, :cairo_image_surface_create_for_data, [:pointer, :cairo_format_t, :int, :int, :int], CairoSurface
+  attach_function :image_surface_create_for_data, :cairo_image_surface_create_for_data, [:pointer, :format_t, :int, :int, :int], Surface
   
   # (Not documented)
   # 
-  # @method cairo_image_surface_get_data(surface)
-  # @param [CairoSurface] surface 
+  # @method image_surface_get_data(surface)
+  # @param [Surface] surface 
   # @return [FFI::Pointer(*UChar)] 
   # @scope class
-  attach_function :cairo_image_surface_get_data, :cairo_image_surface_get_data, [CairoSurface], :pointer
+  attach_function :image_surface_get_data, :cairo_image_surface_get_data, [Surface], :pointer
   
   # (Not documented)
   # 
-  # @method cairo_image_surface_get_format(surface)
-  # @param [CairoSurface] surface 
-  # @return [Symbol from _enum_cairo_format_t_] 
+  # @method image_surface_get_format(surface)
+  # @param [Surface] surface 
+  # @return [Symbol from _enum_format_t_] 
   # @scope class
-  attach_function :cairo_image_surface_get_format, :cairo_image_surface_get_format, [CairoSurface], :cairo_format_t
+  attach_function :image_surface_get_format, :cairo_image_surface_get_format, [Surface], :format_t
   
   # (Not documented)
   # 
-  # @method cairo_image_surface_get_width(surface)
-  # @param [CairoSurface] surface 
+  # @method image_surface_get_width(surface)
+  # @param [Surface] surface 
   # @return [Integer] 
   # @scope class
-  attach_function :cairo_image_surface_get_width, :cairo_image_surface_get_width, [CairoSurface], :int
+  attach_function :image_surface_get_width, :cairo_image_surface_get_width, [Surface], :int
   
   # (Not documented)
   # 
-  # @method cairo_image_surface_get_height(surface)
-  # @param [CairoSurface] surface 
+  # @method image_surface_get_height(surface)
+  # @param [Surface] surface 
   # @return [Integer] 
   # @scope class
-  attach_function :cairo_image_surface_get_height, :cairo_image_surface_get_height, [CairoSurface], :int
+  attach_function :image_surface_get_height, :cairo_image_surface_get_height, [Surface], :int
   
   # (Not documented)
   # 
-  # @method cairo_image_surface_get_stride(surface)
-  # @param [CairoSurface] surface 
+  # @method image_surface_get_stride(surface)
+  # @param [Surface] surface 
   # @return [Integer] 
   # @scope class
-  attach_function :cairo_image_surface_get_stride, :cairo_image_surface_get_stride, [CairoSurface], :int
+  attach_function :image_surface_get_stride, :cairo_image_surface_get_stride, [Surface], :int
   
   # (Not documented)
   # 
-  # @method cairo_image_surface_create_from_png(filename)
+  # @method image_surface_create_from_png(filename)
   # @param [String] filename 
-  # @return [CairoSurface] 
+  # @return [Surface] 
   # @scope class
-  attach_function :cairo_image_surface_create_from_png, :cairo_image_surface_create_from_png, [:string], CairoSurface
+  attach_function :image_surface_create_from_png, :cairo_image_surface_create_from_png, [:string], Surface
   
   # (Not documented)
   # 
-  # @method cairo_image_surface_create_from_png_stream(read_func, closure)
-  # @param [Proc(_callback_cairo_read_func_t_)] read_func 
+  # @method image_surface_create_from_png_stream(read_func, closure)
+  # @param [Proc(_callback_read_func_t_)] read_func 
   # @param [FFI::Pointer(*Void)] closure 
-  # @return [CairoSurface] 
+  # @return [Surface] 
   # @scope class
-  attach_function :cairo_image_surface_create_from_png_stream, :cairo_image_surface_create_from_png_stream, [:cairo_read_func_t, :pointer], CairoSurface
+  attach_function :image_surface_create_from_png_stream, :cairo_image_surface_create_from_png_stream, [:read_func_t, :pointer], Surface
   
   # Recording-surface functions
   # 
-  # @method cairo_recording_surface_create(content, extents)
-  # @param [Symbol from _enum_cairo_content_t_] content 
-  # @param [CairoRectangle] extents 
-  # @return [CairoSurface] 
+  # @method recording_surface_create(content, extents)
+  # @param [Symbol from _enum_content_t_] content 
+  # @param [Rectangle] extents 
+  # @return [Surface] 
   # @scope class
-  attach_function :cairo_recording_surface_create, :cairo_recording_surface_create, [:cairo_content_t, CairoRectangle], CairoSurface
+  attach_function :recording_surface_create, :cairo_recording_surface_create, [:content_t, Rectangle], Surface
   
   # (Not documented)
   # 
-  # @method cairo_recording_surface_ink_extents(surface, x0, y0, width, height)
-  # @param [CairoSurface] surface 
+  # @method recording_surface_ink_extents(surface, x0, y0, width, height)
+  # @param [Surface] surface 
   # @param [FFI::Pointer(*Double)] x0 
   # @param [FFI::Pointer(*Double)] y0 
   # @param [FFI::Pointer(*Double)] width 
   # @param [FFI::Pointer(*Double)] height 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_recording_surface_ink_extents, :cairo_recording_surface_ink_extents, [CairoSurface, :pointer, :pointer, :pointer, :pointer], :void
+  attach_function :recording_surface_ink_extents, :cairo_recording_surface_ink_extents, [Surface, :pointer, :pointer, :pointer, :pointer], :void
   
   # Pattern creation functions
   # 
-  # @method cairo_pattern_create_rgb(red, green, blue)
+  # @method pattern_create_rgb(red, green, blue)
   # @param [Float] red 
   # @param [Float] green 
   # @param [Float] blue 
-  # @return [CairoPattern] 
+  # @return [Pattern] 
   # @scope class
-  attach_function :cairo_pattern_create_rgb, :cairo_pattern_create_rgb, [:double, :double, :double], CairoPattern
+  attach_function :pattern_create_rgb, :cairo_pattern_create_rgb, [:double, :double, :double], Pattern
   
   # (Not documented)
   # 
-  # @method cairo_pattern_create_rgba(red, green, blue, alpha)
+  # @method pattern_create_rgba(red, green, blue, alpha)
   # @param [Float] red 
   # @param [Float] green 
   # @param [Float] blue 
   # @param [Float] alpha 
-  # @return [CairoPattern] 
+  # @return [Pattern] 
   # @scope class
-  attach_function :cairo_pattern_create_rgba, :cairo_pattern_create_rgba, [:double, :double, :double, :double], CairoPattern
+  attach_function :pattern_create_rgba, :cairo_pattern_create_rgba, [:double, :double, :double, :double], Pattern
   
   # (Not documented)
   # 
-  # @method cairo_pattern_create_for_surface(surface)
-  # @param [CairoSurface] surface 
-  # @return [CairoPattern] 
+  # @method pattern_create_for_surface(surface)
+  # @param [Surface] surface 
+  # @return [Pattern] 
   # @scope class
-  attach_function :cairo_pattern_create_for_surface, :cairo_pattern_create_for_surface, [CairoSurface], CairoPattern
+  attach_function :pattern_create_for_surface, :cairo_pattern_create_for_surface, [Surface], Pattern
   
   # (Not documented)
   # 
-  # @method cairo_pattern_create_linear(x0, y0, x1, y1)
+  # @method pattern_create_linear(x0, y0, x1, y1)
   # @param [Float] x0 
   # @param [Float] y0 
   # @param [Float] x1 
   # @param [Float] y1 
-  # @return [CairoPattern] 
+  # @return [Pattern] 
   # @scope class
-  attach_function :cairo_pattern_create_linear, :cairo_pattern_create_linear, [:double, :double, :double, :double], CairoPattern
+  attach_function :pattern_create_linear, :cairo_pattern_create_linear, [:double, :double, :double, :double], Pattern
   
   # (Not documented)
   # 
-  # @method cairo_pattern_create_radial(cx0, cy0, radius0, cx1, cy1, radius1)
+  # @method pattern_create_radial(cx0, cy0, radius0, cx1, cy1, radius1)
   # @param [Float] cx0 
   # @param [Float] cy0 
   # @param [Float] radius0 
   # @param [Float] cx1 
   # @param [Float] cy1 
   # @param [Float] radius1 
-  # @return [CairoPattern] 
+  # @return [Pattern] 
   # @scope class
-  attach_function :cairo_pattern_create_radial, :cairo_pattern_create_radial, [:double, :double, :double, :double, :double, :double], CairoPattern
+  attach_function :pattern_create_radial, :cairo_pattern_create_radial, [:double, :double, :double, :double, :double, :double], Pattern
   
   # (Not documented)
   # 
-  # @method cairo_pattern_reference(pattern)
-  # @param [CairoPattern] pattern 
-  # @return [CairoPattern] 
+  # @method pattern_reference(pattern)
+  # @param [Pattern] pattern 
+  # @return [Pattern] 
   # @scope class
-  attach_function :cairo_pattern_reference, :cairo_pattern_reference, [CairoPattern], CairoPattern
+  attach_function :pattern_reference, :cairo_pattern_reference, [Pattern], Pattern
   
   # (Not documented)
   # 
-  # @method cairo_pattern_destroy(pattern)
-  # @param [CairoPattern] pattern 
+  # @method pattern_destroy(pattern)
+  # @param [Pattern] pattern 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_pattern_destroy, :cairo_pattern_destroy, [CairoPattern], :void
+  attach_function :pattern_destroy, :cairo_pattern_destroy, [Pattern], :void
   
   # (Not documented)
   # 
-  # @method cairo_pattern_get_reference_count(pattern)
-  # @param [CairoPattern] pattern 
+  # @method pattern_get_reference_count(pattern)
+  # @param [Pattern] pattern 
   # @return [Integer] 
   # @scope class
-  attach_function :cairo_pattern_get_reference_count, :cairo_pattern_get_reference_count, [CairoPattern], :uint
+  attach_function :pattern_get_reference_count, :cairo_pattern_get_reference_count, [Pattern], :uint
   
   # (Not documented)
   # 
-  # @method cairo_pattern_status(pattern)
-  # @param [CairoPattern] pattern 
-  # @return [Symbol from _enum_cairo_status_t_] 
+  # @method pattern_status(pattern)
+  # @param [Pattern] pattern 
+  # @return [Symbol from _enum_status_t_] 
   # @scope class
-  attach_function :cairo_pattern_status, :cairo_pattern_status, [CairoPattern], :cairo_status_t
+  attach_function :pattern_status, :cairo_pattern_status, [Pattern], :status_t
   
   # (Not documented)
   # 
-  # @method cairo_pattern_get_user_data(pattern, key)
-  # @param [CairoPattern] pattern 
-  # @param [CairoUserDataKey] key 
+  # @method pattern_get_user_data(pattern, key)
+  # @param [Pattern] pattern 
+  # @param [UserDataKey] key 
   # @return [FFI::Pointer(*Void)] 
   # @scope class
-  attach_function :cairo_pattern_get_user_data, :cairo_pattern_get_user_data, [CairoPattern, CairoUserDataKey], :pointer
+  attach_function :pattern_get_user_data, :cairo_pattern_get_user_data, [Pattern, UserDataKey], :pointer
   
   # (Not documented)
   # 
-  # @method cairo_pattern_set_user_data(pattern, key, user_data, destroy)
-  # @param [CairoPattern] pattern 
-  # @param [CairoUserDataKey] key 
+  # @method pattern_set_user_data(pattern, key, user_data, destroy)
+  # @param [Pattern] pattern 
+  # @param [UserDataKey] key 
   # @param [FFI::Pointer(*Void)] user_data 
-  # @param [FFI::Pointer(CairoDestroyFuncT)] destroy 
-  # @return [Symbol from _enum_cairo_status_t_] 
+  # @param [FFI::Pointer(DestroyFuncT)] destroy 
+  # @return [Symbol from _enum_status_t_] 
   # @scope class
-  attach_function :cairo_pattern_set_user_data, :cairo_pattern_set_user_data, [CairoPattern, CairoUserDataKey, :pointer, :pointer], :cairo_status_t
+  attach_function :pattern_set_user_data, :cairo_pattern_set_user_data, [Pattern, UserDataKey, :pointer, :pointer], :status_t
   
   # cairo_pattern_type_t:
   # @CAIRO_PATTERN_TYPE_SOLID: The pattern is a solid (uniform)
@@ -5020,7 +5020,7 @@ module Cairo
   # 
   # Since: 1.2
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_pattern_type).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:pattern_type).</em>
   # 
   # === Options:
   # :solid ::
@@ -5032,10 +5032,10 @@ module Cairo
   # :radial ::
   #   
   # 
-  # @method _enum_cairo_pattern_type_
+  # @method _enum_pattern_type_
   # @return [Symbol]
   # @scope class
-  enum :cairo_pattern_type, [
+  enum :pattern_type, [
     :solid,
     :surface,
     :linear,
@@ -5071,7 +5071,7 @@ module Cairo
   # 
   # Since: 1.2
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_pattern_type_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:pattern_type_t).</em>
   # 
   # === Options:
   # :solid ::
@@ -5083,10 +5083,10 @@ module Cairo
   # :radial ::
   #   
   # 
-  # @method _enum_cairo_pattern_type_t_
+  # @method _enum_pattern_type_t_
   # @return [Symbol]
   # @scope class
-  enum :cairo_pattern_type_t, [
+  enum :pattern_type_t, [
     :solid,
     :surface,
     :linear,
@@ -5095,28 +5095,28 @@ module Cairo
   
   # (Not documented)
   # 
-  # @method cairo_pattern_get_type(pattern)
-  # @param [CairoPattern] pattern 
-  # @return [Symbol from _enum_cairo_pattern_type_t_] 
+  # @method pattern_get_type(pattern)
+  # @param [Pattern] pattern 
+  # @return [Symbol from _enum_pattern_type_t_] 
   # @scope class
-  attach_function :cairo_pattern_get_type, :cairo_pattern_get_type, [CairoPattern], :cairo_pattern_type_t
+  attach_function :pattern_get_type, :cairo_pattern_get_type, [Pattern], :pattern_type_t
   
   # (Not documented)
   # 
-  # @method cairo_pattern_add_color_stop_rgb(pattern, offset, red, green, blue)
-  # @param [CairoPattern] pattern 
+  # @method pattern_add_color_stop_rgb(pattern, offset, red, green, blue)
+  # @param [Pattern] pattern 
   # @param [Float] offset 
   # @param [Float] red 
   # @param [Float] green 
   # @param [Float] blue 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_pattern_add_color_stop_rgb, :cairo_pattern_add_color_stop_rgb, [CairoPattern, :double, :double, :double, :double], :void
+  attach_function :pattern_add_color_stop_rgb, :cairo_pattern_add_color_stop_rgb, [Pattern, :double, :double, :double, :double], :void
   
   # (Not documented)
   # 
-  # @method cairo_pattern_add_color_stop_rgba(pattern, offset, red, green, blue, alpha)
-  # @param [CairoPattern] pattern 
+  # @method pattern_add_color_stop_rgba(pattern, offset, red, green, blue, alpha)
+  # @param [Pattern] pattern 
   # @param [Float] offset 
   # @param [Float] red 
   # @param [Float] green 
@@ -5124,25 +5124,25 @@ module Cairo
   # @param [Float] alpha 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_pattern_add_color_stop_rgba, :cairo_pattern_add_color_stop_rgba, [CairoPattern, :double, :double, :double, :double, :double], :void
+  attach_function :pattern_add_color_stop_rgba, :cairo_pattern_add_color_stop_rgba, [Pattern, :double, :double, :double, :double, :double], :void
   
   # (Not documented)
   # 
-  # @method cairo_pattern_set_matrix(pattern, matrix)
-  # @param [CairoPattern] pattern 
-  # @param [CairoMatrix] matrix 
+  # @method pattern_set_matrix(pattern, matrix)
+  # @param [Pattern] pattern 
+  # @param [Matrix] matrix 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_pattern_set_matrix, :cairo_pattern_set_matrix, [CairoPattern, CairoMatrix], :void
+  attach_function :pattern_set_matrix, :cairo_pattern_set_matrix, [Pattern, Matrix], :void
   
   # (Not documented)
   # 
-  # @method cairo_pattern_get_matrix(pattern, matrix)
-  # @param [CairoPattern] pattern 
-  # @param [CairoMatrix] matrix 
+  # @method pattern_get_matrix(pattern, matrix)
+  # @param [Pattern] pattern 
+  # @param [Matrix] matrix 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_pattern_get_matrix, :cairo_pattern_get_matrix, [CairoPattern, CairoMatrix], :void
+  attach_function :pattern_get_matrix, :cairo_pattern_get_matrix, [Pattern, Matrix], :void
   
   # cairo_extend_t:
   # @CAIRO_EXTEND_NONE: pixels outside of the source pattern
@@ -5164,7 +5164,7 @@ module Cairo
   # 
   # New entries may be added in future versions.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_extend).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:extend).</em>
   # 
   # === Options:
   # :none ::
@@ -5176,10 +5176,10 @@ module Cairo
   # :pad ::
   #   
   # 
-  # @method _enum_cairo_extend_
+  # @method _enum_extend_
   # @return [Symbol]
   # @scope class
-  enum :cairo_extend, [
+  enum :extend, [
     :none,
     :repeat,
     :reflect,
@@ -5206,7 +5206,7 @@ module Cairo
   # 
   # New entries may be added in future versions.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_extend_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:extend_t).</em>
   # 
   # === Options:
   # :none ::
@@ -5218,10 +5218,10 @@ module Cairo
   # :pad ::
   #   
   # 
-  # @method _enum_cairo_extend_t_
+  # @method _enum_extend_t_
   # @return [Symbol]
   # @scope class
-  enum :cairo_extend_t, [
+  enum :extend_t, [
     :none,
     :repeat,
     :reflect,
@@ -5230,20 +5230,20 @@ module Cairo
   
   # (Not documented)
   # 
-  # @method cairo_pattern_set_extend(pattern, extend)
-  # @param [CairoPattern] pattern 
-  # @param [Symbol from _enum_cairo_extend_t_] extend 
+  # @method pattern_set_extend(pattern, extend)
+  # @param [Pattern] pattern 
+  # @param [Symbol from _enum_extend_t_] extend 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_pattern_set_extend, :cairo_pattern_set_extend, [CairoPattern, :cairo_extend_t], :void
+  attach_function :pattern_set_extend, :cairo_pattern_set_extend, [Pattern, :extend_t], :void
   
   # (Not documented)
   # 
-  # @method cairo_pattern_get_extend(pattern)
-  # @param [CairoPattern] pattern 
-  # @return [Symbol from _enum_cairo_extend_t_] 
+  # @method pattern_get_extend(pattern)
+  # @param [Pattern] pattern 
+  # @return [Symbol from _enum_extend_t_] 
   # @scope class
-  attach_function :cairo_pattern_get_extend, :cairo_pattern_get_extend, [CairoPattern], :cairo_extend_t
+  attach_function :pattern_get_extend, :cairo_pattern_get_extend, [Pattern], :extend_t
   
   # cairo_filter_t:
   # @CAIRO_FILTER_FAST: A high-performance filter, with quality similar
@@ -5262,7 +5262,7 @@ module Cairo
   # cairo_pattern_set_source() for indicating the desired filter to be
   # used with a particular pattern.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_filter).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:filter).</em>
   # 
   # === Options:
   # :fast ::
@@ -5278,10 +5278,10 @@ module Cairo
   # :gaussian ::
   #   
   # 
-  # @method _enum_cairo_filter_
+  # @method _enum_filter_
   # @return [Symbol]
   # @scope class
-  enum :cairo_filter, [
+  enum :filter, [
     :fast,
     :good,
     :best,
@@ -5307,7 +5307,7 @@ module Cairo
   # cairo_pattern_set_source() for indicating the desired filter to be
   # used with a particular pattern.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_filter_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:filter_t).</em>
   # 
   # === Options:
   # :fast ::
@@ -5323,10 +5323,10 @@ module Cairo
   # :gaussian ::
   #   
   # 
-  # @method _enum_cairo_filter_t_
+  # @method _enum_filter_t_
   # @return [Symbol]
   # @scope class
-  enum :cairo_filter_t, [
+  enum :filter_t, [
     :fast,
     :good,
     :best,
@@ -5337,95 +5337,95 @@ module Cairo
   
   # (Not documented)
   # 
-  # @method cairo_pattern_set_filter(pattern, filter)
-  # @param [CairoPattern] pattern 
-  # @param [Symbol from _enum_cairo_filter_t_] filter 
+  # @method pattern_set_filter(pattern, filter)
+  # @param [Pattern] pattern 
+  # @param [Symbol from _enum_filter_t_] filter 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_pattern_set_filter, :cairo_pattern_set_filter, [CairoPattern, :cairo_filter_t], :void
+  attach_function :pattern_set_filter, :cairo_pattern_set_filter, [Pattern, :filter_t], :void
   
   # (Not documented)
   # 
-  # @method cairo_pattern_get_filter(pattern)
-  # @param [CairoPattern] pattern 
-  # @return [Symbol from _enum_cairo_filter_t_] 
+  # @method pattern_get_filter(pattern)
+  # @param [Pattern] pattern 
+  # @return [Symbol from _enum_filter_t_] 
   # @scope class
-  attach_function :cairo_pattern_get_filter, :cairo_pattern_get_filter, [CairoPattern], :cairo_filter_t
+  attach_function :pattern_get_filter, :cairo_pattern_get_filter, [Pattern], :filter_t
   
   # (Not documented)
   # 
-  # @method cairo_pattern_get_rgba(pattern, red, green, blue, alpha)
-  # @param [CairoPattern] pattern 
+  # @method pattern_get_rgba(pattern, red, green, blue, alpha)
+  # @param [Pattern] pattern 
   # @param [FFI::Pointer(*Double)] red 
   # @param [FFI::Pointer(*Double)] green 
   # @param [FFI::Pointer(*Double)] blue 
   # @param [FFI::Pointer(*Double)] alpha 
-  # @return [Symbol from _enum_cairo_status_t_] 
+  # @return [Symbol from _enum_status_t_] 
   # @scope class
-  attach_function :cairo_pattern_get_rgba, :cairo_pattern_get_rgba, [CairoPattern, :pointer, :pointer, :pointer, :pointer], :cairo_status_t
+  attach_function :pattern_get_rgba, :cairo_pattern_get_rgba, [Pattern, :pointer, :pointer, :pointer, :pointer], :status_t
   
   # (Not documented)
   # 
-  # @method cairo_pattern_get_surface(pattern, surface)
-  # @param [CairoPattern] pattern 
-  # @param [FFI::Pointer(**CairoSurfaceT)] surface 
-  # @return [Symbol from _enum_cairo_status_t_] 
+  # @method pattern_get_surface(pattern, surface)
+  # @param [Pattern] pattern 
+  # @param [FFI::Pointer(**SurfaceT)] surface 
+  # @return [Symbol from _enum_status_t_] 
   # @scope class
-  attach_function :cairo_pattern_get_surface, :cairo_pattern_get_surface, [CairoPattern, :pointer], :cairo_status_t
+  attach_function :pattern_get_surface, :cairo_pattern_get_surface, [Pattern, :pointer], :status_t
   
   # (Not documented)
   # 
-  # @method cairo_pattern_get_color_stop_rgba(pattern, index, offset, red, green, blue, alpha)
-  # @param [CairoPattern] pattern 
+  # @method pattern_get_color_stop_rgba(pattern, index, offset, red, green, blue, alpha)
+  # @param [Pattern] pattern 
   # @param [Integer] index 
   # @param [FFI::Pointer(*Double)] offset 
   # @param [FFI::Pointer(*Double)] red 
   # @param [FFI::Pointer(*Double)] green 
   # @param [FFI::Pointer(*Double)] blue 
   # @param [FFI::Pointer(*Double)] alpha 
-  # @return [Symbol from _enum_cairo_status_t_] 
+  # @return [Symbol from _enum_status_t_] 
   # @scope class
-  attach_function :cairo_pattern_get_color_stop_rgba, :cairo_pattern_get_color_stop_rgba, [CairoPattern, :int, :pointer, :pointer, :pointer, :pointer, :pointer], :cairo_status_t
+  attach_function :pattern_get_color_stop_rgba, :cairo_pattern_get_color_stop_rgba, [Pattern, :int, :pointer, :pointer, :pointer, :pointer, :pointer], :status_t
   
   # (Not documented)
   # 
-  # @method cairo_pattern_get_color_stop_count(pattern, count)
-  # @param [CairoPattern] pattern 
+  # @method pattern_get_color_stop_count(pattern, count)
+  # @param [Pattern] pattern 
   # @param [FFI::Pointer(*Int)] count 
-  # @return [Symbol from _enum_cairo_status_t_] 
+  # @return [Symbol from _enum_status_t_] 
   # @scope class
-  attach_function :cairo_pattern_get_color_stop_count, :cairo_pattern_get_color_stop_count, [CairoPattern, :pointer], :cairo_status_t
+  attach_function :pattern_get_color_stop_count, :cairo_pattern_get_color_stop_count, [Pattern, :pointer], :status_t
   
   # (Not documented)
   # 
-  # @method cairo_pattern_get_linear_points(pattern, x0, y0, x1, y1)
-  # @param [CairoPattern] pattern 
+  # @method pattern_get_linear_points(pattern, x0, y0, x1, y1)
+  # @param [Pattern] pattern 
   # @param [FFI::Pointer(*Double)] x0 
   # @param [FFI::Pointer(*Double)] y0 
   # @param [FFI::Pointer(*Double)] x1 
   # @param [FFI::Pointer(*Double)] y1 
-  # @return [Symbol from _enum_cairo_status_t_] 
+  # @return [Symbol from _enum_status_t_] 
   # @scope class
-  attach_function :cairo_pattern_get_linear_points, :cairo_pattern_get_linear_points, [CairoPattern, :pointer, :pointer, :pointer, :pointer], :cairo_status_t
+  attach_function :pattern_get_linear_points, :cairo_pattern_get_linear_points, [Pattern, :pointer, :pointer, :pointer, :pointer], :status_t
   
   # (Not documented)
   # 
-  # @method cairo_pattern_get_radial_circles(pattern, x0, y0, r0, x1, y1, r1)
-  # @param [CairoPattern] pattern 
+  # @method pattern_get_radial_circles(pattern, x0, y0, r0, x1, y1, r1)
+  # @param [Pattern] pattern 
   # @param [FFI::Pointer(*Double)] x0 
   # @param [FFI::Pointer(*Double)] y0 
   # @param [FFI::Pointer(*Double)] r0 
   # @param [FFI::Pointer(*Double)] x1 
   # @param [FFI::Pointer(*Double)] y1 
   # @param [FFI::Pointer(*Double)] r1 
-  # @return [Symbol from _enum_cairo_status_t_] 
+  # @return [Symbol from _enum_status_t_] 
   # @scope class
-  attach_function :cairo_pattern_get_radial_circles, :cairo_pattern_get_radial_circles, [CairoPattern, :pointer, :pointer, :pointer, :pointer, :pointer, :pointer], :cairo_status_t
+  attach_function :pattern_get_radial_circles, :cairo_pattern_get_radial_circles, [Pattern, :pointer, :pointer, :pointer, :pointer, :pointer, :pointer], :status_t
   
   # Matrix functions
   # 
-  # @method cairo_matrix_init(matrix, xx, yx, xy, yy, x0, y0)
-  # @param [CairoMatrix] matrix 
+  # @method matrix_init(matrix, xx, yx, xy, yy, x0, y0)
+  # @param [Matrix] matrix 
   # @param [Float] xx 
   # @param [Float] yx 
   # @param [Float] xy 
@@ -5434,111 +5434,111 @@ module Cairo
   # @param [Float] y0 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_matrix_init, :cairo_matrix_init, [CairoMatrix, :double, :double, :double, :double, :double, :double], :void
+  attach_function :matrix_init, :cairo_matrix_init, [Matrix, :double, :double, :double, :double, :double, :double], :void
   
   # (Not documented)
   # 
-  # @method cairo_matrix_init_identity(matrix)
-  # @param [CairoMatrix] matrix 
+  # @method matrix_init_identity(matrix)
+  # @param [Matrix] matrix 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_matrix_init_identity, :cairo_matrix_init_identity, [CairoMatrix], :void
+  attach_function :matrix_init_identity, :cairo_matrix_init_identity, [Matrix], :void
   
   # (Not documented)
   # 
-  # @method cairo_matrix_init_translate(matrix, tx, ty)
-  # @param [CairoMatrix] matrix 
+  # @method matrix_init_translate(matrix, tx, ty)
+  # @param [Matrix] matrix 
   # @param [Float] tx 
   # @param [Float] ty 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_matrix_init_translate, :cairo_matrix_init_translate, [CairoMatrix, :double, :double], :void
+  attach_function :matrix_init_translate, :cairo_matrix_init_translate, [Matrix, :double, :double], :void
   
   # (Not documented)
   # 
-  # @method cairo_matrix_init_scale(matrix, sx, sy)
-  # @param [CairoMatrix] matrix 
+  # @method matrix_init_scale(matrix, sx, sy)
+  # @param [Matrix] matrix 
   # @param [Float] sx 
   # @param [Float] sy 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_matrix_init_scale, :cairo_matrix_init_scale, [CairoMatrix, :double, :double], :void
+  attach_function :matrix_init_scale, :cairo_matrix_init_scale, [Matrix, :double, :double], :void
   
   # (Not documented)
   # 
-  # @method cairo_matrix_init_rotate(matrix, radians)
-  # @param [CairoMatrix] matrix 
+  # @method matrix_init_rotate(matrix, radians)
+  # @param [Matrix] matrix 
   # @param [Float] radians 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_matrix_init_rotate, :cairo_matrix_init_rotate, [CairoMatrix, :double], :void
+  attach_function :matrix_init_rotate, :cairo_matrix_init_rotate, [Matrix, :double], :void
   
   # (Not documented)
   # 
-  # @method cairo_matrix_translate(matrix, tx, ty)
-  # @param [CairoMatrix] matrix 
+  # @method matrix_translate(matrix, tx, ty)
+  # @param [Matrix] matrix 
   # @param [Float] tx 
   # @param [Float] ty 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_matrix_translate, :cairo_matrix_translate, [CairoMatrix, :double, :double], :void
+  attach_function :matrix_translate, :cairo_matrix_translate, [Matrix, :double, :double], :void
   
   # (Not documented)
   # 
-  # @method cairo_matrix_scale(matrix, sx, sy)
-  # @param [CairoMatrix] matrix 
+  # @method matrix_scale(matrix, sx, sy)
+  # @param [Matrix] matrix 
   # @param [Float] sx 
   # @param [Float] sy 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_matrix_scale, :cairo_matrix_scale, [CairoMatrix, :double, :double], :void
+  attach_function :matrix_scale, :cairo_matrix_scale, [Matrix, :double, :double], :void
   
   # (Not documented)
   # 
-  # @method cairo_matrix_rotate(matrix, radians)
-  # @param [CairoMatrix] matrix 
+  # @method matrix_rotate(matrix, radians)
+  # @param [Matrix] matrix 
   # @param [Float] radians 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_matrix_rotate, :cairo_matrix_rotate, [CairoMatrix, :double], :void
+  attach_function :matrix_rotate, :cairo_matrix_rotate, [Matrix, :double], :void
   
   # (Not documented)
   # 
-  # @method cairo_matrix_invert(matrix)
-  # @param [CairoMatrix] matrix 
-  # @return [Symbol from _enum_cairo_status_t_] 
+  # @method matrix_invert(matrix)
+  # @param [Matrix] matrix 
+  # @return [Symbol from _enum_status_t_] 
   # @scope class
-  attach_function :cairo_matrix_invert, :cairo_matrix_invert, [CairoMatrix], :cairo_status_t
+  attach_function :matrix_invert, :cairo_matrix_invert, [Matrix], :status_t
   
   # (Not documented)
   # 
-  # @method cairo_matrix_multiply(result, a, b)
-  # @param [CairoMatrix] result 
-  # @param [CairoMatrix] a 
-  # @param [CairoMatrix] b 
+  # @method matrix_multiply(result, a, b)
+  # @param [Matrix] result 
+  # @param [Matrix] a 
+  # @param [Matrix] b 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_matrix_multiply, :cairo_matrix_multiply, [CairoMatrix, CairoMatrix, CairoMatrix], :void
+  attach_function :matrix_multiply, :cairo_matrix_multiply, [Matrix, Matrix, Matrix], :void
   
   # (Not documented)
   # 
-  # @method cairo_matrix_transform_distance(matrix, dx, dy)
-  # @param [CairoMatrix] matrix 
+  # @method matrix_transform_distance(matrix, dx, dy)
+  # @param [Matrix] matrix 
   # @param [FFI::Pointer(*Double)] dx 
   # @param [FFI::Pointer(*Double)] dy 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_matrix_transform_distance, :cairo_matrix_transform_distance, [CairoMatrix, :pointer, :pointer], :void
+  attach_function :matrix_transform_distance, :cairo_matrix_transform_distance, [Matrix, :pointer, :pointer], :void
   
   # (Not documented)
   # 
-  # @method cairo_matrix_transform_point(matrix, x, y)
-  # @param [CairoMatrix] matrix 
+  # @method matrix_transform_point(matrix, x, y)
+  # @param [Matrix] matrix 
   # @param [FFI::Pointer(*Double)] x 
   # @param [FFI::Pointer(*Double)] y 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_matrix_transform_point, :cairo_matrix_transform_point, [CairoMatrix, :pointer, :pointer], :void
+  attach_function :matrix_transform_point, :cairo_matrix_transform_point, [Matrix, :pointer, :pointer], :void
   
   # cairo_region_t:
   # 
@@ -5551,7 +5551,7 @@ module Cairo
   # cairo_region_reference() and cairo_region_destroy().
   # 
   # Since: 1.10
-  class CairoRegion < FFI::Struct
+  class Region < FFI::Struct
   end
   
   # cairo_rectangle_int_t:
@@ -5573,7 +5573,7 @@ module Cairo
   #   (Integer) 
   # :height ::
   #   (Integer) 
-  class CairoRectangleInt < FFI::Struct
+  class RectangleInt < FFI::Struct
     layout :x, :int,
            :y, :int,
            :width, :int,
@@ -5599,7 +5599,7 @@ module Cairo
   #   (Integer) 
   # :height ::
   #   (Integer) 
-  class CairoRectangleIntT < FFI::Struct
+  class RectangleIntT < FFI::Struct
     layout :x, :int,
            :y, :int,
            :width, :int,
@@ -5608,7 +5608,7 @@ module Cairo
   
   # (Not documented)
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_region_overlap).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:region_overlap).</em>
   # 
   # === Options:
   # :in ::
@@ -5618,10 +5618,10 @@ module Cairo
   # :part ::
   #   completely outside region
   # 
-  # @method _enum_cairo_region_overlap_
+  # @method _enum_region_overlap_
   # @return [Symbol]
   # @scope class
-  enum :cairo_region_overlap, [
+  enum :region_overlap, [
     :in,
     :out,
     :part
@@ -5629,7 +5629,7 @@ module Cairo
   
   # (Not documented)
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cairo_region_overlap_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:region_overlap_t).</em>
   # 
   # === Options:
   # :in ::
@@ -5639,10 +5639,10 @@ module Cairo
   # :part ::
   #   completely outside region
   # 
-  # @method _enum_cairo_region_overlap_t_
+  # @method _enum_region_overlap_t_
   # @return [Symbol]
   # @scope class
-  enum :cairo_region_overlap_t, [
+  enum :region_overlap_t, [
     :in,
     :out,
     :part
@@ -5650,210 +5650,210 @@ module Cairo
   
   # (Not documented)
   # 
-  # @method cairo_region_create()
-  # @return [CairoRegion] 
+  # @method region_create()
+  # @return [Region] 
   # @scope class
-  attach_function :cairo_region_create, :cairo_region_create, [], CairoRegion
+  attach_function :region_create, :cairo_region_create, [], Region
   
   # (Not documented)
   # 
-  # @method cairo_region_create_rectangle(rectangle)
-  # @param [CairoRectangleInt] rectangle 
-  # @return [CairoRegion] 
+  # @method region_create_rectangle(rectangle)
+  # @param [RectangleInt] rectangle 
+  # @return [Region] 
   # @scope class
-  attach_function :cairo_region_create_rectangle, :cairo_region_create_rectangle, [CairoRectangleInt], CairoRegion
+  attach_function :region_create_rectangle, :cairo_region_create_rectangle, [RectangleInt], Region
   
   # (Not documented)
   # 
-  # @method cairo_region_create_rectangles(rects, count)
-  # @param [CairoRectangleInt] rects 
+  # @method region_create_rectangles(rects, count)
+  # @param [RectangleInt] rects 
   # @param [Integer] count 
-  # @return [CairoRegion] 
+  # @return [Region] 
   # @scope class
-  attach_function :cairo_region_create_rectangles, :cairo_region_create_rectangles, [CairoRectangleInt, :int], CairoRegion
+  attach_function :region_create_rectangles, :cairo_region_create_rectangles, [RectangleInt, :int], Region
   
   # (Not documented)
   # 
-  # @method cairo_region_copy(original)
-  # @param [CairoRegion] original 
-  # @return [CairoRegion] 
+  # @method region_copy(original)
+  # @param [Region] original 
+  # @return [Region] 
   # @scope class
-  attach_function :cairo_region_copy, :cairo_region_copy, [CairoRegion], CairoRegion
+  attach_function :region_copy, :cairo_region_copy, [Region], Region
   
   # (Not documented)
   # 
-  # @method cairo_region_reference(region)
-  # @param [CairoRegion] region 
-  # @return [CairoRegion] 
+  # @method region_reference(region)
+  # @param [Region] region 
+  # @return [Region] 
   # @scope class
-  attach_function :cairo_region_reference, :cairo_region_reference, [CairoRegion], CairoRegion
+  attach_function :region_reference, :cairo_region_reference, [Region], Region
   
   # (Not documented)
   # 
-  # @method cairo_region_destroy(region)
-  # @param [CairoRegion] region 
+  # @method region_destroy(region)
+  # @param [Region] region 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_region_destroy, :cairo_region_destroy, [CairoRegion], :void
+  attach_function :region_destroy, :cairo_region_destroy, [Region], :void
   
   # (Not documented)
   # 
-  # @method cairo_region_equal(a, b)
-  # @param [CairoRegion] a 
-  # @param [CairoRegion] b 
+  # @method region_equal(a, b)
+  # @param [Region] a 
+  # @param [Region] b 
   # @return [Integer] 
   # @scope class
-  attach_function :cairo_region_equal, :cairo_region_equal, [CairoRegion, CairoRegion], :int
+  attach_function :region_equal, :cairo_region_equal, [Region, Region], :int
   
   # (Not documented)
   # 
-  # @method cairo_region_status(region)
-  # @param [CairoRegion] region 
-  # @return [Symbol from _enum_cairo_status_t_] 
+  # @method region_status(region)
+  # @param [Region] region 
+  # @return [Symbol from _enum_status_t_] 
   # @scope class
-  attach_function :cairo_region_status, :cairo_region_status, [CairoRegion], :cairo_status_t
+  attach_function :region_status, :cairo_region_status, [Region], :status_t
   
   # (Not documented)
   # 
-  # @method cairo_region_get_extents(region, extents)
-  # @param [CairoRegion] region 
-  # @param [CairoRectangleInt] extents 
+  # @method region_get_extents(region, extents)
+  # @param [Region] region 
+  # @param [RectangleInt] extents 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_region_get_extents, :cairo_region_get_extents, [CairoRegion, CairoRectangleInt], :void
+  attach_function :region_get_extents, :cairo_region_get_extents, [Region, RectangleInt], :void
   
   # (Not documented)
   # 
-  # @method cairo_region_num_rectangles(region)
-  # @param [CairoRegion] region 
+  # @method region_num_rectangles(region)
+  # @param [Region] region 
   # @return [Integer] 
   # @scope class
-  attach_function :cairo_region_num_rectangles, :cairo_region_num_rectangles, [CairoRegion], :int
+  attach_function :region_num_rectangles, :cairo_region_num_rectangles, [Region], :int
   
   # (Not documented)
   # 
-  # @method cairo_region_get_rectangle(region, nth, rectangle)
-  # @param [CairoRegion] region 
+  # @method region_get_rectangle(region, nth, rectangle)
+  # @param [Region] region 
   # @param [Integer] nth 
-  # @param [CairoRectangleInt] rectangle 
+  # @param [RectangleInt] rectangle 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_region_get_rectangle, :cairo_region_get_rectangle, [CairoRegion, :int, CairoRectangleInt], :void
+  attach_function :region_get_rectangle, :cairo_region_get_rectangle, [Region, :int, RectangleInt], :void
   
   # (Not documented)
   # 
-  # @method cairo_region_is_empty(region)
-  # @param [CairoRegion] region 
+  # @method region_is_empty(region)
+  # @param [Region] region 
   # @return [Integer] 
   # @scope class
-  attach_function :cairo_region_is_empty, :cairo_region_is_empty, [CairoRegion], :int
+  attach_function :region_is_empty, :cairo_region_is_empty, [Region], :int
   
   # (Not documented)
   # 
-  # @method cairo_region_contains_rectangle(region, rectangle)
-  # @param [CairoRegion] region 
-  # @param [CairoRectangleInt] rectangle 
-  # @return [Symbol from _enum_cairo_region_overlap_t_] 
+  # @method region_contains_rectangle(region, rectangle)
+  # @param [Region] region 
+  # @param [RectangleInt] rectangle 
+  # @return [Symbol from _enum_region_overlap_t_] 
   # @scope class
-  attach_function :cairo_region_contains_rectangle, :cairo_region_contains_rectangle, [CairoRegion, CairoRectangleInt], :cairo_region_overlap_t
+  attach_function :region_contains_rectangle, :cairo_region_contains_rectangle, [Region, RectangleInt], :region_overlap_t
   
   # (Not documented)
   # 
-  # @method cairo_region_contains_point(region, x, y)
-  # @param [CairoRegion] region 
+  # @method region_contains_point(region, x, y)
+  # @param [Region] region 
   # @param [Integer] x 
   # @param [Integer] y 
   # @return [Integer] 
   # @scope class
-  attach_function :cairo_region_contains_point, :cairo_region_contains_point, [CairoRegion, :int, :int], :int
+  attach_function :region_contains_point, :cairo_region_contains_point, [Region, :int, :int], :int
   
   # (Not documented)
   # 
-  # @method cairo_region_translate(region, dx, dy)
-  # @param [CairoRegion] region 
+  # @method region_translate(region, dx, dy)
+  # @param [Region] region 
   # @param [Integer] dx 
   # @param [Integer] dy 
   # @return [nil] 
   # @scope class
-  attach_function :cairo_region_translate, :cairo_region_translate, [CairoRegion, :int, :int], :void
+  attach_function :region_translate, :cairo_region_translate, [Region, :int, :int], :void
   
   # (Not documented)
   # 
-  # @method cairo_region_subtract(dst, other)
-  # @param [CairoRegion] dst 
-  # @param [CairoRegion] other 
-  # @return [Symbol from _enum_cairo_status_t_] 
+  # @method region_subtract(dst, other)
+  # @param [Region] dst 
+  # @param [Region] other 
+  # @return [Symbol from _enum_status_t_] 
   # @scope class
-  attach_function :cairo_region_subtract, :cairo_region_subtract, [CairoRegion, CairoRegion], :cairo_status_t
+  attach_function :region_subtract, :cairo_region_subtract, [Region, Region], :status_t
   
   # (Not documented)
   # 
-  # @method cairo_region_subtract_rectangle(dst, rectangle)
-  # @param [CairoRegion] dst 
-  # @param [CairoRectangleInt] rectangle 
-  # @return [Symbol from _enum_cairo_status_t_] 
+  # @method region_subtract_rectangle(dst, rectangle)
+  # @param [Region] dst 
+  # @param [RectangleInt] rectangle 
+  # @return [Symbol from _enum_status_t_] 
   # @scope class
-  attach_function :cairo_region_subtract_rectangle, :cairo_region_subtract_rectangle, [CairoRegion, CairoRectangleInt], :cairo_status_t
+  attach_function :region_subtract_rectangle, :cairo_region_subtract_rectangle, [Region, RectangleInt], :status_t
   
   # (Not documented)
   # 
-  # @method cairo_region_intersect(dst, other)
-  # @param [CairoRegion] dst 
-  # @param [CairoRegion] other 
-  # @return [Symbol from _enum_cairo_status_t_] 
+  # @method region_intersect(dst, other)
+  # @param [Region] dst 
+  # @param [Region] other 
+  # @return [Symbol from _enum_status_t_] 
   # @scope class
-  attach_function :cairo_region_intersect, :cairo_region_intersect, [CairoRegion, CairoRegion], :cairo_status_t
+  attach_function :region_intersect, :cairo_region_intersect, [Region, Region], :status_t
   
   # (Not documented)
   # 
-  # @method cairo_region_intersect_rectangle(dst, rectangle)
-  # @param [CairoRegion] dst 
-  # @param [CairoRectangleInt] rectangle 
-  # @return [Symbol from _enum_cairo_status_t_] 
+  # @method region_intersect_rectangle(dst, rectangle)
+  # @param [Region] dst 
+  # @param [RectangleInt] rectangle 
+  # @return [Symbol from _enum_status_t_] 
   # @scope class
-  attach_function :cairo_region_intersect_rectangle, :cairo_region_intersect_rectangle, [CairoRegion, CairoRectangleInt], :cairo_status_t
+  attach_function :region_intersect_rectangle, :cairo_region_intersect_rectangle, [Region, RectangleInt], :status_t
   
   # (Not documented)
   # 
-  # @method cairo_region_union(dst, other)
-  # @param [CairoRegion] dst 
-  # @param [CairoRegion] other 
-  # @return [Symbol from _enum_cairo_status_t_] 
+  # @method region_union(dst, other)
+  # @param [Region] dst 
+  # @param [Region] other 
+  # @return [Symbol from _enum_status_t_] 
   # @scope class
-  attach_function :cairo_region_union, :cairo_region_union, [CairoRegion, CairoRegion], :cairo_status_t
+  attach_function :region_union, :cairo_region_union, [Region, Region], :status_t
   
   # (Not documented)
   # 
-  # @method cairo_region_union_rectangle(dst, rectangle)
-  # @param [CairoRegion] dst 
-  # @param [CairoRectangleInt] rectangle 
-  # @return [Symbol from _enum_cairo_status_t_] 
+  # @method region_union_rectangle(dst, rectangle)
+  # @param [Region] dst 
+  # @param [RectangleInt] rectangle 
+  # @return [Symbol from _enum_status_t_] 
   # @scope class
-  attach_function :cairo_region_union_rectangle, :cairo_region_union_rectangle, [CairoRegion, CairoRectangleInt], :cairo_status_t
+  attach_function :region_union_rectangle, :cairo_region_union_rectangle, [Region, RectangleInt], :status_t
   
   # (Not documented)
   # 
-  # @method cairo_region_xor(dst, other)
-  # @param [CairoRegion] dst 
-  # @param [CairoRegion] other 
-  # @return [Symbol from _enum_cairo_status_t_] 
+  # @method region_xor(dst, other)
+  # @param [Region] dst 
+  # @param [Region] other 
+  # @return [Symbol from _enum_status_t_] 
   # @scope class
-  attach_function :cairo_region_xor, :cairo_region_xor, [CairoRegion, CairoRegion], :cairo_status_t
+  attach_function :region_xor, :cairo_region_xor, [Region, Region], :status_t
   
   # (Not documented)
   # 
-  # @method cairo_region_xor_rectangle(dst, rectangle)
-  # @param [CairoRegion] dst 
-  # @param [CairoRectangleInt] rectangle 
-  # @return [Symbol from _enum_cairo_status_t_] 
+  # @method region_xor_rectangle(dst, rectangle)
+  # @param [Region] dst 
+  # @param [RectangleInt] rectangle 
+  # @return [Symbol from _enum_status_t_] 
   # @scope class
-  attach_function :cairo_region_xor_rectangle, :cairo_region_xor_rectangle, [CairoRegion, CairoRectangleInt], :cairo_status_t
+  attach_function :region_xor_rectangle, :cairo_region_xor_rectangle, [Region, RectangleInt], :status_t
   
   # Functions to be used while debugging (not intended for use in production code)
   # 
-  # @method cairo_debug_reset_static_data()
+  # @method debug_reset_static_data()
   # @return [nil] 
   # @scope class
-  attach_function :cairo_debug_reset_static_data, :cairo_debug_reset_static_data, [], :void
+  attach_function :debug_reset_static_data, :cairo_debug_reset_static_data, [], :void
   
 end
