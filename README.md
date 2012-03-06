@@ -15,6 +15,7 @@ Features
   * LLVM
   * OpenGL
   * SQLite3
+  * Cairo
 
 
 Requirements
@@ -69,7 +70,6 @@ Roadmap
 -------
 
 * Support for more libraries:
-  * Cairo
   * (Write me if you have a whish)
 * Automatic generation of object oriented wrappers
 * Polish YARD documentation comments some more

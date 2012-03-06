@@ -6,6 +6,7 @@ task :test do
   require "llvm_test"
   require "opengl_test"
   require "sqlite3_test"
+  require "cairo_test"
   
   system "git status test/gen"
 end
