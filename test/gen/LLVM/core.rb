@@ -8,51 +8,62 @@ module LLVM
   
   # The top-level container for all LLVM global data.  See the LLVMContext class.
   class OpaqueContext < FFI::Struct
+    layout :dummy, :char
   end
   
   # The top-level container for all other LLVM Intermediate Representation (IR)
   # objects. See the llvm::Module class.
   class OpaqueModule < FFI::Struct
+    layout :dummy, :char
   end
   
   # Each value in the LLVM IR has a type, an LLVMTypeRef. See the llvm::Type
   # class.
   class OpaqueType < FFI::Struct
+    layout :dummy, :char
   end
   
   # (Not documented)
   class OpaqueValue < FFI::Struct
+    layout :dummy, :char
   end
   
   # (Not documented)
   class OpaqueBasicBlock < FFI::Struct
+    layout :dummy, :char
   end
   
   # (Not documented)
   class OpaqueBuilder < FFI::Struct
+    layout :dummy, :char
   end
   
   # Interface used to provide a module to JIT or interpreter.  This is now just a
   # synonym for llvm::Module, but we have to keep using the different type to
   # keep binary compatibility.
   class OpaqueModuleProvider < FFI::Struct
+    layout :dummy, :char
   end
   
   # Used to provide a module to JIT or interpreter.
   # See the llvm::MemoryBuffer class.
   class OpaqueMemoryBuffer < FFI::Struct
+    layout :dummy, :char
   end
   
   # See the llvm::PassManagerBase class.
   class OpaquePassManager < FFI::Struct
+    layout :dummy, :char
   end
   
   # See the llvm::PassRegistry class.
   class OpaquePassRegistry < FFI::Struct
+    layout :dummy, :char
   end
   
   # Used to get the users and usees of a Value. See the llvm::Use class.
   class OpaqueUse < FFI::Struct
+    layout :dummy, :char
   end
   
   # (Not documented)

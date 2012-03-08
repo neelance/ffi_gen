@@ -318,14 +318,17 @@ module GLU
   
   # (Not documented)
   class GLUnurbs < FFI::Struct
+    layout :dummy, :char
   end
   
   # (Not documented)
   class GLUquadric < FFI::Struct
+    layout :dummy, :char
   end
   
   # (Not documented)
   class GLUtesselator < FFI::Struct
+    layout :dummy, :char
   end
   
   # (Not documented)

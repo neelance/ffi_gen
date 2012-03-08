@@ -26,14 +26,17 @@ module LLVM
   
   # (Not documented)
   class OpaqueTargetData < FFI::Struct
+    layout :dummy, :char
   end
   
   # (Not documented)
   class OpaqueTargetLibraryInfotData < FFI::Struct
+    layout :dummy, :char
   end
   
   # (Not documented)
   class StructLayout < FFI::Struct
+    layout :dummy, :char
   end
   
   # Creates target data from a target layout string.

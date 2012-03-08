@@ -22,10 +22,12 @@ module LLVM
   
   # (Not documented)
   class OpaqueGenericValue < FFI::Struct
+    layout :dummy, :char
   end
   
   # (Not documented)
   class OpaqueExecutionEngine < FFI::Struct
+    layout :dummy, :char
   end
   
   # ===-- Operations on generic values --------------------------------------===

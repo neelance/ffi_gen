@@ -564,6 +564,7 @@ module SQLite3
   # (sqlite3_busy_timeout()) to name but three) that are methods on an
   # sqlite3 object.
   class Sqlite3 < FFI::Struct
+    layout :dummy, :char
   end
   
   # CAPI3REF: Closing A Database Connection
@@ -762,6 +763,7 @@ module SQLite3
   # 
   # Mutexes are created using (sqlite3_mutex_alloc()).
   class Mutex < FFI::Struct
+    layout :dummy, :char
   end
   
   # CAPI3REF: OS Interface Object
@@ -2442,6 +2444,7 @@ module SQLite3
   # Refer to documentation on individual methods above for additional
   # information.
   class Stmt < FFI::Struct
+    layout :dummy, :char
   end
   
   # CAPI3REF: Run-time Limits
@@ -2697,6 +2700,7 @@ module SQLite3
   # The (sqlite3_value_blob | sqlite3_value_type()) family of
   # interfaces require protected sqlite3_value objects.
   class Mem < FFI::Struct
+    layout :dummy, :char
   end
   
   # CAPI3REF: SQL Function Context Object
@@ -2710,6 +2714,7 @@ module SQLite3
   # (sqlite3_context_db_handle()), (sqlite3_get_auxdata()),
   # and/or (sqlite3_set_auxdata()).
   class Context < FFI::Struct
+    layout :dummy, :char
   end
   
   # CAPI3REF: Binding Values To Prepared Statements
@@ -5301,6 +5306,7 @@ module SQLite3
   # can be used to read or write small subsections of the BLOB.
   # ^The (sqlite3_blob_bytes()) interface returns the size of the BLOB in bytes.
   class Blob < FFI::Struct
+    layout :dummy, :char
   end
   
   # CAPI3REF: Open A BLOB For Incremental I/O
@@ -6002,6 +6008,7 @@ module SQLite3
   # 
   # See (sqlite3_pcache_methods) for additional information.
   class Pcache < FFI::Struct
+    layout :dummy, :char
   end
   
   # CAPI3REF: Application Defined Page Cache.
@@ -6199,6 +6206,7 @@ module SQLite3
   # 
   # See Also: (Using the SQLite Online Backup API)
   class Backup < FFI::Struct
+    layout :dummy, :char
   end
   
   # CAPI3REF: Online Backup API.

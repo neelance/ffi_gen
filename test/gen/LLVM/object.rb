@@ -8,10 +8,12 @@ module LLVM
   
   # (Not documented)
   class OpaqueObjectFile < FFI::Struct
+    layout :dummy, :char
   end
   
   # (Not documented)
   class OpaqueSectionIterator < FFI::Struct
+    layout :dummy, :char
   end
   
   # (Not documented)

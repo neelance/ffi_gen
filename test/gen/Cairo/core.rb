@@ -40,6 +40,7 @@ module Cairo
   # Memory management of #cairo_t is done with
   # cairo_reference() and cairo_destroy().
   class Cairo < FFI::Struct
+    layout :dummy, :char
   end
   
   # cairo_surface_t:
@@ -66,6 +67,7 @@ module Cairo
   # Memory management of #cairo_surface_t is done with
   # cairo_surface_reference() and cairo_surface_destroy().
   class Surface < FFI::Struct
+    layout :dummy, :char
   end
   
   # cairo_device_t:
@@ -83,6 +85,7 @@ module Cairo
   # 
   # Since: 1.10
   class Device < FFI::Struct
+    layout :dummy, :char
   end
   
   # cairo_matrix_t:
@@ -179,6 +182,7 @@ module Cairo
   # Memory management of #cairo_pattern_t is done with
   # cairo_pattern_reference() and cairo_pattern_destroy().
   class Pattern < FFI::Struct
+    layout :dummy, :char
   end
   
   # cairo_user_data_key_t:
@@ -2059,6 +2063,7 @@ module Cairo
   # Memory management of #cairo_scaled_font_t is done with
   # cairo_scaled_font_reference() and cairo_scaled_font_destroy().
   class ScaledFont < FFI::Struct
+    layout :dummy, :char
   end
   
   # cairo_font_face_t:
@@ -2077,6 +2082,7 @@ module Cairo
   # Memory management of #cairo_font_face_t is done with
   # cairo_font_face_reference() and cairo_font_face_destroy().
   class FontFace < FFI::Struct
+    layout :dummy, :char
   end
   
   # cairo_glyph_t:
@@ -2676,6 +2682,7 @@ module Cairo
   # for equality, merge, or compute a hash value of
   # #cairo_font_options_t objects.
   class FontOptions < FFI::Struct
+    layout :dummy, :char
   end
   
   # (Not documented)
@@ -5552,6 +5559,7 @@ module Cairo
   # 
   # Since: 1.10
   class Region < FFI::Struct
+    layout :dummy, :char
   end
   
   # cairo_rectangle_int_t:

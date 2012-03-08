@@ -8,6 +8,7 @@ module Clang
   
   # A single translation unit, which resides in an index.
   class TranslationUnitImpl < FFI::Struct
+    layout :dummy, :char
   end
   
   # Provides the contents of a file that has not yet been saved to disk.
@@ -1961,6 +1962,7 @@ module Clang
   
   # A fast container representing a set of CXCursors.
   class CursorSetImpl < FFI::Struct
+    layout :dummy, :char
   end
   
   # Creates an empty CXCursorSet.
