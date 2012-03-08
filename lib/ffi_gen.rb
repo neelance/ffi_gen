@@ -125,6 +125,8 @@ class FFIGen
         end
       end
       
+      @fields << { symbol: ":dummy", type_data: { ffi_type: ":char" } } if @fields.empty?
+      
       writer.puts "class #{ruby_name} < FFI::Struct"
       writer.indent do
         writer.write_array @fields, ",", "layout ", "       " do |field|
