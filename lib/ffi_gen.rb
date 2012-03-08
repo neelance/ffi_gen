@@ -310,7 +310,7 @@ class FFIGen
     
     args = []
     @headers.each do |header|
-      args.push "-include", header
+      args.push "-include", header unless header.is_a? Regexp
     end
     args.concat @cflags
     args_ptr = FFI::MemoryPointer.new :pointer, args.size
@@ -334,7 +334,7 @@ class FFIGen
     header_files = []
     Clang.get_inclusions translation_unit, proc { |included_file, inclusion_stack, include_length, client_data|
       filename = Clang.get_file_name(included_file).to_s_and_dispose
-      header_files << included_file if @headers.any? { |header| filename.end_with? header }
+      header_files << included_file if @headers.any? { |header| header.is_a?(Regexp) ? header =~ filename : filename.end_with?(header) }
     }, nil
     
     @declarations = {}
