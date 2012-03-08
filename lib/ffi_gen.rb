@@ -561,7 +561,7 @@ class FFIGen
       
       result
     when :record
-      ["#{declaration.ruby_name}.by_value", declaration.ruby_name]
+      declaration ? ["#{declaration.ruby_name}.by_value", declaration.ruby_name] : ["[:char, 1]", "unknown"] # TODO
     when :enum
       [":#{declaration.ruby_name}", "Symbol from _enum_#{declaration.ruby_name}_", declaration.ruby_name]
     when :constant_array
