@@ -8,7 +8,7 @@ ffi_gen - A generator for Ruby FFI bindings
 
 Features
 --------
-* Generation of FFI methods, structures, enums and callbacks
+* Generation of FFI methods, structures, enumerations and callbacks
 * Generation of YARD documentation comments
 * Tested with headers of the following libraries:
   * Clang
