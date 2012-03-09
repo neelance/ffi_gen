@@ -97,12 +97,13 @@ class FFIGen
     end
   end
   
-  class Struct
+  class StructOrUnion
     attr_reader :fields, :comment, :written
     
-    def initialize(generator, name, comment)
+    def initialize(generator, name, is_union, comment)
       @generator = generator
       @name = name
+      @is_union = is_union
       @comment = comment
       @fields = []
       @written = false
@@ -127,7 +128,7 @@ class FFIGen
       
       @fields << { symbol: ":dummy", type_data: { ffi_type: ":char" } } if @fields.empty?
       
-      writer.puts "class #{ruby_name} < FFI::Struct"
+      writer.puts "class #{ruby_name} < #{@is_union ? 'FFI::Union' : 'FFI::Struct'}"
       writer.indent do
         writer.write_array @fields, ",", "layout ", "       " do |field|
           "#{field[:symbol]}, #{field[:type_data][:ffi_type]}"
@@ -143,7 +144,7 @@ class FFIGen
     end
   end
   
-  class Function
+  class FunctionOrCallback
     attr_reader :name, :parameters, :comment
     attr_accessor :return_type
     
@@ -347,7 +348,7 @@ class FFIGen
       
       extent = Clang.get_cursor_extent declaration
       comment_range = Clang.get_range previous_declaration_end, Clang.get_range_start(extent)
-      unless declaration[:kind] == :enum_decl or declaration[:kind] == :struct_decl # keep comment for typedef_decl
+      unless [:enum_decl, :struct_decl, :union_decl].include? declaration[:kind] # keep comment for typedef_decl
         previous_declaration_end = Clang.get_range_end extent
       end 
       
@@ -359,11 +360,11 @@ class FFIGen
       comment = extract_comment translation_unit, comment_range
       
       case declaration[:kind]
-      when :enum_decl, :struct_decl
+      when :enum_decl, :struct_decl, :union_decl
         read_named_declaration declaration, name, comment unless name.empty?
       
       when :function_decl
-        function = Function.new self, name, false, comment
+        function = FunctionOrCallback.new self, name, false, comment
         function.return_type = Clang.get_cursor_result_type declaration
         @declarations[name] = function
         
@@ -380,7 +381,7 @@ class FFIGen
           read_named_declaration typedef_children.first, name, comment unless @declarations.has_key? name
           
         elsif typedef_children.size > 1
-          callback = Function.new self, name, true, comment
+          callback = FunctionOrCallback.new self, name, true, comment
           callback.return_type = Clang.get_cursor_type typedef_children.first
           @declarations[name] = callback
           
@@ -448,37 +449,41 @@ class FFIGen
         enum.constants << { name: constant_name, value: constant_value, comment: constant_comment }
       end
       
-    when :struct_decl
-      struct = Struct.new self, name, comment
+    when :struct_decl, :union_decl
+      struct = StructOrUnion.new self, name, (declaration[:kind] == :union_decl), comment
       
       struct_children = Clang.get_children declaration
-      previous_child_end = Clang.get_cursor_location declaration
-      struct_children.each_with_index do |struct_child, index|
-        child_name = Clang.get_cursor_spelling(struct_child).to_s_and_dispose
-        child_extent = Clang.get_cursor_extent struct_child
+      previous_field_end = Clang.get_cursor_location declaration
+      until struct_children.empty?
+        nested_declaration = struct_children.shift if [:struct_decl, :union_decl].include? struct_children.first[:kind]
+        field = struct_children.shift
+        raise if field[:kind] != :field_decl
         
-        child_comment_range = Clang.get_range previous_child_end, Clang.get_range_start(child_extent)
-        child_comment = extract_comment translation_unit, child_comment_range
+        field_name = Clang.get_cursor_spelling(field).to_s_and_dispose
+        field_extent = Clang.get_cursor_extent field
+        
+        field_comment_range = Clang.get_range previous_field_end, Clang.get_range_start(field_extent)
+        field_comment = extract_comment translation_unit, field_comment_range
         
         # check for comment starting on same line
-        next_child_start = index < struct_children.size - 1 ? Clang.get_cursor_location(struct_children[index + 1]) : Clang.get_range_end(Clang.get_cursor_extent(declaration))
-        following_comment_range = Clang.get_range Clang.get_range_end(child_extent), next_child_start
+        next_field_start = struct_children.first ? Clang.get_cursor_location(struct_children.first) : Clang.get_range_end(Clang.get_cursor_extent(declaration))
+        following_comment_range = Clang.get_range Clang.get_range_end(field_extent), next_field_start
         following_comment_token = extract_comment translation_unit, following_comment_range, false, false
-        if following_comment_token and Clang.get_spelling_location_data(Clang.get_token_location(translation_unit, following_comment_token))[:line] == Clang.get_spelling_location_data(Clang.get_range_end(child_extent))[:line]
-          child_comment = Clang.get_token_spelling(translation_unit, following_comment_token).to_s_and_dispose
-          previous_child_end = Clang.get_range_end Clang.get_token_extent(translation_unit, following_comment_token)
+        if following_comment_token and Clang.get_spelling_location_data(Clang.get_token_location(translation_unit, following_comment_token))[:line] == Clang.get_spelling_location_data(Clang.get_range_end(field_extent))[:line]
+          field_comment = Clang.get_token_spelling(translation_unit, following_comment_token).to_s_and_dispose
+          previous_field_end = Clang.get_range_end Clang.get_token_extent(translation_unit, following_comment_token)
         else
-          previous_child_end = Clang.get_range_end child_extent
+          previous_field_end = Clang.get_range_end field_extent
         end
         
-        case struct_child[:kind]
-        when :field_decl
-          field_type = Clang.get_cursor_type struct_child
-  
-          struct.fields << { name: child_name, type: field_type, comment: child_comment }
-        when :struct_decl
-          read_named_declaration struct_child, child_name, child_comment
+        if nested_declaration
+          nested_declaration_name = Clang.get_cursor_spelling(nested_declaration).to_s_and_dispose
+          nested_declaration_name = "#{name}_#{field_name}" if nested_declaration_name.empty?
+          read_named_declaration nested_declaration, nested_declaration_name, ""
         end
+        
+        field_type = Clang.get_cursor_type field
+        struct.fields << { name: field_name, type: field_type, comment: field_comment }
       end
       
       @declarations[name] = struct
