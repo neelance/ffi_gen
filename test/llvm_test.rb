@@ -7,6 +7,7 @@ run_test(
   prefixes:      ["LLVM"],
   blacklist:     ["LLVMGetMDNodeNumOperands", "LLVMGetMDNodeOperand", "EDGetDisassembler",
                   "LLVMInitializeAllTargetInfos", "LLVMInitializeAllTargets", "LLVMInitializeNativeTarget"],
+  blocking:      ["LLVMRunFunction", "LLVMRunFunctionAsMain"],
   file_mappings: {
     "llvm-c/Analysis.h"          => "analysis.rb",
     "llvm-c/BitReader.h"         => "bit_reader.rb",

@@ -178,11 +178,12 @@ class FFIGen
     attr_reader :name, :parameters, :comment
     attr_accessor :return_type
     
-    def initialize(generator, name, is_callback, comment)
+    def initialize(generator, name, is_callback, blocking, comment)
       @generator = generator
       @name = name
       @parameters = []
       @is_callback = is_callback
+      @blocking = blocking
       @comment = comment
     end
     
@@ -211,6 +212,7 @@ class FFIGen
         current_description << line
       end
       
+      writer.puts "@blocking = true" if @blocking
       writer.comment do
         writer.write_description function_description
         writer.puts "", "<em>This entry is only for documentation and no real method.</em>" if @is_callback
@@ -311,6 +313,7 @@ class FFIGen
     @cflags        = options.fetch :cflags, []
     @prefixes      = options.fetch :prefixes, []
     @blacklist     = options.fetch :blacklist, []
+    @blocking      = options.fetch :blocking, []
     @ffi_lib_flags = options.fetch :ffi_lib_flags, nil
     @output        = options.fetch :output, $stdout
     
@@ -477,7 +480,7 @@ class FFIGen
       @declarations[Clang.get_cursor_type(declaration)] = struct
     
     when :function_decl
-      function = FunctionOrCallback.new self, name, false, comment
+      function = FunctionOrCallback.new self, name, false, @blocking.include?(name), comment
       function.return_type = Clang.get_cursor_result_type declaration
       @declarations[declaration] = function
       
@@ -495,7 +498,7 @@ class FFIGen
         child_declaration.name ||= name if child_declaration
         
       elsif typedef_children.size > 1
-        callback = FunctionOrCallback.new self, name, true, comment
+        callback = FunctionOrCallback.new self, name, true, false, comment
         callback.return_type = Clang.get_cursor_type typedef_children.first
         @declarations[Clang.get_cursor_type(declaration)] = callback
         

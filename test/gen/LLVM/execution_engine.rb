@@ -185,6 +185,7 @@ module LLVM
   # @scope class
   attach_function :run_static_destructors, :LLVMRunStaticDestructors, [OpaqueExecutionEngine], :void
   
+  @blocking = true
   # (Not documented)
   # 
   # @method run_function_as_main(ee, f, arg_c, arg_v, env_p)
@@ -197,6 +198,7 @@ module LLVM
   # @scope class
   attach_function :run_function_as_main, :LLVMRunFunctionAsMain, [OpaqueExecutionEngine, :pointer, :uint, :pointer, :pointer], :int
   
+  @blocking = true
   # (Not documented)
   # 
   # @method run_function(ee, f, num_args, args)

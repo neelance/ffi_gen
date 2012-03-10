@@ -10,9 +10,10 @@ def run_test(options = {})
       ruby_module: options[:library_name],
       ffi_lib:     options[:ffi_lib],
       headers:     [header],
-      cflags:      options[:cflags] || [],
-      prefixes:    options[:prefixes] || [],
-      blacklist:   options[:blacklist] || [],
+      cflags:      options.fetch(:cflags, []),
+      prefixes:    options.fetch(:prefixes, []),
+      blacklist:   options.fetch(:blacklist, []),
+      blocking:    options.fetch(:blocking, []),
       output:      output_file
     )
     
