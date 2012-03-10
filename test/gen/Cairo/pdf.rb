@@ -26,24 +26,6 @@ module Cairo
   
   # (Not documented)
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:pdf_version_t).</em>
-  # 
-  # === Options:
-  # :_4 ::
-  #   
-  # :_5 ::
-  #   
-  # 
-  # @method _enum_pdf_version_t_
-  # @return [Symbol]
-  # @scope class
-  enum :pdf_version_t, [
-    :_4,
-    :_5
-  ]
-  
-  # (Not documented)
-  # 
   # @method pdf_surface_create(filename, width_in_points, height_in_points)
   # @param [String] filename 
   # @param [Float] width_in_points 
@@ -67,10 +49,10 @@ module Cairo
   # 
   # @method pdf_surface_restrict_to_version(surface, version)
   # @param [FFI::Pointer(*SurfaceT)] surface 
-  # @param [Symbol from _enum_pdf_version_t_] version 
+  # @param [Symbol from _enum_pdf_version_] version 
   # @return [nil] 
   # @scope class
-  attach_function :pdf_surface_restrict_to_version, :cairo_pdf_surface_restrict_to_version, [:pointer, :pdf_version_t], :void
+  attach_function :pdf_surface_restrict_to_version, :cairo_pdf_surface_restrict_to_version, [:pointer, :pdf_version], :void
   
   # (Not documented)
   # 
@@ -84,10 +66,10 @@ module Cairo
   # (Not documented)
   # 
   # @method pdf_version_to_string(version)
-  # @param [Symbol from _enum_pdf_version_t_] version 
+  # @param [Symbol from _enum_pdf_version_] version 
   # @return [String] 
   # @scope class
-  attach_function :pdf_version_to_string, :cairo_pdf_version_to_string, [:pdf_version_t], :string
+  attach_function :pdf_version_to_string, :cairo_pdf_version_to_string, [:pdf_version], :string
   
   # (Not documented)
   # 

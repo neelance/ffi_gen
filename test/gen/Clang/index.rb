@@ -317,7 +317,7 @@ module Clang
   # @method get_presumed_location(location, filename, line, column)
   # @param [SourceLocation] location the location within a source file that will be decomposed
   #   into its parts.
-  # @param [FFI::Pointer(*String)] filename (out) if non-NULL, will be set to the filename of the
+  # @param [String] filename (out) if non-NULL, will be set to the filename of the
   #   source location. Note that filenames returned will be for "virtual" files,
   #   which don't necessarily exist on the machine running clang - e.g. when
   #   parsing preprocessed output obtained from a different environment. If
@@ -330,7 +330,7 @@ module Clang
   #   source location. For an invalid source location, zero is returned.
   # @return [nil] 
   # @scope class
-  attach_function :get_presumed_location, :clang_getPresumedLocation, [SourceLocation.by_value, :pointer, :pointer, :pointer], :void
+  attach_function :get_presumed_location, :clang_getPresumedLocation, [SourceLocation.by_value, String, :pointer, :pointer], :void
   
   # Legacy API to retrieve the file, line, column, and offset represented
   # by the given source location.
@@ -566,12 +566,12 @@ module Clang
   # 
   # @method get_diagnostic_option(diag, disable)
   # @param [FFI::Pointer(Diagnostic)] diag The diagnostic to be queried.
-  # @param [FFI::Pointer(*String)] disable If non-NULL, will be set to the option that disables this
+  # @param [String] disable If non-NULL, will be set to the option that disables this
   #   diagnostic (if any).
   # @return [String] A string that contains the command-line option used to enable this
   #   warning, such as "-Wconversion" or "-pedantic". 
   # @scope class
-  attach_function :get_diagnostic_option, :clang_getDiagnosticOption, [:pointer, :pointer], String.by_value
+  attach_function :get_diagnostic_option, :clang_getDiagnosticOption, [:pointer, String], String.by_value
   
   # Retrieve the category number for this diagnostic.
   # 
@@ -641,14 +641,14 @@ module Clang
   # @method get_diagnostic_fix_it(diagnostic, fix_it, replacement_range)
   # @param [FFI::Pointer(Diagnostic)] diagnostic The diagnostic whose fix-its are being queried.
   # @param [Integer] fix_it The zero-based index of the fix-it.
-  # @param [FFI::Pointer(*SourceRange)] replacement_range The source range whose contents will be
+  # @param [SourceRange] replacement_range The source range whose contents will be
   #   replaced with the returned replacement string. Note that source
   #   ranges are half-open ranges (a, b), so the source code should be
   #   replaced from a and up to (but not including) b.
   # @return [String] A string containing text that should be replace the source
   #   code indicated by the \c ReplacementRange.
   # @scope class
-  attach_function :get_diagnostic_fix_it, :clang_getDiagnosticFixIt, [:pointer, :uint, :pointer], String.by_value
+  attach_function :get_diagnostic_fix_it, :clang_getDiagnosticFixIt, [:pointer, :uint, SourceRange], String.by_value
   
   # Get the original translation unit source file name.
   # 
@@ -2122,10 +2122,10 @@ module Clang
   # clang_getOverriddenCursors().
   # 
   # @method dispose_overridden_cursors(overridden)
-  # @param [FFI::Pointer(*Cursor)] overridden 
+  # @param [Cursor] overridden 
   # @return [nil] 
   # @scope class
-  attach_function :dispose_overridden_cursors, :clang_disposeOverriddenCursors, [:pointer], :void
+  attach_function :dispose_overridden_cursors, :clang_disposeOverriddenCursors, [Cursor], :void
   
   # Retrieve the file that is included by the given inclusion directive
   # cursor.
@@ -3027,23 +3027,23 @@ module Clang
   # 
   # @method annotate_tokens(tu, tokens, num_tokens, cursors)
   # @param [TranslationUnitImpl] tu the translation unit that owns the given tokens.
-  # @param [FFI::Pointer(*Token)] tokens the set of tokens to annotate.
+  # @param [Token] tokens the set of tokens to annotate.
   # @param [Integer] num_tokens the number of tokens in \p Tokens.
-  # @param [FFI::Pointer(*Cursor)] cursors an array of \p NumTokens cursors, whose contents will be
+  # @param [Cursor] cursors an array of \p NumTokens cursors, whose contents will be
   #   replaced with the cursors corresponding to each token.
   # @return [nil] 
   # @scope class
-  attach_function :annotate_tokens, :clang_annotateTokens, [TranslationUnitImpl, :pointer, :uint, :pointer], :void
+  attach_function :annotate_tokens, :clang_annotateTokens, [TranslationUnitImpl, Token, :uint, Cursor], :void
   
   # Free the given set of tokens.
   # 
   # @method dispose_tokens(tu, tokens, num_tokens)
   # @param [TranslationUnitImpl] tu 
-  # @param [FFI::Pointer(*Token)] tokens 
+  # @param [Token] tokens 
   # @param [Integer] num_tokens 
   # @return [nil] 
   # @scope class
-  attach_function :dispose_tokens, :clang_disposeTokens, [TranslationUnitImpl, :pointer, :uint], :void
+  attach_function :dispose_tokens, :clang_disposeTokens, [TranslationUnitImpl, Token, :uint], :void
   
   # for debug/testing
   # 
@@ -3359,12 +3359,12 @@ module Clang
   # 
   # = Fields:
   # :results ::
-  #   (FFI::Pointer(*CompletionResult)) The code-completion results.
+  #   (CompletionResult) The code-completion results.
   # :num_results ::
   #   (Integer) The number of code-completion results stored in the
   #   \c Results array.
   class CodeCompleteResults < FFI::Struct
-    layout :results, :pointer,
+    layout :results, CompletionResult,
            :num_results, :uint
   end
   
@@ -3475,39 +3475,39 @@ module Clang
   #   CXCodeComplete_Flags enumeration. The 
   #   \c clang_defaultCodeCompleteOptions() function returns a default set
   #   of code-completion options.
-  # @return [FFI::Pointer(*CodeCompleteResults)] If successful, a new \c CXCodeCompleteResults structure
+  # @return [CodeCompleteResults] If successful, a new \c CXCodeCompleteResults structure
   #   containing code-completion results, which should eventually be
   #   freed with \c clang_disposeCodeCompleteResults(). If code
   #   completion fails, returns NULL.
   # @scope class
-  attach_function :code_complete_at, :clang_codeCompleteAt, [TranslationUnitImpl, :string, :uint, :uint, UnsavedFile, :uint, :uint], :pointer
+  attach_function :code_complete_at, :clang_codeCompleteAt, [TranslationUnitImpl, :string, :uint, :uint, UnsavedFile, :uint, :uint], CodeCompleteResults
   
   # Sort the code-completion results in case-insensitive alphabetical 
   # order.
   # 
   # @method sort_code_completion_results(results, num_results)
-  # @param [FFI::Pointer(*CompletionResult)] results The set of results to sort.
+  # @param [CompletionResult] results The set of results to sort.
   # @param [Integer] num_results The number of results in \p Results.
   # @return [nil] 
   # @scope class
-  attach_function :sort_code_completion_results, :clang_sortCodeCompletionResults, [:pointer, :uint], :void
+  attach_function :sort_code_completion_results, :clang_sortCodeCompletionResults, [CompletionResult, :uint], :void
   
   # Free the given set of code-completion results.
   # 
   # @method dispose_code_complete_results(results)
-  # @param [FFI::Pointer(*CodeCompleteResults)] results 
+  # @param [CodeCompleteResults] results 
   # @return [nil] 
   # @scope class
-  attach_function :dispose_code_complete_results, :clang_disposeCodeCompleteResults, [:pointer], :void
+  attach_function :dispose_code_complete_results, :clang_disposeCodeCompleteResults, [CodeCompleteResults], :void
   
   # Determine the number of diagnostics produced prior to the
   # location where code completion was performed.
   # 
   # @method code_complete_get_num_diagnostics(results)
-  # @param [FFI::Pointer(*CodeCompleteResults)] results 
+  # @param [CodeCompleteResults] results 
   # @return [Integer] 
   # @scope class
-  attach_function :code_complete_get_num_diagnostics, :clang_codeCompleteGetNumDiagnostics, [:pointer], :uint
+  attach_function :code_complete_get_num_diagnostics, :clang_codeCompleteGetNumDiagnostics, [CodeCompleteResults], :uint
   
   # Retrieve a diagnostic associated with the given code completion.
   # 
@@ -3515,22 +3515,22 @@ module Clang
   # the code completion results to query.
   # 
   # @method code_complete_get_diagnostic(results, index)
-  # @param [FFI::Pointer(*CodeCompleteResults)] results 
+  # @param [CodeCompleteResults] results 
   # @param [Integer] index the zero-based diagnostic number to retrieve.
   # @return [FFI::Pointer(Diagnostic)] the requested diagnostic. This diagnostic must be freed
   #   via a call to \c clang_disposeDiagnostic().
   # @scope class
-  attach_function :code_complete_get_diagnostic, :clang_codeCompleteGetDiagnostic, [:pointer, :uint], :pointer
+  attach_function :code_complete_get_diagnostic, :clang_codeCompleteGetDiagnostic, [CodeCompleteResults, :uint], :pointer
   
   # Determines what compeltions are appropriate for the context
   # the given code completion.
   # 
   # @method code_complete_get_contexts(results)
-  # @param [FFI::Pointer(*CodeCompleteResults)] results the code completion results to query
+  # @param [CodeCompleteResults] results the code completion results to query
   # @return [Integer] the kinds of completions that are appropriate for use
   #   along with the given code completion results.
   # @scope class
-  attach_function :code_complete_get_contexts, :clang_codeCompleteGetContexts, [:pointer], :ulong_long
+  attach_function :code_complete_get_contexts, :clang_codeCompleteGetContexts, [CodeCompleteResults], :ulong_long
   
   # Returns the cursor kind for the container for the current code
   # completion context. The container is only guaranteed to be set for
@@ -3539,24 +3539,24 @@ module Clang
   # CXCursor_InvalidCode.
   # 
   # @method code_complete_get_container_kind(results, is_incomplete)
-  # @param [FFI::Pointer(*CodeCompleteResults)] results the code completion results to query
+  # @param [CodeCompleteResults] results the code completion results to query
   # @param [FFI::Pointer(*UInt)] is_incomplete on return, this value will be false if Clang has complete
   #   information about the container. If Clang does not have complete
   #   information, this value will be true.
   # @return [Symbol from _enum_cursor_kind_] the container kind, or CXCursor_InvalidCode if there is not a
   #   container
   # @scope class
-  attach_function :code_complete_get_container_kind, :clang_codeCompleteGetContainerKind, [:pointer, :pointer], :cursor_kind
+  attach_function :code_complete_get_container_kind, :clang_codeCompleteGetContainerKind, [CodeCompleteResults, :pointer], :cursor_kind
   
   # Returns the USR for the container for the current code completion
   # context. If there is not a container for the current context, this
   # function will return the empty string.
   # 
   # @method code_complete_get_container_usr(results)
-  # @param [FFI::Pointer(*CodeCompleteResults)] results the code completion results to query
+  # @param [CodeCompleteResults] results the code completion results to query
   # @return [String] the USR for the container
   # @scope class
-  attach_function :code_complete_get_container_usr, :clang_codeCompleteGetContainerUSR, [:pointer], String.by_value
+  attach_function :code_complete_get_container_usr, :clang_codeCompleteGetContainerUSR, [CodeCompleteResults], String.by_value
   
   # Returns the currently-entered selector for an Objective-C message
   # send, formatted like "initWithFoo:bar:". Only guaranteed to return a
@@ -3564,11 +3564,11 @@ module Clang
   # CXCompletionContext_ObjCClassMessage.
   # 
   # @method code_complete_get_obj_c_selector(results)
-  # @param [FFI::Pointer(*CodeCompleteResults)] results the code completion results to query
+  # @param [CodeCompleteResults] results the code completion results to query
   # @return [String] the selector (or partial selector) that has been entered thus far
   #   for an Objective-C message send.
   # @scope class
-  attach_function :code_complete_get_obj_c_selector, :clang_codeCompleteGetObjCSelector, [:pointer], String.by_value
+  attach_function :code_complete_get_obj_c_selector, :clang_codeCompleteGetObjCSelector, [CodeCompleteResults], String.by_value
   
   # Return a version string, suitable for showing to a user, but not
   #        intended to be parsed (the format is not guaranteed to be stable).
@@ -3603,12 +3603,12 @@ module Clang
   # <em>This entry is only for documentation and no real method.</em>
   # 
   # @method _callback_inclusion_visitor_(inclusion_stack, include_len, client_data)
-  # @param [FFI::Pointer(*SourceLocation)] inclusion_stack 
+  # @param [SourceLocation] inclusion_stack 
   # @param [Integer] include_len 
   # @param [FFI::Pointer(ClientData)] client_data 
   # @return [FFI::Pointer(File)] 
   # @scope class
-  callback :inclusion_visitor, [:pointer, :uint, :pointer], :pointer
+  callback :inclusion_visitor, [SourceLocation, :uint, :pointer], :pointer
   
   # Visit the set of preprocessor inclusions in a translation unit.
   #   The visitor function is called with the provided data for every included
@@ -3645,12 +3645,12 @@ module Clang
   # @method remap_get_filenames(remapping, index, original, transformed)
   # @param [FFI::Pointer(Remapping)] remapping 
   # @param [Integer] index 
-  # @param [FFI::Pointer(*String)] original If non-NULL, will be set to the original filename.
-  # @param [FFI::Pointer(*String)] transformed If non-NULL, will be set to the filename that the original
+  # @param [String] original If non-NULL, will be set to the original filename.
+  # @param [String] transformed If non-NULL, will be set to the filename that the original
   #   is associated with.
   # @return [nil] 
   # @scope class
-  attach_function :remap_get_filenames, :clang_remap_getFilenames, [:pointer, :uint, :pointer, :pointer], :void
+  attach_function :remap_get_filenames, :clang_remap_getFilenames, [:pointer, :uint, String, String], :void
   
   # Dispose the remapping.
   # 

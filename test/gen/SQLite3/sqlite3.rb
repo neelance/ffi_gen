@@ -5059,7 +5059,7 @@ module SQLite3
            :desc, :uchar
   end
   
-  # Outputs
+  # (Not documented)
   # 
   # = Fields:
   # :argv_index ::
@@ -5133,7 +5133,7 @@ module SQLite3
   # :a_order_by ::
   #   (IndexOrderby) The ORDER BY clause
   # :a_constraint_usage ::
-  #   (IndexConstraintUsage) 
+  #   (IndexConstraintUsage) Outputs
   # :idx_num ::
   #   (Integer) Number used to identify the index
   # :idx_str ::

@@ -26,24 +26,6 @@ module Cairo
   
   # (Not documented)
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:ps_level_t).</em>
-  # 
-  # === Options:
-  # :_2 ::
-  #   
-  # :_3 ::
-  #   
-  # 
-  # @method _enum_ps_level_t_
-  # @return [Symbol]
-  # @scope class
-  enum :ps_level_t, [
-    :_2,
-    :_3
-  ]
-  
-  # (Not documented)
-  # 
   # @method ps_surface_create(filename, width_in_points, height_in_points)
   # @param [String] filename 
   # @param [Float] width_in_points 
@@ -67,10 +49,10 @@ module Cairo
   # 
   # @method ps_surface_restrict_to_level(surface, level)
   # @param [FFI::Pointer(*SurfaceT)] surface 
-  # @param [Symbol from _enum_ps_level_t_] level 
+  # @param [Symbol from _enum_ps_level_] level 
   # @return [nil] 
   # @scope class
-  attach_function :ps_surface_restrict_to_level, :cairo_ps_surface_restrict_to_level, [:pointer, :ps_level_t], :void
+  attach_function :ps_surface_restrict_to_level, :cairo_ps_surface_restrict_to_level, [:pointer, :ps_level], :void
   
   # (Not documented)
   # 
@@ -84,10 +66,10 @@ module Cairo
   # (Not documented)
   # 
   # @method ps_level_to_string(level)
-  # @param [Symbol from _enum_ps_level_t_] level 
+  # @param [Symbol from _enum_ps_level_] level 
   # @return [String] 
   # @scope class
-  attach_function :ps_level_to_string, :cairo_ps_level_to_string, [:ps_level_t], :string
+  attach_function :ps_level_to_string, :cairo_ps_level_to_string, [:ps_level], :string
   
   # (Not documented)
   # 

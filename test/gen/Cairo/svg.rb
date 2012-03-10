@@ -26,24 +26,6 @@ module Cairo
   
   # (Not documented)
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:svg_version_t).</em>
-  # 
-  # === Options:
-  # :_1 ::
-  #   
-  # :_2 ::
-  #   
-  # 
-  # @method _enum_svg_version_t_
-  # @return [Symbol]
-  # @scope class
-  enum :svg_version_t, [
-    :_1,
-    :_2
-  ]
-  
-  # (Not documented)
-  # 
   # @method svg_surface_create(filename, width_in_points, height_in_points)
   # @param [String] filename 
   # @param [Float] width_in_points 
@@ -67,10 +49,10 @@ module Cairo
   # 
   # @method svg_surface_restrict_to_version(surface, version)
   # @param [FFI::Pointer(*SurfaceT)] surface 
-  # @param [Symbol from _enum_svg_version_t_] version 
+  # @param [Symbol from _enum_svg_version_] version 
   # @return [nil] 
   # @scope class
-  attach_function :svg_surface_restrict_to_version, :cairo_svg_surface_restrict_to_version, [:pointer, :svg_version_t], :void
+  attach_function :svg_surface_restrict_to_version, :cairo_svg_surface_restrict_to_version, [:pointer, :svg_version], :void
   
   # (Not documented)
   # 
@@ -84,9 +66,9 @@ module Cairo
   # (Not documented)
   # 
   # @method svg_version_to_string(version)
-  # @param [Symbol from _enum_svg_version_t_] version 
+  # @param [Symbol from _enum_svg_version_] version 
   # @return [String] 
   # @scope class
-  attach_function :svg_version_to_string, :cairo_svg_version_to_string, [:svg_version_t], :string
+  attach_function :svg_version_to_string, :cairo_svg_version_to_string, [:svg_version], :string
   
 end
