@@ -423,7 +423,7 @@ class FFIGen
           num_tokens_ptr = FFI::MemoryPointer.new :uint
           Clang.tokenize translation_unit, Clang.get_cursor_extent(value_cursor), tokens_ptr_ptr, num_tokens_ptr
           token = Clang::Token.new tokens_ptr_ptr.read_pointer
-          literal = Clang.get_token_spelling translation_unit, token
+          literal = Clang.get_token_spelling(translation_unit, token).to_s_and_dispose
           Clang.dispose_tokens translation_unit, tokens_ptr_ptr.read_pointer, num_tokens_ptr.read_uint
           literal
         else
@@ -521,6 +521,7 @@ class FFIGen
         token = Clang::Token.new tokens_ptr[1]
         if Clang.get_token_kind(token) == :literal
           value = Clang.get_token_spelling(translation_unit, token).to_s_and_dispose
+          value.sub! /[A-Za-z]+$/, '' # remove number suffixes
           @declarations[declaration] = Constant.new self, name, value
         end 
       end
