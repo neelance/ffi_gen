@@ -522,7 +522,7 @@ class FFIGen
         if Clang.get_token_kind(token) == :literal
           value = Clang.get_token_spelling(translation_unit, token).to_s_and_dispose
           value.sub! /[A-Za-z]+$/, '' # remove number suffixes
-          @declarations[declaration] = Constant.new self, name, value
+          @declarations[name] ||= Constant.new self, name, value
         end 
       end
       
