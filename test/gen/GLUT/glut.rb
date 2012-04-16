@@ -342,7 +342,7 @@ module GLUT
   # 
   # @method init(pargc, argv)
   # @param [FFI::Pointer(*Int)] pargc 
-  # @param [FFI::Pointer(**Char_S)] argv 
+  # @param [FFI::Pointer(**CharS)] argv 
   # @return [nil] 
   # @scope class
   attach_function :init, :glutInit, [:pointer, :pointer], :void

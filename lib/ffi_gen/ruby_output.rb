@@ -51,7 +51,7 @@ class FFIGen
         current_type = full_type
         loop do
           declaration = Clang.get_type_declaration current_type
-          pointer_target_name = to_ruby_camelcase Clang.get_cursor_spelling(declaration).to_s_and_dispose
+          pointer_target_name = split_name Clang.get_cursor_spelling(declaration).to_s_and_dispose
           break if not pointer_target_name.empty?
 
           case current_type[:kind]
@@ -61,11 +61,11 @@ class FFIGen
           when :unexposed
             break
           else
-            pointer_target_name = Clang.get_type_kind_spelling(current_type[:kind]).to_s_and_dispose
+            pointer_target_name = split_name Clang.get_type_kind_spelling(current_type[:kind]).to_s_and_dispose
             break
           end
         end
-        result = [":pointer", "FFI::Pointer(#{'*' * pointer_depth}#{pointer_target_name})", pointer_target_name]
+        result = [":pointer", "FFI::Pointer(#{'*' * pointer_depth}#{to_ruby_camelcase pointer_target_name})", pointer_target_name]
       end
       
       result
@@ -74,7 +74,7 @@ class FFIGen
       declaration ? ["#{declaration.ruby_name}.by_value", declaration.ruby_name] : [":char", "unknown"] # TODO
     when :enum
       declaration = @declarations[canonical_type]
-      declaration ? [":#{declaration.ruby_name}", "Symbol from _enum_#{declaration.ruby_name}_", declaration.ruby_name] : [":char", "unknown"] # TODO
+      declaration ? [":#{declaration.ruby_name}", "Symbol from _enum_#{declaration.ruby_name}_", declaration.name] : [":char", "unknown"] # TODO
     when :constant_array
       element_type_data = to_ruby_type Clang.get_array_element_type(canonical_type)
       size = Clang.get_array_size canonical_type
@@ -83,11 +83,10 @@ class FFIGen
       raise NotImplementedError, "No translation for values of type #{canonical_type[:kind]}"
     end
     
-    { ffi_type: data_array[0], description: data_array[1], parameter_name: to_ruby_lowercase(data_array[2] || data_array[1]) }
+    { ffi_type: data_array[0], description: data_array[1], parameter_name: to_ruby_lowercase(data_array[2] || split_name(data_array[1])) }
   end
   
   def to_ruby_lowercase(parts, avoid_keywords = false)
-    parts = split_name parts if parts.is_a? String
     str = parts.map(&:downcase).join("_")
     str.sub! /^\d/, '_\0' # fix illegal beginnings
     str = "_#{str}" if avoid_keywords and RUBY_KEYWORDS.include? str
@@ -95,36 +94,15 @@ class FFIGen
   end
   
   def to_ruby_camelcase(parts)
-    parts = split_name parts if parts.is_a? String
     parts.map{ |s| s[0].upcase + s[1..-1] }.join
   end
   
   class Enum
     def write_ruby(writer)
-      prefix_length = 0
-      suffix_length = 0
-      
-      unless @constants.size < 2
-        search_pattern = @constants.all? { |constant| constant[:name].include? "_" } ? /(?<=_)/ : /[A-Z]/
-        first_name = @constants.first[:name]
-        
-        loop do
-          position = first_name.index(search_pattern, prefix_length + 1) or break
-          prefix = first_name[0...position]
-          break if not @constants.all? { |constant| constant[:name].start_with? prefix }
-          prefix_length = position
-        end
-        
-        loop do
-          position = first_name.rindex(search_pattern, first_name.size - suffix_length - 1) or break
-          prefix = first_name[position..-1]
-          break if not @constants.all? { |constant| constant[:name].end_with? prefix }
-          suffix_length = first_name.size - position
-        end
-      end
+      shorten_names
       
       @constants.each do |constant|
-        constant[:symbol] = ":#{@generator.to_ruby_lowercase constant[:name][prefix_length..(-1 - suffix_length)]}"
+        constant[:symbol] = ":#{@generator.to_ruby_lowercase constant[:name]}"
       end
       
       writer.comment do
@@ -203,7 +181,7 @@ class FFIGen
       @comment.split("\n").map do |line|
         line = writer.prepare_comment_line line
         if line.gsub! /\\param (.*?) /, ''
-          parameter = @parameters.find { |parameter| parameter[:name] == $1 }
+          parameter = @parameters.find { |parameter| parameter[:name] == @generator.split_name($1) }
           if parameter
             current_description = parameter[:description]
           else

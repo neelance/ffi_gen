@@ -34,7 +34,7 @@ module LLVM
   # @method verify_module(m, action, out_message)
   # @param [FFI::Pointer(ModuleRef)] m 
   # @param [Symbol from _enum_verifier_failure_action_] action 
-  # @param [FFI::Pointer(**Char_S)] out_message 
+  # @param [FFI::Pointer(**CharS)] out_message 
   # @return [Integer] 
   # @scope class
   attach_function :verify_module, :LLVMVerifyModule, [:pointer, :verifier_failure_action, :pointer], :int

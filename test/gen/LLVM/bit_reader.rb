@@ -11,7 +11,7 @@ module LLVM
   # @method parse_bitcode(mem_buf, out_module, out_message)
   # @param [FFI::Pointer(MemoryBufferRef)] mem_buf 
   # @param [FFI::Pointer(*ModuleRef)] out_module 
-  # @param [FFI::Pointer(**Char_S)] out_message 
+  # @param [FFI::Pointer(**CharS)] out_message 
   # @return [Integer] 
   # @scope class
   attach_function :parse_bitcode, :LLVMParseBitcode, [:pointer, :pointer, :pointer], :int
@@ -22,7 +22,7 @@ module LLVM
   # @param [FFI::Pointer(ContextRef)] context_ref 
   # @param [FFI::Pointer(MemoryBufferRef)] mem_buf 
   # @param [FFI::Pointer(*ModuleRef)] out_module 
-  # @param [FFI::Pointer(**Char_S)] out_message 
+  # @param [FFI::Pointer(**CharS)] out_message 
   # @return [Integer] 
   # @scope class
   attach_function :parse_bitcode_in_context, :LLVMParseBitcodeInContext, [:pointer, :pointer, :pointer, :pointer], :int
@@ -35,7 +35,7 @@ module LLVM
   # @param [FFI::Pointer(ContextRef)] context_ref 
   # @param [FFI::Pointer(MemoryBufferRef)] mem_buf 
   # @param [FFI::Pointer(*ModuleRef)] out_m 
-  # @param [FFI::Pointer(**Char_S)] out_message 
+  # @param [FFI::Pointer(**CharS)] out_message 
   # @return [Integer] 
   # @scope class
   attach_function :get_bitcode_module_in_context, :LLVMGetBitcodeModuleInContext, [:pointer, :pointer, :pointer, :pointer], :int
@@ -45,7 +45,7 @@ module LLVM
   # @method get_bitcode_module(mem_buf, out_m, out_message)
   # @param [FFI::Pointer(MemoryBufferRef)] mem_buf 
   # @param [FFI::Pointer(*ModuleRef)] out_m 
-  # @param [FFI::Pointer(**Char_S)] out_message 
+  # @param [FFI::Pointer(**CharS)] out_message 
   # @return [Integer] 
   # @scope class
   attach_function :get_bitcode_module, :LLVMGetBitcodeModule, [:pointer, :pointer, :pointer], :int
@@ -56,7 +56,7 @@ module LLVM
   # @param [FFI::Pointer(ContextRef)] context_ref 
   # @param [FFI::Pointer(MemoryBufferRef)] mem_buf 
   # @param [FFI::Pointer(*ModuleProviderRef)] out_mp 
-  # @param [FFI::Pointer(**Char_S)] out_message 
+  # @param [FFI::Pointer(**CharS)] out_message 
   # @return [Integer] 
   # @scope class
   attach_function :get_bitcode_module_provider_in_context, :LLVMGetBitcodeModuleProviderInContext, [:pointer, :pointer, :pointer, :pointer], :int
@@ -66,7 +66,7 @@ module LLVM
   # @method get_bitcode_module_provider(mem_buf, out_mp, out_message)
   # @param [FFI::Pointer(MemoryBufferRef)] mem_buf 
   # @param [FFI::Pointer(*ModuleProviderRef)] out_mp 
-  # @param [FFI::Pointer(**Char_S)] out_message 
+  # @param [FFI::Pointer(**CharS)] out_message 
   # @return [Integer] 
   # @scope class
   attach_function :get_bitcode_module_provider, :LLVMGetBitcodeModuleProvider, [:pointer, :pointer, :pointer], :int

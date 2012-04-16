@@ -104,7 +104,7 @@ module LLVM
   # @method create_execution_engine_for_module(out_ee, m, out_error)
   # @param [FFI::Pointer(*ExecutionEngineRef)] out_ee 
   # @param [FFI::Pointer(ModuleRef)] m 
-  # @param [FFI::Pointer(**Char_S)] out_error 
+  # @param [FFI::Pointer(**CharS)] out_error 
   # @return [Integer] 
   # @scope class
   attach_function :create_execution_engine_for_module, :LLVMCreateExecutionEngineForModule, [:pointer, :pointer, :pointer], :int
@@ -114,7 +114,7 @@ module LLVM
   # @method create_interpreter_for_module(out_interp, m, out_error)
   # @param [FFI::Pointer(*ExecutionEngineRef)] out_interp 
   # @param [FFI::Pointer(ModuleRef)] m 
-  # @param [FFI::Pointer(**Char_S)] out_error 
+  # @param [FFI::Pointer(**CharS)] out_error 
   # @return [Integer] 
   # @scope class
   attach_function :create_interpreter_for_module, :LLVMCreateInterpreterForModule, [:pointer, :pointer, :pointer], :int
@@ -125,7 +125,7 @@ module LLVM
   # @param [FFI::Pointer(*ExecutionEngineRef)] out_jit 
   # @param [FFI::Pointer(ModuleRef)] m 
   # @param [Integer] opt_level 
-  # @param [FFI::Pointer(**Char_S)] out_error 
+  # @param [FFI::Pointer(**CharS)] out_error 
   # @return [Integer] 
   # @scope class
   attach_function :create_jit_compiler_for_module, :LLVMCreateJITCompilerForModule, [:pointer, :pointer, :uint, :pointer], :int
@@ -135,7 +135,7 @@ module LLVM
   # @method create_execution_engine(out_ee, mp, out_error)
   # @param [FFI::Pointer(*ExecutionEngineRef)] out_ee 
   # @param [FFI::Pointer(ModuleProviderRef)] mp 
-  # @param [FFI::Pointer(**Char_S)] out_error 
+  # @param [FFI::Pointer(**CharS)] out_error 
   # @return [Integer] 
   # @scope class
   attach_function :create_execution_engine, :LLVMCreateExecutionEngine, [:pointer, :pointer, :pointer], :int
@@ -145,7 +145,7 @@ module LLVM
   # @method create_interpreter(out_interp, mp, out_error)
   # @param [FFI::Pointer(*ExecutionEngineRef)] out_interp 
   # @param [FFI::Pointer(ModuleProviderRef)] mp 
-  # @param [FFI::Pointer(**Char_S)] out_error 
+  # @param [FFI::Pointer(**CharS)] out_error 
   # @return [Integer] 
   # @scope class
   attach_function :create_interpreter, :LLVMCreateInterpreter, [:pointer, :pointer, :pointer], :int
@@ -156,7 +156,7 @@ module LLVM
   # @param [FFI::Pointer(*ExecutionEngineRef)] out_jit 
   # @param [FFI::Pointer(ModuleProviderRef)] mp 
   # @param [Integer] opt_level 
-  # @param [FFI::Pointer(**Char_S)] out_error 
+  # @param [FFI::Pointer(**CharS)] out_error 
   # @return [Integer] 
   # @scope class
   attach_function :create_jit_compiler, :LLVMCreateJITCompiler, [:pointer, :pointer, :uint, :pointer], :int
@@ -192,8 +192,8 @@ module LLVM
   # @param [OpaqueExecutionEngine] ee 
   # @param [FFI::Pointer(ValueRef)] f 
   # @param [Integer] arg_c 
-  # @param [FFI::Pointer(**Char_S)] arg_v 
-  # @param [FFI::Pointer(**Char_S)] env_p 
+  # @param [FFI::Pointer(**CharS)] arg_v 
+  # @param [FFI::Pointer(**CharS)] env_p 
   # @return [Integer] 
   # @scope class
   attach_function :run_function_as_main, :LLVMRunFunctionAsMain, [OpaqueExecutionEngine, :pointer, :uint, :pointer, :pointer], :int
@@ -243,7 +243,7 @@ module LLVM
   # @param [OpaqueExecutionEngine] ee 
   # @param [FFI::Pointer(ModuleRef)] m 
   # @param [FFI::Pointer(*ModuleRef)] out_mod 
-  # @param [FFI::Pointer(**Char_S)] out_error 
+  # @param [FFI::Pointer(**CharS)] out_error 
   # @return [Integer] 
   # @scope class
   attach_function :remove_module, :LLVMRemoveModule, [OpaqueExecutionEngine, :pointer, :pointer, :pointer], :int
@@ -254,7 +254,7 @@ module LLVM
   # @param [OpaqueExecutionEngine] ee 
   # @param [FFI::Pointer(ModuleProviderRef)] mp 
   # @param [FFI::Pointer(*ModuleRef)] out_mod 
-  # @param [FFI::Pointer(**Char_S)] out_error 
+  # @param [FFI::Pointer(**CharS)] out_error 
   # @return [Integer] 
   # @scope class
   attach_function :remove_module_provider, :LLVMRemoveModuleProvider, [OpaqueExecutionEngine, :pointer, :pointer, :pointer], :int

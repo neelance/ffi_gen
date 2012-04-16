@@ -11,17 +11,17 @@ module LLVM
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:byte_ordering).</em>
   # 
   # === Options:
-  # :big ::
+  # :big_endian ::
   #   
-  # :little ::
+  # :little_endian ::
   #   
   # 
   # @method _enum_byte_ordering_
   # @return [Symbol]
   # @scope class
   enum :byte_ordering, [
-    :big,
-    :little
+    :big_endian,
+    :little_endian
   ]
   
   # (Not documented)

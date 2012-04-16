@@ -119,7 +119,7 @@ module LLVM
   # @param [Integer] reference_value 
   # @param [FFI::Pointer(*Uint64T)] reference_type 
   # @param [Integer] reference_pc 
-  # @param [FFI::Pointer(**Char_S)] reference_name 
+  # @param [FFI::Pointer(**CharS)] reference_name 
   # @return [FFI::Pointer(*Void)] 
   # @scope class
   callback :symbol_lookup_callback, [:ulong, :pointer, :ulong, :pointer], :pointer

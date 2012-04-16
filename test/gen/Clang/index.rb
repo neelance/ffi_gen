@@ -455,7 +455,7 @@ module Clang
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:diagnostic_display_options).</em>
   # 
   # === Options:
-  # :display_source_location ::
+  # :source_location ::
   #   Display the source-location information where the
   #   diagnostic was located.
   #   
@@ -467,31 +467,31 @@ module Clang
   #   \endcode
   #   
   #   This option corresponds to the clang flag \c -fshow-source-location.
-  # :display_column ::
+  # :column ::
   #   If displaying the source-location information of the
   #   diagnostic, also include the column number.
   #   
   #   This option corresponds to the clang flag \c -fshow-column.
-  # :display_source_ranges ::
+  # :source_ranges ::
   #   If displaying the source-location information of the
   #   diagnostic, also include information about source ranges in a
   #   machine-parsable format.
   #   
   #   This option corresponds to the clang flag
   #   \c -fdiagnostics-print-source-range-info.
-  # :display_option ::
+  # :option ::
   #   Display the option name associated with this diagnostic, if any.
   #   
   #   The option name displayed (e.g., -Wconversion) will be placed in brackets
   #   after the diagnostic text. This option corresponds to the clang flag
   #   \c -fdiagnostics-show-option.
-  # :display_category_id ::
+  # :category_id ::
   #   Display the category number associated with this diagnostic, if any.
   #   
   #   The category number is displayed within brackets after the diagnostic text.
   #   This option corresponds to the clang flag 
   #   \c -fdiagnostics-show-category=id.
-  # :display_category_name ::
+  # :category_name ::
   #   Display the category name associated with this diagnostic, if any.
   #   
   #   The category name is displayed within brackets after the diagnostic text.
@@ -502,12 +502,12 @@ module Clang
   # @return [Symbol]
   # @scope class
   enum :diagnostic_display_options, [
-    :display_source_location, 0x01,
-    :display_column, 0x02,
-    :display_source_ranges, 0x04,
-    :display_option, 0x08,
-    :display_category_id, 0x10,
-    :display_category_name, 0x20
+    :source_location, 0x01,
+    :column, 0x02,
+    :source_ranges, 0x04,
+    :option, 0x08,
+    :category_id, 0x10,
+    :category_name, 0x20
   ]
   
   # Format the given diagnostic in a manner that is suitable for display.
@@ -680,7 +680,7 @@ module Clang
   #   source file is included in \p clang_command_line_args.
   # @param [Integer] num_clang_command_line_args The number of command-line arguments in
   #   \p clang_command_line_args.
-  # @param [FFI::Pointer(**Char_S)] command_line_args The command-line arguments that would be
+  # @param [FFI::Pointer(**CharS)] command_line_args The command-line arguments that would be
   #   passed to the \c clang executable if it were being invoked out-of-process.
   #   These command-line options will be parsed and will affect how the translation
   #   unit is parsed. Note that the following options are ignored: '-c',
@@ -756,12 +756,12 @@ module Clang
   #   Caching of code-completion results is a performance optimization that
   #   introduces some overhead to reparsing but improves the performance of
   #   code-completion operations.
-  # :x_precompiled_preamble ::
+  # :cxx_precompiled_preamble ::
   #   DEPRECATED: Enable precompiled preambles in C++.
   #   
   #   Note: this is a *temporary* option that is available only while
   #   we are testing C++ precompiled preamble support. It is deprecated.
-  # :x_chained_pch ::
+  # :cxx_chained_pch ::
   #   DEPRECATED: Enabled chained precompiled preambles in C++.
   #   
   #   Note: this is a *temporary* option that is available only while
@@ -784,8 +784,8 @@ module Clang
     :incomplete, 0x02,
     :precompiled_preamble, 0x04,
     :cache_completion_results, 0x08,
-    :x_precompiled_preamble, 0x10,
-    :x_chained_pch, 0x20,
+    :cxx_precompiled_preamble, 0x10,
+    :cxx_chained_pch, 0x20,
     :nested_macro_expansions, 0x40
   ]
   
@@ -819,7 +819,7 @@ module Clang
   #   associated.
   # @param [String] source_filename The name of the source file to load, or NULL if the
   #   source file is included in \p command_line_args.
-  # @param [FFI::Pointer(**Char_S)] command_line_args The command-line arguments that would be
+  # @param [FFI::Pointer(**CharS)] command_line_args The command-line arguments that would be
   #   passed to the \c clang executable if it were being invoked out-of-process.
   #   These command-line options will be parsed and will affect how the translation
   #   unit is parsed. Note that the following options are ignored: '-c', 
@@ -1170,7 +1170,7 @@ module Clang
   #   An Objective-C @implementation for a category.
   # :typedef_decl ::
   #   A typedef
-  # :x_method ::
+  # :cxx_method ::
   #   A C++ class method.
   # :namespace ::
   #   A C++ namespace.
@@ -1206,7 +1206,7 @@ module Clang
   #   An Objective-C @synthesize definition.
   # :obj_c_dynamic_decl ::
   #   An Objective-C @dynamic definition.
-  # :x_access_specifier ::
+  # :cxx_access_specifier ::
   #   An access specifier.
   # :first_ref ::
   #   References
@@ -1230,7 +1230,7 @@ module Clang
   #   The typedef is a declaration of size_type (CXCursor_TypedefDecl),
   #   while the type of the variable "size" is referenced. The cursor
   #   referenced by the type of size is the typedef for size_type.
-  # :x_base_specifier ::
+  # :cxx_base_specifier ::
   #   
   # :template_ref ::
   #   A reference to a class template, function template, template
@@ -1371,15 +1371,15 @@ module Clang
   #   The __null extension is typically only used by system headers, which define
   #   NULL as __null in C++ rather than using 0 (which is an integer that may not
   #   match the size of a pointer).
-  # :x_static_cast_expr ::
+  # :cxx_static_cast_expr ::
   #   C++'s static_cast<> expression.
-  # :x_dynamic_cast_expr ::
+  # :cxx_dynamic_cast_expr ::
   #   C++'s dynamic_cast<> expression.
-  # :x_reinterpret_cast_expr ::
+  # :cxx_reinterpret_cast_expr ::
   #   C++'s reinterpret_cast<> expression.
-  # :x_const_cast_expr ::
+  # :cxx_const_cast_expr ::
   #   C++'s const_cast<> expression.
-  # :x_functional_cast_expr ::
+  # :cxx_functional_cast_expr ::
   #   Represents an explicit C++ type conversion that uses "functional"
   #   notion (C++ (expr.type.conv)).
   #   
@@ -1387,23 +1387,23 @@ module Clang
   #   \code
   #     x = int(0.5);
   #   \endcode
-  # :x_typeid_expr ::
+  # :cxx_typeid_expr ::
   #   A C++ typeid expression (C++ (expr.typeid)).
-  # :x_bool_literal_expr ::
+  # :cxx_bool_literal_expr ::
   #   (C++ 2.13.5) C++ Boolean Literal.
-  # :x_null_ptr_literal_expr ::
+  # :cxx_null_ptr_literal_expr ::
   #   (C++0x 2.14.7) C++ Pointer Literal.
-  # :x_this_expr ::
+  # :cxx_this_expr ::
   #   Represents the "this" expression in C++
-  # :x_throw_expr ::
+  # :cxx_throw_expr ::
   #   (C++ 15) C++ Throw Expression.
   #   
   #   This handles 'throw' and 'throw' assignment-expression. When
   #   assignment-expression isn't present, Op will be null.
-  # :x_new_expr ::
+  # :cxx_new_expr ::
   #   A new expression for memory allocation and constructor calls, e.g:
   #   "new CXXNewExpr(foo)".
-  # :x_delete_expr ::
+  # :cxx_delete_expr ::
   #   A delete expression for memory deallocation and destructor calls,
   #   e.g. "delete() pArray".
   # :unary_expr ::
@@ -1511,11 +1511,11 @@ module Clang
   #   Objective-C's autorelease pool statement.
   # :obj_c_for_collection_stmt ::
   #   Objective-C's collection statement.
-  # :x_catch_stmt ::
+  # :cxx_catch_stmt ::
   #   C++'s catch statement.
-  # :x_try_stmt ::
+  # :cxx_try_stmt ::
   #   C++'s try statement.
-  # :x_for_range_stmt ::
+  # :cxx_for_range_stmt ::
   #   C++'s for (* : *) statement.
   # :seh_try_stmt ::
   #   Windows Structured Exception Handling's try statement.
@@ -1546,9 +1546,9 @@ module Clang
   #   
   # :ib_outlet_collection_attr ::
   #   
-  # :x_final_attr ::
+  # :cxx_final_attr ::
   #   
-  # :x_override_attr ::
+  # :cxx_override_attr ::
   #   
   # :annotate_attr ::
   #   
@@ -1585,7 +1585,7 @@ module Clang
     :obj_c_implementation_decl, 18,
     :obj_c_category_impl_decl, 19,
     :typedef_decl, 20,
-    :x_method, 21,
+    :cxx_method, 21,
     :namespace, 22,
     :linkage_spec, 23,
     :constructor, 24,
@@ -1603,13 +1603,13 @@ module Clang
     :type_alias_decl, 36,
     :obj_c_synthesize_decl, 37,
     :obj_c_dynamic_decl, 38,
-    :x_access_specifier, 39,
+    :cxx_access_specifier, 39,
     :first_ref, 40,
     :obj_c_super_class_ref, 40,
     :obj_c_protocol_ref, 41,
     :obj_c_class_ref, 42,
     :type_ref, 43,
-    :x_base_specifier, 44,
+    :cxx_base_specifier, 44,
     :template_ref, 45,
     :namespace_ref, 46,
     :member_ref, 47,
@@ -1645,18 +1645,18 @@ module Clang
     :stmt_expr, 121,
     :generic_selection_expr, 122,
     :gnu_null_expr, 123,
-    :x_static_cast_expr, 124,
-    :x_dynamic_cast_expr, 125,
-    :x_reinterpret_cast_expr, 126,
-    :x_const_cast_expr, 127,
-    :x_functional_cast_expr, 128,
-    :x_typeid_expr, 129,
-    :x_bool_literal_expr, 130,
-    :x_null_ptr_literal_expr, 131,
-    :x_this_expr, 132,
-    :x_throw_expr, 133,
-    :x_new_expr, 134,
-    :x_delete_expr, 135,
+    :cxx_static_cast_expr, 124,
+    :cxx_dynamic_cast_expr, 125,
+    :cxx_reinterpret_cast_expr, 126,
+    :cxx_const_cast_expr, 127,
+    :cxx_functional_cast_expr, 128,
+    :cxx_typeid_expr, 129,
+    :cxx_bool_literal_expr, 130,
+    :cxx_null_ptr_literal_expr, 131,
+    :cxx_this_expr, 132,
+    :cxx_throw_expr, 133,
+    :cxx_new_expr, 134,
+    :cxx_delete_expr, 135,
     :unary_expr, 136,
     :obj_c_string_literal, 137,
     :obj_c_encode_expr, 138,
@@ -1689,9 +1689,9 @@ module Clang
     :obj_c_at_synchronized_stmt, 220,
     :obj_c_autorelease_pool_stmt, 221,
     :obj_c_for_collection_stmt, 222,
-    :x_catch_stmt, 223,
-    :x_try_stmt, 224,
-    :x_for_range_stmt, 225,
+    :cxx_catch_stmt, 223,
+    :cxx_try_stmt, 224,
+    :cxx_for_range_stmt, 225,
     :seh_try_stmt, 226,
     :seh_except_stmt, 227,
     :seh_finally_stmt, 228,
@@ -1703,8 +1703,8 @@ module Clang
     :ib_action_attr, 401,
     :ib_outlet_attr, 402,
     :ib_outlet_collection_attr, 403,
-    :x_final_attr, 404,
-    :x_override_attr, 405,
+    :cxx_final_attr, 404,
+    :cxx_override_attr, 405,
     :annotate_attr, 406,
     :preprocessing_directive, 500,
     :macro_definition, 501,
@@ -2491,23 +2491,23 @@ module Clang
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cxx_access_specifier).</em>
   # 
   # === Options:
-  # :x_invalid_access_specifier ::
+  # :invalid_access_specifier ::
   #   
-  # :x_public ::
+  # :public ::
   #   
-  # :x_protected ::
+  # :protected ::
   #   
-  # :x_private ::
+  # :private ::
   #   
   # 
   # @method _enum_cxx_access_specifier_
   # @return [Symbol]
   # @scope class
   enum :cxx_access_specifier, [
-    :x_invalid_access_specifier,
-    :x_public,
-    :x_protected,
-    :x_private
+    :invalid_access_specifier,
+    :public,
+    :protected,
+    :private
   ]
   
   # Returns the access control level for the C++ base specifier
@@ -2887,13 +2887,13 @@ module Clang
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:name_ref_flags).</em>
   # 
   # === Options:
-  # :want_qualifier ::
+  # :range_want_qualifier ::
   #   Include the nested-name-specifier, e.g. Foo:: in x.Foo::y, in the
   #   range.
-  # :want_template_args ::
+  # :range_want_template_args ::
   #   Include the explicit template arguments, e.g. <int> in x.f<int>, in 
   #   the range.
-  # :want_single_piece ::
+  # :range_want_single_piece ::
   #   If the name is non-contiguous, return the full spanning range.
   #   
   #   Non-contiguous names occur in Objective-C when a selector with two or more
@@ -2907,9 +2907,9 @@ module Clang
   # @return [Symbol]
   # @scope class
   enum :name_ref_flags, [
-    :want_qualifier, 0x1,
-    :want_template_args, 0x2,
-    :want_single_piece, 0x4
+    :range_want_qualifier, 0x1,
+    :range_want_template_args, 0x2,
+    :range_want_single_piece, 0x4
   ]
   
   # Describes a kind of token.
@@ -3057,8 +3057,8 @@ module Clang
   # 
   # @method get_definition_spelling_and_extent(cursor, start_buf, end_buf, start_line, start_column, end_line, end_column)
   # @param [Cursor] cursor 
-  # @param [FFI::Pointer(**Char_S)] start_buf 
-  # @param [FFI::Pointer(**Char_S)] end_buf 
+  # @param [FFI::Pointer(**CharS)] start_buf 
+  # @param [FFI::Pointer(**CharS)] end_buf 
   # @param [FFI::Pointer(*UInt)] start_line 
   # @param [FFI::Pointer(*UInt)] start_column 
   # @param [FFI::Pointer(*UInt)] end_line 
@@ -3667,17 +3667,17 @@ module Clang
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:visitor_result).</em>
   # 
   # === Options:
-  # :break ::
+  # :visit_break ::
   #   
-  # :continue ::
+  # :visit_continue ::
   #   
   # 
   # @method _enum_visitor_result_
   # @return [Symbol]
   # @scope class
   enum :visitor_result, [
-    :break,
-    :continue
+    :visit_break,
+    :visit_continue
   ]
   
   # \defgroup CINDEX_HIGH Higher level API functions

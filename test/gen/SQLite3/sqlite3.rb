@@ -604,8 +604,8 @@ module SQLite3
   # 
   # @method _callback_callback_(integer, char_s, char_s)
   # @param [Integer] integer 
-  # @param [FFI::Pointer(**Char_S)] char_s 
-  # @param [FFI::Pointer(**Char_S)] char_s 
+  # @param [FFI::Pointer(**CharS)] char_s 
+  # @param [FFI::Pointer(**CharS)] char_s 
   # @return [FFI::Pointer(*Void)] 
   # @scope class
   callback :callback, [:int, :pointer, :pointer], :pointer
@@ -675,7 +675,7 @@ module SQLite3
   # @param [String] sql 
   # @param [FFI::Pointer(*)] callback 
   # @param [FFI::Pointer(*Void)] void 
-  # @param [FFI::Pointer(**Char_S)] errmsg 
+  # @param [FFI::Pointer(**CharS)] errmsg 
   # @return [Integer] 
   # @scope class
   attach_function :exec, :sqlite3_exec, [Sqlite3, :string, :pointer, :pointer, :pointer], :int
@@ -1654,10 +1654,10 @@ module SQLite3
   # @method get_table(db, z_sql, paz_result, pn_row, pn_column, pz_errmsg)
   # @param [Sqlite3] db 
   # @param [String] z_sql 
-  # @param [FFI::Pointer(***Char_S)] paz_result 
+  # @param [FFI::Pointer(***CharS)] paz_result 
   # @param [FFI::Pointer(*Int)] pn_row 
   # @param [FFI::Pointer(*Int)] pn_column 
-  # @param [FFI::Pointer(**Char_S)] pz_errmsg 
+  # @param [FFI::Pointer(**CharS)] pz_errmsg 
   # @return [Integer] 
   # @scope class
   attach_function :get_table, :sqlite3_get_table, [Sqlite3, :string, :pointer, :pointer, :pointer, :pointer], :int
@@ -1665,7 +1665,7 @@ module SQLite3
   # (Not documented)
   # 
   # @method free_table(result)
-  # @param [FFI::Pointer(**Char_S)] result 
+  # @param [FFI::Pointer(**CharS)] result 
   # @return [nil] 
   # @scope class
   attach_function :free_table, :sqlite3_free_table, [:pointer], :void
@@ -2577,7 +2577,7 @@ module SQLite3
   # @param [String] z_sql 
   # @param [Integer] n_byte 
   # @param [FFI::Pointer(**Stmt)] pp_stmt 
-  # @param [FFI::Pointer(**Char_S)] pz_tail 
+  # @param [FFI::Pointer(**CharS)] pz_tail 
   # @return [Integer] 
   # @scope class
   attach_function :prepare, :sqlite3_prepare, [Sqlite3, :string, :int, :pointer, :pointer], :int
@@ -2589,7 +2589,7 @@ module SQLite3
   # @param [String] z_sql 
   # @param [Integer] n_byte 
   # @param [FFI::Pointer(**Stmt)] pp_stmt 
-  # @param [FFI::Pointer(**Char_S)] pz_tail 
+  # @param [FFI::Pointer(**CharS)] pz_tail 
   # @return [Integer] 
   # @scope class
   attach_function :prepare_v2, :sqlite3_prepare_v2, [Sqlite3, :string, :int, :pointer, :pointer], :int
@@ -4829,8 +4829,8 @@ module SQLite3
   # @param [String] z_db_name 
   # @param [String] z_table_name 
   # @param [String] z_column_name 
-  # @param [FFI::Pointer(**Char_S)] pz_data_type 
-  # @param [FFI::Pointer(**Char_S)] pz_coll_seq 
+  # @param [FFI::Pointer(**CharS)] pz_data_type 
+  # @param [FFI::Pointer(**CharS)] pz_coll_seq 
   # @param [FFI::Pointer(*Int)] p_not_null 
   # @param [FFI::Pointer(*Int)] p_primary_key 
   # @param [FFI::Pointer(*Int)] p_autoinc 
@@ -4866,7 +4866,7 @@ module SQLite3
   # @param [Sqlite3] db 
   # @param [String] z_file 
   # @param [String] z_proc 
-  # @param [FFI::Pointer(**Char_S)] pz_err_msg 
+  # @param [FFI::Pointer(**CharS)] pz_err_msg 
   # @return [Integer] 
   # @scope class
   attach_function :load_extension, :sqlite3_load_extension, [Sqlite3, :string, :string, :pointer], :int

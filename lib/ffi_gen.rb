@@ -72,6 +72,13 @@ class FFIGen
       @comment = comment
       @constants = []
     end
+    
+    def shorten_names
+      return if @constants.size < 2
+      names = @constants.map { |constant| constant[:name] }
+      names.each(&:shift) while names.map(&:first).uniq.size == 1 and @name.map(&:downcase).include? names.first.first.downcase
+      names.each(&:pop) while names.map(&:last).uniq.size == 1 and @name.map(&:downcase).include? names.first.last.downcase
+    end
   end
   
   class StructOrUnion
@@ -270,7 +277,7 @@ class FFIGen
       
       previous_constant_location = Clang.get_cursor_location declaration
       Clang.get_children(declaration).each do |enum_constant|
-        constant_name = Clang.get_cursor_spelling(enum_constant).to_s_and_dispose
+        constant_name = split_name Clang.get_cursor_spelling(enum_constant).to_s_and_dispose
         
         constant_value = nil
         value_cursor = Clang.get_children(enum_constant).first
@@ -345,7 +352,7 @@ class FFIGen
         next if function_child[:kind] != :parm_decl
         param_name = Clang.get_cursor_spelling(function_child).to_s_and_dispose
         param_type = Clang.get_cursor_type function_child
-        function.parameters << { name: param_name, type: param_type }
+        function.parameters << { name: split_name(param_name), c_name: param_name, type: param_type }
       end
     
     when :typedef_decl
@@ -362,7 +369,7 @@ class FFIGen
         typedef_children[1..-1].each do |param_decl|
           param_name = Clang.get_cursor_spelling(param_decl).to_s_and_dispose
           param_type = Clang.get_cursor_type param_decl
-          callback.parameters << { name: param_name, type: param_type }
+          callback.parameters << { name: split_name(param_name), type: param_type }
         end
       end
         

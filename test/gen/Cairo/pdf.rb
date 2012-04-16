@@ -11,17 +11,17 @@ module Cairo
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:pdf_version).</em>
   # 
   # === Options:
-  # :_4 ::
+  # :_1_4 ::
   #   
-  # :_5 ::
+  # :_1_5 ::
   #   
   # 
   # @method _enum_pdf_version_
   # @return [Symbol]
   # @scope class
   enum :pdf_version, [
-    :_4,
-    :_5
+    :_1_4,
+    :_1_5
   ]
   
   # (Not documented)

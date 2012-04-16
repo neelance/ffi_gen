@@ -11,17 +11,17 @@ module Cairo
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:svg_version).</em>
   # 
   # === Options:
-  # :_1 ::
+  # :_1_1 ::
   #   
-  # :_2 ::
+  # :_1_2 ::
   #   
   # 
   # @method _enum_svg_version_
   # @return [Symbol]
   # @scope class
   enum :svg_version, [
-    :_1,
-    :_2
+    :_1_1,
+    :_1_2
   ]
   
   # (Not documented)

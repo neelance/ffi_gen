@@ -4584,7 +4584,7 @@ module LLVM
   # @method create_memory_buffer_with_contents_of_file(path, out_mem_buf, out_message)
   # @param [String] path 
   # @param [FFI::Pointer(*MemoryBufferRef)] out_mem_buf 
-  # @param [FFI::Pointer(**Char_S)] out_message 
+  # @param [FFI::Pointer(**CharS)] out_message 
   # @return [Integer] 
   # @scope class
   attach_function :create_memory_buffer_with_contents_of_file, :LLVMCreateMemoryBufferWithContentsOfFile, [:string, :pointer, :pointer], :int
@@ -4593,7 +4593,7 @@ module LLVM
   # 
   # @method create_memory_buffer_with_stdin(out_mem_buf, out_message)
   # @param [FFI::Pointer(*MemoryBufferRef)] out_mem_buf 
-  # @param [FFI::Pointer(**Char_S)] out_message 
+  # @param [FFI::Pointer(**CharS)] out_message 
   # @return [Integer] 
   # @scope class
   attach_function :create_memory_buffer_with_stdin, :LLVMCreateMemoryBufferWithSTDIN, [:pointer, :pointer], :int
