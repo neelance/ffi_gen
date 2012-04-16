@@ -7,7 +7,7 @@ def run_test(options = {})
     FileUtils.mkdir_p File.dirname(output_file)
     
     FFIGen.generate(
-      ruby_module: options[:library_name],
+      module_name: options[:library_name],
       ffi_lib:     options[:ffi_lib],
       headers:     [header],
       cflags:      options.fetch(:cflags, []),
