@@ -155,6 +155,15 @@ class FFIGen
         writer.write_array @fields, ",", "layout ", "       " do |field|
           "#{field[:symbol]}, #{field[:type_data][:ffi_type]}"
         end
+        @oo_functions.each do |(name, function, return_type_declaration)|
+          parameter_names = function.parameters[1..-1].map { |parameter| !parameter[:name].empty? ? @generator.to_ruby_lowercase(parameter[:name], true) : "arg#{function.parameters.index(parameter)}" }
+          writer.puts "", "def #{@generator.to_ruby_lowercase name}(#{parameter_names.join(', ')})"
+          writer.indent do
+            cast = return_type_declaration ? "#{return_type_declaration.ruby_name}.new " : ""
+            writer.puts "#{cast}#{@generator.module_name}.#{function.ruby_name}(#{(["self"] + parameter_names).join(', ')})"
+          end
+          writer.puts "end"
+        end
       end
       writer.puts "end", ""
       

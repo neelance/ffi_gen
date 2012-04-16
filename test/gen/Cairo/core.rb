@@ -68,6 +68,114 @@ module Cairo
   # cairo_surface_reference() and cairo_surface_destroy().
   class Surface < FFI::Struct
     layout :dummy, :char
+    
+    def create_similar(content, width, height)
+      Surface.new Cairo.surface_create_similar(self, content, width, height)
+    end
+    
+    def create_for_rectangle(x, y, width, height)
+      Surface.new Cairo.surface_create_for_rectangle(self, x, y, width, height)
+    end
+    
+    def reference()
+      Surface.new Cairo.surface_reference(self)
+    end
+    
+    def finish()
+      Cairo.surface_finish(self)
+    end
+    
+    def destroy()
+      Cairo.surface_destroy(self)
+    end
+    
+    def get_device()
+      Device.new Cairo.surface_get_device(self)
+    end
+    
+    def get_reference_count()
+      Cairo.surface_get_reference_count(self)
+    end
+    
+    def status()
+      Cairo.surface_status(self)
+    end
+    
+    def get_type()
+      Cairo.surface_get_type(self)
+    end
+    
+    def get_content()
+      Cairo.surface_get_content(self)
+    end
+    
+    def write_to_png(filename)
+      Cairo.surface_write_to_png(self, filename)
+    end
+    
+    def write_to_png_stream(write_func, closure)
+      Cairo.surface_write_to_png_stream(self, write_func, closure)
+    end
+    
+    def get_user_data(key)
+      Cairo.surface_get_user_data(self, key)
+    end
+    
+    def set_user_data(key, user_data, destroy)
+      Cairo.surface_set_user_data(self, key, user_data, destroy)
+    end
+    
+    def get_mime_data(mime_type, data, length)
+      Cairo.surface_get_mime_data(self, mime_type, data, length)
+    end
+    
+    def set_mime_data(mime_type, data, length, destroy, closure)
+      Cairo.surface_set_mime_data(self, mime_type, data, length, destroy, closure)
+    end
+    
+    def get_font_options(options)
+      Cairo.surface_get_font_options(self, options)
+    end
+    
+    def flush()
+      Cairo.surface_flush(self)
+    end
+    
+    def mark_dirty()
+      Cairo.surface_mark_dirty(self)
+    end
+    
+    def mark_dirty_rectangle(x, y, width, height)
+      Cairo.surface_mark_dirty_rectangle(self, x, y, width, height)
+    end
+    
+    def set_device_offset(x_offset, y_offset)
+      Cairo.surface_set_device_offset(self, x_offset, y_offset)
+    end
+    
+    def get_device_offset(x_offset, y_offset)
+      Cairo.surface_get_device_offset(self, x_offset, y_offset)
+    end
+    
+    def set_fallback_resolution(x_pixels_per_inch, y_pixels_per_inch)
+      Cairo.surface_set_fallback_resolution(self, x_pixels_per_inch, y_pixels_per_inch)
+    end
+    
+    def get_fallback_resolution(x_pixels_per_inch, y_pixels_per_inch)
+      Cairo.surface_get_fallback_resolution(self, x_pixels_per_inch, y_pixels_per_inch)
+    end
+    
+    def copy_page()
+      Cairo.surface_copy_page(self)
+    end
+    
+    def show_page()
+      Cairo.surface_show_page(self)
+    end
+    
+    def has_show_text_glyphs()
+      Cairo.surface_has_show_text_glyphs(self)
+    end
   end
   
   # cairo_device_t:
@@ -86,6 +194,50 @@ module Cairo
   # Since: 1.10
   class Device < FFI::Struct
     layout :dummy, :char
+    
+    def reference()
+      Device.new Cairo.device_reference(self)
+    end
+    
+    def get_type()
+      Cairo.device_get_type(self)
+    end
+    
+    def status()
+      Cairo.device_status(self)
+    end
+    
+    def acquire()
+      Cairo.device_acquire(self)
+    end
+    
+    def release()
+      Cairo.device_release(self)
+    end
+    
+    def flush()
+      Cairo.device_flush(self)
+    end
+    
+    def finish()
+      Cairo.device_finish(self)
+    end
+    
+    def destroy()
+      Cairo.device_destroy(self)
+    end
+    
+    def get_reference_count()
+      Cairo.device_get_reference_count(self)
+    end
+    
+    def get_user_data(key)
+      Cairo.device_get_user_data(self, key)
+    end
+    
+    def set_user_data(key, user_data, destroy)
+      Cairo.device_set_user_data(self, key, user_data, destroy)
+    end
   end
   
   # cairo_matrix_t:
@@ -124,6 +276,54 @@ module Cairo
            :yy, :double,
            :x0, :double,
            :y0, :double
+    
+    def init(xx, yx, xy, yy, x0, y0)
+      Cairo.matrix_init(self, xx, yx, xy, yy, x0, y0)
+    end
+    
+    def init_identity()
+      Cairo.matrix_init_identity(self)
+    end
+    
+    def init_translate(tx, ty)
+      Cairo.matrix_init_translate(self, tx, ty)
+    end
+    
+    def init_scale(sx, sy)
+      Cairo.matrix_init_scale(self, sx, sy)
+    end
+    
+    def init_rotate(radians)
+      Cairo.matrix_init_rotate(self, radians)
+    end
+    
+    def translate(tx, ty)
+      Cairo.matrix_translate(self, tx, ty)
+    end
+    
+    def scale(sx, sy)
+      Cairo.matrix_scale(self, sx, sy)
+    end
+    
+    def rotate(radians)
+      Cairo.matrix_rotate(self, radians)
+    end
+    
+    def invert()
+      Cairo.matrix_invert(self)
+    end
+    
+    def multiply(a, b)
+      Cairo.matrix_multiply(self, a, b)
+    end
+    
+    def transform_distance(dx, dy)
+      Cairo.matrix_transform_distance(self, dx, dy)
+    end
+    
+    def transform_point(x, y)
+      Cairo.matrix_transform_point(self, x, y)
+    end
   end
   
   # cairo_pattern_t:
@@ -145,6 +345,90 @@ module Cairo
   # cairo_pattern_reference() and cairo_pattern_destroy().
   class Pattern < FFI::Struct
     layout :dummy, :char
+    
+    def reference()
+      Pattern.new Cairo.pattern_reference(self)
+    end
+    
+    def destroy()
+      Cairo.pattern_destroy(self)
+    end
+    
+    def get_reference_count()
+      Cairo.pattern_get_reference_count(self)
+    end
+    
+    def status()
+      Cairo.pattern_status(self)
+    end
+    
+    def get_user_data(key)
+      Cairo.pattern_get_user_data(self, key)
+    end
+    
+    def set_user_data(key, user_data, destroy)
+      Cairo.pattern_set_user_data(self, key, user_data, destroy)
+    end
+    
+    def get_type()
+      Cairo.pattern_get_type(self)
+    end
+    
+    def add_color_stop_rgb(offset, red, green, blue)
+      Cairo.pattern_add_color_stop_rgb(self, offset, red, green, blue)
+    end
+    
+    def add_color_stop_rgba(offset, red, green, blue, alpha)
+      Cairo.pattern_add_color_stop_rgba(self, offset, red, green, blue, alpha)
+    end
+    
+    def set_matrix(matrix)
+      Cairo.pattern_set_matrix(self, matrix)
+    end
+    
+    def get_matrix(matrix)
+      Cairo.pattern_get_matrix(self, matrix)
+    end
+    
+    def set_extend(extend)
+      Cairo.pattern_set_extend(self, extend)
+    end
+    
+    def get_extend()
+      Cairo.pattern_get_extend(self)
+    end
+    
+    def set_filter(filter)
+      Cairo.pattern_set_filter(self, filter)
+    end
+    
+    def get_filter()
+      Cairo.pattern_get_filter(self)
+    end
+    
+    def get_rgba(red, green, blue, alpha)
+      Cairo.pattern_get_rgba(self, red, green, blue, alpha)
+    end
+    
+    def get_surface(surface)
+      Cairo.pattern_get_surface(self, surface)
+    end
+    
+    def get_color_stop_rgba(index, offset, red, green, blue, alpha)
+      Cairo.pattern_get_color_stop_rgba(self, index, offset, red, green, blue, alpha)
+    end
+    
+    def get_color_stop_count(count)
+      Cairo.pattern_get_color_stop_count(self, count)
+    end
+    
+    def get_linear_points(x0, y0, x1, y1)
+      Cairo.pattern_get_linear_points(self, x0, y0, x1, y1)
+    end
+    
+    def get_radial_circles(x0, y0, r0, x1, y1, r1)
+      Cairo.pattern_get_radial_circles(self, x0, y0, r0, x1, y1, r1)
+    end
   end
   
   # cairo_user_data_key_t:
@@ -1417,6 +1701,10 @@ module Cairo
     layout :status, :status,
            :rectangles, Rectangle,
            :num_rectangles, :int
+    
+    def destroy()
+      Cairo.rectangle_list_destroy(self)
+    end
   end
   
   # (Not documented)
@@ -1450,6 +1738,70 @@ module Cairo
   # cairo_scaled_font_reference() and cairo_scaled_font_destroy().
   class ScaledFont < FFI::Struct
     layout :dummy, :char
+    
+    def reference()
+      ScaledFont.new Cairo.scaled_font_reference(self)
+    end
+    
+    def destroy()
+      Cairo.scaled_font_destroy(self)
+    end
+    
+    def get_reference_count()
+      Cairo.scaled_font_get_reference_count(self)
+    end
+    
+    def status()
+      Cairo.scaled_font_status(self)
+    end
+    
+    def get_type()
+      Cairo.scaled_font_get_type(self)
+    end
+    
+    def get_user_data(key)
+      Cairo.scaled_font_get_user_data(self, key)
+    end
+    
+    def set_user_data(key, user_data, destroy)
+      Cairo.scaled_font_set_user_data(self, key, user_data, destroy)
+    end
+    
+    def extents(extents)
+      Cairo.scaled_font_extents(self, extents)
+    end
+    
+    def text_extents(utf8, extents)
+      Cairo.scaled_font_text_extents(self, utf8, extents)
+    end
+    
+    def glyph_extents(glyphs, num_glyphs, extents)
+      Cairo.scaled_font_glyph_extents(self, glyphs, num_glyphs, extents)
+    end
+    
+    def text_to_glyphs(x, y, utf8, utf8_len, glyphs, num_glyphs, clusters, num_clusters, cluster_flags)
+      Cairo.scaled_font_text_to_glyphs(self, x, y, utf8, utf8_len, glyphs, num_glyphs, clusters, num_clusters, cluster_flags)
+    end
+    
+    def get_font_face()
+      FontFace.new Cairo.scaled_font_get_font_face(self)
+    end
+    
+    def get_font_matrix(font_matrix)
+      Cairo.scaled_font_get_font_matrix(self, font_matrix)
+    end
+    
+    def get_ctm(ctm)
+      Cairo.scaled_font_get_ctm(self, ctm)
+    end
+    
+    def get_scale_matrix(scale_matrix)
+      Cairo.scaled_font_get_scale_matrix(self, scale_matrix)
+    end
+    
+    def get_font_options(options)
+      Cairo.scaled_font_get_font_options(self, options)
+    end
   end
   
   # cairo_font_face_t:
@@ -1469,6 +1821,34 @@ module Cairo
   # cairo_font_face_reference() and cairo_font_face_destroy().
   class FontFace < FFI::Struct
     layout :dummy, :char
+    
+    def reference()
+      FontFace.new Cairo.font_face_reference(self)
+    end
+    
+    def destroy()
+      Cairo.font_face_destroy(self)
+    end
+    
+    def get_reference_count()
+      Cairo.font_face_get_reference_count(self)
+    end
+    
+    def status()
+      Cairo.font_face_status(self)
+    end
+    
+    def get_type()
+      Cairo.font_face_get_type(self)
+    end
+    
+    def get_user_data(key)
+      Cairo.font_face_get_user_data(self, key)
+    end
+    
+    def set_user_data(key, user_data, destroy)
+      Cairo.font_face_set_user_data(self, key, user_data, destroy)
+    end
   end
   
   # cairo_glyph_t:
@@ -1882,6 +2262,62 @@ module Cairo
   # #cairo_font_options_t objects.
   class FontOptions < FFI::Struct
     layout :dummy, :char
+    
+    def copy()
+      FontOptions.new Cairo.font_options_copy(self)
+    end
+    
+    def destroy()
+      Cairo.font_options_destroy(self)
+    end
+    
+    def status()
+      Cairo.font_options_status(self)
+    end
+    
+    def merge(other)
+      Cairo.font_options_merge(self, other)
+    end
+    
+    def equal(other)
+      Cairo.font_options_equal(self, other)
+    end
+    
+    def hash()
+      Cairo.font_options_hash(self)
+    end
+    
+    def set_antialias(antialias)
+      Cairo.font_options_set_antialias(self, antialias)
+    end
+    
+    def get_antialias()
+      Cairo.font_options_get_antialias(self)
+    end
+    
+    def set_subpixel_order(subpixel_order)
+      Cairo.font_options_set_subpixel_order(self, subpixel_order)
+    end
+    
+    def get_subpixel_order()
+      Cairo.font_options_get_subpixel_order(self)
+    end
+    
+    def set_hint_style(hint_style)
+      Cairo.font_options_set_hint_style(self, hint_style)
+    end
+    
+    def get_hint_style()
+      Cairo.font_options_get_hint_style(self)
+    end
+    
+    def set_hint_metrics(hint_metrics)
+      Cairo.font_options_set_hint_metrics(self, hint_metrics)
+    end
+    
+    def get_hint_metrics()
+      Cairo.font_options_get_hint_metrics(self)
+    end
   end
   
   # (Not documented)
@@ -3086,6 +3522,10 @@ module Cairo
     layout :status, :status,
            :data, PathDataT,
            :num_data, :int
+    
+    def destroy()
+      Cairo.path_destroy(self)
+    end
   end
   
   # (Not documented)
@@ -4357,6 +4797,86 @@ module Cairo
   # Since: 1.10
   class Region < FFI::Struct
     layout :dummy, :char
+    
+    def copy()
+      Region.new Cairo.region_copy(self)
+    end
+    
+    def reference()
+      Region.new Cairo.region_reference(self)
+    end
+    
+    def destroy()
+      Cairo.region_destroy(self)
+    end
+    
+    def equal(b)
+      Cairo.region_equal(self, b)
+    end
+    
+    def status()
+      Cairo.region_status(self)
+    end
+    
+    def get_extents(extents)
+      Cairo.region_get_extents(self, extents)
+    end
+    
+    def num_rectangles()
+      Cairo.region_num_rectangles(self)
+    end
+    
+    def get_rectangle(nth, rectangle)
+      Cairo.region_get_rectangle(self, nth, rectangle)
+    end
+    
+    def is_empty()
+      Cairo.region_is_empty(self)
+    end
+    
+    def contains_rectangle(rectangle)
+      Cairo.region_contains_rectangle(self, rectangle)
+    end
+    
+    def contains_point(x, y)
+      Cairo.region_contains_point(self, x, y)
+    end
+    
+    def translate(dx, dy)
+      Cairo.region_translate(self, dx, dy)
+    end
+    
+    def subtract(other)
+      Cairo.region_subtract(self, other)
+    end
+    
+    def subtract_rectangle(rectangle)
+      Cairo.region_subtract_rectangle(self, rectangle)
+    end
+    
+    def intersect(other)
+      Cairo.region_intersect(self, other)
+    end
+    
+    def intersect_rectangle(rectangle)
+      Cairo.region_intersect_rectangle(self, rectangle)
+    end
+    
+    def union(other)
+      Cairo.region_union(self, other)
+    end
+    
+    def union_rectangle(rectangle)
+      Cairo.region_union_rectangle(self, rectangle)
+    end
+    
+    def xor(other)
+      Cairo.region_xor(self, other)
+    end
+    
+    def xor_rectangle(rectangle)
+      Cairo.region_xor_rectangle(self, rectangle)
+    end
   end
   
   # cairo_rectangle_int_t:

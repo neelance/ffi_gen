@@ -83,7 +83,7 @@ class FFIGen
   
   class StructOrUnion
     attr_accessor :name, :comment
-    attr_reader :fields, :written
+    attr_reader :fields, :oo_functions, :written
     
     def initialize(generator, name, is_union)
       @generator = generator
@@ -91,6 +91,7 @@ class FFIGen
       @is_union = is_union
       @comment = ""
       @fields = []
+      @oo_functions = []
       @written = false
     end
   end
@@ -173,7 +174,7 @@ class FFIGen
     end
   end
   
-  attr_reader :module, :ffi_lib, :headers, :output, :blacklist, :cflags
+  attr_reader :module_name, :ffi_lib, :headers, :output, :blacklist, :cflags
 
   def initialize(options = {})
     @module_name   = options[:module_name] or fail "No module name given."
@@ -354,6 +355,12 @@ class FFIGen
         param_type = Clang.get_cursor_type function_child
         function.parameters << { name: split_name(param_name), c_name: param_name, type: param_type }
       end
+      
+      if function.parameters.size != 0 and not (pointee_declaration = get_pointee_declaration(function.parameters.first[:type])).nil?
+        if name.map(&:downcase)[0, pointee_declaration.name.size] == pointee_declaration.name.map(&:downcase)
+          pointee_declaration.oo_functions << [name[pointee_declaration.name.size..-1], function, get_pointee_declaration(function.return_type)]
+        end
+      end
     
     when :typedef_decl
       typedef_children = Clang.get_children declaration
@@ -391,6 +398,14 @@ class FFIGen
       end
       
     end
+  end
+  
+  def get_pointee_declaration(type)
+    canonical_type = Clang.get_canonical_type type
+    return nil if canonical_type[:kind] != :pointer
+    pointee_type = Clang.get_pointee_type canonical_type
+    return nil if pointee_type[:kind] != :record
+    @declarations[Clang.get_cursor_type(Clang.get_type_declaration(pointee_type))]
   end
   
   def extract_comment(translation_unit, range, search_backwards = true, return_spelling = true)

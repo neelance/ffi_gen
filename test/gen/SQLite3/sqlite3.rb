@@ -764,6 +764,22 @@ module SQLite3
   # Mutexes are created using (sqlite3_mutex_alloc()).
   class Mutex < FFI::Struct
     layout :dummy, :char
+    
+    def free()
+      SQLite3.mutex_free(self)
+    end
+    
+    def enter()
+      SQLite3.mutex_enter(self)
+    end
+    
+    def try()
+      SQLite3.mutex_try(self)
+    end
+    
+    def leave()
+      SQLite3.mutex_leave(self)
+    end
   end
   
   # CAPI3REF: OS Interface Object
@@ -992,6 +1008,14 @@ module SQLite3
            :x_set_system_call, :pointer,
            :x_get_system_call, :pointer,
            :x_next_system_call, :pointer
+    
+    def register(make_dflt)
+      SQLite3.vfs_register(self, make_dflt)
+    end
+    
+    def unregister()
+      SQLite3.vfs_unregister(self)
+    end
   end
   
   # CAPI3REF: Initialize The SQLite Library
@@ -2445,6 +2469,14 @@ module SQLite3
   # information.
   class Stmt < FFI::Struct
     layout :dummy, :char
+    
+    def readonly()
+      SQLite3.stmt_readonly(self)
+    end
+    
+    def status(op, reset_flg)
+      SQLite3.stmt_status(self, op, reset_flg)
+    end
   end
   
   # CAPI3REF: Run-time Limits
@@ -2715,6 +2747,10 @@ module SQLite3
   # and/or (sqlite3_set_auxdata()).
   class Context < FFI::Struct
     layout :dummy, :char
+    
+    def db_handle()
+      Sqlite3.new SQLite3.context_db_handle(self)
+    end
   end
   
   # CAPI3REF: Binding Values To Prepared Statements
@@ -5307,6 +5343,26 @@ module SQLite3
   # ^The (sqlite3_blob_bytes()) interface returns the size of the BLOB in bytes.
   class Blob < FFI::Struct
     layout :dummy, :char
+    
+    def reopen(arg1)
+      SQLite3.blob_reopen(self, arg1)
+    end
+    
+    def close()
+      SQLite3.blob_close(self)
+    end
+    
+    def bytes()
+      SQLite3.blob_bytes(self)
+    end
+    
+    def read(z, n, i_offset)
+      SQLite3.blob_read(self, z, n, i_offset)
+    end
+    
+    def write(z, n, i_offset)
+      SQLite3.blob_write(self, z, n, i_offset)
+    end
   end
   
   # CAPI3REF: Open A BLOB For Incremental I/O
@@ -6207,6 +6263,22 @@ module SQLite3
   # See Also: (Using the SQLite Online Backup API)
   class Backup < FFI::Struct
     layout :dummy, :char
+    
+    def step(n_page)
+      SQLite3.backup_step(self, n_page)
+    end
+    
+    def finish()
+      SQLite3.backup_finish(self)
+    end
+    
+    def remaining()
+      SQLite3.backup_remaining(self)
+    end
+    
+    def pagecount()
+      SQLite3.backup_pagecount(self)
+    end
   end
   
   # CAPI3REF: Online Backup API.
