@@ -521,7 +521,7 @@ class FFIGen
         token = Clang::Token.new tokens_ptr[1]
         if Clang.get_token_kind(token) == :literal
           value = Clang.get_token_spelling(translation_unit, token).to_s_and_dispose
-          value.sub! /[A-Za-z]+$/, '' # remove number suffixes
+          value.sub! /[A-Za-z]+$/, '' unless value.start_with? '0x' # remove number suffixes
           @declarations[name] ||= Constant.new self, name, value
         end 
       end
@@ -602,10 +602,10 @@ class FFIGen
       result
     when :record
       declaration = @declarations[canonical_type]
-      declaration ? ["#{declaration.ruby_name}.by_value", declaration.ruby_name] : ["[:char, 1]", "unknown"] # TODO
+      declaration ? ["#{declaration.ruby_name}.by_value", declaration.ruby_name] : [":char", "unknown"] # TODO
     when :enum
       declaration = @declarations[canonical_type]
-      [":#{declaration.ruby_name}", "Symbol from _enum_#{declaration.ruby_name}_", declaration.ruby_name]
+      declaration ? [":#{declaration.ruby_name}", "Symbol from _enum_#{declaration.ruby_name}_", declaration.ruby_name] : [":char", "unknown"] # TODO
     when :constant_array
       element_type_data = map_type Clang.get_array_element_type(canonical_type)
       size = Clang.get_array_size canonical_type
