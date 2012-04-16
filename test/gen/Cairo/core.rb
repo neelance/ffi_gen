@@ -66,9 +66,7 @@ module Cairo
   # 
   # Memory management of #cairo_surface_t is done with
   # cairo_surface_reference() and cairo_surface_destroy().
-  class Surface < FFI::Struct
-    layout :dummy, :char
-    
+  module SurfaceWrappers
     def create_similar(content, width, height)
       Surface.new Cairo.surface_create_similar(self, content, width, height)
     end
@@ -178,6 +176,11 @@ module Cairo
     end
   end
   
+  class Surface < FFI::Struct
+    include SurfaceWrappers
+    layout :dummy, :char
+  end
+  
   # cairo_device_t:
   # 
   # A #cairo_device_t represents the driver interface for drawing
@@ -192,9 +195,7 @@ module Cairo
   # cairo_device_reference() and cairo_device_destroy().
   # 
   # Since: 1.10
-  class Device < FFI::Struct
-    layout :dummy, :char
-    
+  module DeviceWrappers
     def reference()
       Device.new Cairo.device_reference(self)
     end
@@ -240,6 +241,11 @@ module Cairo
     end
   end
   
+  class Device < FFI::Struct
+    include DeviceWrappers
+    layout :dummy, :char
+  end
+  
   # cairo_matrix_t:
   # @xx: xx component of the affine transformation
   # @yx: yx component of the affine transformation
@@ -269,14 +275,7 @@ module Cairo
   #   (Float) 
   # :y0 ::
   #   (Float) 
-  class Matrix < FFI::Struct
-    layout :xx, :double,
-           :yx, :double,
-           :xy, :double,
-           :yy, :double,
-           :x0, :double,
-           :y0, :double
-    
+  module MatrixWrappers
     def init(xx, yx, xy, yy, x0, y0)
       Cairo.matrix_init(self, xx, yx, xy, yy, x0, y0)
     end
@@ -326,6 +325,16 @@ module Cairo
     end
   end
   
+  class Matrix < FFI::Struct
+    include MatrixWrappers
+    layout :xx, :double,
+           :yx, :double,
+           :xy, :double,
+           :yy, :double,
+           :x0, :double,
+           :y0, :double
+  end
+  
   # cairo_pattern_t:
   # 
   # A #cairo_pattern_t represents a source when drawing onto a
@@ -343,9 +352,7 @@ module Cairo
   # 
   # Memory management of #cairo_pattern_t is done with
   # cairo_pattern_reference() and cairo_pattern_destroy().
-  class Pattern < FFI::Struct
-    layout :dummy, :char
-    
+  module PatternWrappers
     def reference()
       Pattern.new Cairo.pattern_reference(self)
     end
@@ -429,6 +436,11 @@ module Cairo
     def get_radial_circles(x0, y0, r0, x1, y1, r1)
       Cairo.pattern_get_radial_circles(self, x0, y0, r0, x1, y1, r1)
     end
+  end
+  
+  class Pattern < FFI::Struct
+    include PatternWrappers
+    layout :dummy, :char
   end
   
   # cairo_user_data_key_t:
@@ -1697,14 +1709,17 @@ module Cairo
   #   (Rectangle) 
   # :num_rectangles ::
   #   (Integer) 
-  class RectangleList < FFI::Struct
-    layout :status, :status,
-           :rectangles, Rectangle,
-           :num_rectangles, :int
-    
+  module RectangleListWrappers
     def destroy()
       Cairo.rectangle_list_destroy(self)
     end
+  end
+  
+  class RectangleList < FFI::Struct
+    include RectangleListWrappers
+    layout :status, :status,
+           :rectangles, Rectangle,
+           :num_rectangles, :int
   end
   
   # (Not documented)
@@ -1736,9 +1751,7 @@ module Cairo
   # 
   # Memory management of #cairo_scaled_font_t is done with
   # cairo_scaled_font_reference() and cairo_scaled_font_destroy().
-  class ScaledFont < FFI::Struct
-    layout :dummy, :char
-    
+  module ScaledFontWrappers
     def reference()
       ScaledFont.new Cairo.scaled_font_reference(self)
     end
@@ -1804,6 +1817,11 @@ module Cairo
     end
   end
   
+  class ScaledFont < FFI::Struct
+    include ScaledFontWrappers
+    layout :dummy, :char
+  end
+  
   # cairo_font_face_t:
   # 
   # A #cairo_font_face_t specifies all aspects of a font other
@@ -1819,9 +1837,7 @@ module Cairo
   # 
   # Memory management of #cairo_font_face_t is done with
   # cairo_font_face_reference() and cairo_font_face_destroy().
-  class FontFace < FFI::Struct
-    layout :dummy, :char
-    
+  module FontFaceWrappers
     def reference()
       FontFace.new Cairo.font_face_reference(self)
     end
@@ -1849,6 +1865,11 @@ module Cairo
     def set_user_data(key, user_data, destroy)
       Cairo.font_face_set_user_data(self, key, user_data, destroy)
     end
+  end
+  
+  class FontFace < FFI::Struct
+    include FontFaceWrappers
+    layout :dummy, :char
   end
   
   # cairo_glyph_t:
@@ -2260,9 +2281,7 @@ module Cairo
   # cairo_font_options_hash() should be used to copy, check
   # for equality, merge, or compute a hash value of
   # #cairo_font_options_t objects.
-  class FontOptions < FFI::Struct
-    layout :dummy, :char
-    
+  module FontOptionsWrappers
     def copy()
       FontOptions.new Cairo.font_options_copy(self)
     end
@@ -2318,6 +2337,11 @@ module Cairo
     def get_hint_metrics()
       Cairo.font_options_get_hint_metrics(self)
     end
+  end
+  
+  class FontOptions < FFI::Struct
+    include FontOptionsWrappers
+    layout :dummy, :char
   end
   
   # (Not documented)
@@ -3518,14 +3542,17 @@ module Cairo
   #   (PathDataT) 
   # :num_data ::
   #   (Integer) 
-  class Path < FFI::Struct
-    layout :status, :status,
-           :data, PathDataT,
-           :num_data, :int
-    
+  module PathWrappers
     def destroy()
       Cairo.path_destroy(self)
     end
+  end
+  
+  class Path < FFI::Struct
+    include PathWrappers
+    layout :status, :status,
+           :data, PathDataT,
+           :num_data, :int
   end
   
   # (Not documented)
@@ -4795,9 +4822,7 @@ module Cairo
   # cairo_region_reference() and cairo_region_destroy().
   # 
   # Since: 1.10
-  class Region < FFI::Struct
-    layout :dummy, :char
-    
+  module RegionWrappers
     def copy()
       Region.new Cairo.region_copy(self)
     end
@@ -4877,6 +4902,11 @@ module Cairo
     def xor_rectangle(rectangle)
       Cairo.region_xor_rectangle(self, rectangle)
     end
+  end
+  
+  class Region < FFI::Struct
+    include RegionWrappers
+    layout :dummy, :char
   end
   
   # cairo_rectangle_int_t:

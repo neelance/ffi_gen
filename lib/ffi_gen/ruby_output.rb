@@ -149,20 +149,29 @@ class FFIGen
       end
       
       @fields << { symbol: ":dummy", type_data: { ffi_type: ":char" } } if @fields.empty?
-      
+
+      unless @oo_functions.empty?
+        writer.puts "module #{ruby_name}Wrappers"
+        writer.indent do
+          @oo_functions.each_with_index do |(name, function, return_type_declaration), index|
+            parameter_names = function.parameters[1..-1].map { |parameter| !parameter[:name].empty? ? @generator.to_ruby_lowercase(parameter[:name], true) : "arg#{function.parameters.index(parameter)}" }
+            writer.puts "" unless index == 0
+            writer.puts "def #{@generator.to_ruby_lowercase name}(#{parameter_names.join(', ')})"
+            writer.indent do
+              cast = return_type_declaration ? "#{return_type_declaration.ruby_name}.new " : ""
+              writer.puts "#{cast}#{@generator.module_name}.#{function.ruby_name}(#{(["self"] + parameter_names).join(', ')})"
+            end
+            writer.puts "end"
+          end
+        end
+        writer.puts "end", ""
+      end
+            
       writer.puts "class #{ruby_name} < #{@is_union ? 'FFI::Union' : 'FFI::Struct'}"
       writer.indent do
+        writer.puts "include #{ruby_name}Wrappers" unless @oo_functions.empty?
         writer.write_array @fields, ",", "layout ", "       " do |field|
           "#{field[:symbol]}, #{field[:type_data][:ffi_type]}"
-        end
-        @oo_functions.each do |(name, function, return_type_declaration)|
-          parameter_names = function.parameters[1..-1].map { |parameter| !parameter[:name].empty? ? @generator.to_ruby_lowercase(parameter[:name], true) : "arg#{function.parameters.index(parameter)}" }
-          writer.puts "", "def #{@generator.to_ruby_lowercase name}(#{parameter_names.join(', ')})"
-          writer.indent do
-            cast = return_type_declaration ? "#{return_type_declaration.ruby_name}.new " : ""
-            writer.puts "#{cast}#{@generator.module_name}.#{function.ruby_name}(#{(["self"] + parameter_names).join(', ')})"
-          end
-          writer.puts "end"
         end
       end
       writer.puts "end", ""

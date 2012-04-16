@@ -762,9 +762,7 @@ module SQLite3
   # deals with pointers to the (sqlite3_mutex) object.
   # 
   # Mutexes are created using (sqlite3_mutex_alloc()).
-  class Mutex < FFI::Struct
-    layout :dummy, :char
-    
+  module MutexWrappers
     def free()
       SQLite3.mutex_free(self)
     end
@@ -780,6 +778,11 @@ module SQLite3
     def leave()
       SQLite3.mutex_leave(self)
     end
+  end
+  
+  class Mutex < FFI::Struct
+    include MutexWrappers
+    layout :dummy, :char
   end
   
   # CAPI3REF: OS Interface Object
@@ -985,7 +988,18 @@ module SQLite3
   #   (FFI::Pointer(*)) 
   # :x_next_system_call ::
   #   (FFI::Pointer(*)) 
+  module VfsWrappers
+    def register(make_dflt)
+      SQLite3.vfs_register(self, make_dflt)
+    end
+    
+    def unregister()
+      SQLite3.vfs_unregister(self)
+    end
+  end
+  
   class Vfs < FFI::Struct
+    include VfsWrappers
     layout :i_version, :int,
            :sz_os_file, :int,
            :mx_pathname, :int,
@@ -1008,14 +1022,6 @@ module SQLite3
            :x_set_system_call, :pointer,
            :x_get_system_call, :pointer,
            :x_next_system_call, :pointer
-    
-    def register(make_dflt)
-      SQLite3.vfs_register(self, make_dflt)
-    end
-    
-    def unregister()
-      SQLite3.vfs_unregister(self)
-    end
   end
   
   # CAPI3REF: Initialize The SQLite Library
@@ -2467,9 +2473,7 @@ module SQLite3
   # 
   # Refer to documentation on individual methods above for additional
   # information.
-  class Stmt < FFI::Struct
-    layout :dummy, :char
-    
+  module StmtWrappers
     def readonly()
       SQLite3.stmt_readonly(self)
     end
@@ -2477,6 +2481,11 @@ module SQLite3
     def status(op, reset_flg)
       SQLite3.stmt_status(self, op, reset_flg)
     end
+  end
+  
+  class Stmt < FFI::Struct
+    include StmtWrappers
+    layout :dummy, :char
   end
   
   # CAPI3REF: Run-time Limits
@@ -2745,12 +2754,15 @@ module SQLite3
   # (sqlite3_aggregate_context()), (sqlite3_user_data()),
   # (sqlite3_context_db_handle()), (sqlite3_get_auxdata()),
   # and/or (sqlite3_set_auxdata()).
-  class Context < FFI::Struct
-    layout :dummy, :char
-    
+  module ContextWrappers
     def db_handle()
       Sqlite3.new SQLite3.context_db_handle(self)
     end
+  end
+  
+  class Context < FFI::Struct
+    include ContextWrappers
+    layout :dummy, :char
   end
   
   # CAPI3REF: Binding Values To Prepared Statements
@@ -5341,9 +5353,7 @@ module SQLite3
   # ^The (sqlite3_blob_read()) and (sqlite3_blob_write()) interfaces
   # can be used to read or write small subsections of the BLOB.
   # ^The (sqlite3_blob_bytes()) interface returns the size of the BLOB in bytes.
-  class Blob < FFI::Struct
-    layout :dummy, :char
-    
+  module BlobWrappers
     def reopen(arg1)
       SQLite3.blob_reopen(self, arg1)
     end
@@ -5363,6 +5373,11 @@ module SQLite3
     def write(z, n, i_offset)
       SQLite3.blob_write(self, z, n, i_offset)
     end
+  end
+  
+  class Blob < FFI::Struct
+    include BlobWrappers
+    layout :dummy, :char
   end
   
   # CAPI3REF: Open A BLOB For Incremental I/O
@@ -6261,9 +6276,7 @@ module SQLite3
   # (sqlite3_backup_finish()).
   # 
   # See Also: (Using the SQLite Online Backup API)
-  class Backup < FFI::Struct
-    layout :dummy, :char
-    
+  module BackupWrappers
     def step(n_page)
       SQLite3.backup_step(self, n_page)
     end
@@ -6279,6 +6292,11 @@ module SQLite3
     def pagecount()
       SQLite3.backup_pagecount(self)
     end
+  end
+  
+  class Backup < FFI::Struct
+    include BackupWrappers
+    layout :dummy, :char
   end
   
   # CAPI3REF: Online Backup API.
