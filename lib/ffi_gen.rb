@@ -92,9 +92,10 @@ class FFIGen
     attr_reader :name, :parameters, :comment
     attr_accessor :return_type
     
-    def initialize(generator, name, is_callback, blocking, comment)
+    def initialize(generator, name, c_name, is_callback, blocking, comment)
       @generator = generator
       @name = name
+      @c_name = c_name
       @parameters = []
       @is_callback = is_callback
       @blocking = blocking
@@ -254,9 +255,13 @@ class FFIGen
     @declarations
   end
   
+  def split_name(name)
+    name.sub(/^(#{@prefixes.join('|')})/, '').split(/_|(?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z])/).reject(&:empty?)
+  end
+  
   def read_named_declaration(declaration, comment)
-    name = Clang.get_cursor_spelling(declaration).to_s_and_dispose
-    name = nil if name.empty?
+    c_name = Clang.get_cursor_spelling(declaration).to_s_and_dispose
+    name = split_name c_name
 
     case declaration[:kind]
     when :enum_decl
@@ -302,7 +307,7 @@ class FFIGen
         field = struct_children.shift
         raise if field[:kind] != :field_decl
         
-        field_name = Clang.get_cursor_spelling(field).to_s_and_dispose
+        field_name = split_name Clang.get_cursor_spelling(field).to_s_and_dispose
         field_extent = Clang.get_cursor_extent field
         
         field_comment_range = Clang.get_range previous_field_end, Clang.get_range_start(field_extent)
@@ -322,7 +327,7 @@ class FFIGen
         if nested_declaration
           read_named_declaration nested_declaration, ""
           decl = @declarations[Clang.get_cursor_type(nested_declaration)]
-          decl.name ||= "#{name}_#{field_name}" if decl
+          decl.name = name + field_name if decl and decl.name.empty?
         end
         
         field_type = Clang.get_cursor_type field
@@ -332,7 +337,7 @@ class FFIGen
       @declarations[Clang.get_cursor_type(declaration)] = struct
     
     when :function_decl
-      function = FunctionOrCallback.new self, name, false, @blocking.include?(name), comment
+      function = FunctionOrCallback.new self, name, c_name, false, @blocking.include?(c_name), comment
       function.return_type = Clang.get_cursor_result_type declaration
       @declarations[declaration] = function
       
@@ -340,17 +345,17 @@ class FFIGen
         next if function_child[:kind] != :parm_decl
         param_name = Clang.get_cursor_spelling(function_child).to_s_and_dispose
         param_type = Clang.get_cursor_type function_child
-        function.parameters << { name: param_name, type: param_type}
+        function.parameters << { name: param_name, type: param_type }
       end
     
     when :typedef_decl
       typedef_children = Clang.get_children declaration
       if typedef_children.size == 1
         child_declaration = @declarations[Clang.get_cursor_type(typedef_children.first)]
-        child_declaration.name ||= name if child_declaration
+        child_declaration.name = name if child_declaration and child_declaration.name.empty?
         
       elsif typedef_children.size > 1
-        callback = FunctionOrCallback.new self, name, true, false, comment
+        callback = FunctionOrCallback.new self, name, nil, true, false, comment
         callback.return_type = Clang.get_cursor_type typedef_children.first
         @declarations[Clang.get_cursor_type(declaration)] = callback
         

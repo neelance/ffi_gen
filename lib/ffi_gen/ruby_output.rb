@@ -86,25 +86,17 @@ class FFIGen
     { ffi_type: data_array[0], description: data_array[1], parameter_name: to_ruby_lowercase(data_array[2] || data_array[1]) }
   end
   
-  def to_ruby_lowercase(str, avoid_keywords = false)
-    str = str.dup
-    str.sub! /^(#{@prefixes.join('|')})/, '' # remove prefixes
-    str.gsub! /([A-Z][a-z])/, '_\1' # add underscores before word beginnings
-    str.gsub! /([a-z])([A-Z])/, '\1_\2' # add underscores after word endings
-    str.sub! /^_*/, '' # remove underscores at the beginning
-    str.gsub! /__+/, '_' # replace multiple underscores by only one
-    str.downcase!
+  def to_ruby_lowercase(parts, avoid_keywords = false)
+    parts = split_name parts if parts.is_a? String
+    str = parts.map(&:downcase).join("_")
     str.sub! /^\d/, '_\0' # fix illegal beginnings
     str = "_#{str}" if avoid_keywords and RUBY_KEYWORDS.include? str
     str
   end
   
-  def to_ruby_camelcase(str)
-    str = str.dup
-    str.sub! /^(#{@prefixes.join('|')})/, '' # remove prefixes
-    str.gsub!(/(^|_)[a-z]/) { |match| match.upcase } # make word beginnings upcased
-    str.gsub! '_', '' # remove all underscores
-    str
+  def to_ruby_camelcase(parts)
+    parts = split_name parts if parts.is_a? String
+    parts.map{ |s| s[0].upcase + s[1..-1] }.join
   end
   
   class Enum
@@ -238,7 +230,7 @@ class FFIGen
       if @is_callback
         writer.puts "callback :#{ruby_name}, #{ffi_signature}", ""
       else
-        writer.puts "attach_function :#{ruby_name}, :#{@name}, #{ffi_signature}", ""
+        writer.puts "attach_function :#{ruby_name}, :#{@c_name}, #{ffi_signature}", ""
       end
     end
     
