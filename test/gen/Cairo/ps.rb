@@ -6,9 +6,9 @@ module Cairo
   extend FFI::Library
   ffi_lib 'cairo'
   
-  def self.attach_function(name, *args)
+  def self.attach_function(name, *_)
     begin; super; rescue FFI::NotFoundError => e
-      (class << self; self; end).class_eval { define_method(name) { |*args| raise e } }
+      (class << self; self; end).class_eval { define_method(name) { |*_| raise e } }
     end
   end
   

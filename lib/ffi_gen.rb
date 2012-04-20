@@ -153,11 +153,11 @@ class FFIGen
     
     def prepare_comment_line(line)
       line = line.dup
-      line.sub! /\ ?\*+\/\s*$/, ''
-      line.sub! /^\s*\/?\*+ ?/, ''
-      line.gsub! /\\(brief|determine) /, ''
-      line.gsub! '[', '('
-      line.gsub! ']', ')'
+      line.sub!(/\ ?\*+\/\s*$/, '')
+      line.sub!(/^\s*\/?\*+ ?/, '')
+      line.gsub!(/\\(brief|determine) /, '')
+      line.gsub!('[', '(')
+      line.gsub!(']', ')')
       line
     end
     
@@ -356,10 +356,9 @@ class FFIGen
         function.parameters << { name: split_name(param_name), c_name: param_name, type: param_type }
       end
       
-      if function.parameters.size != 0 and not (pointee_declaration = get_pointee_declaration(function.parameters.first[:type])).nil?
-        if name.map(&:downcase)[0, pointee_declaration.name.size] == pointee_declaration.name.map(&:downcase)
-          pointee_declaration.oo_functions << [name[pointee_declaration.name.size..-1], function, get_pointee_declaration(function.return_type)]
-        end
+      pointee_declaration = function.parameters.first && get_pointee_declaration(function.parameters.first[:type])
+      if pointee_declaration && name.map(&:downcase)[0, pointee_declaration.name.size] == pointee_declaration.name.map(&:downcase)
+        pointee_declaration.oo_functions << [name[pointee_declaration.name.size..-1], function, get_pointee_declaration(function.return_type)]
       end
     
     when :typedef_decl
@@ -392,7 +391,7 @@ class FFIGen
         token = Clang::Token.new tokens_ptr[1]
         if Clang.get_token_kind(token) == :literal
           value = Clang.get_token_spelling(translation_unit, token).to_s_and_dispose
-          value.sub! /[A-Za-z]+$/, '' unless value.start_with? '0x' # remove number suffixes
+          value.sub!(/[A-Za-z]+$/, '') unless value.start_with? '0x' # remove number suffixes
           @declarations[name] ||= Constant.new self, name, value
         end 
       end

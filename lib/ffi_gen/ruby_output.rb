@@ -7,7 +7,7 @@ class FFIGen
       writer.puts "extend FFI::Library"
       writer.puts "ffi_lib_flags #{@ffi_lib_flags.map(&:inspect).join(', ')}" if @ffi_lib_flags
       writer.puts "ffi_lib '#{@ffi_lib}'", ""
-      writer.puts "def self.attach_function(name, *args)", "  begin; super; rescue FFI::NotFoundError => e", "    (class << self; self; end).class_eval { define_method(name) { |*args| raise e } }", "  end", "end", ""
+      writer.puts "def self.attach_function(name, *_)", "  begin; super; rescue FFI::NotFoundError => e", "    (class << self; self; end).class_eval { define_method(name) { |*_| raise e } }", "  end", "end", ""
       declarations.values.compact.uniq.each do |declaration|
         declaration.write_ruby writer
       end
@@ -89,7 +89,7 @@ class FFIGen
   
   def to_ruby_lowercase(parts, avoid_keywords = false)
     str = parts.map(&:downcase).join("_")
-    str.sub! /^\d/, '_\0' # fix illegal beginnings
+    str.sub!(/^\d/, '_\0') # fix illegal beginnings
     str = "_#{str}" if avoid_keywords and RUBY_KEYWORDS.include? str
     str
   end
@@ -199,8 +199,8 @@ class FFIGen
       current_description = function_description
       @comment.split("\n").map do |line|
         line = writer.prepare_comment_line line
-        if line.gsub! /\\param (.*?) /, ''
-          parameter = @parameters.find { |parameter| parameter[:name] == @generator.split_name($1) }
+        if line.gsub!(/\\param (.*?) /, '')
+          parameter = @parameters.find { |p| p[:name] == @generator.split_name($1) }
           if parameter
             current_description = parameter[:description]
           else
