@@ -6,6 +6,12 @@ module Cairo
   extend FFI::Library
   ffi_lib 'cairo'
   
+  def self.attach_function(name, *args)
+    begin; super; rescue FFI::NotFoundError => e
+      (class << self; self; end).class_eval { define_method(name) { |*args| raise e } }
+    end
+  end
+  
   # (Not documented)
   # 
   # @method xlib_surface_create_with_xrender_format(dpy, drawable, screen, format, width, height)

@@ -6,6 +6,12 @@ module Cairo
   extend FFI::Library
   ffi_lib 'cairo'
   
+  def self.attach_function(name, *args)
+    begin; super; rescue FFI::NotFoundError => e
+      (class << self; self; end).class_eval { define_method(name) { |*args| raise e } }
+    end
+  end
+  
   # (Not documented)
   # 
   # @method ft_font_face_create_for_ft_face(face, load_flags)

@@ -6,6 +6,12 @@ module Cairo
   extend FFI::Library
   ffi_lib 'cairo'
   
+  def self.attach_function(name, *args)
+    begin; super; rescue FFI::NotFoundError => e
+      (class << self; self; end).class_eval { define_method(name) { |*args| raise e } }
+    end
+  end
+  
   # (Not documented)
   # 
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:svg_version).</em>

@@ -6,6 +6,12 @@ module GL
   extend FFI::Library
   ffi_lib 'GL'
   
+  def self.attach_function(name, *args)
+    begin; super; rescue FFI::NotFoundError => e
+      (class << self; self; end).class_eval { define_method(name) { |*args| raise e } }
+    end
+  end
+  
   VERSION_1_1 = 1
   
   VERSION_1_2 = 1

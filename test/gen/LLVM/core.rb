@@ -6,6 +6,12 @@ module LLVM
   extend FFI::Library
   ffi_lib 'LLVM-3.0'
   
+  def self.attach_function(name, *args)
+    begin; super; rescue FFI::NotFoundError => e
+      (class << self; self; end).class_eval { define_method(name) { |*args| raise e } }
+    end
+  end
+  
   # The top-level container for all LLVM global data.  See the LLVMContext class.
   class OpaqueContext < FFI::Struct
     layout :dummy, :char

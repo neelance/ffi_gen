@@ -6,6 +6,12 @@ module LLVM
   extend FFI::Library
   ffi_lib 'LLVM-3.0'
   
+  def self.attach_function(name, *args)
+    begin; super; rescue FFI::NotFoundError => e
+      (class << self; self; end).class_eval { define_method(name) { |*args| raise e } }
+    end
+  end
+  
   DISASSEMBLER_VARIANT_KIND_NONE = 0
   
   DISASSEMBLER_VARIANT_KIND_ARM_HI16 = 1

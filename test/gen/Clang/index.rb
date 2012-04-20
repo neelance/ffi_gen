@@ -6,6 +6,12 @@ module Clang
   extend FFI::Library
   ffi_lib 'clang'
   
+  def self.attach_function(name, *args)
+    begin; super; rescue FFI::NotFoundError => e
+      (class << self; self; end).class_eval { define_method(name) { |*args| raise e } }
+    end
+  end
+  
   # A single translation unit, which resides in an index.
   class TranslationUnitImpl < FFI::Struct
     layout :dummy, :char

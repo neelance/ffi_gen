@@ -6,6 +6,12 @@ module GLUT
   extend FFI::Library
   ffi_lib 'glut'
   
+  def self.attach_function(name, *args)
+    begin; super; rescue FFI::NotFoundError => e
+      (class << self; self; end).class_eval { define_method(name) { |*args| raise e } }
+    end
+  end
+  
   FREEGLUT = 1
   
   API_VERSION = 4

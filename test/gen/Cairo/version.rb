@@ -6,6 +6,12 @@ module Cairo
   extend FFI::Library
   ffi_lib 'cairo'
   
+  def self.attach_function(name, *args)
+    begin; super; rescue FFI::NotFoundError => e
+      (class << self; self; end).class_eval { define_method(name) { |*args| raise e } }
+    end
+  end
+  
   VERSION_MAJOR = 1
   
   VERSION_MINOR = 10

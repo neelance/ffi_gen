@@ -6,6 +6,12 @@ module SQLite3
   extend FFI::Library
   ffi_lib 'sqlite3'
   
+  def self.attach_function(name, *args)
+    begin; super; rescue FFI::NotFoundError => e
+      (class << self; self; end).class_eval { define_method(name) { |*args| raise e } }
+    end
+  end
+  
   VERSION = "3.7.7"
   
   VERSION_NUMBER = 3007007

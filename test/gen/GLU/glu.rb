@@ -6,6 +6,12 @@ module GLU
   extend FFI::Library
   ffi_lib 'GLU'
   
+  def self.attach_function(name, *args)
+    begin; super; rescue FFI::NotFoundError => e
+      (class << self; self; end).class_eval { define_method(name) { |*args| raise e } }
+    end
+  end
+  
   EXT_OBJECT_SPACE_TESS = 1
   
   EXT_NURBS_TESSELLATOR = 1
