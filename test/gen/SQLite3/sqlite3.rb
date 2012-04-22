@@ -1104,10 +1104,10 @@ module SQLite3
   # must return (SQLITE_OK) on success and some other (error code) upon
   # failure.
   # 
-  # @method initialize_()
+  # @method initialize()
   # @return [Integer] 
   # @scope class
-  attach_function :initialize_, :sqlite3_initialize, [], :int
+  attach_function :initialize, :sqlite3_initialize, [], :int
   
   # (Not documented)
   # 

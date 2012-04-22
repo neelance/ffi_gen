@@ -16,9 +16,9 @@ module GLU
   
   EXT_NURBS_TESSELLATOR = 1
   
-  FALSE_ = 0
+  FALSE = 0
   
-  TRUE_ = 1
+  TRUE = 1
   
   VERSION_1_1 = 1
   

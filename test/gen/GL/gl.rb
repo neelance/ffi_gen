@@ -20,9 +20,9 @@ module GL
   
   ARB_IMAGING = 1
   
-  FALSE_ = 0x0
+  FALSE = 0x0
   
-  TRUE_ = 0x1
+  TRUE = 0x1
   
   BYTE = 0x1400
   
@@ -352,7 +352,7 @@ module GL
   
   MULT = 0x0103
   
-  RETURN_ = 0x0102
+  RETURN = 0x0102
   
   ALPHA_TEST = 0x0BC0
   
@@ -470,11 +470,11 @@ module GL
   
   INVERT = 0x150A
   
-  AND_ = 0x1501
+  AND = 0x1501
   
   NAND = 0x150E
   
-  OR_ = 0x1507
+  OR = 0x1507
   
   NOR = 0x1508
   

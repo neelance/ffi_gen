@@ -76,9 +76,9 @@ class FFIGen
     
     def shorten_names
       return if @constants.size < 2
-      names = @constants.map { |constant| constant[:name] }
-      names.each(&:shift) while names.map(&:first).uniq.size == 1 and @name.map(&:downcase).include? names.first.first.downcase
-      names.each(&:pop) while names.map(&:last).uniq.size == 1 and @name.map(&:downcase).include? names.first.last.downcase
+      names = @constants.map { |constant| constant[:name].parts }
+      names.each(&:shift) while names.map(&:first).uniq.size == 1 and @name.parts.map(&:downcase).include? names.first.first.downcase
+      names.each(&:pop) while names.map(&:last).uniq.size == 1 and @name.parts.map(&:downcase).include? names.first.last.downcase
     end
   end
   
@@ -98,13 +98,12 @@ class FFIGen
   end
   
   class FunctionOrCallback
-    attr_reader :name, :c_name, :parameters, :comment
+    attr_reader :name, :parameters, :comment
     attr_accessor :return_type
     
-    def initialize(generator, name, c_name, is_callback, blocking, comment)
+    def initialize(generator, name, is_callback, blocking, comment)
       @generator = generator
       @name = name
-      @c_name = c_name
       @parameters = []
       @is_callback = is_callback
       @blocking = blocking
@@ -184,7 +183,32 @@ class FFIGen
     end
   end
   
-  attr_reader :module_name, :ffi_lib, :headers, :output, :blacklist, :cflags
+  class Name
+    attr_reader :raw, :parts
+    
+    def initialize(generator, raw)
+      @generator = generator
+      @raw = raw
+      @parts = @raw.is_a?(Array) ? raw : @raw.sub(/^(#{generator.prefixes.join('|')})/, '').split(/_|(?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z])/).reject(&:empty?)
+    end
+    
+    def format(*modes, keyword_blacklist)
+      parts = @parts.dup
+      parts.map!(&:downcase) if modes.include? :downcase
+      parts.map!(&:upcase) if modes.include? :upcase
+      parts.map! { |s| s[0].upcase + s[1..-1] } if modes.include? :camelcase
+      str = parts.join(modes.include?(:underscores) ? "_" : "")
+      str.sub!(/^\d/, '_\0') # fix illegal beginnings
+      str = "#{str}_" if keyword_blacklist.include? str
+      str
+    end
+    
+    def empty?
+      @parts.empty?
+    end
+  end
+  
+  attr_reader :module_name, :ffi_lib, :headers, :prefixes, :output, :blacklist, :cflags
 
   def initialize(options = {})
     @module_name   = options[:module_name] or fail "No module name given."
@@ -272,13 +296,8 @@ class FFIGen
     @declarations
   end
   
-  def split_name(name)
-    name.sub(/^(#{@prefixes.join('|')})/, '').split(/_|(?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z])/).reject(&:empty?)
-  end
-  
   def read_named_declaration(declaration, comment)
-    c_name = Clang.get_cursor_spelling(declaration).to_s_and_dispose
-    name = split_name c_name
+    name = Name.new self, Clang.get_cursor_spelling(declaration).to_s_and_dispose
 
     case declaration[:kind]
     when :enum_decl
@@ -287,7 +306,7 @@ class FFIGen
       
       previous_constant_location = Clang.get_cursor_location declaration
       Clang.get_children(declaration).each do |enum_constant|
-        constant_name = split_name Clang.get_cursor_spelling(enum_constant).to_s_and_dispose
+        constant_name = Name.new self, Clang.get_cursor_spelling(enum_constant).to_s_and_dispose
         
         constant_value = nil
         value_cursor = Clang.get_children(enum_constant).first
@@ -324,7 +343,7 @@ class FFIGen
         field = struct_children.shift
         raise if field[:kind] != :field_decl
         
-        field_name = split_name Clang.get_cursor_spelling(field).to_s_and_dispose
+        field_name = Name.new self, Clang.get_cursor_spelling(field).to_s_and_dispose
         field_extent = Clang.get_cursor_extent field
         
         field_comment_range = Clang.get_range previous_field_end, Clang.get_range_start(field_extent)
@@ -344,7 +363,7 @@ class FFIGen
         if nested_declaration
           read_named_declaration nested_declaration, ""
           decl = @declarations[Clang.get_cursor_type(nested_declaration)]
-          decl.name = name + field_name if decl and decl.name.empty?
+          decl.name = Name.new(self, name.parts + field_name.parts) if decl and decl.name.empty?
         end
         
         field_type = Clang.get_cursor_type field
@@ -354,20 +373,20 @@ class FFIGen
       @declarations[Clang.get_cursor_type(declaration)] = struct
     
     when :function_decl
-      function = FunctionOrCallback.new self, name, c_name, false, @blocking.include?(c_name), comment
+      function = FunctionOrCallback.new self, name, false, @blocking.include?(name.raw), comment
       function.return_type = Clang.get_cursor_result_type declaration
       @declarations[declaration] = function
       
       Clang.get_children(declaration).each do |function_child|
         next if function_child[:kind] != :parm_decl
-        param_name = Clang.get_cursor_spelling(function_child).to_s_and_dispose
+        param_name = Name.new self, Clang.get_cursor_spelling(function_child).to_s_and_dispose
         param_type = Clang.get_cursor_type function_child
-        function.parameters << { name: split_name(param_name), c_name: param_name, type: param_type }
+        function.parameters << { name: param_name, type: param_type }
       end
       
       pointee_declaration = function.parameters.first && get_pointee_declaration(function.parameters.first[:type])
-      if pointee_declaration && name.map(&:downcase)[0, pointee_declaration.name.size] == pointee_declaration.name.map(&:downcase)
-        pointee_declaration.oo_functions << [name[pointee_declaration.name.size..-1], function, get_pointee_declaration(function.return_type)]
+      if pointee_declaration && name.parts.map(&:downcase)[0, pointee_declaration.name.parts.size] == pointee_declaration.name.parts.map(&:downcase)
+        pointee_declaration.oo_functions << [Name.new(self, name.parts[pointee_declaration.name.parts.size..-1]), function, get_pointee_declaration(function.return_type)]
       end
     
     when :typedef_decl
@@ -377,14 +396,14 @@ class FFIGen
         child_declaration.name = name if child_declaration and child_declaration.name.empty?
         
       elsif typedef_children.size > 1
-        callback = FunctionOrCallback.new self, name, nil, true, false, comment
+        callback = FunctionOrCallback.new self, name, true, false, comment
         callback.return_type = Clang.get_cursor_type typedef_children.first
         @declarations[Clang.get_cursor_type(declaration)] = callback
         
         typedef_children[1..-1].each do |param_decl|
-          param_name = Clang.get_cursor_spelling(param_decl).to_s_and_dispose
+          param_name = Name.new self, Clang.get_cursor_spelling(param_decl).to_s_and_dispose
           param_type = Clang.get_cursor_type param_decl
-          callback.parameters << { name: split_name(param_name), type: param_type }
+          callback.parameters << { name:param_name, type: param_type }
         end
       end
         
