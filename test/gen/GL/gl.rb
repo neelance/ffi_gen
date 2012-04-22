@@ -20,9 +20,9 @@ module GL
   
   ARB_IMAGING = 1
   
-  _FALSE = 0x0
+  FALSE_ = 0x0
   
-  _TRUE = 0x1
+  TRUE_ = 0x1
   
   BYTE = 0x1400
   
@@ -352,7 +352,7 @@ module GL
   
   MULT = 0x0103
   
-  _RETURN = 0x0102
+  RETURN_ = 0x0102
   
   ALPHA_TEST = 0x0BC0
   
@@ -470,11 +470,11 @@ module GL
   
   INVERT = 0x150A
   
-  _AND = 0x1501
+  AND_ = 0x1501
   
   NAND = 0x150E
   
-  _OR = 0x1507
+  OR_ = 0x1507
   
   NOR = 0x1508
   
@@ -2228,18 +2228,18 @@ module GL
   
   # (Not documented)
   # 
-  # @method _begin(mode)
+  # @method begin_(mode)
   # @param [Integer] mode 
   # @return [nil] 
   # @scope class
-  attach_function :_begin, :glBegin, [:uint], :void
+  attach_function :begin_, :glBegin, [:uint], :void
   
   # (Not documented)
   # 
-  # @method _end()
+  # @method end_()
   # @return [nil] 
   # @scope class
-  attach_function :_end, :glEnd, [], :void
+  attach_function :end_, :glEnd, [], :void
   
   # (Not documented)
   # 
@@ -4725,10 +4725,10 @@ module GL
   
   # (Not documented)
   # 
-  # @method draw_range_elements(mode, start, end, count, type, indices)
+  # @method draw_range_elements(mode, start, end_, count, type, indices)
   # @param [Integer] mode 
   # @param [Integer] start 
-  # @param [Integer] end 
+  # @param [Integer] end_ 
   # @param [Integer] count 
   # @param [Integer] type 
   # @param [FFI::Pointer(*GLvoid)] indices 
@@ -4791,9 +4791,9 @@ module GL
   # 
   # <em>This entry is only for documentation and no real method.</em>
   # 
-  # @method _callback_pfngldrawrangeelementsproc_(start, end, count, type, indices)
+  # @method _callback_pfngldrawrangeelementsproc_(start, end_, count, type, indices)
   # @param [Integer] start 
-  # @param [Integer] end 
+  # @param [Integer] end_ 
   # @param [Integer] count 
   # @param [Integer] type 
   # @param [FFI::Pointer(*GLvoid)] indices 

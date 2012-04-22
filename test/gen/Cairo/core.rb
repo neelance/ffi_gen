@@ -906,7 +906,7 @@ module Cairo
   #   
   # :over ::
   #   
-  # :in ::
+  # :in_ ::
   #   
   # :out ::
   #   
@@ -966,7 +966,7 @@ module Cairo
     :clear,
     :source,
     :over,
-    :in,
+    :in_,
     :out,
     :atop,
     :dest,
@@ -4946,7 +4946,7 @@ module Cairo
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:region_overlap).</em>
   # 
   # === Options:
-  # :in ::
+  # :in_ ::
   #   
   # :out ::
   #   completely inside region
@@ -4957,7 +4957,7 @@ module Cairo
   # @return [Symbol]
   # @scope class
   enum :region_overlap, [
-    :in,
+    :in_,
     :out,
     :part
   ]

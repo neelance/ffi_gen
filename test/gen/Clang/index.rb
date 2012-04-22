@@ -276,9 +276,9 @@ module Clang
   # Retrieve a source range given the beginning and ending source
   # locations.
   # 
-  # @method get_range(begin, end)
-  # @param [SourceLocation] begin 
-  # @param [SourceLocation] end 
+  # @method get_range(begin_, end_)
+  # @param [SourceLocation] begin_ 
+  # @param [SourceLocation] end_ 
   # @return [SourceRange] 
   # @scope class
   attach_function :get_range, :clang_getRange, [SourceLocation.by_value, SourceLocation.by_value], SourceRange.by_value
@@ -2568,7 +2568,7 @@ module Clang
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:child_visit_result).</em>
   # 
   # === Options:
-  # :break ::
+  # :break_ ::
   #   Terminates the cursor traversal.
   # :continue ::
   #   Continues the cursor traversal with the next sibling of
@@ -2581,7 +2581,7 @@ module Clang
   # @return [Symbol]
   # @scope class
   enum :child_visit_result, [
-    :break,
+    :break_,
     :continue,
     :recurse
   ]

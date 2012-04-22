@@ -131,9 +131,9 @@ module LLVM
   #   
   # :a_shr ::
   #   
-  # :and ::
+  # :and_ ::
   #   
-  # :or ::
+  # :or_ ::
   #   
   # :xor ::
   #   
@@ -233,8 +233,8 @@ module LLVM
     :shl, 20,
     :l_shr, 21,
     :a_shr, 22,
-    :and, 23,
-    :or, 24,
+    :and_, 23,
+    :or_, 24,
     :xor, 25,
     :alloca, 26,
     :load, 27,
@@ -3627,21 +3627,21 @@ module LLVM
   
   # (Not documented)
   # 
-  # @method build_cond_br(opaque_builder, if, then, else)
+  # @method build_cond_br(opaque_builder, if_, then_, else_)
   # @param [OpaqueBuilder] opaque_builder 
-  # @param [OpaqueValue] if 
-  # @param [OpaqueBasicBlock] then 
-  # @param [OpaqueBasicBlock] else 
+  # @param [OpaqueValue] if_ 
+  # @param [OpaqueBasicBlock] then_ 
+  # @param [OpaqueBasicBlock] else_ 
   # @return [OpaqueValue] 
   # @scope class
   attach_function :build_cond_br, :LLVMBuildCondBr, [OpaqueBuilder, OpaqueValue, OpaqueBasicBlock, OpaqueBasicBlock], OpaqueValue
   
   # (Not documented)
   # 
-  # @method build_switch(opaque_builder, v, else, num_cases)
+  # @method build_switch(opaque_builder, v, else_, num_cases)
   # @param [OpaqueBuilder] opaque_builder 
   # @param [OpaqueValue] v 
-  # @param [OpaqueBasicBlock] else 
+  # @param [OpaqueBasicBlock] else_ 
   # @param [Integer] num_cases 
   # @return [OpaqueValue] 
   # @scope class
@@ -3659,12 +3659,12 @@ module LLVM
   
   # (Not documented)
   # 
-  # @method build_invoke(opaque_builder, fn, args, num_args, then, catch, name)
+  # @method build_invoke(opaque_builder, fn, args, num_args, then_, catch, name)
   # @param [OpaqueBuilder] opaque_builder 
   # @param [OpaqueValue] fn 
   # @param [FFI::Pointer(*ValueRef)] args 
   # @param [Integer] num_args 
-  # @param [OpaqueBasicBlock] then 
+  # @param [OpaqueBasicBlock] then_ 
   # @param [OpaqueBasicBlock] catch 
   # @param [String] name 
   # @return [OpaqueValue] 
@@ -4458,11 +4458,11 @@ module LLVM
   
   # (Not documented)
   # 
-  # @method build_select(opaque_builder, if, then, else, name)
+  # @method build_select(opaque_builder, if_, then_, else_, name)
   # @param [OpaqueBuilder] opaque_builder 
-  # @param [OpaqueValue] if 
-  # @param [OpaqueValue] then 
-  # @param [OpaqueValue] else 
+  # @param [OpaqueValue] if_ 
+  # @param [OpaqueValue] then_ 
+  # @param [OpaqueValue] else_ 
   # @param [String] name 
   # @return [OpaqueValue] 
   # @scope class

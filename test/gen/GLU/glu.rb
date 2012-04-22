@@ -16,9 +16,9 @@ module GLU
   
   EXT_NURBS_TESSELLATOR = 1
   
-  _FALSE = 0
+  FALSE_ = 0
   
-  _TRUE = 1
+  TRUE_ = 1
   
   VERSION_1_1 = 1
   
@@ -236,7 +236,7 @@ module GLU
   
   TESS_BEGIN = 100100
   
-  _BEGIN = 100100
+  BEGIN_ = 100100
   
   TESS_VERTEX = 100101
   
@@ -244,7 +244,7 @@ module GLU
   
   TESS_END = 100102
   
-  _END = 100102
+  END_ = 100102
   
   TESS_ERROR = 100103
   

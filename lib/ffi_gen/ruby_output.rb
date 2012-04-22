@@ -89,10 +89,10 @@ class FFIGen
     { ffi_type: data_array[0], description: data_array[1], parameter_name: to_ruby_downcase(data_array[2] || split_name(data_array[1])) }
   end
   
-  def to_ruby_downcase(parts, avoid_keywords = false)
+  def to_ruby_downcase(parts)
     str = parts.map(&:downcase).join("_")
     str.sub!(/^\d/, '_\0') # fix illegal beginnings
-    str = "_#{str}" if avoid_keywords and RUBY_KEYWORDS.include? str
+    str = "#{str}_" if RUBY_KEYWORDS.include? str
     str
   end
   
@@ -157,7 +157,7 @@ class FFIGen
         writer.puts "module #{ruby_name}Wrappers"
         writer.indent do
           @oo_functions.each_with_index do |(name, function, return_type_declaration), index|
-            parameter_names = function.parameters[1..-1].map { |parameter| !parameter[:name].empty? ? @generator.to_ruby_downcase(parameter[:name], true) : "arg#{function.parameters.index(parameter)}" }
+            parameter_names = function.parameters[1..-1].map { |parameter| !parameter[:name].empty? ? @generator.to_ruby_downcase(parameter[:name]) : "arg#{function.parameters.index(parameter)}" }
             writer.puts "" unless index == 0
             writer.puts "def #{@generator.to_ruby_downcase name}(#{parameter_names.join(', ')})"
             writer.indent do
@@ -234,13 +234,13 @@ class FFIGen
     end
     
     def ruby_name
-      @ruby_name ||= @generator.to_ruby_downcase @name, true
+      @ruby_name ||= @generator.to_ruby_downcase @name
     end
   end
   
   class Constant
     def write_ruby(writer)
-      writer.puts "#{@generator.to_ruby_downcase(@name, true).upcase} = #{@value}", ""
+      writer.puts "#{@generator.to_ruby_downcase(@name).upcase} = #{@value}", ""
     end
   end
 end
