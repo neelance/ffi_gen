@@ -1427,9 +1427,9 @@ module Cairo
   # XXX: NYI
   # cairo_public void
   # cairo_arc_to (cairo_t *cr,
-  # 	      double x1, double y1,
-  # 	      double x2, double y2,
-  # 	      double radius);
+  #           double x1, double y1,
+  #           double x2, double y2,
+  #           double radius);
   # 
   # @method rel_move_to(cr, dx, dy)
   # @param [Cairo] cr 

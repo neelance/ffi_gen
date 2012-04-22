@@ -1,6 +1,7 @@
 class FFIGen
   require "ffi_gen/clang"
   require "ffi_gen/ruby_output"
+  require "ffi_gen/java_output"
 
   class << Clang
     def get_children(declaration)
@@ -97,7 +98,7 @@ class FFIGen
   end
   
   class FunctionOrCallback
-    attr_reader :name, :parameters, :comment
+    attr_reader :name, :c_name, :parameters, :comment
     attr_accessor :return_type
     
     def initialize(generator, name, c_name, is_callback, blocking, comment)
@@ -122,25 +123,31 @@ class FFIGen
   class Writer
     attr_reader :output
     
-    def initialize
-      @indentation = ""
+    def initialize(indentation_prefix, comment_prefix, comment_start = nil, comment_end = nil)
+      @indentation_prefix = indentation_prefix
+      @comment_prefix = comment_prefix
+      @comment_start = comment_start
+      @comment_end = comment_end
+      @current_indentation = ""
       @output = ""
     end
     
-    def indent(prefix = "  ")
-      previous_indentation = @indentation
-      @indentation += prefix
+    def indent(prefix = @indentation_prefix)
+      previous_indentation = @current_indentation
+      @current_indentation += prefix
       yield
-      @indentation = previous_indentation
+      @current_indentation = previous_indentation
     end
     
     def comment(&block)
-      indent "# ", &block
+      self.puts @comment_start unless @comment_start.nil?
+      self.indent @comment_prefix, &block
+      self.puts @comment_end unless @comment_end.nil?
     end
     
     def puts(*lines)
       lines.each do |line|
-        @output << "#{@indentation}#{line}\n"
+        @output << "#{@current_indentation}#{line}\n"
       end
     end
     
@@ -165,9 +172,12 @@ class FFIGen
       if description.is_a? String
         description = description.split("\n").map { |line| prepare_comment_line(line) }
       end
-      
+
       description.shift while not description.empty? and description.first.strip.empty?
       description.pop while not description.empty? and description.last.strip.empty?
+      description.map! { |line| line.gsub "\t", "    " }
+      space_prefix_length = description.map{ |line| line.index(/\S/) }.compact.min
+      description.map! { |line| line[space_prefix_length..-1] }
       description << (not_documented_message ? "(Not documented)" : "") if description.empty?
       
       write_array description, "", first_line_prefix, other_lines_prefix
@@ -195,13 +205,12 @@ class FFIGen
   end
   
   def generate
-    writer = Writer.new
-    send :write_ruby, writer
+    code = send "generate_#{File.extname(@output)[1..-1]}"
     if @output.is_a? String
-      File.open(@output, "w") { |file| file.write writer.output }
+      File.open(@output, "w") { |file| file.write code }
       puts "ffi_gen: #{@output}"
     else
-      @output.write writer.output
+      @output.write code
     end
   end
   

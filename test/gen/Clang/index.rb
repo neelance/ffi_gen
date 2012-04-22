@@ -2377,8 +2377,8 @@ module Clang
   # @scope class
   attach_function :get_canonical_type, :clang_getCanonicalType, [Type.by_value], Type.by_value
   
-  #  Determine whether a CXType has the "const" qualifier set, 
-  #  without looking through typedefs that may have added "const" at a different level.
+  # Determine whether a CXType has the "const" qualifier set, 
+  # without looking through typedefs that may have added "const" at a different level.
   # 
   # @method is_const_qualified_type(t)
   # @param [Type] t 
@@ -2386,8 +2386,8 @@ module Clang
   # @scope class
   attach_function :is_const_qualified_type, :clang_isConstQualifiedType, [Type.by_value], :uint
   
-  #  Determine whether a CXType has the "volatile" qualifier set,
-  #  without looking through typedefs that may have added "volatile" at a different level.
+  # Determine whether a CXType has the "volatile" qualifier set,
+  # without looking through typedefs that may have added "volatile" at a different level.
   # 
   # @method is_volatile_qualified_type(t)
   # @param [Type] t 
@@ -2395,8 +2395,8 @@ module Clang
   # @scope class
   attach_function :is_volatile_qualified_type, :clang_isVolatileQualifiedType, [Type.by_value], :uint
   
-  #  Determine whether a CXType has the "restrict" qualifier set,
-  #  without looking through typedefs that may have added "restrict" at a different level.
+  # Determine whether a CXType has the "restrict" qualifier set,
+  # without looking through typedefs that may have added "restrict" at a different level.
   # 
   # @method is_restrict_qualified_type(t)
   # @param [Type] t 
@@ -2734,32 +2734,32 @@ module Clang
   # @scope class
   attach_function :get_cursor_referenced, :clang_getCursorReferenced, [Cursor.by_value], Cursor.by_value
   
-  #  For a cursor that is either a reference to or a declaration
-  #  of some entity, retrieve a cursor that describes the definition of
-  #  that entity.
+  # For a cursor that is either a reference to or a declaration
+  # of some entity, retrieve a cursor that describes the definition of
+  # that entity.
   # 
-  #  Some entities can be declared multiple times within a translation
-  #  unit, but only one of those declarations can also be a
-  #  definition. For example, given:
+  # Some entities can be declared multiple times within a translation
+  # unit, but only one of those declarations can also be a
+  # definition. For example, given:
   # 
-  #  \code
-  #  int f(int, int);
-  #  int g(int x, int y) { return f(x, y); }
-  #  int f(int a, int b) { return a + b; }
-  #  int f(int, int);
-  #  \endcode
+  # \code
+  # int f(int, int);
+  # int g(int x, int y) { return f(x, y); }
+  # int f(int a, int b) { return a + b; }
+  # int f(int, int);
+  # \endcode
   # 
-  #  there are three declarations of the function "f", but only the
-  #  second one is a definition. The clang_getCursorDefinition()
-  #  function will take any cursor pointing to a declaration of "f"
-  #  (the first or fourth lines of the example) or a cursor referenced
-  #  that uses "f" (the call to "f' inside "g") and will return a
-  #  declaration cursor pointing to the definition (the second "f"
-  #  declaration).
+  # there are three declarations of the function "f", but only the
+  # second one is a definition. The clang_getCursorDefinition()
+  # function will take any cursor pointing to a declaration of "f"
+  # (the first or fourth lines of the example) or a cursor referenced
+  # that uses "f" (the call to "f' inside "g") and will return a
+  # declaration cursor pointing to the definition (the second "f"
+  # declaration).
   # 
-  #  If given a cursor for which there is no corresponding definition,
-  #  e.g., because there is no definition of that entity within this
-  #  translation unit, returns a NULL cursor.
+  # If given a cursor for which there is no corresponding definition,
+  # e.g., because there is no definition of that entity within this
+  # translation unit, returns a NULL cursor.
   # 
   # @method get_cursor_definition(cursor)
   # @param [Cursor] cursor 
