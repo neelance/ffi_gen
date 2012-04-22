@@ -84,22 +84,22 @@ class FFIGen
       raise NotImplementedError, "No translation for values of type #{canonical_type[:kind]}"
     end
     
-    { ffi_type: data_array[0], description: data_array[1], parameter_name: (data_array[2] || Name.new(self, data_array[1])).to_ruby_lowercase }
+    { ffi_type: data_array[0], description: data_array[1], parameter_name: (data_array[2] || Name.new(self, data_array[1])).to_ruby_downcase }
   end
   
   class Name
     RUBY_KEYWORDS = %w{alias and begin break case class def defined do else elsif end ensure false for if in module next nil not or redo rescue retry return self super then true undef unless until when while yield BEGIN END}
 
-    def to_ruby_lowercase
-      format(:downcase, :underscores, RUBY_KEYWORDS)
+    def to_ruby_downcase
+      format :downcase, :underscores, RUBY_KEYWORDS
     end
     
     def to_ruby_classname
-      format(:camelcase, RUBY_KEYWORDS)
+      format :camelcase, RUBY_KEYWORDS
     end
     
     def to_ruby_constant
-      format(:upcase, :underscores, RUBY_KEYWORDS)
+      format :upcase, :underscores, RUBY_KEYWORDS
     end
   end
   
@@ -108,7 +108,7 @@ class FFIGen
       shorten_names
       
       @constants.each do |constant|
-        constant[:symbol] = ":#{constant[:name].to_ruby_lowercase}"
+        constant[:symbol] = ":#{constant[:name].to_ruby_downcase}"
       end
       
       writer.comment do
@@ -132,14 +132,14 @@ class FFIGen
     end
     
     def ruby_name
-      @ruby_name ||= @name.to_ruby_lowercase
+      @ruby_name ||= @name.to_ruby_downcase
     end
   end
   
   class StructOrUnion
     def write_ruby(writer)
       @fields.each do |field|
-        field[:symbol] = ":#{field[:name].to_ruby_lowercase}"
+        field[:symbol] = ":#{field[:name].to_ruby_downcase}"
         field[:type_data] = @generator.to_ruby_type field[:type]
       end
       
@@ -160,9 +160,9 @@ class FFIGen
         writer.puts "module #{ruby_name}Wrappers"
         writer.indent do
           @oo_functions.each_with_index do |(name, function, return_type_declaration), index|
-            parameter_names = function.parameters[1..-1].map { |parameter| !parameter[:name].empty? ? parameter[:name].to_ruby_lowercase : "arg#{function.parameters.index(parameter)}" }
+            parameter_names = function.parameters[1..-1].map { |parameter| !parameter[:name].empty? ? parameter[:name].to_ruby_downcase : "arg#{function.parameters.index(parameter)}" }
             writer.puts "" unless index == 0
-            writer.puts "def #{name.to_ruby_lowercase}(#{parameter_names.join(', ')})"
+            writer.puts "def #{name.to_ruby_downcase}(#{parameter_names.join(', ')})"
             writer.indent do
               cast = return_type_declaration ? "#{return_type_declaration.ruby_name}.new " : ""
               writer.puts "#{cast}#{@generator.module_name}.#{function.ruby_name}(#{(["self"] + parameter_names).join(', ')})"
@@ -194,7 +194,7 @@ class FFIGen
     def write_ruby(writer)
       @parameters.each do |parameter|
         parameter[:type_data] = @generator.to_ruby_type parameter[:type]
-        parameter[:ruby_name] = !parameter[:name].empty? ? parameter[:name].to_ruby_lowercase : parameter[:type_data][:parameter_name]
+        parameter[:ruby_name] = !parameter[:name].empty? ? parameter[:name].to_ruby_downcase : parameter[:type_data][:parameter_name]
         parameter[:description] = []
       end
       return_type_data = @generator.to_ruby_type @return_type
@@ -237,7 +237,7 @@ class FFIGen
     end
     
     def ruby_name
-      @ruby_name ||= @name.to_ruby_lowercase
+      @ruby_name ||= @name.to_ruby_downcase
     end
   end
   
