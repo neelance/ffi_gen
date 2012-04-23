@@ -3427,15 +3427,97 @@ module Clang
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:completion_context).</em>
   # 
   # === Options:
-  # :completion_context_unexposed ::
+  # :unexposed ::
   #   The context for completions is unexposed, as only Clang results
   #   should be included. (This is equivalent to having no context bits set.)
+  # :any_type ::
+  #   Completions for any possible type should be included in the results.
+  # :any_value ::
+  #   Completions for any possible value (variables, function calls, etc.)
+  #   should be included in the results.
+  # :obj_c_object_value ::
+  #   Completions for values that resolve to an Objective-C object should
+  #   be included in the results.
+  # :obj_c_selector_value ::
+  #   Completions for values that resolve to an Objective-C selector
+  #   should be included in the results.
+  # :cxx_class_type_value ::
+  #   Completions for values that resolve to a C++ class type should be
+  #   included in the results.
+  # :dot_member_access ::
+  #   Completions for fields of the member being accessed using the dot
+  #   operator should be included in the results.
+  # :arrow_member_access ::
+  #   Completions for fields of the member being accessed using the arrow
+  #   operator should be included in the results.
+  # :obj_c_property_access ::
+  #   Completions for properties of the Objective-C object being accessed
+  #   using the dot operator should be included in the results.
+  # :enum_tag ::
+  #   Completions for enum tags should be included in the results.
+  # :union_tag ::
+  #   Completions for union tags should be included in the results.
+  # :struct_tag ::
+  #   Completions for struct tags should be included in the results.
+  # :class_tag ::
+  #   Completions for C++ class names should be included in the results.
+  # :namespace ::
+  #   Completions for C++ namespaces and namespace aliases should be
+  #   included in the results.
+  # :nested_name_specifier ::
+  #   Completions for C++ nested name specifiers should be included in
+  #   the results.
+  # :obj_c_interface ::
+  #   Completions for Objective-C interfaces (classes) should be included
+  #   in the results.
+  # :obj_c_protocol ::
+  #   Completions for Objective-C protocols should be included in
+  #   the results.
+  # :obj_c_category ::
+  #   Completions for Objective-C categories should be included in
+  #   the results.
+  # :obj_c_instance_message ::
+  #   Completions for Objective-C instance messages should be included
+  #   in the results.
+  # :obj_c_class_message ::
+  #   Completions for Objective-C class messages should be included in
+  #   the results.
+  # :obj_c_selector_name ::
+  #   Completions for Objective-C selector names should be included in
+  #   the results.
+  # :macro_name ::
+  #   Completions for preprocessor macro names should be included in
+  #   the results.
+  # :natural_language ::
+  #   Natural language completions should be included in the results.
   # 
   # @method _enum_completion_context_
   # @return [Symbol]
   # @scope class
   enum :completion_context, [
-    :completion_context_unexposed, 0
+    :unexposed, 0,
+    :any_type, 1 << 0,
+    :any_value, 1 << 1,
+    :obj_c_object_value, 1 << 2,
+    :obj_c_selector_value, 1 << 3,
+    :cxx_class_type_value, 1 << 4,
+    :dot_member_access, 1 << 5,
+    :arrow_member_access, 1 << 6,
+    :obj_c_property_access, 1 << 7,
+    :enum_tag, 1 << 8,
+    :union_tag, 1 << 9,
+    :struct_tag, 1 << 10,
+    :class_tag, 1 << 11,
+    :namespace, 1 << 12,
+    :nested_name_specifier, 1 << 13,
+    :obj_c_interface, 1 << 14,
+    :obj_c_protocol, 1 << 15,
+    :obj_c_category, 1 << 16,
+    :obj_c_instance_message, 1 << 17,
+    :obj_c_class_message, 1 << 18,
+    :obj_c_selector_name, 1 << 19,
+    :macro_name, 1 << 20,
+    :natural_language, 1 << 21
   ]
   
   # Returns a default set of code-completion options that can be

@@ -77,11 +77,89 @@ module LLVM
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:attribute).</em>
   # 
   # === Options:
+  # :z_ext_attribute ::
+  #   
+  # :s_ext_attribute ::
+  #   
+  # :no_return_attribute ::
+  #   
+  # :in_reg_attribute ::
+  #   
+  # :struct_ret_attribute ::
+  #   
+  # :no_unwind_attribute ::
+  #   
+  # :no_alias_attribute ::
+  #   
+  # :by_val_attribute ::
+  #   
+  # :nest_attribute ::
+  #   
+  # :read_none_attribute ::
+  #   
+  # :read_only_attribute ::
+  #   
+  # :no_inline_attribute ::
+  #   
+  # :always_inline_attribute ::
+  #   
+  # :optimize_for_size_attribute ::
+  #   
+  # :stack_protect_attribute ::
+  #   
+  # :stack_protect_req_attribute ::
+  #   
+  # :alignment ::
+  #   
+  # :no_capture_attribute ::
+  #   
+  # :no_red_zone_attribute ::
+  #   
+  # :no_implicit_float_attribute ::
+  #   
+  # :naked_attribute ::
+  #   
+  # :inline_hint_attribute ::
+  #   
+  # :stack_alignment ::
+  #   
+  # :returns_twice ::
+  #   
+  # :uw_table ::
+  #   
+  # :non_lazy_bind ::
+  #   
   # 
   # @method _enum_attribute_
   # @return [Symbol]
   # @scope class
   enum :attribute, [
+    :z_ext_attribute, 1 << 0,
+    :s_ext_attribute, 1 << 1,
+    :no_return_attribute, 1 << 2,
+    :in_reg_attribute, 1 << 3,
+    :struct_ret_attribute, 1 << 4,
+    :no_unwind_attribute, 1 << 5,
+    :no_alias_attribute, 1 << 6,
+    :by_val_attribute, 1 << 7,
+    :nest_attribute, 1 << 8,
+    :read_none_attribute, 1 << 9,
+    :read_only_attribute, 1 << 10,
+    :no_inline_attribute, 1 << 11,
+    :always_inline_attribute, 1 << 12,
+    :optimize_for_size_attribute, 1 << 13,
+    :stack_protect_attribute, 1 << 14,
+    :stack_protect_req_attribute, 1 << 15,
+    :alignment, 31 << 16,
+    :no_capture_attribute, 1 << 21,
+    :no_red_zone_attribute, 1 << 22,
+    :no_implicit_float_attribute, 1 << 23,
+    :naked_attribute, 1 << 24,
+    :inline_hint_attribute, 1 << 25,
+    :stack_alignment, 7 << 26,
+    :returns_twice, 1 << 29,
+    :uw_table, 1 << 30,
+    :non_lazy_bind, 1 << 31
   ]
   
   # (Not documented)

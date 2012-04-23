@@ -4170,6 +4170,8 @@ module Cairo
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:format).</em>
   # 
   # === Options:
+  # :invalid ::
+  #   
   # :argb32 ::
   #   
   # :rgb24 ::
@@ -4185,6 +4187,7 @@ module Cairo
   # @return [Symbol]
   # @scope class
   enum :format, [
+    :invalid, - 1,
     :argb32, 0,
     :rgb24, 1,
     :a8, 2,
