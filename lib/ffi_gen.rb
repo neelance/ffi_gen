@@ -209,7 +209,7 @@ class FFIGen
     end
   end
   
-  attr_reader :module_name, :ffi_lib, :headers, :prefixes, :output, :blacklist, :cflags
+  attr_reader :module_name, :ffi_lib, :headers, :prefixes, :output, :cflags
 
   def initialize(options = {})
     @module_name   = options[:module_name] or fail "No module name given."
@@ -217,13 +217,9 @@ class FFIGen
     @headers       = options[:headers] or fail "No headers given."
     @cflags        = options.fetch :cflags, []
     @prefixes      = options.fetch :prefixes, []
-    @blacklist     = options.fetch :blacklist, []
     @blocking      = options.fetch :blocking, []
     @ffi_lib_flags = options.fetch :ffi_lib_flags, nil
     @output        = options.fetch :output, $stdout
-    
-    blacklist = @blacklist
-    @blacklist = lambda { |name| blacklist.include? name } if @blacklist.is_a? Array
     
     @translation_unit = nil
     @declarations = nil
@@ -284,10 +280,6 @@ class FFIGen
       end 
       
       next if not header_files.include? file
-      
-      name = Clang.get_cursor_spelling(declaration).to_s_and_dispose
-      name = nil if name.empty?
-      next if @blacklist[name]
       
       comment = extract_comment translation_unit, comment_range
       
@@ -465,7 +457,6 @@ if __FILE__ == $0
     headers:     ["clang-c/Index.h"],
     cflags:      `llvm-config --cflags`.split(" "),
     prefixes:    ["clang_", "CX"],
-    blacklist:   ["clang_getExpansionLocation"],
     output:      File.join(File.dirname(__FILE__), "ffi_gen/clang.rb")
   )
 end

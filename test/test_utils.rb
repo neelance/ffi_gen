@@ -12,7 +12,6 @@ def run_test(options = {})
       headers:     [header],
       cflags:      options.fetch(:cflags, []),
       prefixes:    options.fetch(:prefixes, []),
-      blacklist:   options.fetch(:blacklist, []),
       blocking:    options.fetch(:blocking, []),
       output:      output_file
     )

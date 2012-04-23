@@ -5,7 +5,6 @@ run_test(
   ffi_lib:       "clang",
   cflags:        `llvm-config --cflags`.split(" "),
   prefixes:      ["clang_", "CX"],
-  blacklist:     ["clang_getExpansionLocation"],
   file_mappings: {
     "clang-c/Index.h" => "index.rb"
   }

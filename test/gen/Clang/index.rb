@@ -301,6 +301,27 @@ module Clang
   attach_function :range_is_null, :clang_Range_isNull, [SourceRange.by_value], :int
   
   # Retrieve the file, line, column, and offset represented by
+  # the given source location.
+  # 
+  # If the location refers into a macro expansion, retrieves the
+  # location of the macro expansion.
+  # 
+  # @method get_expansion_location(location, file, line, column, offset)
+  # @param [SourceLocation] location the location within a source file that will be decomposed
+  #   into its parts.
+  # @param [FFI::Pointer(*File)] file (out) if non-NULL, will be set to the file to which the given
+  #   source location points.
+  # @param [FFI::Pointer(*UInt)] line (out) if non-NULL, will be set to the line to which the given
+  #   source location points.
+  # @param [FFI::Pointer(*UInt)] column (out) if non-NULL, will be set to the column to which the given
+  #   source location points.
+  # @param [FFI::Pointer(*UInt)] offset (out) if non-NULL, will be set to the offset into the
+  #   buffer to which the given source location points.
+  # @return [nil] 
+  # @scope class
+  attach_function :get_expansion_location, :clang_getExpansionLocation, [SourceLocation.by_value, :pointer, :pointer, :pointer, :pointer], :void
+  
+  # Retrieve the file, line, column, and offset represented by
   # the given source location, as specified in a # line directive.
   # 
   # Example: given the following source code in a file somefile.c

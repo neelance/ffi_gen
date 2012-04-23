@@ -1576,13 +1576,47 @@ module GL
   
   MESA_SHADER_DEBUG = 1
   
+  DEBUG_OBJECT_MESA = 0x8759
+  
+  DEBUG_PRINT_MESA = 0x875A
+  
+  DEBUG_ASSERT_MESA = 0x875B
+  
   MESA_PACKED_DEPTH_STENCIL = 1
   
+  DEPTH_STENCIL_MESA = 0x8750
+  
+  UNSIGNED_INT_24_8_MESA = 0x8751
+  
+  UNSIGNED_INT_8_24_REV_MESA = 0x8752
+  
+  UNSIGNED_SHORT_15_1_MESA = 0x8753
+  
+  UNSIGNED_SHORT_1_15_REV_MESA = 0x8754
+  
   MESA_PROGRAM_DEBUG = 1
+  
+  FRAGMENT_PROGRAM_POSITION_MESA = 0x8bb0
+  
+  FRAGMENT_PROGRAM_CALLBACK_MESA = 0x8bb1
+  
+  FRAGMENT_PROGRAM_CALLBACK_FUNC_MESA = 0x8bb2
+  
+  FRAGMENT_PROGRAM_CALLBACK_DATA_MESA = 0x8bb3
+  
+  VERTEX_PROGRAM_POSITION_MESA = 0x8bb4
+  
+  VERTEX_PROGRAM_CALLBACK_MESA = 0x8bb5
+  
+  VERTEX_PROGRAM_CALLBACK_FUNC_MESA = 0x8bb6
+  
+  VERTEX_PROGRAM_CALLBACK_DATA_MESA = 0x8bb7
   
   MESA_TEXTURE_ARRAY = 1
   
   ATI_BLEND_EQUATION_SEPARATE = 1
+  
+  ALPHA_BLEND_EQUATION_ATI = 0x883D
   
   OES_EGL_IMAGE = 1
   
@@ -6502,6 +6536,86 @@ module GL
   # @return [Integer] 
   # @scope class
   callback :pfnglmultitexcoord4svarbproc, [:pointer], :uint
+  
+  # (Not documented)
+  # 
+  # @method create_debug_object_mesa()
+  # @return [Integer] 
+  # @scope class
+  attach_function :create_debug_object_mesa, :glCreateDebugObjectMESA, [], :uint
+  
+  # (Not documented)
+  # 
+  # @method clear_debug_log_mesa(obj, log_type, shader_type)
+  # @param [Integer] obj 
+  # @param [Integer] log_type 
+  # @param [Integer] shader_type 
+  # @return [nil] 
+  # @scope class
+  attach_function :clear_debug_log_mesa, :glClearDebugLogMESA, [:uint, :uint, :uint], :void
+  
+  # (Not documented)
+  # 
+  # @method get_debug_log_mesa(obj, log_type, shader_type, max_length, length, debug_log)
+  # @param [Integer] obj 
+  # @param [Integer] log_type 
+  # @param [Integer] shader_type 
+  # @param [Integer] max_length 
+  # @param [FFI::Pointer(*GLsizei)] length 
+  # @param [String] debug_log 
+  # @return [nil] 
+  # @scope class
+  attach_function :get_debug_log_mesa, :glGetDebugLogMESA, [:uint, :uint, :uint, :int, :pointer, :string], :void
+  
+  # (Not documented)
+  # 
+  # @method get_debug_log_length_mesa(obj, log_type, shader_type)
+  # @param [Integer] obj 
+  # @param [Integer] log_type 
+  # @param [Integer] shader_type 
+  # @return [Integer] 
+  # @scope class
+  attach_function :get_debug_log_length_mesa, :glGetDebugLogLengthMESA, [:uint, :uint, :uint], :int
+  
+  # GL_MESA_packed_depth_stencil
+  # 
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_g_lprogramcallback_mesa_(data)
+  # @param [FFI::Pointer(*GLvoid)] data 
+  # @return [Integer] 
+  # @scope class
+  callback :g_lprogramcallback_mesa, [:pointer], :uint
+  
+  # (Not documented)
+  # 
+  # @method program_callback_mesa(target, callback, data)
+  # @param [Integer] target 
+  # @param [Proc(_callback_g_lprogramcallback_mesa_)] callback 
+  # @param [FFI::Pointer(*GLvoid)] data 
+  # @return [nil] 
+  # @scope class
+  attach_function :program_callback_mesa, :glProgramCallbackMESA, [:uint, :g_lprogramcallback_mesa, :pointer], :void
+  
+  # (Not documented)
+  # 
+  # @method get_program_registerfv_mesa(target, len, name, v)
+  # @param [Integer] target 
+  # @param [Integer] len 
+  # @param [FFI::Pointer(*GLubyte)] name 
+  # @param [FFI::Pointer(*GLfloat)] v 
+  # @return [nil] 
+  # @scope class
+  attach_function :get_program_registerfv_mesa, :glGetProgramRegisterfvMESA, [:uint, :int, :pointer, :pointer], :void
+  
+  # (Not documented)
+  # 
+  # @method blend_equation_separate_ati(mode_rgb, mode_a)
+  # @param [Integer] mode_rgb 
+  # @param [Integer] mode_a 
+  # @return [nil] 
+  # @scope class
+  attach_function :blend_equation_separate_ati, :glBlendEquationSeparateATI, [:uint, :uint], :void
   
   # (Not documented)
   # 

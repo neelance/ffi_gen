@@ -45,6 +45,31 @@ module LLVM
     layout :dummy, :char
   end
   
+  # (Not documented)
+  # 
+  # @method initialize_all_target_infos()
+  # @return [nil] 
+  # @scope class
+  attach_function :initialize_all_target_infos, :LLVMInitializeAllTargetInfos, [], :void
+  
+  # LLVMInitializeAllTargets - The main program should call this function if it
+  #     wants to link in all available targets that LLVM is configured to
+  #     support.
+  # 
+  # @method initialize_all_targets()
+  # @return [nil] 
+  # @scope class
+  attach_function :initialize_all_targets, :LLVMInitializeAllTargets, [], :void
+  
+  # LLVMInitializeNativeTarget - The main program should call this function to
+  #     initialize the native target corresponding to the host.  This is useful 
+  #     for JIT applications to ensure that the target gets linked in correctly.
+  # 
+  # @method initialize_native_target()
+  # @return [Integer] 
+  # @scope class
+  attach_function :initialize_native_target, :LLVMInitializeNativeTarget, [], :int
+  
   # Creates target data from a target layout string.
   #     See the constructor llvm::TargetData::TargetData.
   # 

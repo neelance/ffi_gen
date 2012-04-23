@@ -5,8 +5,6 @@ run_test(
   ffi_lib:       "LLVM-3.0",
   cflags:        `llvm-config --cflags`.split(" "),
   prefixes:      ["LLVM"],
-  blacklist:     ["LLVMGetMDNodeNumOperands", "LLVMGetMDNodeOperand", "EDGetDisassembler",
-                  "LLVMInitializeAllTargetInfos", "LLVMInitializeAllTargets", "LLVMInitializeNativeTarget"],
   blocking:      ["LLVMRunFunction", "LLVMRunFunctionAsMain"],
   file_mappings: {
     "llvm-c/Analysis.h"          => "analysis.rb",

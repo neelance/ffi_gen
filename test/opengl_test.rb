@@ -4,7 +4,6 @@ run_test(
   library_name:  "GL",
   ffi_lib:       "GL",
   prefixes:      ["gl", "GL_"],
-  blacklist:     lambda { |name| name.end_with?("MESA") || name.end_with?("ATI") },
   file_mappings: {
     "GL/gl.h" => "gl.rb"
   }

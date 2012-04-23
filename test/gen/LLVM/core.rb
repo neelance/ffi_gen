@@ -1944,6 +1944,23 @@ module LLVM
   
   # (Not documented)
   # 
+  # @method get_md_node_num_operands(v)
+  # @param [OpaqueValue] v 
+  # @return [Integer] 
+  # @scope class
+  attach_function :get_md_node_num_operands, :LLVMGetMDNodeNumOperands, [OpaqueValue], :int
+  
+  # (Not documented)
+  # 
+  # @method get_md_node_operand(v, i)
+  # @param [OpaqueValue] v 
+  # @param [Integer] i 
+  # @return [FFI::Pointer(*ValueRef)] 
+  # @scope class
+  attach_function :get_md_node_operand, :LLVMGetMDNodeOperand, [OpaqueValue, :uint], :pointer
+  
+  # (Not documented)
+  # 
   # @method get_named_metadata_num_operands(m, name)
   # @param [OpaqueModule] m 
   # @param [String] name 
