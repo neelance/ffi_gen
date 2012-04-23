@@ -368,8 +368,16 @@ class FFIGen
       end
       
       pointee_declaration = function.parameters.first && get_pointee_declaration(function.parameters.first[:type])
-      if pointee_declaration && name.parts.map(&:downcase)[0, pointee_declaration.name.parts.size] == pointee_declaration.name.parts.map(&:downcase)
-        pointee_declaration.oo_functions << [Name.new(self, name.parts[pointee_declaration.name.parts.size..-1]), function, get_pointee_declaration(function.return_type)]
+      if pointee_declaration
+        type_prefix = pointee_declaration.name.parts.join.downcase
+        function_name_parts = name.parts.dup
+        while type_prefix.start_with? function_name_parts.first.downcase
+          type_prefix = type_prefix[function_name_parts.first.size..-1]
+          function_name_parts.shift
+        end
+        if type_prefix.empty?
+          pointee_declaration.oo_functions << [Name.new(self, function_name_parts), function, get_pointee_declaration(function.return_type)]
+        end
       end
     
     when :typedef_decl
