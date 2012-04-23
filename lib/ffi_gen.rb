@@ -301,27 +301,17 @@ class FFIGen
       Clang.get_children(declaration).each do |enum_constant|
         constant_name = Name.new self, Clang.get_cursor_spelling(enum_constant).to_s_and_dispose
         
-        constant_value = nil
-        value_cursor = Clang.get_children(enum_constant).first
-        constant_value = value_cursor && case value_cursor[:kind]
-        when :integer_literal
-          tokens_ptr_ptr = FFI::MemoryPointer.new :pointer
-          num_tokens_ptr = FFI::MemoryPointer.new :uint
-          Clang.tokenize translation_unit, Clang.get_cursor_extent(value_cursor), tokens_ptr_ptr, num_tokens_ptr
-          token = Clang::Token.new tokens_ptr_ptr.read_pointer
-          literal = Clang.get_token_spelling(translation_unit, token).to_s_and_dispose
-          Clang.dispose_tokens translation_unit, tokens_ptr_ptr.read_pointer, num_tokens_ptr.read_uint
-          literal
-        else
-          next # skip those entries for now
-        end
-        
         constant_location = Clang.get_cursor_location enum_constant
         constant_comment_range = Clang.get_range previous_constant_location, constant_location
         constant_comment = extract_comment translation_unit, constant_comment_range
         previous_constant_location = constant_location
         
-        enum.constants << { name: constant_name, value: constant_value, comment: constant_comment }
+        catch :unsupported_value do
+          value_cursor = Clang.get_children(enum_constant).first
+          constant_value = value_cursor && read_value(value_cursor)
+          
+          enum.constants << { name: constant_name, value: constant_value, comment: constant_comment }
+        end
       end
       
     when :struct_decl, :union_decl
@@ -418,6 +408,37 @@ class FFIGen
       end
       
     end
+  end
+  
+  def read_value(cursor)
+    parts = []
+    tokens_ptr_ptr = FFI::MemoryPointer.new :pointer
+    num_tokens_ptr = FFI::MemoryPointer.new :uint
+    Clang.tokenize translation_unit, Clang.get_cursor_extent(cursor), tokens_ptr_ptr, num_tokens_ptr
+    tokens_ptr = tokens_ptr_ptr.read_pointer
+    
+    num_tokens_ptr.read_uint.times do |i|
+      token = Clang::Token.new(tokens_ptr + (i * Clang::Token.size))
+      spelling = Clang.get_token_spelling(translation_unit, token).to_s_and_dispose
+      case Clang.get_token_kind(token)
+      when :literal
+        parts << spelling
+      when :punctuation
+        case spelling
+        when ",", "}"
+          # ignored
+        when "+", "-", "<<", ">>"
+          parts << spelling
+        else
+          throw :unsupported_value
+        end
+      else
+        throw :unsupported_value
+      end
+    end
+
+    Clang.dispose_tokens translation_unit, tokens_ptr_ptr.read_pointer, num_tokens_ptr.read_uint
+    parts.join " "
   end
   
   def get_pointee_declaration(type)
