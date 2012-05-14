@@ -141,11 +141,12 @@ class FFIGen
         end
       end
       
-      writer.puts "public static class #{java_name} extends #{@is_union ? 'Union' : 'Structure'} {"
+      writer.puts "public static class #{java_name} extends #{@is_union ? 'Union' : (@fields.empty? ? 'PointerType' : 'Structure')} {"
       writer.indent do
         @fields.each do |field|
           writer.puts "public #{field[:type_data][:jna_type]} #{field[:symbol]};"
         end
+        writer.puts "// hidden structure" if @fields.empty?
       end
       writer.puts "}", ""
       
