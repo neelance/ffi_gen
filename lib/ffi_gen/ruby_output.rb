@@ -80,6 +80,8 @@ class FFIGen
       element_type_data = to_ruby_type Clang.get_array_element_type(canonical_type)
       size = Clang.get_array_size canonical_type
       ["[#{element_type_data[:ffi_type]}, #{size}]", "Array<#{element_type_data[:description]}>"]
+    when :unexposed
+      [":char", "unexposed"]
     else
       raise NotImplementedError, "No translation for values of type #{canonical_type[:kind]}"
     end
