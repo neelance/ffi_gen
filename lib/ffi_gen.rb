@@ -373,7 +373,9 @@ class FFIGen
         next if function_child[:kind] != :parm_decl
         param_name = Name.new self, Clang.get_cursor_spelling(function_child).to_s_and_dispose
         param_type = Clang.get_cursor_type function_child
-        function.parameters << { name: param_name, type: param_type }
+        tokens = Clang.get_tokens translation_unit, Clang.get_cursor_extent(function_child)
+        is_array = tokens.any? { |t| Clang.get_token_spelling(translation_unit, t).to_s_and_dispose == "[" }
+        function.parameters << { name: param_name, type: param_type, is_array: is_array }
       end
       
       pointee_declaration = function.parameters.first && get_pointee_declaration(function.parameters.first[:type])

@@ -25,7 +25,7 @@ class FFIGen
     writer.output
   end
   
-  def to_java_type(full_type)
+  def to_java_type(full_type, is_array = false)
     canonical_type = Clang.get_canonical_type full_type
     data_array = case canonical_type[:kind]
     when :void            then ["void",       "nil"]
@@ -43,6 +43,11 @@ class FFIGen
     when :float           then ["float",      "Float"]
     when :double          then ["double",     "Float"]
     when :pointer
+      if is_array
+        element_type = to_java_type Clang.get_pointee_type(canonical_type)
+        return { jna_type: "#{element_type[:jna_type]}[]", description: "Array of #{element_type[:description]}", parameter_name: element_type[:parameter_name] }
+      end
+      
       pointee_type = Clang.get_pointee_type canonical_type
       result = nil
       case pointee_type[:kind]
@@ -163,7 +168,7 @@ class FFIGen
       return if @is_callback # not yet supported
       
       @parameters.each do |parameter|
-        parameter[:type_data] = @generator.to_java_type parameter[:type]
+        parameter[:type_data] = @generator.to_java_type parameter[:type], parameter[:is_array]
         parameter[:java_name] = !parameter[:name].empty? ? parameter[:name].to_java_downcase : parameter[:type_data][:parameter_name]
         parameter[:description] = []
       end
