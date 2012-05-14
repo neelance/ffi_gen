@@ -12,11 +12,11 @@ module SQLite3
     end
   end
   
-  VERSION = "3.7.7"
+  VERSION = "3.7.9"
   
-  VERSION_NUMBER = 3007007
+  VERSION_NUMBER = 3007009
   
-  SOURCE_ID = "2011-06-23 19:49:22 4374b7e83ea0a3fbc3691f9c0c936272862f32f2"
+  SOURCE_ID = "2011-11-01 00:52:41 c7c6050ef060877ebe77b41d959e9df13f8c9b5e"
   
   OK = 0
   
@@ -169,6 +169,12 @@ module SQLite3
   FCNTL_FILE_POINTER = 7
   
   FCNTL_SYNC_OMITTED = 8
+  
+  FCNTL_WIN32_AV_RETRY = 9
+  
+  FCNTL_PERSIST_WAL = 10
+  
+  FCNTL_OVERWRITE = 11
   
   ACCESS_EXISTS = 0
   
@@ -440,7 +446,11 @@ module SQLite3
   
   DBSTATUS_LOOKASIDE_MISS_FULL = 6
   
-  DBSTATUS_MAX = 6
+  DBSTATUS_CACHE_HIT = 7
+  
+  DBSTATUS_CACHE_MISS = 8
+  
+  DBSTATUS_MAX = 8
   
   STMTSTATUS_FULLSCAN_STEP = 1
   
@@ -1218,16 +1228,10 @@ module SQLite3
   # order to verify that SQLite recovers gracefully from such
   # conditions.
   # 
-  # The xMalloc and xFree methods must work like the
-  # malloc() and free() functions from the standard C library.
-  # The xRealloc method must work like realloc() from the standard C library
-  # with the exception that if the second argument to xRealloc is zero,
-  # xRealloc must be a no-op - it must not perform any allocation or
-  # deallocation.  ^SQLite guarantees that the second argument to
+  # The xMalloc, xRealloc, and xFree methods must work like the
+  # malloc(), realloc() and free() functions from the standard C library.
+  # ^SQLite guarantees that the second argument to
   # xRealloc is always a value returned by a prior call to xRoundup.
-  # And so in cases where xRoundup always returns a positive number,
-  # xRealloc can perform exactly as the standard library realloc() and
-  # still be in compliance with this specification.
   # 
   # xSize should return the allocated size of a memory allocation
   # previously obtained from xMalloc or xRealloc.  The allocated size
@@ -1815,12 +1819,12 @@ module SQLite3
   
   # (Not documented)
   # 
-  # @method vmprintf(string, va_list_tag)
+  # @method vmprintf(string, va_list)
   # @param [String] string 
-  # @param [FFI::Pointer(*VaListTag)] va_list_tag 
+  # @param [Integer] va_list 
   # @return [String] 
   # @scope class
-  attach_function :vmprintf, :sqlite3_vmprintf, [:string, :pointer], :string
+  attach_function :vmprintf, :sqlite3_vmprintf, [:string, :int], :string
   
   # (Not documented)
   # 
@@ -1834,14 +1838,14 @@ module SQLite3
   
   # (Not documented)
   # 
-  # @method vsnprintf(integer, string, string, va_list_tag)
+  # @method vsnprintf(integer, string, string, va_list)
   # @param [Integer] integer 
   # @param [String] string 
   # @param [String] string 
-  # @param [FFI::Pointer(*VaListTag)] va_list_tag 
+  # @param [Integer] va_list 
   # @return [String] 
   # @scope class
-  attach_function :vsnprintf, :sqlite3_vsnprintf, [:int, :string, :string, :pointer], :string
+  attach_function :vsnprintf, :sqlite3_vsnprintf, [:int, :string, :string, :int], :string
   
   # CAPI3REF: Memory Allocation Subsystem
   # 
@@ -2571,7 +2575,8 @@ module SQLite3
   # that the supplied string is nul-terminated, then there is a small
   # performance advantage to be gained by passing an nByte parameter that
   # is equal to the number of bytes in the input string <i>including</i>
-  # the nul-terminator bytes.
+  # the nul-terminator bytes as this saves SQLite from having to
+  # make a copy of the input string.
   # 
   # ^If pzTail is not NULL then *pzTail is made to point to the first byte
   # past the end of the first SQL statement in zSql.  These routines only
@@ -2622,7 +2627,7 @@ module SQLite3
   # ^The specific value of WHERE-clause (parameter) might influence the 
   # choice of query plan if the parameter is the left-hand side of a (LIKE)
   # or (GLOB) operator or if the parameter is compared to an indexed column
-  # and the (SQLITE_ENABLE_STAT2) compile-time option is enabled.
+  # and the (SQLITE_ENABLE_STAT3) compile-time option is enabled.
   # the 
   # </li>
   # </ol>
@@ -2821,6 +2826,13 @@ module SQLite3
   # number of <u>bytes</u> in the value, not the number of characters.)^
   # ^If the fourth parameter is negative, the length of the string is
   # the number of bytes up to the first zero terminator.
+  # If a non-negative fourth parameter is provided to sqlite3_bind_text()
+  # or sqlite3_bind_text16() then that parameter must be the byte offset
+  # where the NUL terminator would occur assuming the string were NUL
+  # terminated.  If any NUL characters occur at byte offsets less than 
+  # the value of the fourth parameter then the resulting string value will
+  # contain embedded NULs.  The result of expressions involving strings
+  # with embedded NULs is undefined.
   # 
   # ^The fifth argument to sqlite3_bind_blob(), sqlite3_bind_text(), and
   # sqlite3_bind_text16() is a destructor used to dispose of the BLOB or
@@ -3324,6 +3336,12 @@ module SQLite3
   # (via calls to the (sqlite3_column_int | sqlite3_column_*()) of
   # interfaces) then sqlite3_data_count(P) returns 0.
   # ^The sqlite3_data_count(P) routine also returns 0 if P is a NULL pointer.
+  # ^The sqlite3_data_count(P) routine returns 0 if the previous call to
+  # (sqlite3_step)(P) returned (SQLITE_DONE).  ^The sqlite3_data_count(P)
+  # will return non-zero if previous call to (sqlite3_step)(P) returned
+  # (SQLITE_ROW), except in the case of the (PRAGMA incremental_vacuum)
+  # where it always returns zero since each step of that multi-step
+  # pragma returns 0 columns of data.
   # 
   # See also: (sqlite3_column_count())
   # 
@@ -4176,7 +4194,12 @@ module SQLite3
   # ^If the 3rd parameter to the sqlite3_result_text* interfaces
   # is non-negative, then as many bytes (not characters) of the text
   # pointed to by the 2nd parameter are taken as the application-defined
-  # function result.
+  # function result.  If the 3rd parameter is non-negative, then it
+  # must be the byte offset into the string where the NUL terminator would
+  # appear if the string where NUL terminated.  If any NUL characters occur
+  # in the string at a byte offset that is less than the value of the 3rd
+  # parameter, then the resulting string will contain embedded NULs and the
+  # result of expressions operating on strings with embedded NULs is undefined.
   # ^If the 4th parameter to the sqlite3_result_text* interfaces
   # or sqlite3_result_blob is a non-NULL pointer, then SQLite calls that
   # function as the destructor on the text or BLOB result when it has
