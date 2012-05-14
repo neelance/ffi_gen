@@ -21,6 +21,15 @@ class FFIGen
       get_spelling_location location, file_ptr, line_ptr, column_ptr, offset_ptr
       { file: file_ptr.read_pointer, line: line_ptr.read_uint, column: column_ptr.read_uint, offset: offset_ptr.read_uint }
     end
+
+    def get_tokens(translation_unit, range)
+      tokens_ptr_ptr = FFI::MemoryPointer.new :pointer
+      num_tokens_ptr = FFI::MemoryPointer.new :uint
+      Clang.tokenize translation_unit, range, tokens_ptr_ptr, num_tokens_ptr
+      num_tokens = num_tokens_ptr.read_uint
+      tokens_ptr = FFI::Pointer.new Clang::Token, tokens_ptr_ptr.read_pointer
+      num_tokens.times.map { |i| Clang::Token.new tokens_ptr[i] }
+    end
   end
   
   class Clang::String
@@ -399,17 +408,10 @@ class FFIGen
       end
         
     when :macro_definition
-      tokens_ptr_ptr = FFI::MemoryPointer.new :pointer
-      num_tokens_ptr = FFI::MemoryPointer.new :uint
-      
-      Clang.tokenize translation_unit, Clang.get_cursor_extent(declaration), tokens_ptr_ptr, num_tokens_ptr
-      num_tokens = num_tokens_ptr.read_uint
-      tokens_ptr = FFI::Pointer.new Clang::Token, tokens_ptr_ptr.read_pointer
-      
-      if num_tokens == 3
-        token = Clang::Token.new tokens_ptr[1]
-        if Clang.get_token_kind(token) == :literal
-          value = Clang.get_token_spelling(translation_unit, token).to_s_and_dispose
+      tokens = Clang.get_tokens translation_unit, Clang.get_cursor_extent(declaration)
+      if tokens.size == 3
+        if Clang.get_token_kind(tokens[1]) == :literal
+          value = Clang.get_token_spelling(translation_unit, tokens[1]).to_s_and_dispose
           value.sub!(/[A-Za-z]+$/, '') unless value.start_with? '0x' # remove number suffixes
           @declarations[name] ||= Constant.new self, name, value
         end 
@@ -420,13 +422,8 @@ class FFIGen
   
   def read_value(cursor)
     parts = []
-    tokens_ptr_ptr = FFI::MemoryPointer.new :pointer
-    num_tokens_ptr = FFI::MemoryPointer.new :uint
-    Clang.tokenize translation_unit, Clang.get_cursor_extent(cursor), tokens_ptr_ptr, num_tokens_ptr
-    tokens_ptr = tokens_ptr_ptr.read_pointer
-    
-    num_tokens_ptr.read_uint.times do |i|
-      token = Clang::Token.new(tokens_ptr + (i * Clang::Token.size))
+    tokens = Clang.get_tokens translation_unit, Clang.get_cursor_extent(cursor)
+    tokens.each do |token|
       spelling = Clang.get_token_spelling(translation_unit, token).to_s_and_dispose
       case Clang.get_token_kind(token)
       when :literal
@@ -444,8 +441,6 @@ class FFIGen
         throw :unsupported_value
       end
     end
-
-    Clang.dispose_tokens translation_unit, tokens_ptr_ptr.read_pointer, num_tokens_ptr.read_uint
     parts.join " "
   end
   
@@ -458,14 +453,9 @@ class FFIGen
   end
   
   def extract_comment(translation_unit, range, search_backwards = true, return_spelling = true)
-    tokens_ptr_ptr = FFI::MemoryPointer.new :pointer
-    num_tokens_ptr = FFI::MemoryPointer.new :uint
-    Clang.tokenize translation_unit, range, tokens_ptr_ptr, num_tokens_ptr
-    num_tokens = num_tokens_ptr.read_uint
-    tokens_ptr = FFI::Pointer.new Clang::Token, tokens_ptr_ptr.read_pointer
-    indices = search_backwards ? (num_tokens - 1).downto(0) : 0.upto(num_tokens - 1)
-    indices.each do |i|
-      token = Clang::Token.new tokens_ptr[i]
+    tokens = Clang.get_tokens translation_unit, range
+    iterator = search_backwards ? tokens.reverse_each : tokens.each
+    iterator.each do |token|
       if Clang.get_token_kind(token) == :comment
         return return_spelling ? Clang.get_token_spelling(translation_unit, token).to_s_and_dispose : token
       end
