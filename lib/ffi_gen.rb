@@ -307,6 +307,7 @@ class FFIGen
       @declarations[Clang.get_cursor_type(declaration)] = enum
       
       previous_constant_location = Clang.get_cursor_location declaration
+      next_constant_value = 0
       Clang.get_children(declaration).each do |enum_constant|
         constant_name = Name.new self, Clang.get_cursor_spelling(enum_constant).to_s_and_dispose
         
@@ -317,9 +318,14 @@ class FFIGen
         
         catch :unsupported_value do
           value_cursor = Clang.get_children(enum_constant).first
-          constant_value = value_cursor && read_value(value_cursor)
+          constant_value = if value_cursor
+            read_value value_cursor
+          else
+            next_constant_value
+          end
           
           enum.constants << { name: constant_name, value: constant_value, comment: constant_comment }
+          next_constant_value = constant_value + 1
         end
       end
       
@@ -443,7 +449,7 @@ class FFIGen
         throw :unsupported_value
       end
     end
-    parts.join " "
+    eval parts.join
   end
   
   def get_pointee_declaration(type)

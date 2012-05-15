@@ -134,32 +134,32 @@ module LLVM
   # @return [Symbol]
   # @scope class
   enum :attribute, [
-    :z_ext_attribute, 1 << 0,
-    :s_ext_attribute, 1 << 1,
-    :no_return_attribute, 1 << 2,
-    :in_reg_attribute, 1 << 3,
-    :struct_ret_attribute, 1 << 4,
-    :no_unwind_attribute, 1 << 5,
-    :no_alias_attribute, 1 << 6,
-    :by_val_attribute, 1 << 7,
-    :nest_attribute, 1 << 8,
-    :read_none_attribute, 1 << 9,
-    :read_only_attribute, 1 << 10,
-    :no_inline_attribute, 1 << 11,
-    :always_inline_attribute, 1 << 12,
-    :optimize_for_size_attribute, 1 << 13,
-    :stack_protect_attribute, 1 << 14,
-    :stack_protect_req_attribute, 1 << 15,
-    :alignment, 31 << 16,
-    :no_capture_attribute, 1 << 21,
-    :no_red_zone_attribute, 1 << 22,
-    :no_implicit_float_attribute, 1 << 23,
-    :naked_attribute, 1 << 24,
-    :inline_hint_attribute, 1 << 25,
-    :stack_alignment, 7 << 26,
-    :returns_twice, 1 << 29,
-    :uw_table, 1 << 30,
-    :non_lazy_bind, 1 << 31
+    :z_ext_attribute, 1,
+    :s_ext_attribute, 2,
+    :no_return_attribute, 4,
+    :in_reg_attribute, 8,
+    :struct_ret_attribute, 16,
+    :no_unwind_attribute, 32,
+    :no_alias_attribute, 64,
+    :by_val_attribute, 128,
+    :nest_attribute, 256,
+    :read_none_attribute, 512,
+    :read_only_attribute, 1024,
+    :no_inline_attribute, 2048,
+    :always_inline_attribute, 4096,
+    :optimize_for_size_attribute, 8192,
+    :stack_protect_attribute, 16384,
+    :stack_protect_req_attribute, 32768,
+    :alignment, 2031616,
+    :no_capture_attribute, 2097152,
+    :no_red_zone_attribute, 4194304,
+    :no_implicit_float_attribute, 8388608,
+    :naked_attribute, 16777216,
+    :inline_hint_attribute, 33554432,
+    :stack_alignment, 469762048,
+    :returns_twice, 536870912,
+    :uw_table, 1073741824,
+    :non_lazy_bind, 2147483648
   ]
   
   # (Not documented)
@@ -391,21 +391,21 @@ module LLVM
   # @return [Symbol]
   # @scope class
   enum :type_kind, [
-    :void,
-    :float,
-    :double,
-    :x86_fp80,
-    :fp128,
-    :ppc_fp128,
-    :label,
-    :integer,
-    :function,
-    :struct,
-    :array,
-    :pointer,
-    :vector,
-    :metadata,
-    :x86_mmx
+    :void, 0,
+    :float, 1,
+    :double, 2,
+    :x86_fp80, 3,
+    :fp128, 4,
+    :ppc_fp128, 5,
+    :label, 6,
+    :integer, 7,
+    :function, 8,
+    :struct, 9,
+    :array, 10,
+    :pointer, 11,
+    :vector, 12,
+    :metadata, 13,
+    :x86_mmx, 14
   ]
   
   # (Not documented)
@@ -455,23 +455,23 @@ module LLVM
   # @return [Symbol]
   # @scope class
   enum :linkage, [
-    :external,
-    :available_externally,
-    :link_once_any,
-    :link_once_odr,
-    :weak_any,
-    :weak_odr,
-    :appending,
-    :internal,
-    :private,
-    :dll_import,
-    :dll_export,
-    :external_weak,
-    :ghost,
-    :common,
-    :linker_private,
-    :linker_private_weak,
-    :linker_private_weak_def_auto
+    :external, 0,
+    :available_externally, 1,
+    :link_once_any, 2,
+    :link_once_odr, 3,
+    :weak_any, 4,
+    :weak_odr, 5,
+    :appending, 6,
+    :internal, 7,
+    :private, 8,
+    :dll_import, 9,
+    :dll_export, 10,
+    :external_weak, 11,
+    :ghost, 12,
+    :common, 13,
+    :linker_private, 14,
+    :linker_private_weak, 15,
+    :linker_private_weak_def_auto, 16
   ]
   
   # (Not documented)
@@ -490,9 +490,9 @@ module LLVM
   # @return [Symbol]
   # @scope class
   enum :visibility, [
-    :default,
-    :hidden,
-    :protected
+    :default, 0,
+    :hidden, 1,
+    :protected, 2
   ]
   
   # (Not documented)
@@ -553,15 +553,15 @@ module LLVM
   # @scope class
   enum :int_predicate, [
     :eq, 32,
-    :ne,
-    :ugt,
-    :uge,
-    :ult,
-    :ule,
-    :sgt,
-    :sge,
-    :slt,
-    :sle
+    :ne, 33,
+    :ugt, 34,
+    :uge, 35,
+    :ult, 36,
+    :ule, 37,
+    :sgt, 38,
+    :sge, 39,
+    :slt, 40,
+    :sle, 41
   ]
   
   # (Not documented)
@@ -606,22 +606,22 @@ module LLVM
   # @return [Symbol]
   # @scope class
   enum :real_predicate, [
-    :predicate_false,
-    :oeq,
-    :ogt,
-    :oge,
-    :olt,
-    :ole,
-    :one,
-    :ord,
-    :uno,
-    :ueq,
-    :ugt,
-    :uge,
-    :ult,
-    :ule,
-    :une,
-    :predicate_true
+    :predicate_false, 0,
+    :oeq, 1,
+    :ogt, 2,
+    :oge, 3,
+    :olt, 4,
+    :ole, 5,
+    :one, 6,
+    :ord, 7,
+    :uno, 8,
+    :ueq, 9,
+    :ugt, 10,
+    :uge, 11,
+    :ult, 12,
+    :ule, 13,
+    :une, 14,
+    :predicate_true, 15
   ]
   
   # (Not documented)
@@ -638,8 +638,8 @@ module LLVM
   # @return [Symbol]
   # @scope class
   enum :landing_pad_clause_ty, [
-    :catch,
-    :filter
+    :catch, 0,
+    :filter, 1
   ]
   
   # (Not documented)

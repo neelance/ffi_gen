@@ -26,8 +26,8 @@ module Cairo
   # @return [Symbol]
   # @scope class
   enum :ps_level, [
-    :_2,
-    :_3
+    :_2, 0,
+    :_3, 1
   ]
   
   # (Not documented)

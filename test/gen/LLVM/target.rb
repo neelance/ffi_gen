@@ -26,8 +26,8 @@ module LLVM
   # @return [Symbol]
   # @scope class
   enum :byte_ordering, [
-    :big_endian,
-    :little_endian
+    :big_endian, 0,
+    :little_endian, 1
   ]
   
   # (Not documented)

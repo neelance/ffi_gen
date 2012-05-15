@@ -60,10 +60,10 @@ module Clang
   # @return [Symbol]
   # @scope class
   enum :availability_kind, [
-    :available,
-    :deprecated,
-    :not_available,
-    :not_accessible
+    :available, 0,
+    :deprecated, 1,
+    :not_available, 2,
+    :not_accessible, 3
   ]
   
   # A character string.
@@ -529,12 +529,12 @@ module Clang
   # @return [Symbol]
   # @scope class
   enum :diagnostic_display_options, [
-    :source_location, 0x01,
-    :column, 0x02,
-    :source_ranges, 0x04,
-    :option, 0x08,
-    :category_id, 0x10,
-    :category_name, 0x20
+    :source_location, 1,
+    :column, 2,
+    :source_ranges, 4,
+    :option, 8,
+    :category_id, 16,
+    :category_name, 32
   ]
   
   # Format the given diagnostic in a manner that is suitable for display.
@@ -806,14 +806,14 @@ module Clang
   # @return [Symbol]
   # @scope class
   enum :translation_unit_flags, [
-    :none, 0x0,
-    :detailed_preprocessing_record, 0x01,
-    :incomplete, 0x02,
-    :precompiled_preamble, 0x04,
-    :cache_completion_results, 0x08,
-    :cxx_precompiled_preamble, 0x10,
-    :cxx_chained_pch, 0x20,
-    :nested_macro_expansions, 0x40
+    :none, 0,
+    :detailed_preprocessing_record, 1,
+    :incomplete, 2,
+    :precompiled_preamble, 4,
+    :cache_completion_results, 8,
+    :cxx_precompiled_preamble, 16,
+    :cxx_chained_pch, 32,
+    :nested_macro_expansions, 64
   ]
   
   # Returns the set of flags that is suitable for parsing a translation
@@ -885,7 +885,7 @@ module Clang
   # @return [Symbol]
   # @scope class
   enum :save_translation_unit_flags, [
-    :save_translation_unit_none, 0x0
+    :save_translation_unit_none, 0
   ]
   
   # Returns the set of flags that is suitable for saving a translation
@@ -982,7 +982,7 @@ module Clang
   # @return [Symbol]
   # @scope class
   enum :reparse_flags, [
-    :reparse_none, 0x0
+    :reparse_none, 0
   ]
   
   # Returns the set of flags that is suitable for reparsing a translation
@@ -1924,11 +1924,11 @@ module Clang
   # @return [Symbol]
   # @scope class
   enum :linkage_kind, [
-    :invalid,
-    :no_linkage,
-    :internal,
-    :unique_external,
-    :external
+    :invalid, 0,
+    :no_linkage, 1,
+    :internal, 2,
+    :unique_external, 3,
+    :external, 4
   ]
   
   # Determine the linkage of the entity referred to by a given cursor.
@@ -1966,9 +1966,9 @@ module Clang
   # @scope class
   enum :language_kind, [
     :invalid, 0,
-    :c,
-    :obj_c,
-    :c_plus_plus
+    :c, 1,
+    :obj_c, 2,
+    :c_plus_plus, 3
   ]
   
   # Determine the "language" of the entity referred to by a given cursor.
@@ -2531,10 +2531,10 @@ module Clang
   # @return [Symbol]
   # @scope class
   enum :cxx_access_specifier, [
-    :invalid_access_specifier,
-    :public,
-    :protected,
-    :private
+    :invalid_access_specifier, 0,
+    :public, 1,
+    :protected, 2,
+    :private, 3
   ]
   
   # Returns the access control level for the C++ base specifier
@@ -2602,9 +2602,9 @@ module Clang
   # @return [Symbol]
   # @scope class
   enum :child_visit_result, [
-    :break_,
-    :continue,
-    :recurse
+    :break_, 0,
+    :continue, 1,
+    :recurse, 2
   ]
   
   # Visitor invoked for each cursor found by a traversal.
@@ -2934,9 +2934,9 @@ module Clang
   # @return [Symbol]
   # @scope class
   enum :name_ref_flags, [
-    :range_want_qualifier, 0x1,
-    :range_want_template_args, 0x2,
-    :range_want_single_piece, 0x4
+    :range_want_qualifier, 1,
+    :range_want_template_args, 2,
+    :range_want_single_piece, 4
   ]
   
   # Describes a kind of token.
@@ -2959,11 +2959,11 @@ module Clang
   # @return [Symbol]
   # @scope class
   enum :token_kind, [
-    :punctuation,
-    :keyword,
-    :identifier,
-    :literal,
-    :comment
+    :punctuation, 0,
+    :keyword, 1,
+    :identifier, 2,
+    :literal, 3,
+    :comment, 4
   ]
   
   # Describes a single preprocessing token.
@@ -3264,27 +3264,27 @@ module Clang
   # @return [Symbol]
   # @scope class
   enum :completion_chunk_kind, [
-    :optional,
-    :typed_text,
-    :text,
-    :placeholder,
-    :informative,
-    :current_parameter,
-    :left_paren,
-    :right_paren,
-    :left_bracket,
-    :right_bracket,
-    :left_brace,
-    :right_brace,
-    :left_angle,
-    :right_angle,
-    :comma,
-    :result_type,
-    :colon,
-    :semi_colon,
-    :equal,
-    :horizontal_space,
-    :vertical_space
+    :optional, 0,
+    :typed_text, 1,
+    :text, 2,
+    :placeholder, 3,
+    :informative, 4,
+    :current_parameter, 5,
+    :left_paren, 6,
+    :right_paren, 7,
+    :left_bracket, 8,
+    :right_bracket, 9,
+    :left_brace, 10,
+    :right_brace, 11,
+    :left_angle, 12,
+    :right_angle, 13,
+    :comma, 14,
+    :result_type, 15,
+    :colon, 16,
+    :semi_colon, 17,
+    :equal, 18,
+    :horizontal_space, 19,
+    :vertical_space, 20
   ]
   
   # Determine the kind of a particular chunk within a completion string.
@@ -3415,8 +3415,8 @@ module Clang
   # @return [Symbol]
   # @scope class
   enum :code_complete_flags, [
-    :include_macros, 0x01,
-    :include_code_patterns, 0x02
+    :include_macros, 1,
+    :include_code_patterns, 2
   ]
   
   # Bits that represent the context under which completion is occurring.
@@ -3496,28 +3496,28 @@ module Clang
   # @scope class
   enum :completion_context, [
     :unexposed, 0,
-    :any_type, 1 << 0,
-    :any_value, 1 << 1,
-    :obj_c_object_value, 1 << 2,
-    :obj_c_selector_value, 1 << 3,
-    :cxx_class_type_value, 1 << 4,
-    :dot_member_access, 1 << 5,
-    :arrow_member_access, 1 << 6,
-    :obj_c_property_access, 1 << 7,
-    :enum_tag, 1 << 8,
-    :union_tag, 1 << 9,
-    :struct_tag, 1 << 10,
-    :class_tag, 1 << 11,
-    :namespace, 1 << 12,
-    :nested_name_specifier, 1 << 13,
-    :obj_c_interface, 1 << 14,
-    :obj_c_protocol, 1 << 15,
-    :obj_c_category, 1 << 16,
-    :obj_c_instance_message, 1 << 17,
-    :obj_c_class_message, 1 << 18,
-    :obj_c_selector_name, 1 << 19,
-    :macro_name, 1 << 20,
-    :natural_language, 1 << 21
+    :any_type, 1,
+    :any_value, 2,
+    :obj_c_object_value, 4,
+    :obj_c_selector_value, 8,
+    :cxx_class_type_value, 16,
+    :dot_member_access, 32,
+    :arrow_member_access, 64,
+    :obj_c_property_access, 128,
+    :enum_tag, 256,
+    :union_tag, 512,
+    :struct_tag, 1024,
+    :class_tag, 2048,
+    :namespace, 4096,
+    :nested_name_specifier, 8192,
+    :obj_c_interface, 16384,
+    :obj_c_protocol, 32768,
+    :obj_c_category, 65536,
+    :obj_c_instance_message, 131072,
+    :obj_c_class_message, 262144,
+    :obj_c_selector_name, 524288,
+    :macro_name, 1048576,
+    :natural_language, 2097152
   ]
   
   # Returns a default set of code-completion options that can be
@@ -3785,8 +3785,8 @@ module Clang
   # @return [Symbol]
   # @scope class
   enum :visitor_result, [
-    :visit_break,
-    :visit_continue
+    :visit_break, 0,
+    :visit_continue, 1
   ]
   
   # \defgroup CINDEX_HIGH Higher level API functions

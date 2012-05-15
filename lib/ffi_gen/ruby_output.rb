@@ -127,7 +127,7 @@ class FFIGen
       writer.puts "enum :#{ruby_name}, ["
       writer.indent do
         writer.write_array @constants, "," do |constant|
-          "#{constant[:symbol]}#{constant[:value] ? ", #{constant[:value]}" : ''}"
+          "#{constant[:symbol]}, #{constant[:value]}"
         end
       end
       writer.puts "]", ""

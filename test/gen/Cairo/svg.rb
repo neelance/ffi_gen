@@ -26,8 +26,8 @@ module Cairo
   # @return [Symbol]
   # @scope class
   enum :svg_version, [
-    :_1_1,
-    :_1_2
+    :_1_1, 0,
+    :_1_2, 1
   ]
   
   # (Not documented)

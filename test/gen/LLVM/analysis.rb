@@ -28,9 +28,9 @@ module LLVM
   # @return [Symbol]
   # @scope class
   enum :verifier_failure_action, [
-    :abort_process,
-    :print_message,
-    :return_status
+    :abort_process, 0,
+    :print_message, 1,
+    :return_status, 2
   ]
   
   # Verifies that a module is valid, taking the specified action if not.

@@ -26,8 +26,8 @@ module Cairo
   # @return [Symbol]
   # @scope class
   enum :pdf_version, [
-    :_1_4,
-    :_1_5
+    :_1_4, 0,
+    :_1_5, 1
   ]
   
   # (Not documented)

@@ -598,42 +598,42 @@ module Cairo
   # @scope class
   enum :status, [
     :success, 0,
-    :no_memory,
-    :invalid_restore,
-    :invalid_pop_group,
-    :no_current_point,
-    :invalid_matrix,
-    :invalid_status,
-    :null_pointer,
-    :invalid_string,
-    :invalid_path_data,
-    :read_error,
-    :write_error,
-    :surface_finished,
-    :surface_type_mismatch,
-    :pattern_type_mismatch,
-    :invalid_content,
-    :invalid_format,
-    :invalid_visual,
-    :file_not_found,
-    :invalid_dash,
-    :invalid_dsc_comment,
-    :invalid_index,
-    :clip_not_representable,
-    :temp_file_error,
-    :invalid_stride,
-    :font_type_mismatch,
-    :user_font_immutable,
-    :user_font_error,
-    :negative_count,
-    :invalid_clusters,
-    :invalid_slant,
-    :invalid_weight,
-    :invalid_size,
-    :user_font_not_implemented,
-    :device_type_mismatch,
-    :device_error,
-    :last_status
+    :no_memory, 1,
+    :invalid_restore, 2,
+    :invalid_pop_group, 3,
+    :no_current_point, 4,
+    :invalid_matrix, 5,
+    :invalid_status, 6,
+    :null_pointer, 7,
+    :invalid_string, 8,
+    :invalid_path_data, 9,
+    :read_error, 10,
+    :write_error, 11,
+    :surface_finished, 12,
+    :surface_type_mismatch, 13,
+    :pattern_type_mismatch, 14,
+    :invalid_content, 15,
+    :invalid_format, 16,
+    :invalid_visual, 17,
+    :file_not_found, 18,
+    :invalid_dash, 19,
+    :invalid_dsc_comment, 20,
+    :invalid_index, 21,
+    :clip_not_representable, 22,
+    :temp_file_error, 23,
+    :invalid_stride, 24,
+    :font_type_mismatch, 25,
+    :user_font_immutable, 26,
+    :user_font_error, 27,
+    :negative_count, 28,
+    :invalid_clusters, 29,
+    :invalid_slant, 30,
+    :invalid_weight, 31,
+    :invalid_size, 32,
+    :user_font_not_implemented, 33,
+    :device_type_mismatch, 34,
+    :device_error, 35,
+    :last_status, 36
   ]
   
   # cairo_content_t:
@@ -663,9 +663,9 @@ module Cairo
   # @return [Symbol]
   # @scope class
   enum :content, [
-    :color, 0x1000,
-    :alpha, 0x2000,
-    :color_alpha, 0x3000
+    :color, 4096,
+    :alpha, 8192,
+    :color_alpha, 12288
   ]
   
   # cairo_write_func_t:
@@ -963,35 +963,35 @@ module Cairo
   # @return [Symbol]
   # @scope class
   enum :operator, [
-    :clear,
-    :source,
-    :over,
-    :in_,
-    :out,
-    :atop,
-    :dest,
-    :dest_over,
-    :dest_in,
-    :dest_out,
-    :dest_atop,
-    :xor,
-    :add,
-    :saturate,
-    :multiply,
-    :screen,
-    :overlay,
-    :darken,
-    :lighten,
-    :color_dodge,
-    :color_burn,
-    :hard_light,
-    :soft_light,
-    :difference,
-    :exclusion,
-    :hsl_hue,
-    :hsl_saturation,
-    :hsl_color,
-    :hsl_luminosity
+    :clear, 0,
+    :source, 1,
+    :over, 2,
+    :in_, 3,
+    :out, 4,
+    :atop, 5,
+    :dest, 6,
+    :dest_over, 7,
+    :dest_in, 8,
+    :dest_out, 9,
+    :dest_atop, 10,
+    :xor, 11,
+    :add, 12,
+    :saturate, 13,
+    :multiply, 14,
+    :screen, 15,
+    :overlay, 16,
+    :darken, 17,
+    :lighten, 18,
+    :color_dodge, 19,
+    :color_burn, 20,
+    :hard_light, 21,
+    :soft_light, 22,
+    :difference, 23,
+    :exclusion, 24,
+    :hsl_hue, 25,
+    :hsl_saturation, 26,
+    :hsl_color, 27,
+    :hsl_luminosity, 28
   ]
   
   # (Not documented)
@@ -1083,10 +1083,10 @@ module Cairo
   # @return [Symbol]
   # @scope class
   enum :antialias, [
-    :default,
-    :none,
-    :gray,
-    :subpixel
+    :default, 0,
+    :none, 1,
+    :gray, 2,
+    :subpixel, 3
   ]
   
   # (Not documented)
@@ -1134,8 +1134,8 @@ module Cairo
   # @return [Symbol]
   # @scope class
   enum :fill_rule, [
-    :winding,
-    :even_odd
+    :winding, 0,
+    :even_odd, 1
   ]
   
   # (Not documented)
@@ -1179,9 +1179,9 @@ module Cairo
   # @return [Symbol]
   # @scope class
   enum :line_cap, [
-    :butt,
-    :round,
-    :square
+    :butt, 0,
+    :round, 1,
+    :square, 2
   ]
   
   # (Not documented)
@@ -1219,9 +1219,9 @@ module Cairo
   # @return [Symbol]
   # @scope class
   enum :line_join, [
-    :miter,
-    :round,
-    :bevel
+    :miter, 0,
+    :round, 1,
+    :bevel, 2
   ]
   
   # (Not documented)
@@ -1993,7 +1993,7 @@ module Cairo
   # @return [Symbol]
   # @scope class
   enum :text_cluster_flags, [
-    :text_cluster_flag_backward, 0x00000001
+    :text_cluster_flag_backward, 1
   ]
   
   # cairo_text_extents_t:
@@ -2124,9 +2124,9 @@ module Cairo
   # @return [Symbol]
   # @scope class
   enum :font_slant, [
-    :normal,
-    :italic,
-    :oblique
+    :normal, 0,
+    :italic, 1,
+    :oblique, 2
   ]
   
   # cairo_font_weight_t:
@@ -2147,8 +2147,8 @@ module Cairo
   # @return [Symbol]
   # @scope class
   enum :font_weight, [
-    :normal,
-    :bold
+    :normal, 0,
+    :bold, 1
   ]
   
   # cairo_subpixel_order_t:
@@ -2185,11 +2185,11 @@ module Cairo
   # @return [Symbol]
   # @scope class
   enum :subpixel_order, [
-    :default,
-    :rgb,
-    :bgr,
-    :vrgb,
-    :vbgr
+    :default, 0,
+    :rgb, 1,
+    :bgr, 2,
+    :vrgb, 3,
+    :vbgr, 4
   ]
   
   # cairo_hint_style_t:
@@ -2231,11 +2231,11 @@ module Cairo
   # @return [Symbol]
   # @scope class
   enum :hint_style, [
-    :default,
-    :none,
-    :slight,
-    :medium,
-    :full
+    :default, 0,
+    :none, 1,
+    :slight, 2,
+    :medium, 3,
+    :full, 4
   ]
   
   # cairo_hint_metrics_t:
@@ -2264,9 +2264,9 @@ module Cairo
   # @return [Symbol]
   # @scope class
   enum :hint_metrics, [
-    :default,
-    :off,
-    :on
+    :default, 0,
+    :off, 1,
+    :on, 2
   ]
   
   # cairo_font_options_t:
@@ -2735,11 +2735,11 @@ module Cairo
   # @return [Symbol]
   # @scope class
   enum :font_type, [
-    :toy,
-    :ft,
-    :win32,
-    :quartz,
-    :user
+    :toy, 0,
+    :ft, 1,
+    :win32, 2,
+    :quartz, 3,
+    :user, 4
   ]
   
   # (Not documented)
@@ -3418,10 +3418,10 @@ module Cairo
   # @return [Symbol]
   # @scope class
   enum :path_data_type, [
-    :move_to,
-    :line_to,
-    :curve_to,
-    :close_path
+    :move_to, 0,
+    :line_to, 1,
+    :curve_to, 2,
+    :close_path, 3
   ]
   
   # (Not documented)
@@ -3665,12 +3665,12 @@ module Cairo
   # @return [Symbol]
   # @scope class
   enum :device_type, [
-    :drm,
-    :gl,
-    :script,
-    :xcb,
-    :xlib,
-    :xml
+    :drm, 0,
+    :gl, 1,
+    :script, 2,
+    :xcb, 3,
+    :xlib, 4,
+    :xml, 5
   ]
   
   # (Not documented)
@@ -3934,30 +3934,30 @@ module Cairo
   # @return [Symbol]
   # @scope class
   enum :surface_type, [
-    :image,
-    :pdf,
-    :ps,
-    :xlib,
-    :xcb,
-    :glitz,
-    :quartz,
-    :win32,
-    :beos,
-    :directfb,
-    :svg,
-    :os2,
-    :win32_printing,
-    :quartz_image,
-    :script,
-    :qt,
-    :recording,
-    :vg,
-    :gl,
-    :drm,
-    :tee,
-    :xml,
-    :skia,
-    :subsurface
+    :image, 0,
+    :pdf, 1,
+    :ps, 2,
+    :xlib, 3,
+    :xcb, 4,
+    :glitz, 5,
+    :quartz, 6,
+    :win32, 7,
+    :beos, 8,
+    :directfb, 9,
+    :svg, 10,
+    :os2, 11,
+    :win32_printing, 12,
+    :quartz_image, 13,
+    :script, 14,
+    :qt, 15,
+    :recording, 16,
+    :vg, 17,
+    :gl, 18,
+    :drm, 19,
+    :tee, 20,
+    :xml, 21,
+    :skia, 22,
+    :subsurface, 23
   ]
   
   # (Not documented)
@@ -4187,7 +4187,7 @@ module Cairo
   # @return [Symbol]
   # @scope class
   enum :format, [
-    :invalid, - 1,
+    :invalid, -1,
     :argb32, 0,
     :rgb24, 1,
     :a8, 2,
@@ -4454,10 +4454,10 @@ module Cairo
   # @return [Symbol]
   # @scope class
   enum :pattern_type, [
-    :solid,
-    :surface,
-    :linear,
-    :radial
+    :solid, 0,
+    :surface, 1,
+    :linear, 2,
+    :radial, 3
   ]
   
   # (Not documented)
@@ -4547,10 +4547,10 @@ module Cairo
   # @return [Symbol]
   # @scope class
   enum :extend, [
-    :none,
-    :repeat,
-    :reflect,
-    :pad
+    :none, 0,
+    :repeat, 1,
+    :reflect, 2,
+    :pad, 3
   ]
   
   # (Not documented)
@@ -4607,12 +4607,12 @@ module Cairo
   # @return [Symbol]
   # @scope class
   enum :filter, [
-    :fast,
-    :good,
-    :best,
-    :nearest,
-    :bilinear,
-    :gaussian
+    :fast, 0,
+    :good, 1,
+    :best, 2,
+    :nearest, 3,
+    :bilinear, 4,
+    :gaussian, 5
   ]
   
   # (Not documented)
@@ -4960,9 +4960,9 @@ module Cairo
   # @return [Symbol]
   # @scope class
   enum :region_overlap, [
-    :in_,
-    :out,
-    :part
+    :in_, 0,
+    :out, 1,
+    :part, 2
   ]
   
   # (Not documented)
