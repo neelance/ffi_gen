@@ -1,3 +1,16 @@
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+@interface NativeName {
+    String value();
+}
+
+class NativeNameAnnotationFunctionMapper implements FunctionMapper {
+    @Override
+    public String getFunctionName(NativeLibrary library, Method method) {
+        return method.getAnnotation(NativeName.class).value();
+    }
+}
+
 interface NativeEnum {
     public int toNativeInt();
 }
@@ -22,18 +35,5 @@ class EnumConverter implements TypeConverter {
 
     public Object toNative(Object input, ToNativeContext context) {
         return ((NativeEnum) input).toNativeInt();
-    }
-}
-
-class MapFunctionMapper implements FunctionMapper {
-    private Map<String, String> map;
-
-    public MapFunctionMapper(Map<String, String> map) {
-        this.map = map;
-    }
-
-    @Override
-    public String getFunctionName(NativeLibrary library, Method method) {
-        return map.get(method.getName());
     }
 }
