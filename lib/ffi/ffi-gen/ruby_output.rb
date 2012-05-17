@@ -123,8 +123,11 @@ class FFI::Gen
         end
         writer.puts "", "@method _enum_#{ruby_name}_", "@return [Symbol]", "@scope class"
       end
-      
-      writer.puts "enum :#{ruby_name}, ["
+      if ruby_name !=""
+        writer.puts "enum :#{ruby_name}, ["
+      else
+        writer.puts "enum  ["
+      end
       writer.indent do
         writer.write_array @constants, "," do |constant|
           "#{constant[:symbol]}, #{constant[:value]}"
