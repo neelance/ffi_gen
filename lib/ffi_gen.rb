@@ -333,6 +333,7 @@ class FFIGen
       until struct_children.empty?
         nested_declaration = [:struct_decl, :union_decl].include?(struct_children.first[:kind]) ? struct_children.shift : nil
         field = struct_children.shift
+        next if field[:kind]==:unexposed_attr
         raise if field[:kind] != :field_decl
         
         field_name = Name.new self, Clang.get_cursor_spelling(field).to_s_and_dispose
