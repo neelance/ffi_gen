@@ -180,6 +180,7 @@ class FFIGen
             
       writer.puts "class #{ruby_name} < #{@is_union ? 'FFI::Union' : 'FFI::Struct'}"
       writer.indent do
+        writer.puts "packed(#{@packed})" if @packed
         writer.puts "include #{ruby_name}Wrappers" unless @oo_functions.empty?
         writer.write_array @fields, ",", "layout ", "       " do |field|
           "#{field[:symbol]}, #{field[:type_data][:ffi_type]}"
