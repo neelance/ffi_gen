@@ -421,11 +421,23 @@ class FFI::Gen
       end
         
     when :macro_definition
-      tokens = Clang.get_tokens translation_unit, Clang.get_cursor_extent(declaration)
-      if tokens.size == 3
-        if Clang.get_token_kind(tokens[1]) == :literal
-          value = Clang.get_token_spelling(translation_unit, tokens[1]).to_s_and_dispose
-          value.sub!(/[A-Za-z]+$/, '') unless value.start_with? '0x' # remove number suffixes
+      catch :unsupported_value do
+        tokens = Clang.get_tokens translation_unit, Clang.get_cursor_extent(declaration)
+        if tokens.size >= 2 && Clang.get_token_kind(tokens[0]) == :identifier
+          throw :unsupported_value if tokens.count{|e|[:literal,:identifier].include?(Clang.get_token_kind(e))}<2 # name and value
+          value=""
+          (1...(tokens.size)).each do|i|
+            elem=Clang.get_token_spelling(translation_unit, tokens[i]).to_s_and_dispose
+            case Clang.get_token_kind(tokens[i])
+            when :literal
+              elem.sub!(/[A-Za-z]+$/, '') unless elem.start_with? '0x' # remove number suffixes
+            when :identifier
+              throw :unsupported_value unless @declarations.find{|k,v|(k.raw==elem) && v.is_a?(Constant)}
+            when :comment
+	            elem=""
+            end
+            value << elem
+          end
           @declarations[name] ||= Constant.new self, name, value
         end 
       end
