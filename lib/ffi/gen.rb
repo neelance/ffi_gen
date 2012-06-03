@@ -86,6 +86,7 @@ class FFI::Gen
     end
     
     def shorten_names
+      return unless @generator.shorten_names
       return if @constants.size < 2
       names = @constants.map { |constant| constant[:name].parts }
       names.each(&:shift) while names.map(&:first).uniq.size == 1 and @name.parts.map(&:downcase).include? names.first.first.downcase
@@ -220,7 +221,7 @@ class FFI::Gen
     end
   end
   
-  attr_reader :module_name, :ffi_lib, :headers, :prefixes, :output, :cflags
+  attr_reader :module_name, :ffi_lib, :headers, :prefixes, :output, :cflags, :shorten_names
 
   def initialize(options = {})
     @module_name   = options[:module_name] or fail "No module name given."
@@ -231,6 +232,7 @@ class FFI::Gen
     @blocking      = options.fetch :blocking, []
     @ffi_lib_flags = options.fetch :ffi_lib_flags, nil
     @output        = options.fetch :output, $stdout
+    @shorten_names = options.fetch :shorten_names, true
     
     @translation_unit = nil
     @declarations = nil
