@@ -427,7 +427,11 @@ class FFIGen
           @declarations[name] ||= Constant.new self, name, value
         end 
       end
-      
+    when :var_decl
+      token=Clang.get_tokens(translation_unit,Clang.get_cursor_extent(declaration)).map{|e|Clang.get_token_spelling(translation_unit, e)}.join("")
+      if token=~/const.+=(.+);$/
+        @declarations[name] ||= Constant.new self, name, $1
+      end
     end
   end
   
