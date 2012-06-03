@@ -95,7 +95,7 @@ class FFI::Gen
   end
   
   class StructOrUnion
-    attr_accessor :name, :comment
+    attr_accessor :name, :comment, :packed
     attr_reader :fields, :oo_functions, :written
     
     def initialize(generator, name, is_union)
@@ -106,6 +106,7 @@ class FFI::Gen
       @fields = []
       @oo_functions = []
       @written = false
+      @packed = false
     end
   end
   
@@ -340,6 +341,22 @@ class FFI::Gen
       
       struct_children = Clang.get_children declaration
       previous_field_end = Clang.get_cursor_location declaration
+      location_data=Clang.get_spelling_location_data(Clang.get_cursor_location(declaration))
+      lines=IO.readlines(Clang.get_file_name(location_data[:file]).to_s_and_dispose)
+      
+      #parse pragma pack at declaration
+      #TODO:support push pop
+      packed=false
+      lines[0...(location_data[:line]-1)].each do|line|
+        if line=~/#pragma\s+pack\s*\(\s*([0-9]*)\s*\)/
+          if $1==""
+            packed=false
+          else
+            packed=$1.to_i
+          end
+        end
+      end
+      struct.packed=packed
       until struct_children.empty?
         nested_declaration = [:struct_decl, :union_decl].include?(struct_children.first[:kind]) ? struct_children.shift : nil
         field = struct_children.shift
