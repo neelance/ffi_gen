@@ -1,12 +1,12 @@
 require "fileutils"
-require "ffi_gen"
+require "ffi/gen"
 
 def run_test(options = {})
   options[:file_mappings].each do |header, ruby_file|
     output_file = File.join File.dirname(__FILE__), "gen/#{options[:library_name]}/#{ruby_file}"
     FileUtils.mkdir_p File.dirname(output_file)
     
-    FFIGen.generate(
+    FFI::Gen.generate(
       module_name: options[:library_name],
       ffi_lib:     options[:ffi_lib],
       headers:     [header],
