@@ -34,7 +34,7 @@ Use the following interface in a script or Rake task:
     require "ffi_gen"
     
     FFIGen.generate(
-      ruby_module: "Clang",
+      module_name: "Clang",
       ffi_lib:     "clang",
       headers:     ["clang-c/Index.h"],
       cflags:      `llvm-config --cflags`.split(" "),
