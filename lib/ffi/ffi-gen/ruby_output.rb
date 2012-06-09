@@ -129,8 +129,9 @@ class FFI::Gen
         writer.puts "enum  ["
       end
       writer.indent do
-        writer.write_array @constants, "," do |constant|
-          "#{constant[:symbol]}, #{constant[:value]}"
+        @constants.each do |constant|
+          hex_comment="  #0x%x"%constant[:value].to_s.to_i if constant[:value].to_s=~/^[0-9]+$/
+          writer.puts "#{constant[:symbol]}, #{constant[:value]},#{hex_comment}"
         end
       end
       writer.puts "]", ""
