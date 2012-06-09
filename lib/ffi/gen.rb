@@ -286,7 +286,15 @@ class FFI::Gen
     @declarations = {}
     unit_cursor = Clang.get_translation_unit_cursor translation_unit
     previous_declaration_end = Clang.get_cursor_location unit_cursor
-    Clang.get_children(unit_cursor).each do |declaration|
+    Clang.get_children(unit_cursor).select{|d|
+      file = Clang.get_spelling_location_data(Clang.get_cursor_location(d))[:file]
+      header_files.include? file
+    }.sort{|a,b|
+      #sort by file,line
+      loc_a=Clang.get_spelling_location_data(Clang.get_cursor_location(a))
+      loc_b=Clang.get_spelling_location_data(Clang.get_cursor_location(b))
+      [header_files.index(loc_a[:file]),loc_a[:line]]<=>[header_files.index(loc_b[:file]),loc_b[:line]]
+    }.each do |declaration|
       file = Clang.get_spelling_location_data(Clang.get_cursor_location(declaration))[:file]
       
       extent = Clang.get_cursor_extent declaration
@@ -294,8 +302,6 @@ class FFI::Gen
       unless [:enum_decl, :struct_decl, :union_decl].include? declaration[:kind] # keep comment for typedef_decl
         previous_declaration_end = Clang.get_range_end extent
       end 
-      
-      next if not header_files.include? file
       
       comment = extract_comment translation_unit, comment_range
       
