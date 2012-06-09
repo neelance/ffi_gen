@@ -439,18 +439,36 @@ class FFIGen
         if tokens.size >= 2 && Clang.get_token_kind(tokens[0]) == :identifier
           throw :unsupported_value if tokens.count{|e|[:literal,:identifier].include?(Clang.get_token_kind(e))}<2 # name and value
           value=""
+          brace_depth=0
+          top_brace_count=0
           (1...(tokens.size)).each do|i|
             elem=Clang.get_token_spelling(translation_unit, tokens[i]).to_s_and_dispose
             case Clang.get_token_kind(tokens[i])
             when :literal
               elem.sub!(/[A-Za-z]+$/, '') unless elem.start_with? '0x' # remove number suffixes
             when :identifier
-              throw :unsupported_value unless @declarations.find{|k,v|(k.raw==elem) && v.is_a?(Constant)}
+              throw :unsupported_value unless @declarations.find{|k,v|v.is_a?(Constant)&&(k.raw==elem)}
             when :comment
-	            elem=""
+              elem=""
+            when :punctuation
+              case elem
+              when "("
+                brace_depth+=1
+              when ")"
+                brace_depth-=1
+                throw :unsupported_value if brace_depth<0
+                top_brace_count+=1 if brace_depth==0
+                #macro function
+                throw :unsupported_value if top_brace_count>=2
+              end
+            when :keyword
+              #noise
+              elem="" if i==tokens.size-1
             end
             value << elem
           end
+          #invoke function
+          throw :unsupported_value if value=~/[a-zA-Z0-9_]+\(.+\)/
           @declarations[name] ||= Constant.new self, name, value
         end 
       end
