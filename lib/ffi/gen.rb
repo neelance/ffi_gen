@@ -354,22 +354,7 @@ class FFI::Gen
       
       struct_children = Clang.get_children declaration
       previous_field_end = Clang.get_cursor_location declaration
-      location_data=Clang.get_spelling_location_data(Clang.get_cursor_location(declaration))
-      lines=IO.readlines(Clang.get_file_name(location_data[:file]).to_s_and_dispose)
-      
-      #parse pragma pack at declaration
-      #TODO:support push pop
-      packed=false
-      lines[0...(location_data[:line]-1)].each do|line|
-        if line=~/#pragma\s+pack\s*\(\s*([0-9]*)\s*\)/
-          if $1==""
-            packed=false
-          else
-            packed=$1.to_i
-          end
-        end
-      end
-      struct.packed=packed
+      struct.packed=packed_at(declaration)
       until struct_children.empty?
         nested_declaration = [:struct_decl, :union_decl].include?(struct_children.first[:kind]) ? struct_children.shift : nil
         field = struct_children.shift
@@ -477,6 +462,43 @@ class FFI::Gen
         @declarations[name] ||= Constant.new self, name, $1
       end
     end
+  end
+  def packed_at(declaration)
+    location_data=Clang.get_spelling_location_data(Clang.get_cursor_location(declaration))
+    lines=IO.readlines(Clang.get_file_name(location_data[:file]).to_s_and_dispose)
+    #parse pragma pack at declaration
+    packed=false
+    stack=[]
+    lines[0,location_data[:line]-1].each do|line|
+      if line=~/^#\s*pragma\s+pack\s*\((.*)\).*$/
+        params=$1.split(",").map(&:strip)
+        push_or_pop=params.shift if params.first=~/^(push|pop)$/
+        identifier=params.shift if params.first=~/[a-zA-Z_]/
+        n=params.shift if params.first=~/^(1|2|4|8|16)$/
+        #unknwon parameter
+        next unless params.empty?
+        case push_or_pop
+        when "push"
+          stack.push([identifier,packed])
+        when "pop"
+          next if stack.empty?
+          if identifier
+            if i=stack.rindex{|v|v[0]==identifier}
+              packed=stack[i][1]
+              stack.slice!(i,stack.size)
+            else
+              next
+            end
+          else
+            packed=stack.pop[1]
+          end
+        else
+          packed=false unless n
+        end
+        packed=n.to_i if n
+      end
+    end
+    packed
   end
   
   def read_value(cursor)
