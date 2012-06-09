@@ -250,7 +250,13 @@ class FFIGen
   
   class Constant
     def write_ruby(writer)
-      writer.puts "#{@name.to_ruby_constant} = #{@value}", ""
+      if @comment!=""
+        writer.comment do
+          writer.write_description @comment
+        end
+      end
+      hex_comment="  #0x%x"%@value.to_s.to_i if @value.to_s=~/^[0-9]+$/
+      writer.puts "#{@name.to_ruby_constant} = #{@value}#{hex_comment}", ""
     end
   end
 end

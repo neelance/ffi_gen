@@ -123,10 +123,11 @@ class FFIGen
   end
   
   class Constant
-    def initialize(generator, name, value)
+    def initialize(generator, name, value,comment="")
       @generator = generator
       @name = name
       @value = value
+      @comment = comment
     end
   end
   
@@ -220,7 +221,7 @@ class FFIGen
     end
   end
   
-  attr_reader :module_name, :ffi_lib, :headers, :prefixes, :output, :cflags, :shorten_names
+  attr_reader :module_name, :ffi_lib, :headers, :prefixes, :output, :cflags, :shorten_names, :enum_as_constant
 
   def initialize(options = {})
     @module_name   = options[:module_name] or fail "No module name given."
@@ -232,6 +233,7 @@ class FFIGen
     @ffi_lib_flags = options.fetch :ffi_lib_flags, nil
     @output        = options.fetch :output, $stdout
     @shorten_names = options.fetch :shorten_names, true
+    @enum_as_constant = options.fetch :enum_as_constant, false
     
     @translation_unit = nil
     @declarations = nil
@@ -328,6 +330,11 @@ class FFIGen
           end
           
           enum.constants << { name: constant_name, value: constant_value, comment: constant_comment }
+          if enum_as_constant
+            enum.constants.each do|constant|
+              @declarations[constant_name] ||= Constant.new self, constant_name, constant_value,constant_comment
+            end
+          end
           next_constant_value = constant_value + 1
         end
       end
