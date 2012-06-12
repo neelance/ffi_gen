@@ -1,10 +1,11 @@
-ffi_gen - A generator for Ruby FFI bindings
+ffi-gen - A generator for Ruby FFI bindings
 ===========================================
 
 *Author:* Richard Musiol  
 *Contributors:* Jeremy Voorhis (thanks for the initial idea)  
 *License:* MIT (see LICENSE)
 
+**ffi-gen is a completely automatic generator for [FFI](https://github.com/ffi/ffi/wiki) wrappers around C libraries. It uses [LLVM's Clang](http://clang.llvm.org/) compiler as a backend for fully processing the header files of a given library.**
 
 Features
 --------
@@ -31,9 +32,9 @@ Example
 -------
 Use the following interface in a script or Rake task:
 
-    require "ffi_gen"
+    require "ffi/gen"
     
-    FFIGen.generate(
+    FFI::Gen.generate(
       module_name: "Clang",
       ffi_lib:     "clang",
       headers:     ["clang-c/Index.h"],
@@ -43,9 +44,9 @@ Use the following interface in a script or Rake task:
       output:      "Clang/index.rb"
     )
 
-Output: [Clang/index.rb](https://github.com/neelance/ffi_gen/blob/master/test/gen/Clang/index.rb)
+Output: [Clang/index.rb](https://github.com/neelance/ffi-gen/blob/master/test/gen/Clang/index.rb)
 
-Other generated files can be found in the [test/gen](https://github.com/neelance/ffi_gen/tree/master/test/gen) directory.
+Other generated files can be found in the [test/gen](https://github.com/neelance/ffi-gen/tree/master/test/gen) directory.
 
 
 Hints
