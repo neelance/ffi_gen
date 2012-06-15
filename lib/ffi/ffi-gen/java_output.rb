@@ -126,7 +126,7 @@ class FFI::Gen
       end
       
       writer.comment do
-        writer.write_description @comment
+        writer.write_description @description
         # TODO constant comments
       end
       
@@ -155,7 +155,7 @@ class FFI::Gen
       end
       
       writer.comment do
-        writer.write_description @comment
+        writer.write_description @description
         unless @fields.empty?
           writer.puts "", "= Fields:"
           @fields.each do |field|
@@ -193,31 +193,14 @@ class FFI::Gen
       end
       return_type_data = @generator.to_java_type @return_type
       
-      function_description = []
-      return_value_description = []
-      current_description = function_description
-      @comment.split("\n").map do |line|
-        line = writer.prepare_comment_line line
-        if line.gsub!(/\\param (.*?) /, '')
-          parameter = @parameters.find { |p| p[:name].raw == $1 }
-          if parameter
-            current_description = parameter[:description]
-          else
-            current_description << "#{$1}: "
-          end
-        end
-        current_description = return_value_description if line.gsub! '\\returns ', ''
-        current_description << line
-      end
-      
       writer.comment do
-        writer.write_description function_description
+        writer.write_description @function_description
         writer.puts "", "<em>This entry is only for documentation and no real method.</em>" if @is_callback
         writer.puts "", "@method #{@is_callback ? "_callback_#{java_name}_" : java_name}(#{@parameters.map{ |parameter| parameter[:java_name] }.join(', ')})"
         @parameters.each do |parameter|
           writer.write_description parameter[:description], false, "@param [#{parameter[:type_data][:description]}] #{parameter[:java_name]} ", "  "
         end
-        writer.write_description return_value_description, false, "@return [#{return_type_data[:description]}] ", "  "
+        writer.write_description @return_value_description, false, "@return [#{return_type_data[:description]}] ", "  "
         writer.puts "@scope class"
       end
       
