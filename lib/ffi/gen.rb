@@ -286,18 +286,6 @@ class FFI::Gen
     @declarations = {}
     unit_cursor = Clang.get_translation_unit_cursor translation_unit
     previous_declaration_end = Clang.get_cursor_location unit_cursor
-    comments={}
-    Clang.get_children(unit_cursor).each do|declaration|
-      file = Clang.get_spelling_location_data(Clang.get_cursor_location(declaration))[:file]
-      
-      extent = Clang.get_cursor_extent declaration
-      comment_range = Clang.get_range previous_declaration_end, Clang.get_range_start(extent)
-      unless [:enum_decl, :struct_decl, :union_decl].include? declaration[:kind] # keep comment for typedef_decl
-        previous_declaration_end = Clang.get_range_end extent
-      end 
-      next if not header_files.include? file
-      comments[declaration] = extract_comment translation_unit, comment_range
-    end
     Clang.get_children(unit_cursor).select{|d|
       file = Clang.get_spelling_location_data(Clang.get_cursor_location(d))[:file]
       header_files.include? file
@@ -307,7 +295,16 @@ class FFI::Gen
       loc_b=Clang.get_spelling_location_data(Clang.get_cursor_location(b))
       [header_files.index(loc_a[:file]),loc_a[:line]]<=>[header_files.index(loc_b[:file]),loc_b[:line]]
     }.each do |declaration|
-      read_named_declaration declaration, comments[declaration]
+      file = Clang.get_spelling_location_data(Clang.get_cursor_location(declaration))[:file]
+      
+      extent = Clang.get_cursor_extent declaration
+      comment_range = Clang.get_range previous_declaration_end, Clang.get_range_start(extent)
+      unless [:enum_decl, :struct_decl, :union_decl].include? declaration[:kind] # keep comment for typedef_decl
+        previous_declaration_end = Clang.get_range_end extent
+      end 
+      next if not header_files.include? file
+      comment = extract_comment translation_unit, comment_range
+      read_named_declaration declaration, comment
     end
 
     @declarations
@@ -538,6 +535,8 @@ class FFI::Gen
         else
           throw :unsupported_value
         end
+      when :comment
+        # ignored
       else
         throw :unsupported_value
       end
