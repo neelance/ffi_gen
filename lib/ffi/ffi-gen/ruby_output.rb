@@ -5,7 +5,7 @@ class FFI::Gen
     writer.indent do
       writer.puts "extend FFI::Library"
       writer.puts "ffi_lib_flags #{@ffi_lib_flags.map(&:inspect).join(', ')}" if @ffi_lib_flags
-      writer.puts "ffi_lib '#{@ffi_lib}'", ""
+      writer.puts "ffi_lib '#{@ffi_lib}'", "" if @ffi_lib
       writer.puts "def self.attach_function(name, *_)", "  begin; super; rescue FFI::NotFoundError => e", "    (class << self; self; end).class_eval { define_method(name) { |*_| raise e } }", "  end", "end", ""
       declarations.values.compact.uniq.each do |declaration|
         declaration.write_ruby writer
