@@ -10,6 +10,7 @@ task :test do
   require "pragma_pack_test"
   require "similar_enums_test"
   require "const_variable_test"
+  require "macro_expression_test"
   
   system "git status test/gen"
 end
