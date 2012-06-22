@@ -13,7 +13,9 @@ def run_test(options = {})
       cflags:      options.fetch(:cflags, []),
       prefixes:    options.fetch(:prefixes, []),
       blocking:    options.fetch(:blocking, []),
-      output:      output_file
+      output:      output_file,
+      shorten_names:options[:shorten_names],
+      enum_as_constant:options[:enum_as_constant],
     )
     
     require output_file
