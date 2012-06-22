@@ -28,6 +28,10 @@ module SimilarEnums
     :enum_a_b, 1,  #0x1
   ]
   
+  ENUM_A_A = 0  #0x0
+  
+  ENUM_A_B = 1  #0x1
+  
   # (Not documented)
   # 
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:enum_b).</em>
@@ -49,6 +53,12 @@ module SimilarEnums
     :enum_b_b, 2,  #0x2
   ]
   
+  ENUM_B_DEFAULT = 0  #0x0
+  
+  ENUM_B_A = 1  #0x1
+  
+  ENUM_B_B = 2  #0x2
+  
   # (Not documented)
   # 
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:).</em>
@@ -66,5 +76,9 @@ module SimilarEnums
     :a, 0,  #0x0
     :b, 1,  #0x1
   ]
+  
+  A = 0  #0x0
+  
+  B = 1  #0x1
   
 end
