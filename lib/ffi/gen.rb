@@ -86,7 +86,7 @@ class FFI::Gen
     end
     
     def shorten_names
-      return unless @generator.shorten_names
+      return if @generator.no_shorten_names
       return if @constants.size < 2
       names = @constants.map { |constant| constant[:name].parts }
       names.each(&:shift) while names.map(&:first).uniq.size == 1 and @name.parts.map(&:downcase).include? names.first.first.downcase
@@ -224,7 +224,8 @@ class FFI::Gen
     end
   end
   
-  attr_reader :module_name, :ffi_lib, :headers, :prefixes, :output, :cflags, :shorten_names, :enum_as_constant
+  attr_reader :module_name, :ffi_lib, :headers, :prefixes, :output,
+              :cflags, :no_shorten_names, :enum_as_constant
 
   def initialize(options = {})
     @module_name   = options[:module_name] or fail "No module name given."
@@ -235,7 +236,7 @@ class FFI::Gen
     @blocking      = options.fetch :blocking, []
     @ffi_lib_flags = options.fetch :ffi_lib_flags, nil
     @output        = options.fetch :output, $stdout
-    @shorten_names = options.fetch :shorten_names, true
+    @no_shorten_names = options.fetch :no_shorten_names, false
     @enum_as_constant = options.fetch :enum_as_constant, false
     
     @translation_unit = nil

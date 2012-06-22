@@ -14,7 +14,7 @@ def run_test(options = {})
       prefixes:    options.fetch(:prefixes, []),
       blocking:    options.fetch(:blocking, []),
       output:      output_file,
-      shorten_names:options[:shorten_names],
+      no_shorten_names:options[:no_shorten_names],
       enum_as_constant:options[:enum_as_constant],
     )
     
