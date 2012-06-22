@@ -9,6 +9,7 @@ task :test do
   require "cairo_test"
   require "pragma_pack_test"
   require "similar_enums_test"
+  require "const_variable_test"
   
   system "git status test/gen"
 end
