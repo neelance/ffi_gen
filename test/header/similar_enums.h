@@ -13,4 +13,8 @@ enum EnumB
 	EnumB_B,
 }; 
 
-
+enum
+{
+	A,
+	B,
+};

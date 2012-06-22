@@ -49,4 +49,22 @@ module SimilarEnums
     :enum_b_b, 2,  #0x2
   ]
   
+  # (Not documented)
+  # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:).</em>
+  # 
+  # === Options:
+  # :a ::
+  #   
+  # :b ::
+  #   
+  # 
+  # @method _enum__
+  # @return [Symbol]
+  # @scope class
+  enum  [
+    :a, 0,  #0x0
+    :b, 1,  #0x1
+  ]
+  
 end
