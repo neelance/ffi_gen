@@ -125,6 +125,7 @@ class FFI::Gen
   end
   
   class Constant
+    attr_reader :name
     def initialize(generator, name, value,comment="")
       @generator = generator
       @name = name
@@ -448,7 +449,10 @@ class FFI::Gen
             when :literal
               elem.sub!(/[A-Za-z]+$/, '') unless elem.start_with? '0x' # remove number suffixes
             when :identifier
-              throw :unsupported_value unless @declarations.find{|k,v|v.is_a?(Constant)&&(k.raw==elem)}
+              constant_kv=@declarations.find{|k,v|v.is_a?(Constant)&&(k.raw==elem)}
+              throw :unsupported_value unless constant_kv
+              #TODO:java_constant
+              elem=constant_kv[1].name.to_ruby_constant
             when :comment
               elem=""
             when :punctuation
