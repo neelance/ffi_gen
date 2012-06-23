@@ -85,6 +85,7 @@ class FFI::Gen
     end
     
     def shorten_names
+      return if @generator.no_shorten_names
       return if @constants.size < 2
       names = @constants.map { |constant| constant[:name].parts }
       names.each(&:shift) while names.map(&:first).uniq.size == 1 and @name.parts.map(&:downcase).include? names.first.first.downcase
@@ -93,7 +94,7 @@ class FFI::Gen
   end
   
   class StructOrUnion
-    attr_accessor :name, :description
+    attr_accessor :name, :description, :packed
     attr_reader :fields, :oo_functions, :written
     
     def initialize(generator, name, is_union)
@@ -104,6 +105,7 @@ class FFI::Gen
       @fields = []
       @oo_functions = []
       @written = false
+      @packed = false
     end
   end
   
@@ -123,10 +125,12 @@ class FFI::Gen
   end
   
   class Constant
-    def initialize(generator, name, value)
+    attr_reader :name
+    def initialize(generator, name, value,comment="")
       @generator = generator
       @name = name
       @value = value
+      @comment = comment
     end
   end
   
@@ -206,17 +210,20 @@ class FFI::Gen
     end
   end
   
-  attr_reader :module_name, :ffi_lib, :headers, :prefixes, :output, :cflags
+  attr_reader :module_name, :ffi_lib, :headers, :prefixes, :output,
+              :cflags, :no_shorten_names, :enum_as_constant
 
   def initialize(options = {})
     @module_name   = options[:module_name] or fail "No module name given."
-    @ffi_lib       = options[:ffi_lib] or fail "No FFI library given."
+    @ffi_lib       = options.fetch :ffi_lib,nil
     @headers       = options[:headers] or fail "No headers given."
     @cflags        = options.fetch :cflags, []
     @prefixes      = options.fetch :prefixes, []
     @blocking      = options.fetch :blocking, []
     @ffi_lib_flags = options.fetch :ffi_lib_flags, nil
     @output        = options.fetch :output, $stdout
+    @no_shorten_names = options.fetch :no_shorten_names, false
+    @enum_as_constant = options.fetch :enum_as_constant, false
     
     @translation_unit = nil
     @declarations = nil
@@ -267,7 +274,15 @@ class FFI::Gen
     @declarations = {}
     unit_cursor = Clang.get_translation_unit_cursor translation_unit
     previous_declaration_end = Clang.get_cursor_location unit_cursor
-    Clang.get_children(unit_cursor).each do |declaration|
+    Clang.get_children(unit_cursor).select{|d|
+      file = Clang.get_spelling_location_data(Clang.get_cursor_location(d))[:file]
+      header_files.include? file
+    }.sort{|a,b|
+      #sort by file,line
+      loc_a=Clang.get_spelling_location_data(Clang.get_cursor_location(a))
+      loc_b=Clang.get_spelling_location_data(Clang.get_cursor_location(b))
+      [header_files.index(loc_a[:file]),loc_a[:line]]<=>[header_files.index(loc_b[:file]),loc_b[:line]]
+    }.each do |declaration|
       file = Clang.get_spelling_location_data(Clang.get_cursor_location(declaration))[:file]
       
       extent = Clang.get_cursor_extent declaration
@@ -275,9 +290,7 @@ class FFI::Gen
       unless [:enum_decl, :struct_decl, :union_decl].include? declaration[:kind] # keep comment for typedef_decl
         previous_declaration_end = Clang.get_range_end extent
       end 
-      
-      next if not header_files.include? file
-      
+
       comment, _ = extract_comment translation_unit, comment_range
       
       read_named_declaration declaration, comment
@@ -330,6 +343,11 @@ class FFI::Gen
 
       enum = Enum.new self, name, constants, enum_description
       @declarations[Clang.get_cursor_type(declaration)] = enum
+      if enum_as_constant
+        constants.each do|constant|
+          @declarations[constant[:name]] ||= Constant.new self, constant[:name], constant[:value],constant[:comment]
+        end
+      end
       
     when :struct_decl, :union_decl
       struct = @declarations.delete(Clang.get_cursor_type(declaration)) || StructOrUnion.new(self, name, (declaration[:kind] == :union_decl))
@@ -338,9 +356,11 @@ class FFI::Gen
       
       struct_children = Clang.get_children declaration
       previous_field_end = Clang.get_cursor_location declaration
+      struct.packed=packed_at(declaration)
       until struct_children.empty?
         nested_declaration = [:struct_decl, :union_decl].include?(struct_children.first[:kind]) ? struct_children.shift : nil
         field = struct_children.shift
+        next if field[:kind]==:unexposed_attr
         raise if field[:kind] != :field_decl
         
         field_name = Name.new self, Clang.get_cursor_spelling(field).to_s_and_dispose
@@ -439,16 +459,90 @@ class FFI::Gen
       end
         
     when :macro_definition
-      tokens = Clang.get_tokens translation_unit, Clang.get_cursor_extent(declaration)
-      if tokens.size == 3
-        if Clang.get_token_kind(tokens[1]) == :literal
-          value = Clang.get_token_spelling(translation_unit, tokens[1]).to_s_and_dispose
-          value.sub!(/[A-Za-z]+$/, '') unless value.start_with? '0x' # remove number suffixes
+      catch :unsupported_value do
+        tokens = Clang.get_tokens translation_unit, Clang.get_cursor_extent(declaration)
+        if tokens.size >= 2 && Clang.get_token_kind(tokens[0]) == :identifier
+          throw :unsupported_value if tokens.count{|e|[:literal,:identifier].include?(Clang.get_token_kind(e))}<2 # name and value
+          value=""
+          brace_depth=0
+          top_brace_count=0
+          (1...(tokens.size)).each do|i|
+            elem=Clang.get_token_spelling(translation_unit, tokens[i]).to_s_and_dispose
+            case Clang.get_token_kind(tokens[i])
+            when :literal
+              elem.sub!(/[A-Za-z]+$/, '') unless elem.start_with? '0x' # remove number suffixes
+            when :identifier
+              constant_kv=@declarations.find{|k,v|v.is_a?(Constant)&&(k.raw==elem)}
+              throw :unsupported_value unless constant_kv
+              #TODO:java_constant
+              elem=constant_kv[1].name.to_ruby_constant
+            when :comment
+              elem=""
+            when :punctuation
+              case elem
+              when "("
+                brace_depth+=1
+              when ")"
+                brace_depth-=1
+                throw :unsupported_value if brace_depth<0
+                top_brace_count+=1 if brace_depth==0
+                #macro function
+                throw :unsupported_value if top_brace_count>=2
+              end
+            when :keyword
+              #noise
+              elem="" if i==tokens.size-1
+            end
+            value << elem
+          end
+          #invoke function
+          throw :unsupported_value if value=~/[a-zA-Z0-9_]+\(.+\)/
           @declarations[name] ||= Constant.new self, name, value
         end 
       end
-      
+    when :var_decl
+      token=Clang.get_tokens(translation_unit,Clang.get_cursor_extent(declaration)).map{|e|Clang.get_token_spelling(translation_unit, e)}.join("")
+      if token=~/const.+=(.+);$/
+        @declarations[name] ||= Constant.new self, name, $1
+      end
     end
+  end
+  def packed_at(declaration)
+    location_data=Clang.get_spelling_location_data(Clang.get_cursor_location(declaration))
+    lines=IO.readlines(Clang.get_file_name(location_data[:file]).to_s_and_dispose)
+    #parse pragma pack at declaration
+    packed=false
+    stack=[]
+    lines[0,location_data[:line]-1].each do|line|
+      if line=~/^#\s*pragma\s+pack\s*\((.*)\).*$/
+        params=$1.split(",").map(&:strip)
+        push_or_pop=params.shift if params.first=~/^(push|pop)$/
+        identifier=params.shift if params.first=~/[a-zA-Z_]/
+        n=params.shift if params.first=~/^(1|2|4|8|16)$/
+        #unknwon parameter
+        next unless params.empty?
+        case push_or_pop
+        when "push"
+          stack.push([identifier,packed])
+        when "pop"
+          next if stack.empty?
+          if identifier
+            if i=stack.rindex{|v|v[0]==identifier}
+              packed=stack[i][1]
+              stack.slice!(i,stack.size)
+            else
+              next
+            end
+          else
+            packed=stack.pop[1]
+          end
+        else
+          packed=false unless n
+        end
+        packed=n.to_i if n
+      end
+    end
+    packed
   end
   
   def read_value(cursor)
@@ -468,6 +562,8 @@ class FFI::Gen
         else
           throw :unsupported_value
         end
+      when :comment
+        # ignored
       else
         throw :unsupported_value
       end

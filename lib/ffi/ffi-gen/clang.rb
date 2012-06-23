@@ -4,7 +4,7 @@ require 'ffi'
 
 module FFI::Gen::Clang
   extend FFI::Library
-  ffi_lib 'clang'
+  ffi_lib ['clang','libclang']
   
   # A single translation unit, which resides in an index.
   class TranslationUnitImpl < FFI::Struct

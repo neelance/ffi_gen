@@ -5,7 +5,7 @@ class FFI::Gen
     writer.indent do
       writer.puts "extend FFI::Library"
       writer.puts "ffi_lib_flags #{@ffi_lib_flags.map(&:inspect).join(', ')}" if @ffi_lib_flags
-      writer.puts "ffi_lib '#{@ffi_lib}'", ""
+      writer.puts "ffi_lib '#{@ffi_lib}'", "" if @ffi_lib
       writer.puts "def self.attach_function(name, *_)", "  begin; super; rescue FFI::NotFoundError => e", "    (class << self; self; end).class_eval { define_method(name) { |*_| raise e } }", "  end", "end", ""
       declarations.values.compact.uniq.each do |declaration|
         declaration.write_ruby writer
@@ -123,11 +123,15 @@ class FFI::Gen
         end
         writer.puts "", "@method _enum_#{ruby_name}_", "@return [Symbol]", "@scope class"
       end
-      
-      writer.puts "enum :#{ruby_name}, ["
+      if ruby_name !=""
+        writer.puts "enum :#{ruby_name}, ["
+      else
+        writer.puts "enum  ["
+      end
       writer.indent do
-        writer.write_array @constants, "," do |constant|
-          "#{constant[:symbol]}, #{constant[:value]}"
+        @constants.each do |constant|
+          hex_comment="  #0x%x"%constant[:value].to_s.to_i if constant[:value].to_s=~/^[0-9]+$/
+          writer.puts "#{constant[:symbol]}, #{constant[:value]},#{hex_comment}"
         end
       end
       writer.puts "]", ""
@@ -177,6 +181,7 @@ class FFI::Gen
             
       writer.puts "class #{ruby_name} < #{@is_union ? 'FFI::Union' : 'FFI::Struct'}"
       writer.indent do
+        writer.puts "packed(#{@packed})" if @packed
         writer.puts "include #{ruby_name}Wrappers" unless @oo_functions.empty?
         writer.write_array @fields, ",", "layout ", "       " do |field|
           "#{field[:symbol]}, #{field[:type_data][:ffi_type]}"
@@ -227,7 +232,13 @@ class FFI::Gen
   
   class Constant
     def write_ruby(writer)
-      writer.puts "#{@name.to_ruby_constant} = #{@value}", ""
+      if @comment!=""
+        writer.comment do
+          writer.write_description @comment
+        end
+      end
+      hex_comment="  #0x%x"%@value.to_s.to_i if @value.to_s=~/^[0-9]+$/
+      writer.puts "#{@name.to_ruby_constant} = #{@value}#{hex_comment}", ""
     end
   end
 end

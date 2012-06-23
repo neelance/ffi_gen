@@ -10,6 +10,6 @@ Gem::Specification.new do |s|
   s.homepage = "https://github.com/neelance/ffi-gen"
 
   s.add_dependency "ffi", ">= 1.0.0"
-  s.files = Dir["lib/**/*.rb"] + ["LICENSE", "README.md", "lib/ffi/gen/empty.h"]
+  s.files = Dir["lib/**/*.rb"] + ["LICENSE", "README.md", "lib/ffi/ffi-gen/empty.h"]
   s.require_path = "lib"
 end
