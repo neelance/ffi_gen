@@ -3620,11 +3620,8 @@ module Clang
   
   # Retrieve a diagnostic associated with the given code completion.
   # 
-  # Result: 
-  # the code completion results to query.
-  # 
   # @method code_complete_get_diagnostic(results, index)
-  # @param [CodeCompleteResults] results 
+  # @param [CodeCompleteResults] results the code completion results to query.
   # @param [Integer] index the zero-based diagnostic number to retrieve.
   # @return [FFI::Pointer(Diagnostic)] the requested diagnostic. This diagnostic must be freed
   #   via a call to \c clang_disposeDiagnostic().
@@ -3689,12 +3686,9 @@ module Clang
   
   # Enable/disable crash recovery.
   # 
-  # Flag: 
-  # to indicate if crash recovery is enabled.  A non-zero value
-  #        enables crash recovery, while 0 disables it.
-  # 
   # @method toggle_crash_recovery(is_enabled)
-  # @param [Integer] is_enabled 
+  # @param [Integer] is_enabled to indicate if crash recovery is enabled.  A non-zero value
+  #          enables crash recovery, while 0 disables it.
   # @return [nil] 
   # @scope class
   attach_function :toggle_crash_recovery, :clang_toggleCrashRecovery, [:uint], :void

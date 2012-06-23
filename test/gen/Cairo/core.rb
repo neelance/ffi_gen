@@ -466,46 +466,6 @@ module Cairo
   end
   
   # cairo_status_t:
-  # @CAIRO_STATUS_SUCCESS: no error has occurred
-  # @CAIRO_STATUS_NO_MEMORY: out of memory
-  # @CAIRO_STATUS_INVALID_RESTORE: cairo_restore() called without matching cairo_save()
-  # @CAIRO_STATUS_INVALID_POP_GROUP: no saved group to pop, i.e. cairo_pop_group() without matching cairo_push_group()
-  # @CAIRO_STATUS_NO_CURRENT_POINT: no current point defined
-  # @CAIRO_STATUS_INVALID_MATRIX: invalid matrix (not invertible)
-  # @CAIRO_STATUS_INVALID_STATUS: invalid value for an input #cairo_status_t
-  # @CAIRO_STATUS_NULL_POINTER: %NULL pointer
-  # @CAIRO_STATUS_INVALID_STRING: input string not valid UTF-8
-  # @CAIRO_STATUS_INVALID_PATH_DATA: input path data not valid
-  # @CAIRO_STATUS_READ_ERROR: error while reading from input stream
-  # @CAIRO_STATUS_WRITE_ERROR: error while writing to output stream
-  # @CAIRO_STATUS_SURFACE_FINISHED: target surface has been finished
-  # @CAIRO_STATUS_SURFACE_TYPE_MISMATCH: the surface type is not appropriate for the operation
-  # @CAIRO_STATUS_PATTERN_TYPE_MISMATCH: the pattern type is not appropriate for the operation
-  # @CAIRO_STATUS_INVALID_CONTENT: invalid value for an input #cairo_content_t
-  # @CAIRO_STATUS_INVALID_FORMAT: invalid value for an input #cairo_format_t
-  # @CAIRO_STATUS_INVALID_VISUAL: invalid value for an input Visual*
-  # @CAIRO_STATUS_FILE_NOT_FOUND: file not found
-  # @CAIRO_STATUS_INVALID_DASH: invalid value for a dash setting
-  # @CAIRO_STATUS_INVALID_DSC_COMMENT: invalid value for a DSC comment (Since 1.2)
-  # @CAIRO_STATUS_INVALID_INDEX: invalid index passed to getter (Since 1.4)
-  # @CAIRO_STATUS_CLIP_NOT_REPRESENTABLE: clip region not representable in desired format (Since 1.4)
-  # @CAIRO_STATUS_TEMP_FILE_ERROR: error creating or writing to a temporary file (Since 1.6)
-  # @CAIRO_STATUS_INVALID_STRIDE: invalid value for stride (Since 1.6)
-  # @CAIRO_STATUS_FONT_TYPE_MISMATCH: the font type is not appropriate for the operation (Since 1.8)
-  # @CAIRO_STATUS_USER_FONT_IMMUTABLE: the user-font is immutable (Since 1.8)
-  # @CAIRO_STATUS_USER_FONT_ERROR: error occurred in a user-font callback function (Since 1.8)
-  # @CAIRO_STATUS_NEGATIVE_COUNT: negative number used where it is not allowed (Since 1.8)
-  # @CAIRO_STATUS_INVALID_CLUSTERS: input clusters do not represent the accompanying text and glyph array (Since 1.8)
-  # @CAIRO_STATUS_INVALID_SLANT: invalid value for an input #cairo_font_slant_t (Since 1.8)
-  # @CAIRO_STATUS_INVALID_WEIGHT: invalid value for an input #cairo_font_weight_t (Since 1.8)
-  # @CAIRO_STATUS_INVALID_SIZE: invalid value (typically too big) for the size of the input (surface, pattern, etc.) (Since 1.10)
-  # @CAIRO_STATUS_USER_FONT_NOT_IMPLEMENTED: user-font method not implemented (Since 1.10)
-  # @CAIRO_STATUS_DEVICE_TYPE_MISMATCH: the device type is not appropriate for the operation (Since 1.10)
-  # @CAIRO_STATUS_DEVICE_ERROR: an operation to the device caused an unspecified error (Since 1.10)
-  # @CAIRO_STATUS_LAST_STATUS: this is a special value indicating the number of
-  #   status values defined in this enumeration.  When using this value, note
-  #   that the version of cairo at run-time may have additional status values
-  #   defined than the value of this symbol at compile-time. (Since 1.10)
   # 
   # #cairo_status_t is used to indicate errors that can occur when
   # using Cairo. In some cases it is returned directly by functions.
@@ -519,79 +479,82 @@ module Cairo
   # 
   # === Options:
   # :success ::
-  #   
+  #   no error has occurred
   # :no_memory ::
-  #   
+  #   out of memory
   # :invalid_restore ::
-  #   
+  #   cairo_restore() called without matching cairo_save()
   # :invalid_pop_group ::
-  #   
+  #   no saved group to pop, i.e. cairo_pop_group() without matching cairo_push_group()
   # :no_current_point ::
-  #   
+  #   no current point defined
   # :invalid_matrix ::
-  #   
+  #   invalid matrix (not invertible)
   # :invalid_status ::
-  #   
+  #   invalid value for an input #cairo_status_t
   # :null_pointer ::
-  #   
+  #   %NULL pointer
   # :invalid_string ::
-  #   
+  #   input string not valid UTF-8
   # :invalid_path_data ::
-  #   
+  #   input path data not valid
   # :read_error ::
-  #   
+  #   error while reading from input stream
   # :write_error ::
-  #   
+  #   error while writing to output stream
   # :surface_finished ::
-  #   
+  #   target surface has been finished
   # :surface_type_mismatch ::
-  #   
+  #   the surface type is not appropriate for the operation
   # :pattern_type_mismatch ::
-  #   
+  #   the pattern type is not appropriate for the operation
   # :invalid_content ::
-  #   
+  #   invalid value for an input #cairo_content_t
   # :invalid_format ::
-  #   
+  #   invalid value for an input #cairo_format_t
   # :invalid_visual ::
-  #   
+  #   invalid value for an input Visual*
   # :file_not_found ::
-  #   
+  #   file not found
   # :invalid_dash ::
-  #   
+  #   invalid value for a dash setting
   # :invalid_dsc_comment ::
-  #   
+  #   invalid value for a DSC comment (Since 1.2)
   # :invalid_index ::
-  #   
+  #   invalid index passed to getter (Since 1.4)
   # :clip_not_representable ::
-  #   
+  #   clip region not representable in desired format (Since 1.4)
   # :temp_file_error ::
-  #   
+  #   error creating or writing to a temporary file (Since 1.6)
   # :invalid_stride ::
-  #   
+  #   invalid value for stride (Since 1.6)
   # :font_type_mismatch ::
-  #   
+  #   the font type is not appropriate for the operation (Since 1.8)
   # :user_font_immutable ::
-  #   
+  #   the user-font is immutable (Since 1.8)
   # :user_font_error ::
-  #   
+  #   error occurred in a user-font callback function (Since 1.8)
   # :negative_count ::
-  #   
+  #   negative number used where it is not allowed (Since 1.8)
   # :invalid_clusters ::
-  #   
+  #   input clusters do not represent the accompanying text and glyph array (Since 1.8)
   # :invalid_slant ::
-  #   
+  #   invalid value for an input #cairo_font_slant_t (Since 1.8)
   # :invalid_weight ::
-  #   
+  #   invalid value for an input #cairo_font_weight_t (Since 1.8)
   # :invalid_size ::
-  #   
+  #   invalid value (typically too big) for the size of the input (surface, pattern, etc.) (Since 1.10)
   # :user_font_not_implemented ::
-  #   
+  #   user-font method not implemented (Since 1.10)
   # :device_type_mismatch ::
-  #   
+  #   the device type is not appropriate for the operation (Since 1.10)
   # :device_error ::
-  #   
+  #   an operation to the device caused an unspecified error (Since 1.10)
   # :last_status ::
-  #   
+  #   this is a special value indicating the number of
+  #     status values defined in this enumeration.  When using this value, note
+  #     that the version of cairo at run-time may have additional status values
+  #     defined than the value of this symbol at compile-time. (Since 1.10)
   # 
   # @method _enum_status_
   # @return [Symbol]
@@ -637,9 +600,6 @@ module Cairo
   ]
   
   # cairo_content_t:
-  # @CAIRO_CONTENT_COLOR: The surface will hold color content only.
-  # @CAIRO_CONTENT_ALPHA: The surface will hold alpha content only.
-  # @CAIRO_CONTENT_COLOR_ALPHA: The surface will hold color and alpha content.
   # 
   # #cairo_content_t is used to describe the content that a surface will
   # contain, whether color information, alpha information (translucence
@@ -653,11 +613,11 @@ module Cairo
   # 
   # === Options:
   # :color ::
-  #   
+  #   The surface will hold color content only.
   # :alpha ::
-  #   
+  #   The surface will hold alpha content only.
   # :color_alpha ::
-  #   
+  #   The surface will hold color and alpha content.
   # 
   # @method _enum_content_
   # @return [Symbol]
@@ -820,64 +780,6 @@ module Cairo
   attach_function :pop_group_to_source, :cairo_pop_group_to_source, [Cairo], :void
   
   # cairo_operator_t:
-  # @CAIRO_OPERATOR_CLEAR: clear destination layer (bounded)
-  # @CAIRO_OPERATOR_SOURCE: replace destination layer (bounded)
-  # @CAIRO_OPERATOR_OVER: draw source layer on top of destination layer
-  # (bounded)
-  # @CAIRO_OPERATOR_IN: draw source where there was destination content
-  # (unbounded)
-  # @CAIRO_OPERATOR_OUT: draw source where there was no destination
-  # content (unbounded)
-  # @CAIRO_OPERATOR_ATOP: draw source on top of destination content and
-  # only there
-  # @CAIRO_OPERATOR_DEST: ignore the source
-  # @CAIRO_OPERATOR_DEST_OVER: draw destination on top of source
-  # @CAIRO_OPERATOR_DEST_IN: leave destination only where there was
-  # source content (unbounded)
-  # @CAIRO_OPERATOR_DEST_OUT: leave destination only where there was no
-  # source content
-  # @CAIRO_OPERATOR_DEST_ATOP: leave destination on top of source content
-  # and only there (unbounded)
-  # @CAIRO_OPERATOR_XOR: source and destination are shown where there is only
-  # one of them
-  # @CAIRO_OPERATOR_ADD: source and destination layers are accumulated
-  # @CAIRO_OPERATOR_SATURATE: like over, but assuming source and dest are
-  # disjoint geometries
-  # @CAIRO_OPERATOR_MULTIPLY: source and destination layers are multiplied.
-  # This causes the result to be at least as dark as the darker inputs.
-  # @CAIRO_OPERATOR_SCREEN: source and destination are complemented and
-  # multiplied. This causes the result to be at least as light as the lighter
-  # inputs.
-  # @CAIRO_OPERATOR_OVERLAY: multiplies or screens, depending on the
-  # lightness of the destination color.
-  # @CAIRO_OPERATOR_DARKEN: replaces the destination with the source if it
-  # is darker, otherwise keeps the source.
-  # @CAIRO_OPERATOR_LIGHTEN: replaces the destination with the source if it
-  # is lighter, otherwise keeps the source.
-  # @CAIRO_OPERATOR_COLOR_DODGE: brightens the destination color to reflect
-  # the source color.
-  # @CAIRO_OPERATOR_COLOR_BURN: darkens the destination color to reflect
-  # the source color.
-  # @CAIRO_OPERATOR_HARD_LIGHT: Multiplies or screens, dependant on source
-  # color.
-  # @CAIRO_OPERATOR_SOFT_LIGHT: Darkens or lightens, dependant on source
-  # color.
-  # @CAIRO_OPERATOR_DIFFERENCE: Takes the difference of the source and
-  # destination color.
-  # @CAIRO_OPERATOR_EXCLUSION: Produces an effect similar to difference, but
-  # with lower contrast.
-  # @CAIRO_OPERATOR_HSL_HUE: Creates a color with the hue of the source
-  # and the saturation and luminosity of the target.
-  # @CAIRO_OPERATOR_HSL_SATURATION: Creates a color with the saturation
-  # of the source and the hue and luminosity of the target. Painting with
-  # this mode onto a gray area prduces no change.
-  # @CAIRO_OPERATOR_HSL_COLOR: Creates a color with the hue and saturation
-  # of the source and the luminosity of the target. This preserves the gray
-  # levels of the target and is useful for coloring monochrome images or
-  # tinting color images.
-  # @CAIRO_OPERATOR_HSL_LUMINOSITY: Creates a color with the luminosity of
-  # the source and the hue and saturation of the target. This produces an
-  # inverse effect to @CAIRO_OPERATOR_HSL_COLOR.
   # 
   # #cairo_operator_t is used to set the compositing operator for all cairo
   # drawing operations.
@@ -901,63 +803,92 @@ module Cairo
   # 
   # === Options:
   # :clear ::
-  #   
+  #   clear destination layer (bounded)
   # :source ::
-  #   
+  #   replace destination layer (bounded)
   # :over ::
-  #   
+  #   draw source layer on top of destination layer
+  #   (bounded)
   # :in_ ::
-  #   
+  #   draw source where there was destination content
+  #   (unbounded)
   # :out ::
-  #   
+  #   draw source where there was no destination
+  #   content (unbounded)
   # :atop ::
-  #   
+  #   draw source on top of destination content and
+  #   only there
   # :dest ::
-  #   
+  #   ignore the source
   # :dest_over ::
-  #   
+  #   draw destination on top of source
   # :dest_in ::
-  #   
+  #   leave destination only where there was
+  #   source content (unbounded)
   # :dest_out ::
-  #   
+  #   leave destination only where there was no
+  #   source content
   # :dest_atop ::
-  #   
+  #   leave destination on top of source content
+  #   and only there (unbounded)
   # :xor ::
-  #   
+  #   source and destination are shown where there is only
+  #   one of them
   # :add ::
-  #   
+  #   source and destination layers are accumulated
   # :saturate ::
-  #   
+  #   like over, but assuming source and dest are
+  #   disjoint geometries
   # :multiply ::
-  #   
+  #   source and destination layers are multiplied.
+  #   This causes the result to be at least as dark as the darker inputs.
   # :screen ::
-  #   
+  #   source and destination are complemented and
+  #   multiplied. This causes the result to be at least as light as the lighter
+  #   inputs.
   # :overlay ::
-  #   
+  #   multiplies or screens, depending on the
+  #   lightness of the destination color.
   # :darken ::
-  #   
+  #   replaces the destination with the source if it
+  #   is darker, otherwise keeps the source.
   # :lighten ::
-  #   
+  #   replaces the destination with the source if it
+  #   is lighter, otherwise keeps the source.
   # :color_dodge ::
-  #   
+  #   brightens the destination color to reflect
+  #   the source color.
   # :color_burn ::
-  #   
+  #   darkens the destination color to reflect
+  #   the source color.
   # :hard_light ::
-  #   
+  #   Multiplies or screens, dependant on source
+  #   color.
   # :soft_light ::
-  #   
+  #   Darkens or lightens, dependant on source
+  #   color.
   # :difference ::
-  #   
+  #   Takes the difference of the source and
+  #   destination color.
   # :exclusion ::
-  #   
+  #   Produces an effect similar to difference, but
+  #   with lower contrast.
   # :hsl_hue ::
-  #   
+  #   Creates a color with the hue of the source
+  #   and the saturation and luminosity of the target.
   # :hsl_saturation ::
-  #   
+  #   Creates a color with the saturation
+  #   of the source and the hue and luminosity of the target. Painting with
+  #   this mode onto a gray area prduces no change.
   # :hsl_color ::
-  #   
+  #   Creates a color with the hue and saturation
+  #   of the source and the luminosity of the target. This preserves the gray
+  #   levels of the target and is useful for coloring monochrome images or
+  #   tinting color images.
   # :hsl_luminosity ::
-  #   
+  #   Creates a color with the luminosity of
+  #   the source and the hue and saturation of the target. This produces an
+  #   inverse effect to @CAIRO_OPERATOR_HSL_COLOR.
   # 
   # @method _enum_operator_
   # @return [Symbol]
@@ -1056,14 +987,6 @@ module Cairo
   attach_function :set_tolerance, :cairo_set_tolerance, [Cairo, :double], :void
   
   # cairo_antialias_t:
-  # @CAIRO_ANTIALIAS_DEFAULT: Use the default antialiasing for
-  #   the subsystem and target device
-  # @CAIRO_ANTIALIAS_NONE: Use a bilevel alpha mask
-  # @CAIRO_ANTIALIAS_GRAY: Perform single-color antialiasing (using
-  #  shades of gray for black text on a white background, for example).
-  # @CAIRO_ANTIALIAS_SUBPIXEL: Perform antialiasing by taking
-  #  advantage of the order of subpixel elements on devices
-  #  such as LCD panels
   # 
   # Specifies the type of antialiasing to do when rendering text or shapes.
   # 
@@ -1071,13 +994,17 @@ module Cairo
   # 
   # === Options:
   # :default ::
-  #   
+  #   Use the default antialiasing for
+  #     the subsystem and target device
   # :none ::
-  #   
+  #   Use a bilevel alpha mask
   # :gray ::
-  #   
+  #   Perform single-color antialiasing (using
+  #    shades of gray for black text on a white background, for example).
   # :subpixel ::
-  #   
+  #   Perform antialiasing by taking
+  #    advantage of the order of subpixel elements on devices
+  #    such as LCD panels
   # 
   # @method _enum_antialias_
   # @return [Symbol]
@@ -1099,15 +1026,6 @@ module Cairo
   attach_function :set_antialias, :cairo_set_antialias, [Cairo, :antialias], :void
   
   # cairo_fill_rule_t:
-  # @CAIRO_FILL_RULE_WINDING: If the path crosses the ray from
-  # left-to-right, counts +1. If the path crosses the ray
-  # from right to left, counts -1. (Left and right are determined
-  # from the perspective of looking along the ray from the starting
-  # point.) If the total count is non-zero, the point will be filled.
-  # @CAIRO_FILL_RULE_EVEN_ODD: Counts the total number of
-  # intersections, without regard to the orientation of the contour. If
-  # the total number of intersections is odd, the point will be
-  # filled.
   # 
   # #cairo_fill_rule_t is used to select how paths are filled. For both
   # fill rules, whether or not a point is included in the fill is
@@ -1126,9 +1044,16 @@ module Cairo
   # 
   # === Options:
   # :winding ::
-  #   
+  #   If the path crosses the ray from
+  #   left-to-right, counts +1. If the path crosses the ray
+  #   from right to left, counts -1. (Left and right are determined
+  #   from the perspective of looking along the ray from the starting
+  #   point.) If the total count is non-zero, the point will be filled.
   # :even_odd ::
-  #   
+  #   Counts the total number of
+  #   intersections, without regard to the orientation of the contour. If
+  #   the total number of intersections is odd, the point will be
+  #   filled.
   # 
   # @method _enum_fill_rule_
   # @return [Symbol]
@@ -1157,9 +1082,6 @@ module Cairo
   attach_function :set_line_width, :cairo_set_line_width, [Cairo, :double], :void
   
   # cairo_line_cap_t:
-  # @CAIRO_LINE_CAP_BUTT: start(stop) the line exactly at the start(end) point
-  # @CAIRO_LINE_CAP_ROUND: use a round ending, the center of the circle is the end point
-  # @CAIRO_LINE_CAP_SQUARE: use squared ending, the center of the square is the end point
   # 
   # Specifies how to render the endpoints of the path when stroking.
   # 
@@ -1169,11 +1091,11 @@ module Cairo
   # 
   # === Options:
   # :butt ::
-  #   
+  #   start(stop) the line exactly at the start(end) point
   # :round ::
-  #   
+  #   use a round ending, the center of the circle is the end point
   # :square ::
-  #   
+  #   use squared ending, the center of the square is the end point
   # 
   # @method _enum_line_cap_
   # @return [Symbol]
@@ -1194,12 +1116,6 @@ module Cairo
   attach_function :set_line_cap, :cairo_set_line_cap, [Cairo, :line_cap], :void
   
   # cairo_line_join_t:
-  # @CAIRO_LINE_JOIN_MITER: use a sharp (angled) corner, see
-  # cairo_set_miter_limit()
-  # @CAIRO_LINE_JOIN_ROUND: use a rounded join, the center of the circle is the
-  # joint point
-  # @CAIRO_LINE_JOIN_BEVEL: use a cut-off join, the join is cut off at half
-  # the line width from the joint point
   # 
   # Specifies how to render the junction of two lines when stroking.
   # 
@@ -1209,11 +1125,14 @@ module Cairo
   # 
   # === Options:
   # :miter ::
-  #   
+  #   use a sharp (angled) corner, see
+  #   cairo_set_miter_limit()
   # :round ::
-  #   
+  #   use a rounded join, the center of the circle is the
+  #   joint point
   # :bevel ::
-  #   
+  #   use a cut-off join, the join is cut off at half
+  #   the line width from the joint point
   # 
   # @method _enum_line_join_
   # @return [Symbol]
@@ -1976,8 +1895,6 @@ module Cairo
   attach_function :text_cluster_free, :cairo_text_cluster_free, [TextClusterT], :void
   
   # cairo_text_cluster_flags_t:
-  # @CAIRO_TEXT_CLUSTER_FLAG_BACKWARD: The clusters in the cluster array
-  # map to glyphs in the glyph array from end to start.
   # 
   # Specifies properties of a text cluster mapping.
   # 
@@ -1987,7 +1904,8 @@ module Cairo
   # 
   # === Options:
   # :text_cluster_flag_backward ::
-  #   
+  #   The clusters in the cluster array
+  #   map to glyphs in the glyph array from end to start.
   # 
   # @method _enum_text_cluster_flags_
   # @return [Symbol]
@@ -2104,9 +2022,6 @@ module Cairo
   end
   
   # cairo_font_slant_t:
-  # @CAIRO_FONT_SLANT_NORMAL: Upright font style
-  # @CAIRO_FONT_SLANT_ITALIC: Italic font style
-  # @CAIRO_FONT_SLANT_OBLIQUE: Oblique font style
   # 
   # Specifies variants of a font face based on their slant.
   # 
@@ -2114,11 +2029,11 @@ module Cairo
   # 
   # === Options:
   # :normal ::
-  #   
+  #   Upright font style
   # :italic ::
-  #   
+  #   Italic font style
   # :oblique ::
-  #   
+  #   Oblique font style
   # 
   # @method _enum_font_slant_
   # @return [Symbol]
@@ -2130,8 +2045,6 @@ module Cairo
   ]
   
   # cairo_font_weight_t:
-  # @CAIRO_FONT_WEIGHT_NORMAL: Normal font weight
-  # @CAIRO_FONT_WEIGHT_BOLD: Bold font weight
   # 
   # Specifies variants of a font face based on their weight.
   # 
@@ -2139,9 +2052,9 @@ module Cairo
   # 
   # === Options:
   # :normal ::
-  #   
+  #   Normal font weight
   # :bold ::
-  #   
+  #   Bold font weight
   # 
   # @method _enum_font_weight_
   # @return [Symbol]
@@ -2152,16 +2065,6 @@ module Cairo
   ]
   
   # cairo_subpixel_order_t:
-  # @CAIRO_SUBPIXEL_ORDER_DEFAULT: Use the default subpixel order for
-  #   for the target device
-  # @CAIRO_SUBPIXEL_ORDER_RGB: Subpixel elements are arranged horizontally
-  #   with red at the left
-  # @CAIRO_SUBPIXEL_ORDER_BGR:  Subpixel elements are arranged horizontally
-  #   with blue at the left
-  # @CAIRO_SUBPIXEL_ORDER_VRGB: Subpixel elements are arranged vertically
-  #   with red at the top
-  # @CAIRO_SUBPIXEL_ORDER_VBGR: Subpixel elements are arranged vertically
-  #   with blue at the top
   # 
   # The subpixel order specifies the order of color elements within
   # each pixel on the display device when rendering with an
@@ -2171,15 +2074,20 @@ module Cairo
   # 
   # === Options:
   # :default ::
-  #   
+  #   Use the default subpixel order for
+  #     for the target device
   # :rgb ::
-  #   
+  #   Subpixel elements are arranged horizontally
+  #     with red at the left
   # :bgr ::
-  #   
+  #   Subpixel elements are arranged horizontally
+  #    with blue at the left
   # :vrgb ::
-  #   
+  #   Subpixel elements are arranged vertically
+  #     with red at the top
   # :vbgr ::
-  #   
+  #   Subpixel elements are arranged vertically
+  #     with blue at the top
   # 
   # @method _enum_subpixel_order_
   # @return [Symbol]
@@ -2193,16 +2101,6 @@ module Cairo
   ]
   
   # cairo_hint_style_t:
-  # @CAIRO_HINT_STYLE_DEFAULT: Use the default hint style for
-  #   font backend and target device
-  # @CAIRO_HINT_STYLE_NONE: Do not hint outlines
-  # @CAIRO_HINT_STYLE_SLIGHT: Hint outlines slightly to improve
-  #   contrast while retaining good fidelity to the original
-  #   shapes.
-  # @CAIRO_HINT_STYLE_MEDIUM: Hint outlines with medium strength
-  #   giving a compromise between fidelity to the original shapes
-  #   and contrast
-  # @CAIRO_HINT_STYLE_FULL: Hint outlines to maximize contrast
   # 
   # Specifies the type of hinting to do on font outlines. Hinting
   # is the process of fitting outlines to the pixel grid in order
@@ -2217,15 +2115,20 @@ module Cairo
   # 
   # === Options:
   # :default ::
-  #   
+  #   Use the default hint style for
+  #     font backend and target device
   # :none ::
-  #   
+  #   Do not hint outlines
   # :slight ::
-  #   
+  #   Hint outlines slightly to improve
+  #     contrast while retaining good fidelity to the original
+  #     shapes.
   # :medium ::
-  #   
+  #   Hint outlines with medium strength
+  #     giving a compromise between fidelity to the original shapes
+  #     and contrast
   # :full ::
-  #   
+  #   Hint outlines to maximize contrast
   # 
   # @method _enum_hint_style_
   # @return [Symbol]
@@ -2239,10 +2142,6 @@ module Cairo
   ]
   
   # cairo_hint_metrics_t:
-  # @CAIRO_HINT_METRICS_DEFAULT: Hint metrics in the default
-  #  manner for the font backend and target device
-  # @CAIRO_HINT_METRICS_OFF: Do not hint font metrics
-  # @CAIRO_HINT_METRICS_ON: Hint font metrics
   # 
   # Specifies whether to hint font metrics; hinting font metrics
   # means quantizing them so that they are integer values in
@@ -2254,11 +2153,12 @@ module Cairo
   # 
   # === Options:
   # :default ::
-  #   
+  #   Hint metrics in the default
+  #    manner for the font backend and target device
   # :off ::
-  #   
+  #   Do not hint font metrics
   # :on ::
-  #   
+  #   Hint font metrics
   # 
   # @method _enum_hint_metrics_
   # @return [Symbol]
@@ -2682,11 +2582,6 @@ module Cairo
   attach_function :font_face_status, :cairo_font_face_status, [FontFace], :status
   
   # cairo_font_type_t:
-  # @CAIRO_FONT_TYPE_TOY: The font was created using cairo's toy font api
-  # @CAIRO_FONT_TYPE_FT: The font is of type FreeType
-  # @CAIRO_FONT_TYPE_WIN32: The font is of type Win32
-  # @CAIRO_FONT_TYPE_QUARTZ: The font is of type Quartz (Since: 1.6)
-  # @CAIRO_FONT_TYPE_USER: The font was create using cairo's user font api (Since: 1.8)
   # 
   # #cairo_font_type_t is used to describe the type of a given font
   # face or scaled font. The font types are also known as "font
@@ -2721,15 +2616,15 @@ module Cairo
   # 
   # === Options:
   # :toy ::
-  #   
+  #   The font was created using cairo's toy font api
   # :ft ::
-  #   
+  #   The font is of type FreeType
   # :win32 ::
-  #   
+  #   The font is of type Win32
   # :quartz ::
-  #   
+  #   The font is of type Quartz (Since: 1.6)
   # :user ::
-  #   
+  #   The font was create using cairo's user font api (Since: 1.8)
   # 
   # @method _enum_font_type_
   # @return [Symbol]
@@ -3393,10 +3288,6 @@ module Cairo
   attach_function :get_group_target, :cairo_get_group_target, [Cairo], Surface
   
   # cairo_path_data_type_t:
-  # @CAIRO_PATH_MOVE_TO: A move-to operation
-  # @CAIRO_PATH_LINE_TO: A line-to operation
-  # @CAIRO_PATH_CURVE_TO: A curve-to operation
-  # @CAIRO_PATH_CLOSE_PATH: A close-path operation
   # 
   # #cairo_path_data_t is used to describe the type of one portion
   # of a path when represented as a #cairo_path_t.
@@ -3406,13 +3297,13 @@ module Cairo
   # 
   # === Options:
   # :move_to ::
-  #   
+  #   A move-to operation
   # :line_to ::
-  #   
+  #   A line-to operation
   # :curve_to ::
-  #   
+  #   A curve-to operation
   # :close_path ::
-  #   
+  #   A close-path operation
   # 
   # @method _enum_path_data_type_
   # @return [Symbol]
@@ -3619,13 +3510,6 @@ module Cairo
   attach_function :device_reference, :cairo_device_reference, [Device], Device
   
   # cairo_device_type_t:
-  # @CAIRO_DEVICE_TYPE_DRM: The surface is of type Direct Render Manager
-  # @CAIRO_DEVICE_TYPE_GL: The surface is of type OpenGL
-  # @CAIRO_DEVICE_TYPE_SCRIPT: The surface is of type script
-  # @CAIRO_DEVICE_TYPE_XCB: The surface is of type xcb
-  # @CAIRO_DEVICE_TYPE_XLIB: The surface is of type xlib
-  # @CAIRO_DEVICE_TYPE_XML: The surface is of type XML
-  #   cairo_surface_create_for_rectangle()
   # 
   # #cairo_device_type_t is used to describe the type of a given
   # device. The devices types are also known as "backends" within cairo.
@@ -3649,17 +3533,18 @@ module Cairo
   # 
   # === Options:
   # :drm ::
-  #   
+  #   The surface is of type Direct Render Manager
   # :gl ::
-  #   
+  #   The surface is of type OpenGL
   # :script ::
-  #   
+  #   The surface is of type script
   # :xcb ::
-  #   
+  #   The surface is of type xcb
   # :xlib ::
-  #   
+  #   The surface is of type xlib
   # :xml ::
-  #   
+  #   The surface is of type XML
+  #     cairo_surface_create_for_rectangle()
   # 
   # @method _enum_device_type_
   # @return [Symbol]
@@ -3829,31 +3714,6 @@ module Cairo
   attach_function :surface_status, :cairo_surface_status, [Surface], :status
   
   # cairo_surface_type_t:
-  # @CAIRO_SURFACE_TYPE_IMAGE: The surface is of type image
-  # @CAIRO_SURFACE_TYPE_PDF: The surface is of type pdf
-  # @CAIRO_SURFACE_TYPE_PS: The surface is of type ps
-  # @CAIRO_SURFACE_TYPE_XLIB: The surface is of type xlib
-  # @CAIRO_SURFACE_TYPE_XCB: The surface is of type xcb
-  # @CAIRO_SURFACE_TYPE_GLITZ: The surface is of type glitz
-  # @CAIRO_SURFACE_TYPE_QUARTZ: The surface is of type quartz
-  # @CAIRO_SURFACE_TYPE_WIN32: The surface is of type win32
-  # @CAIRO_SURFACE_TYPE_BEOS: The surface is of type beos
-  # @CAIRO_SURFACE_TYPE_DIRECTFB: The surface is of type directfb
-  # @CAIRO_SURFACE_TYPE_SVG: The surface is of type svg
-  # @CAIRO_SURFACE_TYPE_OS2: The surface is of type os2
-  # @CAIRO_SURFACE_TYPE_WIN32_PRINTING: The surface is a win32 printing surface
-  # @CAIRO_SURFACE_TYPE_QUARTZ_IMAGE: The surface is of type quartz_image
-  # @CAIRO_SURFACE_TYPE_SCRIPT: The surface is of type script, since 1.10
-  # @CAIRO_SURFACE_TYPE_QT: The surface is of type Qt, since 1.10
-  # @CAIRO_SURFACE_TYPE_RECORDING: The surface is of type recording, since 1.10
-  # @CAIRO_SURFACE_TYPE_VG: The surface is a OpenVG surface, since 1.10
-  # @CAIRO_SURFACE_TYPE_GL: The surface is of type OpenGL, since 1.10
-  # @CAIRO_SURFACE_TYPE_DRM: The surface is of type Direct Render Manager, since 1.10
-  # @CAIRO_SURFACE_TYPE_TEE: The surface is of type 'tee' (a multiplexing surface), since 1.10
-  # @CAIRO_SURFACE_TYPE_XML: The surface is of type XML (for debugging), since 1.10
-  # @CAIRO_SURFACE_TYPE_SKIA: The surface is of type Skia, since 1.10
-  # @CAIRO_SURFACE_TYPE_SUBSURFACE: The surface is a subsurface created with
-  #   cairo_surface_create_for_rectangle(), since 1.10
   # 
   # #cairo_surface_type_t is used to describe the type of a given
   # surface. The surface types are also known as "backends" or "surface
@@ -3882,53 +3742,54 @@ module Cairo
   # 
   # === Options:
   # :image ::
-  #   
+  #   The surface is of type image
   # :pdf ::
-  #   
+  #   The surface is of type pdf
   # :ps ::
-  #   
+  #   The surface is of type ps
   # :xlib ::
-  #   
+  #   The surface is of type xlib
   # :xcb ::
-  #   
+  #   The surface is of type xcb
   # :glitz ::
-  #   
+  #   The surface is of type glitz
   # :quartz ::
-  #   
+  #   The surface is of type quartz
   # :win32 ::
-  #   
+  #   The surface is of type win32
   # :beos ::
-  #   
+  #   The surface is of type beos
   # :directfb ::
-  #   
+  #   The surface is of type directfb
   # :svg ::
-  #   
+  #   The surface is of type svg
   # :os2 ::
-  #   
+  #   The surface is of type os2
   # :win32_printing ::
-  #   
+  #   The surface is a win32 printing surface
   # :quartz_image ::
-  #   
+  #   The surface is of type quartz_image
   # :script ::
-  #   
+  #   The surface is of type script, since 1.10
   # :qt ::
-  #   
+  #   The surface is of type Qt, since 1.10
   # :recording ::
-  #   
+  #   The surface is of type recording, since 1.10
   # :vg ::
-  #   
+  #   The surface is a OpenVG surface, since 1.10
   # :gl ::
-  #   
+  #   The surface is of type OpenGL, since 1.10
   # :drm ::
-  #   
+  #   The surface is of type Direct Render Manager, since 1.10
   # :tee ::
-  #   
+  #   The surface is of type 'tee' (a multiplexing surface), since 1.10
   # :xml ::
-  #   
+  #   The surface is of type XML (for debugging), since 1.10
   # :skia ::
-  #   
+  #   The surface is of type Skia, since 1.10
   # :subsurface ::
-  #   
+  #   The surface is a subsurface created with
+  #     cairo_surface_create_for_rectangle(), since 1.10
   # 
   # @method _enum_surface_type_
   # @return [Symbol]
@@ -4141,26 +4002,6 @@ module Cairo
   attach_function :surface_has_show_text_glyphs, :cairo_surface_has_show_text_glyphs, [Surface], :int
   
   # cairo_format_t:
-  # @CAIRO_FORMAT_INVALID: no such format exists or is supported.
-  # @CAIRO_FORMAT_ARGB32: each pixel is a 32-bit quantity, with
-  #   alpha in the upper 8 bits, then red, then green, then blue.
-  #   The 32-bit quantities are stored native-endian. Pre-multiplied
-  #   alpha is used. (That is, 50% transparent red is 0x80800000,
-  #   not 0x80ff0000.)
-  # @CAIRO_FORMAT_RGB24: each pixel is a 32-bit quantity, with
-  #   the upper 8 bits unused. Red, Green, and Blue are stored
-  #   in the remaining 24 bits in that order.
-  # @CAIRO_FORMAT_A8: each pixel is a 8-bit quantity holding
-  #   an alpha value.
-  # @CAIRO_FORMAT_A1: each pixel is a 1-bit quantity holding
-  #   an alpha value. Pixels are packed together into 32-bit
-  #   quantities. The ordering of the bits matches the
-  #   endianess of the platform. On a big-endian machine, the
-  #   first pixel is in the uppermost bit, on a little-endian
-  #   machine the first pixel is in the least-significant bit.
-  # @CAIRO_FORMAT_RGB16_565: each pixel is a 16-bit quantity
-  #   with red in the upper 5 bits, then green in the middle
-  #   6 bits, and blue in the lower 5 bits.
   # 
   # #cairo_format_t is used to identify the memory format of
   # image data.
@@ -4171,17 +4012,31 @@ module Cairo
   # 
   # === Options:
   # :invalid ::
-  #   
+  #   no such format exists or is supported.
   # :argb32 ::
-  #   
+  #   each pixel is a 32-bit quantity, with
+  #     alpha in the upper 8 bits, then red, then green, then blue.
+  #     The 32-bit quantities are stored native-endian. Pre-multiplied
+  #     alpha is used. (That is, 50% transparent red is 0x80800000,
+  #     not 0x80ff0000.)
   # :rgb24 ::
-  #   
+  #   each pixel is a 32-bit quantity, with
+  #     the upper 8 bits unused. Red, Green, and Blue are stored
+  #     in the remaining 24 bits in that order.
   # :a8 ::
-  #   
+  #   each pixel is a 8-bit quantity holding
+  #     an alpha value.
   # :a1 ::
-  #   
+  #   each pixel is a 1-bit quantity holding
+  #     an alpha value. Pixels are packed together into 32-bit
+  #     quantities. The ordering of the bits matches the
+  #     endianess of the platform. On a big-endian machine, the
+  #     first pixel is in the uppermost bit, on a little-endian
+  #     machine the first pixel is in the least-significant bit.
   # :rgb16_565 ::
-  #   
+  #   each pixel is a 16-bit quantity
+  #     with red in the upper 5 bits, then green in the middle
+  #     6 bits, and blue in the lower 5 bits.
   # 
   # @method _enum_format_
   # @return [Symbol]
@@ -4410,11 +4265,6 @@ module Cairo
   attach_function :pattern_set_user_data, :cairo_pattern_set_user_data, [Pattern, UserDataKey, :pointer, :pointer], :status
   
   # cairo_pattern_type_t:
-  # @CAIRO_PATTERN_TYPE_SOLID: The pattern is a solid (uniform)
-  # color. It may be opaque or translucent.
-  # @CAIRO_PATTERN_TYPE_SURFACE: The pattern is a based on a surface (an image).
-  # @CAIRO_PATTERN_TYPE_LINEAR: The pattern is a linear gradient.
-  # @CAIRO_PATTERN_TYPE_RADIAL: The pattern is a radial gradient.
   # 
   # #cairo_pattern_type_t is used to describe the type of a given pattern.
   # 
@@ -4442,13 +4292,14 @@ module Cairo
   # 
   # === Options:
   # :solid ::
-  #   
+  #   The pattern is a solid (uniform)
+  #   color. It may be opaque or translucent.
   # :surface ::
-  #   
+  #   The pattern is a based on a surface (an image).
   # :linear ::
-  #   
+  #   The pattern is a linear gradient.
   # :radial ::
-  #   
+  #   The pattern is a radial gradient.
   # 
   # @method _enum_pattern_type_
   # @return [Symbol]
@@ -4512,14 +4363,6 @@ module Cairo
   attach_function :pattern_get_matrix, :cairo_pattern_get_matrix, [Pattern, Matrix], :void
   
   # cairo_extend_t:
-  # @CAIRO_EXTEND_NONE: pixels outside of the source pattern
-  #   are fully transparent
-  # @CAIRO_EXTEND_REPEAT: the pattern is tiled by repeating
-  # @CAIRO_EXTEND_REFLECT: the pattern is tiled by reflecting
-  #   at the edges (Implemented for surface patterns since 1.6)
-  # @CAIRO_EXTEND_PAD: pixels outside of the pattern copy
-  #   the closest pixel from the source (Since 1.2; but only
-  #   implemented for surface patterns since 1.6)
   # 
   # #cairo_extend_t is used to describe how pattern color/alpha will be
   # determined for areas "outside" the pattern's natural area, (for
@@ -4535,13 +4378,17 @@ module Cairo
   # 
   # === Options:
   # :none ::
-  #   
+  #   pixels outside of the source pattern
+  #     are fully transparent
   # :repeat ::
-  #   
+  #   the pattern is tiled by repeating
   # :reflect ::
-  #   
+  #   the pattern is tiled by reflecting
+  #     at the edges (Implemented for surface patterns since 1.6)
   # :pad ::
-  #   
+  #   pixels outside of the pattern copy
+  #     the closest pixel from the source (Since 1.2; but only
+  #     implemented for surface patterns since 1.6)
   # 
   # @method _enum_extend_
   # @return [Symbol]
@@ -4571,16 +4418,6 @@ module Cairo
   attach_function :pattern_get_extend, :cairo_pattern_get_extend, [Pattern], :extend
   
   # cairo_filter_t:
-  # @CAIRO_FILTER_FAST: A high-performance filter, with quality similar
-  #     to %CAIRO_FILTER_NEAREST
-  # @CAIRO_FILTER_GOOD: A reasonable-performance filter, with quality
-  #     similar to %CAIRO_FILTER_BILINEAR
-  # @CAIRO_FILTER_BEST: The highest-quality available, performance may
-  #     not be suitable for interactive use.
-  # @CAIRO_FILTER_NEAREST: Nearest-neighbor filtering
-  # @CAIRO_FILTER_BILINEAR: Linear interpolation in two dimensions
-  # @CAIRO_FILTER_GAUSSIAN: This filter value is currently
-  #     unimplemented, and should not be used in current code.
   # 
   # #cairo_filter_t is used to indicate what filtering should be
   # applied when reading pixel values from patterns. See
@@ -4591,17 +4428,21 @@ module Cairo
   # 
   # === Options:
   # :fast ::
-  #   
+  #   A high-performance filter, with quality similar
+  #       to %CAIRO_FILTER_NEAREST
   # :good ::
-  #   
+  #   A reasonable-performance filter, with quality
+  #       similar to %CAIRO_FILTER_BILINEAR
   # :best ::
-  #   
+  #   The highest-quality available, performance may
+  #       not be suitable for interactive use.
   # :nearest ::
-  #   
+  #   Nearest-neighbor filtering
   # :bilinear ::
-  #   
+  #   Linear interpolation in two dimensions
   # :gaussian ::
-  #   
+  #   This filter value is currently
+  #       unimplemented, and should not be used in current code.
   # 
   # @method _enum_filter_
   # @return [Symbol]

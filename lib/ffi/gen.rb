@@ -76,13 +76,12 @@ class FFI::Gen
   
   class Enum
     attr_accessor :name
-    attr_reader :constants, :comment
     
-    def initialize(generator, name, comment)
+    def initialize(generator, name, constants, description)
       @generator = generator
       @name = name
-      @comment = comment
-      @constants = []
+      @constants = constants
+      @description = description
     end
     
     def shorten_names
@@ -95,14 +94,14 @@ class FFI::Gen
   end
   
   class StructOrUnion
-    attr_accessor :name, :comment, :packed
+    attr_accessor :name, :description, :packed
     attr_reader :fields, :oo_functions, :written
     
     def initialize(generator, name, is_union)
       @generator = generator
       @name = name
       @is_union = is_union
-      @comment = ""
+      @description = []
       @fields = []
       @oo_functions = []
       @written = false
@@ -111,16 +110,17 @@ class FFI::Gen
   end
   
   class FunctionOrCallback
-    attr_reader :name, :parameters, :comment
-    attr_accessor :return_type
+    attr_reader :name, :parameters, :return_type
     
-    def initialize(generator, name, is_callback, blocking, comment)
+    def initialize(generator, name, parameters, return_type, is_callback, blocking, function_description, return_value_description)
       @generator = generator
       @name = name
-      @parameters = []
+      @parameters = parameters
+      @return_type = return_type
       @is_callback = is_callback
       @blocking = blocking
-      @comment = comment
+      @function_description = function_description
+      @return_value_description = return_value_description
     end
   end
   
@@ -172,21 +172,7 @@ class FFI::Gen
       end
     end
     
-    def prepare_comment_line(line)
-      line = line.dup
-      line.sub!(/\ ?\*+\/\s*$/, '')
-      line.sub!(/^\s*\/?\*+ ?/, '')
-      line.gsub!(/\\(brief|determine) /, '')
-      line.gsub!('[', '(')
-      line.gsub!(']', ')')
-      line
-    end
-    
     def write_description(description, not_documented_message = true, first_line_prefix = "", other_lines_prefix = "")
-      if description.is_a? String
-        description = description.split("\n").map { |line| prepare_comment_line(line) }
-      end
-
       description.shift while not description.empty? and description.first.strip.empty?
       description.pop while not description.empty? and description.last.strip.empty?
       description.map! { |line| line.gsub "\t", "    " }
@@ -304,8 +290,9 @@ class FFI::Gen
       unless [:enum_decl, :struct_decl, :union_decl].include? declaration[:kind] # keep comment for typedef_decl
         previous_declaration_end = Clang.get_range_end extent
       end 
-      next if not header_files.include? file
-      comment = extract_comment translation_unit, comment_range
+
+      comment, _ = extract_comment translation_unit, comment_range
+      
       read_named_declaration declaration, comment
     end
 
@@ -317,9 +304,19 @@ class FFI::Gen
 
     case declaration[:kind]
     when :enum_decl
-      enum = Enum.new self, name, comment
-      @declarations[Clang.get_cursor_type(declaration)] = enum
+      enum_description = []
+      constant_descriptions = {}
+      current_description = enum_description
+      comment.each do |line|
+        if line.gsub!(/@(.*?): /, '')
+          current_description = []
+          constant_descriptions[$1] = current_description
+        end
+        current_description = enum_description if line.strip.empty?
+        current_description << line
+      end
       
+      constants = []
       previous_constant_location = Clang.get_cursor_location declaration
       next_constant_value = 0
       Clang.get_children(declaration).each do |enum_constant|
@@ -327,7 +324,8 @@ class FFI::Gen
         
         constant_location = Clang.get_cursor_location enum_constant
         constant_comment_range = Clang.get_range previous_constant_location, constant_location
-        constant_comment = extract_comment translation_unit, constant_comment_range
+        constant_description, _ = extract_comment translation_unit, constant_comment_range
+        constant_description.concat(constant_descriptions[constant_name.raw] || [])
         previous_constant_location = constant_location
         
         catch :unsupported_value do
@@ -338,20 +336,23 @@ class FFI::Gen
             next_constant_value
           end
           
-          enum.constants << { name: constant_name, value: constant_value, comment: constant_comment }
+          constants << { name: constant_name, value: constant_value, comment: constant_description }
           if enum_as_constant
-            enum.constants.each do|constant|
-              @declarations[constant_name] ||= Constant.new self, constant_name, constant_value,constant_comment
+            constants.each do|constant|
+              @declarations[constant_name] ||= Constant.new self, constant_name, constant_value,constant_description
             end
           end
           next_constant_value = constant_value + 1
         end
       end
+
+      enum = Enum.new self, name, constants, enum_description
+      @declarations[Clang.get_cursor_type(declaration)] = enum
       
     when :struct_decl, :union_decl
       struct = @declarations.delete(Clang.get_cursor_type(declaration)) || StructOrUnion.new(self, name, (declaration[:kind] == :union_decl))
       raise if not struct.fields.empty?
-      struct.comment << "\n#{comment}"
+      struct.description.concat comment
       
       struct_children = Clang.get_children declaration
       previous_field_end = Clang.get_cursor_location declaration
@@ -366,21 +367,21 @@ class FFI::Gen
         field_extent = Clang.get_cursor_extent field
         
         field_comment_range = Clang.get_range previous_field_end, Clang.get_range_start(field_extent)
-        field_comment = extract_comment translation_unit, field_comment_range
+        field_comment, _ = extract_comment translation_unit, field_comment_range
         
         # check for comment starting on same line
         next_field_start = struct_children.first ? Clang.get_cursor_location(struct_children.first) : Clang.get_range_end(Clang.get_cursor_extent(declaration))
         following_comment_range = Clang.get_range Clang.get_range_end(field_extent), next_field_start
-        following_comment_token = extract_comment translation_unit, following_comment_range, false, false
+        following_comment, following_comment_token = extract_comment translation_unit, following_comment_range, false
         if following_comment_token and Clang.get_spelling_location_data(Clang.get_token_location(translation_unit, following_comment_token))[:line] == Clang.get_spelling_location_data(Clang.get_range_end(field_extent))[:line]
-          field_comment = Clang.get_token_spelling(translation_unit, following_comment_token).to_s_and_dispose
+          field_comment = following_comment
           previous_field_end = Clang.get_range_end Clang.get_token_extent(translation_unit, following_comment_token)
         else
           previous_field_end = Clang.get_range_end field_extent
         end
         
         if nested_declaration
-          read_named_declaration nested_declaration, ""
+          read_named_declaration nested_declaration, []
           decl = @declarations[Clang.get_cursor_type(nested_declaration)]
           decl.name = Name.new(self, name.parts + field_name.parts) if decl and decl.name.empty?
         end
@@ -392,20 +393,40 @@ class FFI::Gen
       @declarations[Clang.get_cursor_type(declaration)] = struct
     
     when :function_decl
-      function = FunctionOrCallback.new self, name, false, @blocking.include?(name.raw), comment
-      function.return_type = Clang.get_cursor_result_type declaration
-      @declarations[declaration] = function
+      function_description = []
+      return_value_description = []
+      parameter_descriptions = {}
+      current_description = function_description
+      comment.each do |line|
+        if line.gsub!(/\\param (.*?) /, '')
+          current_description = []
+          parameter_descriptions[$1] = current_description
+        end
+        current_description = return_value_description if line.gsub! '\\returns ', ''
+        current_description << line
+      end
       
+      return_type = Clang.get_cursor_result_type declaration
+      parameters = []
       Clang.get_children(declaration).each do |function_child|
         next if function_child[:kind] != :parm_decl
         param_name = Name.new self, Clang.get_cursor_spelling(function_child).to_s_and_dispose
         param_type = Clang.get_cursor_type function_child
         tokens = Clang.get_tokens translation_unit, Clang.get_cursor_extent(function_child)
         is_array = tokens.any? { |t| Clang.get_token_spelling(translation_unit, t).to_s_and_dispose == "[" }
-        function.parameters << { name: param_name, type: param_type, is_array: is_array }
+        parameters << { name: param_name, type: param_type, is_array: is_array }
       end
       
-      pointee_declaration = function.parameters.first && get_pointee_declaration(function.parameters.first[:type])
+      parameters.each_with_index do |parameter, index|
+        parameter[:description] = parameter_descriptions[parameter[:name].raw]
+        parameter[:description] ||= parameter_descriptions.values[index] if parameter_descriptions.size == parameters.size # workaround for wrong names
+        parameter[:description] ||= []
+      end
+      
+      function = FunctionOrCallback.new self, name, parameters, return_type, false, @blocking.include?(name.raw), function_description, return_value_description
+      @declarations[declaration] = function
+      
+      pointee_declaration = parameters.first && get_pointee_declaration(parameters.first[:type])
       if pointee_declaration
         type_prefix = pointee_declaration.name.parts.join.downcase
         function_name_parts = name.parts.dup
@@ -425,15 +446,16 @@ class FFI::Gen
         child_declaration.name = name if child_declaration and child_declaration.name.empty?
         
       elsif typedef_children.size > 1
-        callback = FunctionOrCallback.new self, name, true, false, comment
-        callback.return_type = Clang.get_cursor_type typedef_children.first
-        @declarations[Clang.get_cursor_type(declaration)] = callback
-        
+        return_type = Clang.get_cursor_type typedef_children.first
+        parameters = []
         typedef_children[1..-1].each do |param_decl|
           param_name = Name.new self, Clang.get_cursor_spelling(param_decl).to_s_and_dispose
           param_type = Clang.get_cursor_type param_decl
-          callback.parameters << { name:param_name, type: param_type }
+          parameters << { name:param_name, type: param_type, description: [] }
         end
+
+        callback = FunctionOrCallback.new self, name, parameters, return_type, true, false, comment, []
+        @declarations[Clang.get_cursor_type(declaration)] = callback
       end
         
     when :macro_definition
@@ -557,15 +579,24 @@ class FFI::Gen
     @declarations[Clang.get_cursor_type(Clang.get_type_declaration(pointee_type))]
   end
   
-  def extract_comment(translation_unit, range, search_backwards = true, return_spelling = true)
+  def extract_comment(translation_unit, range, search_backwards = true)
     tokens = Clang.get_tokens translation_unit, range
     iterator = search_backwards ? tokens.reverse_each : tokens.each
     iterator.each do |token|
       if Clang.get_token_kind(token) == :comment
-        return return_spelling ? Clang.get_token_spelling(translation_unit, token).to_s_and_dispose : token
+        comment = Clang.get_token_spelling(translation_unit, token).to_s_and_dispose
+        lines = comment.split("\n").map { |line|
+          line.sub!(/\ ?\*+\/\s*$/, '')
+          line.sub!(/^\s*\/?\*+ ?/, '')
+          line.gsub!(/\\(brief|determine) /, '')
+          line.gsub!('[', '(')
+          line.gsub!(']', ')')
+          line
+        }
+        return lines, token
       end
     end
-    ""
+    return [], nil
   end
   
   def self.generate(options = {})
