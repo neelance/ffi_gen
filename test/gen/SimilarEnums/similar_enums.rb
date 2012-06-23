@@ -28,8 +28,10 @@ module SimilarEnums
     :enum_a_b, 1,  #0x1
   ]
   
+  # (Not documented)
   ENUM_A_A = 0  #0x0
   
+  # (Not documented)
   ENUM_A_B = 1  #0x1
   
   # (Not documented)
@@ -53,10 +55,13 @@ module SimilarEnums
     :enum_b_b, 2,  #0x2
   ]
   
+  # (Not documented)
   ENUM_B_DEFAULT = 0  #0x0
   
+  # (Not documented)
   ENUM_B_A = 1  #0x1
   
+  # (Not documented)
   ENUM_B_B = 2  #0x2
   
   # (Not documented)
@@ -77,8 +82,10 @@ module SimilarEnums
     :b, 1,  #0x1
   ]
   
+  # (Not documented)
   A = 0  #0x0
   
+  # (Not documented)
   B = 1  #0x1
   
 end

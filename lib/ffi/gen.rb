@@ -337,17 +337,17 @@ class FFI::Gen
           end
           
           constants << { name: constant_name, value: constant_value, comment: constant_description }
-          if enum_as_constant
-            constants.each do|constant|
-              @declarations[constant_name] ||= Constant.new self, constant_name, constant_value,constant_description
-            end
-          end
           next_constant_value = constant_value + 1
         end
       end
 
       enum = Enum.new self, name, constants, enum_description
       @declarations[Clang.get_cursor_type(declaration)] = enum
+      if enum_as_constant
+        constants.each do|constant|
+          @declarations[constant[:name]] ||= Constant.new self, constant[:name], constant[:value],constant[:comment]
+        end
+      end
       
     when :struct_decl, :union_decl
       struct = @declarations.delete(Clang.get_cursor_type(declaration)) || StructOrUnion.new(self, name, (declaration[:kind] == :union_decl))
