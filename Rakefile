@@ -8,5 +8,5 @@ task :test do
   require "sqlite3_test"
   require "cairo_test"
   
-  system "git status test/gen"
+  system "git status test/output"
 end

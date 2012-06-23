@@ -10,7 +10,7 @@ def run_test(options = {})
       module_name: options[:library_name],
       ffi_lib:     options[:ffi_lib],
       headers:     [header],
-      cflags:      options.fetch(:cflags, []),
+      cflags:      ["-nostdinc", "-Itest/headers"] + options.fetch(:cflags, []),
       prefixes:    options.fetch(:prefixes, []),
       blocking:    options.fetch(:blocking, []),
       output:      output_file
