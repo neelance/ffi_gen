@@ -7,6 +7,7 @@ task :test do
   require "opengl_test"
   require "sqlite3_test"
   require "cairo_test"
+  require "libssh2_test"
   
   system "git status test/output"
 end
