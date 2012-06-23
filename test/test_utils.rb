@@ -3,7 +3,7 @@ require "ffi/gen"
 
 def run_test(options = {})
   options[:file_mappings].each do |header, ruby_file|
-    output_file = File.join File.dirname(__FILE__), "gen/#{options[:library_name]}/#{ruby_file}"
+    output_file = File.join File.dirname(__FILE__), "output/#{options[:library_name]}/#{ruby_file}"
     FileUtils.mkdir_p File.dirname(output_file)
     
     FFI::Gen.generate(

@@ -1,9 +1,9 @@
 require 'ffi'
 
 class FFI::Gen
-  require "ffi/ffi-gen/clang"
-  require "ffi/ffi-gen/ruby_output"
-  require "ffi/ffi-gen/java_output"
+  require "ffi/gen/clang"
+  require "ffi/gen/ruby_output"
+  require "ffi/gen/java_output"
 
   class << Clang
     def get_children(declaration)
@@ -245,7 +245,7 @@ class FFI::Gen
     args_ptr.write_array_of_pointer pointers
     
     index = Clang.create_index 0, 0
-    @translation_unit = Clang.parse_translation_unit index, File.join(File.dirname(__FILE__), "ffi-gen/empty.h"), args_ptr, args.size, nil, 0, Clang.enum_type(:translation_unit_flags)[:detailed_preprocessing_record]
+    @translation_unit = Clang.parse_translation_unit index, File.join(File.dirname(__FILE__), "gen/empty.h"), args_ptr, args.size, nil, 0, Clang.enum_type(:translation_unit_flags)[:detailed_preprocessing_record]
     
     Clang.get_num_diagnostics(@translation_unit).times do |i|
       diag = Clang.get_diagnostic @translation_unit, i
@@ -445,7 +445,7 @@ class FFI::Gen
           value = Clang.get_token_spelling(translation_unit, tokens[1]).to_s_and_dispose
           value.sub!(/[A-Za-z]+$/, '') unless value.start_with? '0x' # remove number suffixes
           @declarations[name] ||= Constant.new self, name, value
-        end 
+        end
       end
       
     end
@@ -516,6 +516,6 @@ if __FILE__ == $0
     headers:     ["clang-c/Index.h"],
     cflags:      `llvm-config --cflags`.split(" "),
     prefixes:    ["clang_", "CX"],
-    output:      File.join(File.dirname(__FILE__), "ffi-gen/clang.rb")
+    output:      File.join(File.dirname(__FILE__), "gen/clang.rb")
   )
 end
