@@ -315,7 +315,7 @@ class FFI::Gen
         constant_description.concat(constant_descriptions[constant_name.raw] || [])
         previous_constant_location = constant_location
         
-        catch :unsupported_value do
+        begin
           value_cursor = Clang.get_children(enum_constant).first
           constant_value = if value_cursor
             eval read_value(Clang.get_tokens(translation_unit, Clang.get_cursor_extent(value_cursor)))
@@ -325,6 +325,8 @@ class FFI::Gen
           
           constants << { name: constant_name, value: constant_value, comment: constant_description }
           next_constant_value = constant_value + 1
+        rescue ArgumentError
+          puts "Warning: Could not process value of enum constant \"#{constant_name.raw}\""
         end
       end
 
@@ -441,9 +443,11 @@ class FFI::Gen
     when :macro_definition
       tokens = Clang.get_tokens translation_unit, Clang.get_cursor_extent(declaration)
       if tokens.size > 1
-        catch :unsupported_value do
+        begin
           value = read_value tokens[1..-1]
           @declarations[name] ||= Constant.new self, name, value
+        rescue ArgumentError
+          puts "Warning: Could not process value of macro \"#{name.raw}\""
         end
       end
       
@@ -462,10 +466,10 @@ class FFI::Gen
         when "+", "-", "<<", ">>", "(", ")"
           parts << spelling
         else
-          throw :unsupported_value
+          raise ArgumentError
         end
       else
-        throw :unsupported_value
+        raise ArgumentError
       end
     end
     parts.join
