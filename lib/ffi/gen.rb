@@ -30,7 +30,7 @@ class FFI::Gen
       Clang.tokenize translation_unit, range, tokens_ptr_ptr, num_tokens_ptr
       num_tokens = num_tokens_ptr.read_uint
       tokens_ptr = FFI::Pointer.new Clang::Token, tokens_ptr_ptr.read_pointer
-      num_tokens.times.map { |i| Clang::Token.new tokens_ptr[i] }
+      (num_tokens - 1).times.map { |i| Clang::Token.new tokens_ptr[i] }
     end
   end
   
@@ -108,7 +108,7 @@ class FFI::Gen
   end
   
   class FunctionOrCallback
-    attr_reader :name, :parameters, :return_type
+    attr_reader :name, :parameters, :return_type, :function_description, :return_value_description
     
     def initialize(generator, name, parameters, return_type, is_callback, blocking, function_description, return_value_description)
       @generator = generator
@@ -280,13 +280,13 @@ class FFI::Gen
       
       comment, _ = extract_comment translation_unit, comment_range
       
-      read_named_declaration declaration, comment
+      read_declaration declaration, comment
     end
 
     @declarations
   end
   
-  def read_named_declaration(declaration, comment)
+  def read_declaration(declaration, comment)
     name = Name.new self, Clang.get_cursor_spelling(declaration).to_s_and_dispose
 
     case declaration[:kind]
@@ -318,7 +318,7 @@ class FFI::Gen
         catch :unsupported_value do
           value_cursor = Clang.get_children(enum_constant).first
           constant_value = if value_cursor
-            read_value value_cursor
+            eval read_value(Clang.get_tokens(translation_unit, Clang.get_cursor_extent(value_cursor)))
           else
             next_constant_value
           end
@@ -361,7 +361,7 @@ class FFI::Gen
         end
         
         if nested_declaration
-          read_named_declaration nested_declaration, []
+          read_declaration nested_declaration, []
           decl = @declarations[Clang.get_cursor_type(nested_declaration)]
           decl.name = Name.new(self, name.parts + field_name.parts) if decl and decl.name.empty?
         end
@@ -440,10 +440,9 @@ class FFI::Gen
         
     when :macro_definition
       tokens = Clang.get_tokens translation_unit, Clang.get_cursor_extent(declaration)
-      if tokens.size == 3
-        if Clang.get_token_kind(tokens[1]) == :literal
-          value = Clang.get_token_spelling(translation_unit, tokens[1]).to_s_and_dispose
-          value.sub!(/[A-Za-z]+$/, '') unless value.start_with? '0x' # remove number suffixes
+      if tokens.size > 1
+        catch :unsupported_value do
+          value = read_value tokens[1..-1]
           @declarations[name] ||= Constant.new self, name, value
         end
       end
@@ -451,9 +450,8 @@ class FFI::Gen
     end
   end
   
-  def read_value(cursor)
+  def read_value(tokens)
     parts = []
-    tokens = Clang.get_tokens translation_unit, Clang.get_cursor_extent(cursor)
     tokens.each do |token|
       spelling = Clang.get_token_spelling(translation_unit, token).to_s_and_dispose
       case Clang.get_token_kind(token)
@@ -461,9 +459,7 @@ class FFI::Gen
         parts << spelling
       when :punctuation
         case spelling
-        when ",", "}"
-          # ignored
-        when "+", "-", "<<", ">>"
+        when "+", "-", "<<", ">>", "(", ")"
           parts << spelling
         else
           throw :unsupported_value
@@ -472,7 +468,7 @@ class FFI::Gen
         throw :unsupported_value
       end
     end
-    eval parts.join
+    parts.join
   end
   
   def get_pointee_declaration(type)

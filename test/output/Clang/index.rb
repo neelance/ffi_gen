@@ -3490,6 +3490,8 @@ module Clang
   #   the results.
   # :natural_language ::
   #   Natural language completions should be included in the results.
+  # :unknown ::
+  #   The current context is unknown, so set all contexts.
   # 
   # @method _enum_completion_context_
   # @return [Symbol]
@@ -3517,7 +3519,8 @@ module Clang
     :obj_c_class_message, 262144,
     :obj_c_selector_name, 524288,
     :macro_name, 1048576,
-    :natural_language, 2097152
+    :natural_language, 2097152,
+    :unknown, 4194303
   ]
   
   # Returns a default set of code-completion options that can be
