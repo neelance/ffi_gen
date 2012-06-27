@@ -73,110 +73,172 @@ module Cairo
   # Memory management of #cairo_surface_t is done with
   # cairo_surface_reference() and cairo_surface_destroy().
   module SurfaceWrappers
+    # @param [Symbol from _enum_content_] content 
+    # @param [Integer] width 
+    # @param [Integer] height 
+    # @return [Surface] 
     def create_similar(content, width, height)
       Surface.new Cairo.surface_create_similar(self, content, width, height)
     end
     
+    # @param [Float] x 
+    # @param [Float] y 
+    # @param [Float] width 
+    # @param [Float] height 
+    # @return [Surface] 
     def create_for_rectangle(x, y, width, height)
       Surface.new Cairo.surface_create_for_rectangle(self, x, y, width, height)
     end
     
+    # @return [Surface] 
     def reference()
       Surface.new Cairo.surface_reference(self)
     end
     
+    # @return [nil] 
     def finish()
       Cairo.surface_finish(self)
     end
     
+    # @return [nil] 
     def destroy()
       Cairo.surface_destroy(self)
     end
     
+    # @return [Device] 
     def get_device()
       Device.new Cairo.surface_get_device(self)
     end
     
+    # @return [Integer] 
     def get_reference_count()
       Cairo.surface_get_reference_count(self)
     end
     
+    # @return [Symbol from _enum_status_] 
     def status()
       Cairo.surface_status(self)
     end
     
+    # @return [Symbol from _enum_surface_type_] 
     def get_type()
       Cairo.surface_get_type(self)
     end
     
+    # @return [Symbol from _enum_content_] 
     def get_content()
       Cairo.surface_get_content(self)
     end
     
+    # @param [String] filename 
+    # @return [Symbol from _enum_status_] 
     def write_to_png(filename)
       Cairo.surface_write_to_png(self, filename)
     end
     
+    # @param [Proc(_callback_write_func_t_)] write_func 
+    # @param [FFI::Pointer(*Void)] closure 
+    # @return [Symbol from _enum_status_] 
     def write_to_png_stream(write_func, closure)
       Cairo.surface_write_to_png_stream(self, write_func, closure)
     end
     
+    # @param [FFI::Pointer(*UserDataKey)] key 
+    # @return [FFI::Pointer(*Void)] 
     def get_user_data(key)
       Cairo.surface_get_user_data(self, key)
     end
     
+    # @param [FFI::Pointer(*UserDataKey)] key 
+    # @param [FFI::Pointer(*Void)] user_data 
+    # @param [FFI::Pointer(DestroyFuncT)] destroy 
+    # @return [Symbol from _enum_status_] 
     def set_user_data(key, user_data, destroy)
       Cairo.surface_set_user_data(self, key, user_data, destroy)
     end
     
+    # @param [String] mime_type 
+    # @param [FFI::Pointer(**UChar)] data 
+    # @param [FFI::Pointer(*ULong)] length 
+    # @return [nil] 
     def get_mime_data(mime_type, data, length)
       Cairo.surface_get_mime_data(self, mime_type, data, length)
     end
     
+    # @param [String] mime_type 
+    # @param [FFI::Pointer(*UChar)] data 
+    # @param [Integer] length 
+    # @param [FFI::Pointer(DestroyFuncT)] destroy 
+    # @param [FFI::Pointer(*Void)] closure 
+    # @return [Symbol from _enum_status_] 
     def set_mime_data(mime_type, data, length, destroy, closure)
       Cairo.surface_set_mime_data(self, mime_type, data, length, destroy, closure)
     end
     
+    # @param [FFI::Pointer(*FontOptions)] options 
+    # @return [nil] 
     def get_font_options(options)
       Cairo.surface_get_font_options(self, options)
     end
     
+    # @return [nil] 
     def flush()
       Cairo.surface_flush(self)
     end
     
+    # @return [nil] 
     def mark_dirty()
       Cairo.surface_mark_dirty(self)
     end
     
+    # @param [Integer] x 
+    # @param [Integer] y 
+    # @param [Integer] width 
+    # @param [Integer] height 
+    # @return [nil] 
     def mark_dirty_rectangle(x, y, width, height)
       Cairo.surface_mark_dirty_rectangle(self, x, y, width, height)
     end
     
+    # @param [Float] x_offset 
+    # @param [Float] y_offset 
+    # @return [nil] 
     def set_device_offset(x_offset, y_offset)
       Cairo.surface_set_device_offset(self, x_offset, y_offset)
     end
     
+    # @param [FFI::Pointer(*Double)] x_offset 
+    # @param [FFI::Pointer(*Double)] y_offset 
+    # @return [nil] 
     def get_device_offset(x_offset, y_offset)
       Cairo.surface_get_device_offset(self, x_offset, y_offset)
     end
     
+    # @param [Float] x_pixels_per_inch 
+    # @param [Float] y_pixels_per_inch 
+    # @return [nil] 
     def set_fallback_resolution(x_pixels_per_inch, y_pixels_per_inch)
       Cairo.surface_set_fallback_resolution(self, x_pixels_per_inch, y_pixels_per_inch)
     end
     
+    # @param [FFI::Pointer(*Double)] x_pixels_per_inch 
+    # @param [FFI::Pointer(*Double)] y_pixels_per_inch 
+    # @return [nil] 
     def get_fallback_resolution(x_pixels_per_inch, y_pixels_per_inch)
       Cairo.surface_get_fallback_resolution(self, x_pixels_per_inch, y_pixels_per_inch)
     end
     
+    # @return [nil] 
     def copy_page()
       Cairo.surface_copy_page(self)
     end
     
+    # @return [nil] 
     def show_page()
       Cairo.surface_show_page(self)
     end
     
+    # @return [Integer] 
     def has_show_text_glyphs()
       Cairo.surface_has_show_text_glyphs(self)
     end
@@ -202,46 +264,61 @@ module Cairo
   # 
   # Since: 1.10
   module DeviceWrappers
+    # @return [Device] 
     def reference()
       Device.new Cairo.device_reference(self)
     end
     
+    # @return [Symbol from _enum_device_type_] 
     def get_type()
       Cairo.device_get_type(self)
     end
     
+    # @return [Symbol from _enum_status_] 
     def status()
       Cairo.device_status(self)
     end
     
+    # @return [Symbol from _enum_status_] 
     def acquire()
       Cairo.device_acquire(self)
     end
     
+    # @return [nil] 
     def release()
       Cairo.device_release(self)
     end
     
+    # @return [nil] 
     def flush()
       Cairo.device_flush(self)
     end
     
+    # @return [nil] 
     def finish()
       Cairo.device_finish(self)
     end
     
+    # @return [nil] 
     def destroy()
       Cairo.device_destroy(self)
     end
     
+    # @return [Integer] 
     def get_reference_count()
       Cairo.device_get_reference_count(self)
     end
     
+    # @param [FFI::Pointer(*UserDataKey)] key 
+    # @return [FFI::Pointer(*Void)] 
     def get_user_data(key)
       Cairo.device_get_user_data(self, key)
     end
     
+    # @param [FFI::Pointer(*UserDataKey)] key 
+    # @param [FFI::Pointer(*Void)] user_data 
+    # @param [FFI::Pointer(DestroyFuncT)] destroy 
+    # @return [Symbol from _enum_status_] 
     def set_user_data(key, user_data, destroy)
       Cairo.device_set_user_data(self, key, user_data, destroy)
     end
@@ -282,50 +359,84 @@ module Cairo
   # :y0 ::
   #   (Float) 
   module MatrixWrappers
+    # @param [Float] xx 
+    # @param [Float] yx 
+    # @param [Float] xy 
+    # @param [Float] yy 
+    # @param [Float] x0 
+    # @param [Float] y0 
+    # @return [nil] 
     def init(xx, yx, xy, yy, x0, y0)
       Cairo.matrix_init(self, xx, yx, xy, yy, x0, y0)
     end
     
+    # @return [nil] 
     def init_identity()
       Cairo.matrix_init_identity(self)
     end
     
+    # @param [Float] tx 
+    # @param [Float] ty 
+    # @return [nil] 
     def init_translate(tx, ty)
       Cairo.matrix_init_translate(self, tx, ty)
     end
     
+    # @param [Float] sx 
+    # @param [Float] sy 
+    # @return [nil] 
     def init_scale(sx, sy)
       Cairo.matrix_init_scale(self, sx, sy)
     end
     
+    # @param [Float] radians 
+    # @return [nil] 
     def init_rotate(radians)
       Cairo.matrix_init_rotate(self, radians)
     end
     
+    # @param [Float] tx 
+    # @param [Float] ty 
+    # @return [nil] 
     def translate(tx, ty)
       Cairo.matrix_translate(self, tx, ty)
     end
     
+    # @param [Float] sx 
+    # @param [Float] sy 
+    # @return [nil] 
     def scale(sx, sy)
       Cairo.matrix_scale(self, sx, sy)
     end
     
+    # @param [Float] radians 
+    # @return [nil] 
     def rotate(radians)
       Cairo.matrix_rotate(self, radians)
     end
     
+    # @return [Symbol from _enum_status_] 
     def invert()
       Cairo.matrix_invert(self)
     end
     
+    # @param [FFI::Pointer(*Matrix)] a 
+    # @param [FFI::Pointer(*Matrix)] b 
+    # @return [nil] 
     def multiply(a, b)
       Cairo.matrix_multiply(self, a, b)
     end
     
+    # @param [FFI::Pointer(*Double)] dx 
+    # @param [FFI::Pointer(*Double)] dy 
+    # @return [nil] 
     def transform_distance(dx, dy)
       Cairo.matrix_transform_distance(self, dx, dy)
     end
     
+    # @param [FFI::Pointer(*Double)] x 
+    # @param [FFI::Pointer(*Double)] y 
+    # @return [nil] 
     def transform_point(x, y)
       Cairo.matrix_transform_point(self, x, y)
     end
@@ -359,86 +470,146 @@ module Cairo
   # Memory management of #cairo_pattern_t is done with
   # cairo_pattern_reference() and cairo_pattern_destroy().
   module PatternWrappers
+    # @return [Pattern] 
     def reference()
       Pattern.new Cairo.pattern_reference(self)
     end
     
+    # @return [nil] 
     def destroy()
       Cairo.pattern_destroy(self)
     end
     
+    # @return [Integer] 
     def get_reference_count()
       Cairo.pattern_get_reference_count(self)
     end
     
+    # @return [Symbol from _enum_status_] 
     def status()
       Cairo.pattern_status(self)
     end
     
+    # @param [FFI::Pointer(*UserDataKey)] key 
+    # @return [FFI::Pointer(*Void)] 
     def get_user_data(key)
       Cairo.pattern_get_user_data(self, key)
     end
     
+    # @param [FFI::Pointer(*UserDataKey)] key 
+    # @param [FFI::Pointer(*Void)] user_data 
+    # @param [FFI::Pointer(DestroyFuncT)] destroy 
+    # @return [Symbol from _enum_status_] 
     def set_user_data(key, user_data, destroy)
       Cairo.pattern_set_user_data(self, key, user_data, destroy)
     end
     
+    # @return [Symbol from _enum_pattern_type_] 
     def get_type()
       Cairo.pattern_get_type(self)
     end
     
+    # @param [Float] offset 
+    # @param [Float] red 
+    # @param [Float] green 
+    # @param [Float] blue 
+    # @return [nil] 
     def add_color_stop_rgb(offset, red, green, blue)
       Cairo.pattern_add_color_stop_rgb(self, offset, red, green, blue)
     end
     
+    # @param [Float] offset 
+    # @param [Float] red 
+    # @param [Float] green 
+    # @param [Float] blue 
+    # @param [Float] alpha 
+    # @return [nil] 
     def add_color_stop_rgba(offset, red, green, blue, alpha)
       Cairo.pattern_add_color_stop_rgba(self, offset, red, green, blue, alpha)
     end
     
+    # @param [Matrix] matrix 
+    # @return [nil] 
     def set_matrix(matrix)
       Cairo.pattern_set_matrix(self, matrix)
     end
     
+    # @param [Matrix] matrix 
+    # @return [nil] 
     def get_matrix(matrix)
       Cairo.pattern_get_matrix(self, matrix)
     end
     
+    # @param [Symbol from _enum_extend_] extend 
+    # @return [nil] 
     def set_extend(extend)
       Cairo.pattern_set_extend(self, extend)
     end
     
+    # @return [Symbol from _enum_extend_] 
     def get_extend()
       Cairo.pattern_get_extend(self)
     end
     
+    # @param [Symbol from _enum_filter_] filter 
+    # @return [nil] 
     def set_filter(filter)
       Cairo.pattern_set_filter(self, filter)
     end
     
+    # @return [Symbol from _enum_filter_] 
     def get_filter()
       Cairo.pattern_get_filter(self)
     end
     
+    # @param [FFI::Pointer(*Double)] red 
+    # @param [FFI::Pointer(*Double)] green 
+    # @param [FFI::Pointer(*Double)] blue 
+    # @param [FFI::Pointer(*Double)] alpha 
+    # @return [Symbol from _enum_status_] 
     def get_rgba(red, green, blue, alpha)
       Cairo.pattern_get_rgba(self, red, green, blue, alpha)
     end
     
+    # @param [FFI::Pointer(**SurfaceT)] surface 
+    # @return [Symbol from _enum_status_] 
     def get_surface(surface)
       Cairo.pattern_get_surface(self, surface)
     end
     
+    # @param [Integer] index 
+    # @param [FFI::Pointer(*Double)] offset 
+    # @param [FFI::Pointer(*Double)] red 
+    # @param [FFI::Pointer(*Double)] green 
+    # @param [FFI::Pointer(*Double)] blue 
+    # @param [FFI::Pointer(*Double)] alpha 
+    # @return [Symbol from _enum_status_] 
     def get_color_stop_rgba(index, offset, red, green, blue, alpha)
       Cairo.pattern_get_color_stop_rgba(self, index, offset, red, green, blue, alpha)
     end
     
+    # @param [FFI::Pointer(*Int)] count 
+    # @return [Symbol from _enum_status_] 
     def get_color_stop_count(count)
       Cairo.pattern_get_color_stop_count(self, count)
     end
     
+    # @param [FFI::Pointer(*Double)] x0 
+    # @param [FFI::Pointer(*Double)] y0 
+    # @param [FFI::Pointer(*Double)] x1 
+    # @param [FFI::Pointer(*Double)] y1 
+    # @return [Symbol from _enum_status_] 
     def get_linear_points(x0, y0, x1, y1)
       Cairo.pattern_get_linear_points(self, x0, y0, x1, y1)
     end
     
+    # @param [FFI::Pointer(*Double)] x0 
+    # @param [FFI::Pointer(*Double)] y0 
+    # @param [FFI::Pointer(*Double)] r0 
+    # @param [FFI::Pointer(*Double)] x1 
+    # @param [FFI::Pointer(*Double)] y1 
+    # @param [FFI::Pointer(*Double)] r1 
+    # @return [Symbol from _enum_status_] 
     def get_radial_circles(x0, y0, r0, x1, y1, r1)
       Cairo.pattern_get_radial_circles(self, x0, y0, r0, x1, y1, r1)
     end
@@ -1635,6 +1806,7 @@ module Cairo
   # :num_rectangles ::
   #   (Integer) 
   module RectangleListWrappers
+    # @return [nil] 
     def destroy()
       Cairo.rectangle_list_destroy(self)
     end
@@ -1677,66 +1849,105 @@ module Cairo
   # Memory management of #cairo_scaled_font_t is done with
   # cairo_scaled_font_reference() and cairo_scaled_font_destroy().
   module ScaledFontWrappers
+    # @return [ScaledFont] 
     def reference()
       ScaledFont.new Cairo.scaled_font_reference(self)
     end
     
+    # @return [nil] 
     def destroy()
       Cairo.scaled_font_destroy(self)
     end
     
+    # @return [Integer] 
     def get_reference_count()
       Cairo.scaled_font_get_reference_count(self)
     end
     
+    # @return [Symbol from _enum_status_] 
     def status()
       Cairo.scaled_font_status(self)
     end
     
+    # @return [Symbol from _enum_font_type_] 
     def get_type()
       Cairo.scaled_font_get_type(self)
     end
     
+    # @param [UserDataKey] key 
+    # @return [FFI::Pointer(*Void)] 
     def get_user_data(key)
       Cairo.scaled_font_get_user_data(self, key)
     end
     
+    # @param [UserDataKey] key 
+    # @param [FFI::Pointer(*Void)] user_data 
+    # @param [FFI::Pointer(DestroyFuncT)] destroy 
+    # @return [Symbol from _enum_status_] 
     def set_user_data(key, user_data, destroy)
       Cairo.scaled_font_set_user_data(self, key, user_data, destroy)
     end
     
+    # @param [FFI::Pointer(*FontExtentsT)] extents 
+    # @return [nil] 
     def extents(extents)
       Cairo.scaled_font_extents(self, extents)
     end
     
+    # @param [String] utf8 
+    # @param [FFI::Pointer(*TextExtentsT)] extents 
+    # @return [nil] 
     def text_extents(utf8, extents)
       Cairo.scaled_font_text_extents(self, utf8, extents)
     end
     
+    # @param [FFI::Pointer(*GlyphT)] glyphs 
+    # @param [Integer] num_glyphs 
+    # @param [FFI::Pointer(*TextExtentsT)] extents 
+    # @return [nil] 
     def glyph_extents(glyphs, num_glyphs, extents)
       Cairo.scaled_font_glyph_extents(self, glyphs, num_glyphs, extents)
     end
     
+    # @param [Float] x 
+    # @param [Float] y 
+    # @param [String] utf8 
+    # @param [Integer] utf8_len 
+    # @param [FFI::Pointer(**GlyphT)] glyphs 
+    # @param [FFI::Pointer(*Int)] num_glyphs 
+    # @param [FFI::Pointer(**TextClusterT)] clusters 
+    # @param [FFI::Pointer(*Int)] num_clusters 
+    # @param [FFI::Pointer(*TextClusterFlagsT)] cluster_flags 
+    # @return [Symbol from _enum_status_] 
     def text_to_glyphs(x, y, utf8, utf8_len, glyphs, num_glyphs, clusters, num_clusters, cluster_flags)
       Cairo.scaled_font_text_to_glyphs(self, x, y, utf8, utf8_len, glyphs, num_glyphs, clusters, num_clusters, cluster_flags)
     end
     
+    # @return [FontFace] 
     def get_font_face()
       FontFace.new Cairo.scaled_font_get_font_face(self)
     end
     
+    # @param [Matrix] font_matrix 
+    # @return [nil] 
     def get_font_matrix(font_matrix)
       Cairo.scaled_font_get_font_matrix(self, font_matrix)
     end
     
+    # @param [Matrix] ctm 
+    # @return [nil] 
     def get_ctm(ctm)
       Cairo.scaled_font_get_ctm(self, ctm)
     end
     
+    # @param [Matrix] scale_matrix 
+    # @return [nil] 
     def get_scale_matrix(scale_matrix)
       Cairo.scaled_font_get_scale_matrix(self, scale_matrix)
     end
     
+    # @param [FFI::Pointer(*FontOptions)] options 
+    # @return [nil] 
     def get_font_options(options)
       Cairo.scaled_font_get_font_options(self, options)
     end
@@ -1763,30 +1974,41 @@ module Cairo
   # Memory management of #cairo_font_face_t is done with
   # cairo_font_face_reference() and cairo_font_face_destroy().
   module FontFaceWrappers
+    # @return [FontFace] 
     def reference()
       FontFace.new Cairo.font_face_reference(self)
     end
     
+    # @return [nil] 
     def destroy()
       Cairo.font_face_destroy(self)
     end
     
+    # @return [Integer] 
     def get_reference_count()
       Cairo.font_face_get_reference_count(self)
     end
     
+    # @return [Symbol from _enum_status_] 
     def status()
       Cairo.font_face_status(self)
     end
     
+    # @return [Symbol from _enum_font_type_] 
     def get_type()
       Cairo.font_face_get_type(self)
     end
     
+    # @param [UserDataKey] key 
+    # @return [FFI::Pointer(*Void)] 
     def get_user_data(key)
       Cairo.font_face_get_user_data(self, key)
     end
     
+    # @param [UserDataKey] key 
+    # @param [FFI::Pointer(*Void)] user_data 
+    # @param [FFI::Pointer(DestroyFuncT)] destroy 
+    # @return [Symbol from _enum_status_] 
     def set_user_data(key, user_data, destroy)
       Cairo.font_face_set_user_data(self, key, user_data, destroy)
     end
@@ -2188,58 +2410,78 @@ module Cairo
   # for equality, merge, or compute a hash value of
   # #cairo_font_options_t objects.
   module FontOptionsWrappers
+    # @return [FontOptions] 
     def copy()
       FontOptions.new Cairo.font_options_copy(self)
     end
     
+    # @return [nil] 
     def destroy()
       Cairo.font_options_destroy(self)
     end
     
+    # @return [Symbol from _enum_status_] 
     def status()
       Cairo.font_options_status(self)
     end
     
+    # @param [FFI::Pointer(*FontOptions)] other 
+    # @return [nil] 
     def merge(other)
       Cairo.font_options_merge(self, other)
     end
     
+    # @param [FFI::Pointer(*FontOptions)] other 
+    # @return [Integer] 
     def equal(other)
       Cairo.font_options_equal(self, other)
     end
     
+    # @return [Integer] 
     def hash()
       Cairo.font_options_hash(self)
     end
     
+    # @param [Symbol from _enum_antialias_] antialias 
+    # @return [nil] 
     def set_antialias(antialias)
       Cairo.font_options_set_antialias(self, antialias)
     end
     
+    # @return [Symbol from _enum_antialias_] 
     def get_antialias()
       Cairo.font_options_get_antialias(self)
     end
     
+    # @param [Symbol from _enum_subpixel_order_] subpixel_order 
+    # @return [nil] 
     def set_subpixel_order(subpixel_order)
       Cairo.font_options_set_subpixel_order(self, subpixel_order)
     end
     
+    # @return [Symbol from _enum_subpixel_order_] 
     def get_subpixel_order()
       Cairo.font_options_get_subpixel_order(self)
     end
     
+    # @param [Symbol from _enum_hint_style_] hint_style 
+    # @return [nil] 
     def set_hint_style(hint_style)
       Cairo.font_options_set_hint_style(self, hint_style)
     end
     
+    # @return [Symbol from _enum_hint_style_] 
     def get_hint_style()
       Cairo.font_options_get_hint_style(self)
     end
     
+    # @param [Symbol from _enum_hint_metrics_] hint_metrics 
+    # @return [nil] 
     def set_hint_metrics(hint_metrics)
       Cairo.font_options_set_hint_metrics(self, hint_metrics)
     end
     
+    # @return [Symbol from _enum_hint_metrics_] 
     def get_hint_metrics()
       Cairo.font_options_get_hint_metrics(self)
     end
@@ -3440,6 +3682,7 @@ module Cairo
   # :num_data ::
   #   (Integer) 
   module PathWrappers
+    # @return [nil] 
     def destroy()
       Cairo.path_destroy(self)
     end
@@ -4673,82 +4916,119 @@ module Cairo
   # 
   # Since: 1.10
   module RegionWrappers
+    # @return [Region] 
     def copy()
       Region.new Cairo.region_copy(self)
     end
     
+    # @return [Region] 
     def reference()
       Region.new Cairo.region_reference(self)
     end
     
+    # @return [nil] 
     def destroy()
       Cairo.region_destroy(self)
     end
     
+    # @param [FFI::Pointer(*Region)] b 
+    # @return [Integer] 
     def equal(b)
       Cairo.region_equal(self, b)
     end
     
+    # @return [Symbol from _enum_status_] 
     def status()
       Cairo.region_status(self)
     end
     
+    # @param [FFI::Pointer(*RectangleInt)] extents 
+    # @return [nil] 
     def get_extents(extents)
       Cairo.region_get_extents(self, extents)
     end
     
+    # @return [Integer] 
     def num_rectangles()
       Cairo.region_num_rectangles(self)
     end
     
+    # @param [Integer] nth 
+    # @param [FFI::Pointer(*RectangleInt)] rectangle 
+    # @return [nil] 
     def get_rectangle(nth, rectangle)
       Cairo.region_get_rectangle(self, nth, rectangle)
     end
     
+    # @return [Integer] 
     def is_empty()
       Cairo.region_is_empty(self)
     end
     
+    # @param [FFI::Pointer(*RectangleInt)] rectangle 
+    # @return [Symbol from _enum_region_overlap_] 
     def contains_rectangle(rectangle)
       Cairo.region_contains_rectangle(self, rectangle)
     end
     
+    # @param [Integer] x 
+    # @param [Integer] y 
+    # @return [Integer] 
     def contains_point(x, y)
       Cairo.region_contains_point(self, x, y)
     end
     
+    # @param [Integer] dx 
+    # @param [Integer] dy 
+    # @return [nil] 
     def translate(dx, dy)
       Cairo.region_translate(self, dx, dy)
     end
     
+    # @param [FFI::Pointer(*Region)] other 
+    # @return [Symbol from _enum_status_] 
     def subtract(other)
       Cairo.region_subtract(self, other)
     end
     
+    # @param [FFI::Pointer(*RectangleInt)] rectangle 
+    # @return [Symbol from _enum_status_] 
     def subtract_rectangle(rectangle)
       Cairo.region_subtract_rectangle(self, rectangle)
     end
     
+    # @param [FFI::Pointer(*Region)] other 
+    # @return [Symbol from _enum_status_] 
     def intersect(other)
       Cairo.region_intersect(self, other)
     end
     
+    # @param [FFI::Pointer(*RectangleInt)] rectangle 
+    # @return [Symbol from _enum_status_] 
     def intersect_rectangle(rectangle)
       Cairo.region_intersect_rectangle(self, rectangle)
     end
     
+    # @param [FFI::Pointer(*Region)] other 
+    # @return [Symbol from _enum_status_] 
     def union(other)
       Cairo.region_union(self, other)
     end
     
+    # @param [FFI::Pointer(*RectangleInt)] rectangle 
+    # @return [Symbol from _enum_status_] 
     def union_rectangle(rectangle)
       Cairo.region_union_rectangle(self, rectangle)
     end
     
+    # @param [FFI::Pointer(*Region)] other 
+    # @return [Symbol from _enum_status_] 
     def xor(other)
       Cairo.region_xor(self, other)
     end
     
+    # @param [FFI::Pointer(*RectangleInt)] rectangle 
+    # @return [Symbol from _enum_status_] 
     def xor_rectangle(rectangle)
       Cairo.region_xor_rectangle(self, rectangle)
     end

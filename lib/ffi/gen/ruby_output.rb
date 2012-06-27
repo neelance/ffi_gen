@@ -31,15 +31,13 @@ class FFI::Gen
     end
   end
   
-  module RubyType
+  class Type
     def ruby_description
       ruby_name
     end
   end
   
   class Enum
-    include RubyType
-    
     def write_ruby(writer)
       shorten_names
       
@@ -81,8 +79,6 @@ class FFI::Gen
   end
   
   class StructOrUnion
-    include RubyType
-    
     def write_ruby(writer)
       writer.comment do
         writer.write_description @description
@@ -103,6 +99,13 @@ class FFI::Gen
           @oo_functions.each_with_index do |(name, function), index|
             parameter_names = function.parameters[1..-1].map { |parameter| parameter[:name].to_ruby_downcase }
             writer.puts "" unless index == 0
+            writer.comment do
+              function.parameters[1..-1].each do |parameter|
+                writer.write_description parameter[:description], false, "@param [#{parameter[:type].ruby_description}] #{parameter[:name].to_ruby_downcase} ", "  "
+              end
+              return_type = function.return_type.is_a?(StructOrUnion) ? function.return_type.ruby_name : function.return_type.ruby_description
+              writer.write_description function.return_value_description, false, "@return [#{return_type}] ", "  "
+            end
             writer.puts "def #{name.to_ruby_downcase}(#{parameter_names.join(', ')})"
             writer.indent do
               cast = function.return_type.is_a?(StructOrUnion) ? "#{function.return_type.ruby_name}.new " : ""
@@ -181,8 +184,6 @@ class FFI::Gen
   end
   
   class PrimitiveType
-    include RubyType
-    
     def ruby_name
       case @clang_type
       when :void
@@ -217,8 +218,6 @@ class FFI::Gen
   end
   
   class StringType
-    include RubyType
-    
     def ruby_name
       "String"
     end
@@ -229,8 +228,6 @@ class FFI::Gen
   end
   
   class ByValueType
-    include RubyType
-    
     def ruby_name
       @inner_type.ruby_name
     end
@@ -241,8 +238,6 @@ class FFI::Gen
   end
   
   class PointerType
-    include RubyType
-    
     def ruby_name
       @pointee_name.to_ruby_downcase
     end
@@ -257,8 +252,6 @@ class FFI::Gen
   end
   
   class ConstantArrayType
-    include RubyType
-    
     def ruby_name
       "array"
     end
@@ -273,8 +266,6 @@ class FFI::Gen
   end
     
   class UnknownType
-    include RubyType
-    
     def ruby_name
       "unknown"
     end

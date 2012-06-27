@@ -779,26 +779,32 @@ module SQLite3
   # 
   # Mutexes are created using (sqlite3_mutex_alloc()).
   module MutexWrappers
+    # @return [nil] 
     def free()
       SQLite3.mutex_free(self)
     end
     
+    # @return [nil] 
     def enter()
       SQLite3.mutex_enter(self)
     end
     
+    # @return [Integer] 
     def try()
       SQLite3.mutex_try(self)
     end
     
+    # @return [nil] 
     def leave()
       SQLite3.mutex_leave(self)
     end
     
+    # @return [Integer] 
     def held()
       SQLite3.mutex_held(self)
     end
     
+    # @return [Integer] 
     def notheld()
       SQLite3.mutex_notheld(self)
     end
@@ -1013,10 +1019,13 @@ module SQLite3
   # :x_next_system_call ::
   #   (FFI::Pointer(*)) 
   module VfsWrappers
+    # @param [Integer] make_dflt 
+    # @return [Integer] 
     def register(make_dflt)
       SQLite3.vfs_register(self, make_dflt)
     end
     
+    # @return [Integer] 
     def unregister()
       SQLite3.vfs_unregister(self)
     end
@@ -2492,10 +2501,14 @@ module SQLite3
   # Refer to documentation on individual methods above for additional
   # information.
   module StmtWrappers
+    # @return [Integer] 
     def readonly()
       SQLite3.stmt_readonly(self)
     end
     
+    # @param [Integer] op 
+    # @param [Integer] reset_flg 
+    # @return [Integer] 
     def status(op, reset_flg)
       SQLite3.stmt_status(self, op, reset_flg)
     end
@@ -2774,6 +2787,7 @@ module SQLite3
   # (sqlite3_context_db_handle()), (sqlite3_get_auxdata()),
   # and/or (sqlite3_set_auxdata()).
   module ContextWrappers
+    # @return [Sqlite3] 
     def db_handle()
       Sqlite3.new SQLite3.context_db_handle(self)
     end
@@ -5391,22 +5405,34 @@ module SQLite3
   # can be used to read or write small subsections of the BLOB.
   # ^The (sqlite3_blob_bytes()) interface returns the size of the BLOB in bytes.
   module BlobWrappers
+    # @param [Integer] long_long 
+    # @return [Integer] 
     def reopen(long_long)
       SQLite3.blob_reopen(self, long_long)
     end
     
+    # @return [Integer] 
     def close()
       SQLite3.blob_close(self)
     end
     
+    # @return [Integer] 
     def bytes()
       SQLite3.blob_bytes(self)
     end
     
+    # @param [FFI::Pointer(*Void)] z 
+    # @param [Integer] n 
+    # @param [Integer] i_offset 
+    # @return [Integer] 
     def read(z, n, i_offset)
       SQLite3.blob_read(self, z, n, i_offset)
     end
     
+    # @param [FFI::Pointer(*Void)] z 
+    # @param [Integer] n 
+    # @param [Integer] i_offset 
+    # @return [Integer] 
     def write(z, n, i_offset)
       SQLite3.blob_write(self, z, n, i_offset)
     end
@@ -6356,18 +6382,23 @@ module SQLite3
   # 
   # See Also: (Using the SQLite Online Backup API)
   module BackupWrappers
+    # @param [Integer] n_page 
+    # @return [Integer] 
     def step(n_page)
       SQLite3.backup_step(self, n_page)
     end
     
+    # @return [Integer] 
     def finish()
       SQLite3.backup_finish(self)
     end
     
+    # @return [Integer] 
     def remaining()
       SQLite3.backup_remaining(self)
     end
     
+    # @return [Integer] 
     def pagecount()
       SQLite3.backup_pagecount(self)
     end

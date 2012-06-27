@@ -2,8 +2,6 @@ require 'ffi'
 
 class FFI::Gen
   require "ffi/gen/clang"
-  require "ffi/gen/ruby_output"
-  require "ffi/gen/java_output"
 
   class << Clang
     def get_children(declaration)
@@ -74,7 +72,10 @@ class FFI::Gen
     end
   end
   
-  class Enum
+  class Type
+  end
+  
+  class Enum < Type
     attr_accessor :name
     
     def initialize(generator, name, constants, description)
@@ -92,7 +93,7 @@ class FFI::Gen
     end
   end
   
-  class StructOrUnion
+  class StructOrUnion < Type
     attr_accessor :name, :description
     attr_reader :fields, :oo_functions, :written
     
@@ -107,7 +108,7 @@ class FFI::Gen
     end
   end
   
-  class FunctionOrCallback
+  class FunctionOrCallback < Type
     attr_reader :name, :parameters, :return_type, :function_description, :return_value_description
     
     def initialize(generator, name, parameters, return_type, is_callback, blocking, function_description, return_value_description)
@@ -205,7 +206,7 @@ class FFI::Gen
     end
   end
   
-  class PrimitiveType
+  class PrimitiveType < Type
     def initialize(clang_type)
       @clang_type = clang_type
     end
@@ -215,13 +216,13 @@ class FFI::Gen
     end
   end
   
-  class StringType
+  class StringType < Type
     def name
       Name.new ["string"]
     end
   end
   
-  class ByValueType
+  class ByValueType < Type
     def initialize(inner_type)
       @inner_type = inner_type
     end
@@ -231,7 +232,7 @@ class FFI::Gen
     end
   end
   
-  class PointerType
+  class PointerType < Type
     attr_reader :pointee_name, :depth
     
     def initialize(pointee_name, depth)
@@ -244,7 +245,7 @@ class FFI::Gen
     end
   end
   
-  class ConstantArrayType
+  class ConstantArrayType < Type
     def initialize(element_type, size)
       @element_type = element_type
       @size = size
@@ -255,7 +256,7 @@ class FFI::Gen
     end
   end
     
-  class UnknownType
+  class UnknownType < Type
     def name
       Name.new ["unknown"]
     end
@@ -629,6 +630,8 @@ class FFI::Gen
     self.new(options).generate
   end
   
+  require "ffi/gen/ruby_output"
+  require "ffi/gen/java_output"
 end
 
 if __FILE__ == $0
