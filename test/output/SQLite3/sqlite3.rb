@@ -618,8 +618,8 @@ module SQLite3
   # 
   # <em>This entry is only for documentation and no real method.</em>
   # 
-  # @method _callback_callback_(integer, char_s, char_s)
-  # @param [Integer] integer 
+  # @method _callback_callback_(int, char_s, char_s)
+  # @param [Integer] int 
   # @param [FFI::Pointer(**CharS)] char_s 
   # @param [FFI::Pointer(**CharS)] char_s 
   # @return [FFI::Pointer(*Void)] 
@@ -1176,8 +1176,8 @@ module SQLite3
   # ^If the option is unknown or SQLite is unable to set the option
   # then this routine returns a non-zero (error code).
   # 
-  # @method config(integer)
-  # @param [Integer] integer 
+  # @method config(int)
+  # @param [Integer] int 
   # @return [Integer] 
   # @scope class
   attach_function :config, :sqlite3_config, [:int], :int
@@ -1828,8 +1828,8 @@ module SQLite3
   
   # (Not documented)
   # 
-  # @method snprintf(integer, string, string)
-  # @param [Integer] integer 
+  # @method snprintf(int, string, string)
+  # @param [Integer] int 
   # @param [String] string 
   # @param [String] string 
   # @return [String] 
@@ -1838,8 +1838,8 @@ module SQLite3
   
   # (Not documented)
   # 
-  # @method vsnprintf(integer, string, string, va_list_tag)
-  # @param [Integer] integer 
+  # @method vsnprintf(int, string, string, va_list_tag)
+  # @param [Integer] int 
   # @param [String] string 
   # @param [String] string 
   # @param [FFI::Pointer(*VaListTag)] va_list_tag 
@@ -1916,17 +1916,17 @@ module SQLite3
   # a block of memory after it has been released using
   # (sqlite3_free()) or (sqlite3_realloc()).
   # 
-  # @method malloc(integer)
-  # @param [Integer] integer 
+  # @method malloc(int)
+  # @param [Integer] int 
   # @return [FFI::Pointer(*Void)] 
   # @scope class
   attach_function :malloc, :sqlite3_malloc, [:int], :pointer
   
   # (Not documented)
   # 
-  # @method realloc(void, integer)
+  # @method realloc(void, int)
   # @param [FFI::Pointer(*Void)] void 
-  # @param [Integer] integer 
+  # @param [Integer] int 
   # @return [FFI::Pointer(*Void)] 
   # @scope class
   attach_function :realloc, :sqlite3_realloc, [:pointer, :int], :pointer
@@ -2155,9 +2155,9 @@ module SQLite3
   # Note that (sqlite3_prepare_v2()) and (sqlite3_step()) both modify their
   # database connections for the meaning of "modify" in this paragraph.
   # 
-  # @method progress_handler(sqlite3, integer, , void)
+  # @method progress_handler(sqlite3, int, , void)
   # @param [Sqlite3] sqlite3 
-  # @param [Integer] integer 
+  # @param [Integer] int 
   # @param [FFI::Pointer(*)]  
   # @param [FFI::Pointer(*Void)] void 
   # @return [nil] 
@@ -2872,9 +2872,9 @@ module SQLite3
   # See also: (sqlite3_bind_parameter_count()),
   # (sqlite3_bind_parameter_name()), and (sqlite3_bind_parameter_index()).
   # 
-  # @method bind_blob(stmt, integer, void, n, )
+  # @method bind_blob(stmt, int, void, n, )
   # @param [Stmt] stmt 
-  # @param [Integer] integer 
+  # @param [Integer] int 
   # @param [FFI::Pointer(*Void)] void 
   # @param [Integer] n 
   # @param [FFI::Pointer(*)]  
@@ -2884,48 +2884,48 @@ module SQLite3
   
   # (Not documented)
   # 
-  # @method bind_double(stmt, integer, float)
+  # @method bind_double(stmt, int, double)
   # @param [Stmt] stmt 
-  # @param [Integer] integer 
-  # @param [Float] float 
+  # @param [Integer] int 
+  # @param [Float] double 
   # @return [Integer] 
   # @scope class
   attach_function :bind_double, :sqlite3_bind_double, [Stmt, :int, :double], :int
   
   # (Not documented)
   # 
-  # @method bind_int(stmt, integer, integer)
+  # @method bind_int(stmt, int, int)
   # @param [Stmt] stmt 
-  # @param [Integer] integer 
-  # @param [Integer] integer 
+  # @param [Integer] int 
+  # @param [Integer] int 
   # @return [Integer] 
   # @scope class
   attach_function :bind_int, :sqlite3_bind_int, [Stmt, :int, :int], :int
   
   # (Not documented)
   # 
-  # @method bind_int64(stmt, integer, integer)
+  # @method bind_int64(stmt, int, long_long)
   # @param [Stmt] stmt 
-  # @param [Integer] integer 
-  # @param [Integer] integer 
+  # @param [Integer] int 
+  # @param [Integer] long_long 
   # @return [Integer] 
   # @scope class
   attach_function :bind_int64, :sqlite3_bind_int64, [Stmt, :int, :long_long], :int
   
   # (Not documented)
   # 
-  # @method bind_null(stmt, integer)
+  # @method bind_null(stmt, int)
   # @param [Stmt] stmt 
-  # @param [Integer] integer 
+  # @param [Integer] int 
   # @return [Integer] 
   # @scope class
   attach_function :bind_null, :sqlite3_bind_null, [Stmt, :int], :int
   
   # (Not documented)
   # 
-  # @method bind_text(stmt, integer, string, n, )
+  # @method bind_text(stmt, int, string, n, )
   # @param [Stmt] stmt 
-  # @param [Integer] integer 
+  # @param [Integer] int 
   # @param [String] string 
   # @param [Integer] n 
   # @param [FFI::Pointer(*)]  
@@ -2935,11 +2935,11 @@ module SQLite3
   
   # (Not documented)
   # 
-  # @method bind_text16(stmt, integer, void, integer, )
+  # @method bind_text16(stmt, int, void, int, )
   # @param [Stmt] stmt 
-  # @param [Integer] integer 
+  # @param [Integer] int 
   # @param [FFI::Pointer(*Void)] void 
-  # @param [Integer] integer 
+  # @param [Integer] int 
   # @param [FFI::Pointer(*)]  
   # @return [Integer] 
   # @scope class
@@ -2947,9 +2947,9 @@ module SQLite3
   
   # (Not documented)
   # 
-  # @method bind_value(stmt, integer, mem)
+  # @method bind_value(stmt, int, mem)
   # @param [Stmt] stmt 
-  # @param [Integer] integer 
+  # @param [Integer] int 
   # @param [Mem] mem 
   # @return [Integer] 
   # @scope class
@@ -2957,9 +2957,9 @@ module SQLite3
   
   # (Not documented)
   # 
-  # @method bind_zeroblob(stmt, integer, n)
+  # @method bind_zeroblob(stmt, int, n)
   # @param [Stmt] stmt 
-  # @param [Integer] integer 
+  # @param [Integer] int 
   # @param [Integer] n 
   # @return [Integer] 
   # @scope class
@@ -3012,9 +3012,9 @@ module SQLite3
   # (sqlite3_bind_parameter_count()), and
   # (sqlite3_bind_parameter_index()).
   # 
-  # @method bind_parameter_name(stmt, integer)
+  # @method bind_parameter_name(stmt, int)
   # @param [Stmt] stmt 
-  # @param [Integer] integer 
+  # @param [Integer] int 
   # @return [String] 
   # @scope class
   attach_function :bind_parameter_name, :sqlite3_bind_parameter_name, [Stmt, :int], :string
@@ -3150,54 +3150,54 @@ module SQLite3
   # for the same (prepared statement) and result column
   # at the same time then the results are undefined.
   # 
-  # @method column_database_name(stmt, integer)
+  # @method column_database_name(stmt, int)
   # @param [Stmt] stmt 
-  # @param [Integer] integer 
+  # @param [Integer] int 
   # @return [String] 
   # @scope class
   attach_function :column_database_name, :sqlite3_column_database_name, [Stmt, :int], :string
   
   # (Not documented)
   # 
-  # @method column_database_name16(stmt, integer)
+  # @method column_database_name16(stmt, int)
   # @param [Stmt] stmt 
-  # @param [Integer] integer 
+  # @param [Integer] int 
   # @return [FFI::Pointer(*Void)] 
   # @scope class
   attach_function :column_database_name16, :sqlite3_column_database_name16, [Stmt, :int], :pointer
   
   # (Not documented)
   # 
-  # @method column_table_name(stmt, integer)
+  # @method column_table_name(stmt, int)
   # @param [Stmt] stmt 
-  # @param [Integer] integer 
+  # @param [Integer] int 
   # @return [String] 
   # @scope class
   attach_function :column_table_name, :sqlite3_column_table_name, [Stmt, :int], :string
   
   # (Not documented)
   # 
-  # @method column_table_name16(stmt, integer)
+  # @method column_table_name16(stmt, int)
   # @param [Stmt] stmt 
-  # @param [Integer] integer 
+  # @param [Integer] int 
   # @return [FFI::Pointer(*Void)] 
   # @scope class
   attach_function :column_table_name16, :sqlite3_column_table_name16, [Stmt, :int], :pointer
   
   # (Not documented)
   # 
-  # @method column_origin_name(stmt, integer)
+  # @method column_origin_name(stmt, int)
   # @param [Stmt] stmt 
-  # @param [Integer] integer 
+  # @param [Integer] int 
   # @return [String] 
   # @scope class
   attach_function :column_origin_name, :sqlite3_column_origin_name, [Stmt, :int], :string
   
   # (Not documented)
   # 
-  # @method column_origin_name16(stmt, integer)
+  # @method column_origin_name16(stmt, int)
   # @param [Stmt] stmt 
-  # @param [Integer] integer 
+  # @param [Integer] int 
   # @return [FFI::Pointer(*Void)] 
   # @scope class
   attach_function :column_origin_name16, :sqlite3_column_origin_name16, [Stmt, :int], :pointer
@@ -3230,18 +3230,18 @@ module SQLite3
   # is associated with individual values, not with the containers
   # used to hold those values.
   # 
-  # @method column_decltype(stmt, integer)
+  # @method column_decltype(stmt, int)
   # @param [Stmt] stmt 
-  # @param [Integer] integer 
+  # @param [Integer] int 
   # @return [String] 
   # @scope class
   attach_function :column_decltype, :sqlite3_column_decltype, [Stmt, :int], :string
   
   # (Not documented)
   # 
-  # @method column_decltype16(stmt, integer)
+  # @method column_decltype16(stmt, int)
   # @param [Stmt] stmt 
-  # @param [Integer] integer 
+  # @param [Integer] int 
   # @return [FFI::Pointer(*Void)] 
   # @scope class
   attach_function :column_decltype16, :sqlite3_column_decltype16, [Stmt, :int], :pointer
@@ -3838,10 +3838,10 @@ module SQLite3
   
   # (Not documented)
   # 
-  # @method memory_alarm(, void, integer)
+  # @method memory_alarm(, void, long_long)
   # @param [FFI::Pointer(*)]  
   # @param [FFI::Pointer(*Void)] void 
-  # @param [Integer] integer 
+  # @param [Integer] long_long 
   # @return [Integer] 
   # @scope class
   attach_function :memory_alarm, :sqlite3_memory_alarm, [:pointer, :pointer, :long_long], :int
@@ -4228,10 +4228,10 @@ module SQLite3
   # than the one containing the application-defined function that received
   # the (sqlite3_context) pointer, the results are undefined.
   # 
-  # @method result_blob(context, void, integer, )
+  # @method result_blob(context, void, int, )
   # @param [Context] context 
   # @param [FFI::Pointer(*Void)] void 
-  # @param [Integer] integer 
+  # @param [Integer] int 
   # @param [FFI::Pointer(*)]  
   # @return [nil] 
   # @scope class
@@ -4239,29 +4239,29 @@ module SQLite3
   
   # (Not documented)
   # 
-  # @method result_double(context, float)
+  # @method result_double(context, double)
   # @param [Context] context 
-  # @param [Float] float 
+  # @param [Float] double 
   # @return [nil] 
   # @scope class
   attach_function :result_double, :sqlite3_result_double, [Context, :double], :void
   
   # (Not documented)
   # 
-  # @method result_error(context, string, integer)
+  # @method result_error(context, string, int)
   # @param [Context] context 
   # @param [String] string 
-  # @param [Integer] integer 
+  # @param [Integer] int 
   # @return [nil] 
   # @scope class
   attach_function :result_error, :sqlite3_result_error, [Context, :string, :int], :void
   
   # (Not documented)
   # 
-  # @method result_error16(context, void, integer)
+  # @method result_error16(context, void, int)
   # @param [Context] context 
   # @param [FFI::Pointer(*Void)] void 
-  # @param [Integer] integer 
+  # @param [Integer] int 
   # @return [nil] 
   # @scope class
   attach_function :result_error16, :sqlite3_result_error16, [Context, :pointer, :int], :void
@@ -4284,27 +4284,27 @@ module SQLite3
   
   # (Not documented)
   # 
-  # @method result_error_code(context, integer)
+  # @method result_error_code(context, int)
   # @param [Context] context 
-  # @param [Integer] integer 
+  # @param [Integer] int 
   # @return [nil] 
   # @scope class
   attach_function :result_error_code, :sqlite3_result_error_code, [Context, :int], :void
   
   # (Not documented)
   # 
-  # @method result_int(context, integer)
+  # @method result_int(context, int)
   # @param [Context] context 
-  # @param [Integer] integer 
+  # @param [Integer] int 
   # @return [nil] 
   # @scope class
   attach_function :result_int, :sqlite3_result_int, [Context, :int], :void
   
   # (Not documented)
   # 
-  # @method result_int64(context, integer)
+  # @method result_int64(context, long_long)
   # @param [Context] context 
-  # @param [Integer] integer 
+  # @param [Integer] long_long 
   # @return [nil] 
   # @scope class
   attach_function :result_int64, :sqlite3_result_int64, [Context, :long_long], :void
@@ -4319,10 +4319,10 @@ module SQLite3
   
   # (Not documented)
   # 
-  # @method result_text(context, string, integer, )
+  # @method result_text(context, string, int, )
   # @param [Context] context 
   # @param [String] string 
-  # @param [Integer] integer 
+  # @param [Integer] int 
   # @param [FFI::Pointer(*)]  
   # @return [nil] 
   # @scope class
@@ -4330,10 +4330,10 @@ module SQLite3
   
   # (Not documented)
   # 
-  # @method result_text16(context, void, integer, )
+  # @method result_text16(context, void, int, )
   # @param [Context] context 
   # @param [FFI::Pointer(*Void)] void 
-  # @param [Integer] integer 
+  # @param [Integer] int 
   # @param [FFI::Pointer(*)]  
   # @return [nil] 
   # @scope class
@@ -4341,10 +4341,10 @@ module SQLite3
   
   # (Not documented)
   # 
-  # @method result_text16le(context, void, integer, )
+  # @method result_text16le(context, void, int, )
   # @param [Context] context 
   # @param [FFI::Pointer(*Void)] void 
-  # @param [Integer] integer 
+  # @param [Integer] int 
   # @param [FFI::Pointer(*)]  
   # @return [nil] 
   # @scope class
@@ -4352,10 +4352,10 @@ module SQLite3
   
   # (Not documented)
   # 
-  # @method result_text16be(context, void, integer, )
+  # @method result_text16be(context, void, int, )
   # @param [Context] context 
   # @param [FFI::Pointer(*Void)] void 
-  # @param [Integer] integer 
+  # @param [Integer] int 
   # @param [FFI::Pointer(*)]  
   # @return [nil] 
   # @scope class
@@ -4551,8 +4551,8 @@ module SQLite3
   # all, then the behavior of sqlite3_sleep() may deviate from the description
   # in the previous paragraphs.
   # 
-  # @method sleep(integer)
-  # @param [Integer] integer 
+  # @method sleep(int)
+  # @param [Integer] int 
   # @return [Integer] 
   # @scope class
   attach_function :sleep, :sqlite3_sleep, [:int], :int
@@ -4757,8 +4757,8 @@ module SQLite3
   # 
   # See Also:  (SQLite Shared-Cache Mode)
   # 
-  # @method enable_shared_cache(integer)
-  # @param [Integer] integer 
+  # @method enable_shared_cache(int)
+  # @param [Integer] int 
   # @return [Integer] 
   # @scope class
   attach_function :enable_shared_cache, :sqlite3_enable_shared_cache, [:int], :int
@@ -4774,8 +4774,8 @@ module SQLite3
   # ^The sqlite3_release_memory() routine is a no-op returning zero
   # if SQLite is not compiled with (SQLITE_ENABLE_MEMORY_MANAGEMENT).
   # 
-  # @method release_memory(integer)
-  # @param [Integer] integer 
+  # @method release_memory(int)
+  # @param [Integer] int 
   # @return [Integer] 
   # @scope class
   attach_function :release_memory, :sqlite3_release_memory, [:int], :int
@@ -5391,8 +5391,8 @@ module SQLite3
   # can be used to read or write small subsections of the BLOB.
   # ^The (sqlite3_blob_bytes()) interface returns the size of the BLOB in bytes.
   module BlobWrappers
-    def reopen(arg1)
-      SQLite3.blob_reopen(self, arg1)
+    def reopen(long_long)
+      SQLite3.blob_reopen(self, long_long)
     end
     
     def close()
@@ -5505,9 +5505,9 @@ module SQLite3
   # 
   # ^This function sets the database handle error code and message.
   # 
-  # @method blob_reopen(blob, integer)
+  # @method blob_reopen(blob, long_long)
   # @param [Blob] blob 
-  # @param [Integer] integer 
+  # @param [Integer] long_long 
   # @return [Integer] 
   # @scope class
   attach_function :blob_reopen, :sqlite3_blob_reopen, [Blob, :long_long], :int
@@ -5799,8 +5799,8 @@ module SQLite3
   # 
   # See also: (sqlite3_mutex_held()) and (sqlite3_mutex_notheld()).
   # 
-  # @method mutex_alloc(integer)
-  # @param [Integer] integer 
+  # @method mutex_alloc(int)
+  # @param [Integer] int 
   # @return [Mutex] 
   # @scope class
   attach_function :mutex_alloc, :sqlite3_mutex_alloc, [:int], Mutex
@@ -6729,10 +6729,10 @@ module SQLite3
   # case-independent fashion, using the same definition of case independence 
   # that SQLite uses internally when comparing identifiers.
   # 
-  # @method strnicmp(string, string, integer)
+  # @method strnicmp(string, string, int)
   # @param [String] string 
   # @param [String] string 
-  # @param [Integer] integer 
+  # @param [Integer] int 
   # @return [Integer] 
   # @scope class
   attach_function :strnicmp, :sqlite3_strnicmp, [:string, :string, :int], :int

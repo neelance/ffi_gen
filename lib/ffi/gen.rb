@@ -181,12 +181,11 @@ class FFI::Gen
   end
   
   class Name
-    attr_reader :raw, :parts
+    attr_reader :parts, :raw
     
-    def initialize(generator, raw)
-      @generator = generator
+    def initialize(parts, raw = nil)
+      @parts = parts
       @raw = raw
-      @parts = @raw.is_a?(Array) ? raw : @raw.sub(/^(#{generator.prefixes.join('|')})/, '').split(/_|(?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z])/).reject(&:empty?)
     end
     
     def format(*modes, keyword_blacklist)
@@ -203,6 +202,62 @@ class FFI::Gen
     
     def empty?
       @parts.empty?
+    end
+  end
+  
+  class PrimitiveType
+    def initialize(clang_type)
+      @clang_type = clang_type
+    end
+    
+    def name
+      Name.new [@clang_type.to_s]
+    end
+  end
+  
+  class StringType
+    def name
+      Name.new ["string"]
+    end
+  end
+  
+  class ByValueType
+    def initialize(inner_type)
+      @inner_type = inner_type
+    end
+    
+    def name
+      @inner_type.name
+    end
+  end
+  
+  class PointerType
+    attr_reader :pointee_name, :depth
+    
+    def initialize(pointee_name, depth)
+      @pointee_name = pointee_name
+      @depth = depth
+    end
+    
+    def name
+      @pointee_name
+    end
+  end
+  
+  class ConstantArrayType
+    def initialize(element_type, size)
+      @element_type = element_type
+      @size = size
+    end
+    
+    def name
+      Name.new ["array"]
+    end
+  end
+    
+  class UnknownType
+    def name
+      Name.new ["unknown"]
     end
   end
   
@@ -287,7 +342,7 @@ class FFI::Gen
   end
   
   def read_declaration(declaration, comment)
-    name = Name.new self, Clang.get_cursor_spelling(declaration).to_s_and_dispose
+    name = read_name declaration
 
     case declaration[:kind]
     when :enum_decl
@@ -307,7 +362,7 @@ class FFI::Gen
       previous_constant_location = Clang.get_cursor_location declaration
       next_constant_value = 0
       Clang.get_children(declaration).each do |enum_constant|
-        constant_name = Name.new self, Clang.get_cursor_spelling(enum_constant).to_s_and_dispose
+        constant_name = read_name enum_constant
         
         constant_location = Clang.get_cursor_location enum_constant
         constant_comment_range = Clang.get_range previous_constant_location, constant_location
@@ -345,7 +400,7 @@ class FFI::Gen
         field = struct_children.shift
         raise if field[:kind] != :field_decl
         
-        field_name = Name.new self, Clang.get_cursor_spelling(field).to_s_and_dispose
+        field_name = read_name field
         field_extent = Clang.get_cursor_extent field
         
         field_comment_range = Clang.get_range previous_field_end, Clang.get_range_start(field_extent)
@@ -365,10 +420,10 @@ class FFI::Gen
         if nested_declaration
           read_declaration nested_declaration, []
           decl = @declarations[Clang.get_cursor_type(nested_declaration)]
-          decl.name = Name.new(self, name.parts + field_name.parts) if decl and decl.name.empty?
+          decl.name = Name.new(name.parts + field_name.parts) if decl and decl.name.empty?
         end
         
-        field_type = Clang.get_cursor_type field
+        field_type = resolve_type Clang.get_cursor_type(field)
         struct.fields << { name: field_name, type: field_type, comment: field_comment }
       end
       
@@ -388,12 +443,15 @@ class FFI::Gen
         current_description << line
       end
       
-      return_type = Clang.get_cursor_result_type declaration
+      return_type = resolve_type Clang.get_cursor_result_type(declaration)
       parameters = []
+      first_parameter_type = nil
       Clang.get_children(declaration).each do |function_child|
         next if function_child[:kind] != :parm_decl
-        param_name = Name.new self, Clang.get_cursor_spelling(function_child).to_s_and_dispose
-        param_type = Clang.get_cursor_type function_child
+        param_name = read_name function_child
+        param_type = resolve_type Clang.get_cursor_type(function_child)
+        param_name = param_type.name if param_name.empty?
+        first_parameter_type ||= Clang.get_cursor_type function_child
         tokens = Clang.get_tokens translation_unit, Clang.get_cursor_extent(function_child)
         is_array = tokens.any? { |t| Clang.get_token_spelling(translation_unit, t).to_s_and_dispose == "[" }
         parameters << { name: param_name, type: param_type, is_array: is_array }
@@ -408,7 +466,7 @@ class FFI::Gen
       function = FunctionOrCallback.new self, name, parameters, return_type, false, @blocking.include?(name.raw), function_description, return_value_description
       @declarations[declaration] = function
       
-      pointee_declaration = parameters.first && get_pointee_declaration(parameters.first[:type])
+      pointee_declaration = first_parameter_type && get_pointee_declaration(first_parameter_type)
       if pointee_declaration
         type_prefix = pointee_declaration.name.parts.join.downcase
         function_name_parts = name.parts.dup
@@ -417,7 +475,7 @@ class FFI::Gen
           function_name_parts.shift
         end
         if type_prefix.empty?
-          pointee_declaration.oo_functions << [Name.new(self, function_name_parts), function, get_pointee_declaration(function.return_type)]
+          pointee_declaration.oo_functions << [Name.new(function_name_parts), function]
         end
       end
     
@@ -428,11 +486,12 @@ class FFI::Gen
         child_declaration.name = name if child_declaration and child_declaration.name.empty?
         
       elsif typedef_children.size > 1
-        return_type = Clang.get_cursor_type typedef_children.first
+        return_type = resolve_type Clang.get_cursor_type(typedef_children.first)
         parameters = []
         typedef_children[1..-1].each do |param_decl|
-          param_name = Name.new self, Clang.get_cursor_spelling(param_decl).to_s_and_dispose
-          param_type = Clang.get_cursor_type param_decl
+          param_name = read_name param_decl
+          param_type = resolve_type Clang.get_cursor_type(param_decl)
+          param_name = param_type.name if param_name.empty?
           parameters << { name:param_name, type: param_type, description: [] }
         end
 
@@ -452,6 +511,69 @@ class FFI::Gen
       end
       
     end
+  end
+  
+  def resolve_type(full_type)
+    canonical_type = Clang.get_canonical_type full_type
+    data_array = case canonical_type[:kind]
+    when :void, :bool, :u_char, :u_short, :u_int, :u_long, :u_long_long, :char_s, :s_char, :short, :int, :long, :long_long, :float, :double
+      PrimitiveType.new canonical_type[:kind]
+    when :pointer
+      pointee_type = Clang.get_pointee_type canonical_type
+      type = case pointee_type[:kind]
+      when :char_s
+        StringType.new
+      when :record
+        @declarations[Clang.get_cursor_type(Clang.get_type_declaration(pointee_type))]
+      when :function_proto
+        @declarations[full_type]
+      else
+        nil
+      end
+      
+      if type.nil?
+        pointer_depth = 0
+        pointee_name = ""
+        current_type = full_type
+        loop do
+          declaration = Clang.get_type_declaration current_type
+          pointee_name = read_name declaration
+          break if not pointee_name.empty?
+
+          case current_type[:kind]
+          when :pointer
+            pointer_depth += 1
+            current_type = Clang.get_pointee_type current_type
+          when :unexposed
+            break
+          else
+            pointee_name = Name.new Clang.get_type_kind_spelling(current_type[:kind]).to_s_and_dispose.split("_")
+            break
+          end
+        end
+        type = PointerType.new pointee_name, pointer_depth
+      end
+      
+      type
+    when :record
+      type = @declarations[canonical_type]
+      type &&= ByValueType.new(type)
+      type || UnknownType.new # TODO
+    when :enum
+      @declarations[canonical_type] || UnknownType.new # TODO
+    when :constant_array
+      ConstantArrayType.new resolve_type(Clang.get_array_element_type(canonical_type)), Clang.get_array_size(canonical_type)
+    when :unexposed
+      UnknownType.new
+    else
+      raise NotImplementedError, "No translation for values of type #{canonical_type[:kind]}"
+    end
+  end
+  
+  def read_name(cursor)
+    raw = Clang.get_cursor_spelling(cursor).to_s_and_dispose
+    parts = raw.sub(/^(#{@prefixes.join('|')})/, '').split(/_|(?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z])/).reject(&:empty?)
+    Name.new parts, raw
   end
   
   def read_value(tokens)

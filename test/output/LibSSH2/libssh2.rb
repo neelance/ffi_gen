@@ -1466,10 +1466,10 @@ module LibSSH2
   # 
   # <em>This entry is only for documentation and no real method.</em>
   # 
-  # @method _callback_trace_handler_func_(void, string, integer)
+  # @method _callback_trace_handler_func_(void, string, u_long)
   # @param [FFI::Pointer(*Void)] void 
   # @param [String] string 
-  # @param [Integer] integer 
+  # @param [Integer] u_long 
   # @return [LIBSSH2SESSION] 
   # @scope class
   callback :trace_handler_func, [:pointer, :string, :ulong], LIBSSH2SESSION
