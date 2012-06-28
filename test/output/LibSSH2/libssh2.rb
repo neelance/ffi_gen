@@ -254,6 +254,30 @@ module LibSSH2
   
   INIT_NO_CRYPTO = 0x0001
   
+  def session_init()
+    session_init_ex(nil, nil, nil, nil)
+  end
+  
+  def session_disconnect(session, description)
+    session_disconnect_ex(session, SSH_DISCONNECT_BY_APPLICATION, description, "")
+  end
+  
+  def userauth_password(session, username, password)
+    userauth_password_ex(session, username, username.length, password, password.length, nil)
+  end
+  
+  def userauth_publickey_fromfile(session, username, publickey, privatekey, passphrase)
+    userauth_publickey_fromfile_ex(session, username, username.length, publickey, privatekey, passphrase)
+  end
+  
+  def userauth_hostbased_fromfile(session, username, publickey, privatekey, passphrase, hostname)
+    userauth_hostbased_fromfile_ex(session, username, username.length, publickey, privatekey, passphrase, hostname, hostname.length, username, username.length)
+  end
+  
+  def userauth_keyboard_interactive(session, username, response_callback)
+    userauth_keyboard_interactive_ex(session, username, username.length, response_callback)
+  end
+  
   CHANNEL_WINDOW_DEFAULT = 65536
   
   CHANNEL_PACKET_DEFAULT = 32768
@@ -268,9 +292,85 @@ module LibSSH2
   
   SSH_EXTENDED_DATA_STDERR = 1
   
+  def channel_open_session(session)
+    channel_open_ex(session, "session", "session".length-1, CHANNEL_WINDOW_DEFAULT, CHANNEL_PACKET_DEFAULT, nil, 0)
+  end
+  
+  def channel_direct_tcpip(session, host, port)
+    channel_direct_tcpip_ex(session, host, port, "127.0.0.1", 22)
+  end
+  
+  def channel_forward_listen(session, port)
+    channel_forward_listen_ex(session, nil, port, nil, 16)
+  end
+  
+  def channel_setenv(channel, varname, value)
+    channel_setenv_ex(channel, varname, varname.length, value, value.length)
+  end
+  
+  def channel_request_pty(channel, term)
+    channel_request_pty_ex(channel, term, term.length, nil, 0, TERM_WIDTH, TERM_HEIGHT, TERM_WIDTH_PX, TERM_HEIGHT_PX)
+  end
+  
+  def channel_request_pty_size(channel, width, height)
+    channel_request_pty_size_ex(channel, width, height, 0, 0)
+  end
+  
+  def channel_x11_req(channel, screen_number)
+    channel_x11_req_ex(channel, 0, nil, nil, screen_number)
+  end
+  
+  def channel_shell(channel)
+    channel_process_startup(channel, "shell", "shell".length-1, nil, 0)
+  end
+  
+  def channel_exec(channel, command)
+    channel_process_startup(channel, "exec", "exec".length-1, command, command.length)
+  end
+  
+  def channel_subsystem(channel, subsystem)
+    channel_process_startup(channel, "subsystem", "subsystem".length-1, subsystem, subsystem.length)
+  end
+  
+  def channel_read(channel, buf, buflen)
+    channel_read_ex(channel, 0, buf, buflen)
+  end
+  
+  def channel_read_stderr(channel, buf, buflen)
+    channel_read_ex(channel, SSH_EXTENDED_DATA_STDERR, buf, buflen)
+  end
+  
+  def channel_window_read(channel)
+    channel_window_read_ex(channel, nil, nil)
+  end
+  
+  def channel_write(channel, buf, buflen)
+    channel_write_ex(channel, 0, buf, buflen)
+  end
+  
+  def channel_write_stderr(channel, buf, buflen)
+    channel_write_ex(channel, SSH_EXTENDED_DATA_STDERR, buf, buflen)
+  end
+  
+  def channel_window_write(channel)
+    channel_window_write_ex(channel, nil)
+  end
+  
   CHANNEL_FLUSH_EXTENDED_DATA = -1
   
   CHANNEL_FLUSH_ALL = -2
+  
+  def channel_flush(channel)
+    channel_flush_ex(channel, 0)
+  end
+  
+  def channel_flush_stderr(channel)
+    channel_flush_ex(channel, SSH_EXTENDED_DATA_STDERR)
+  end
+  
+  def scp_send(session, path, mode, size)
+    scp_send_ex(session, path, mode, size, 0, 0)
+  end
   
   HAVE_LIBSSH2_KNOWNHOST_API = 0x010101
   

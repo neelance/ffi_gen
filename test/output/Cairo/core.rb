@@ -12,6 +12,10 @@ module Cairo
     end
   end
   
+  def version_stringize(major, minor, micro)
+    version_stringize(major, minor, micro)
+  end
+  
   MIME_TYPE_JPEG = "image/jpeg"
   
   MIME_TYPE_PNG = "image/png"

@@ -7,7 +7,7 @@ class FFI::Gen
       writer.puts "ffi_lib_flags #{@ffi_lib_flags.map(&:inspect).join(', ')}" if @ffi_lib_flags
       writer.puts "ffi_lib '#{@ffi_lib}'", ""
       writer.puts "def self.attach_function(name, *_)", "  begin; super; rescue FFI::NotFoundError => e", "    (class << self; self; end).class_eval { define_method(name) { |*_| raise e } }", "  end", "end", ""
-      declarations.values.compact.uniq.each do |declaration|
+      declarations.each do |declaration|
         declaration.write_ruby writer
       end
     end
@@ -177,9 +177,28 @@ class FFI::Gen
     end
   end
   
-  class Constant
+  class Define
     def write_ruby(writer)
-      writer.puts "#{@name.to_ruby_constant} = #{@value}", ""
+      parts = @value.map { |v|
+        if v.is_a? Array
+          case v[0]
+          when :method then v[1].to_ruby_downcase
+          when :constant then v[1].to_ruby_constant
+          else raise ArgumentError
+          end
+        else
+          v
+        end
+      }
+      if @parameters
+        writer.puts "def #{@name.to_ruby_downcase}(#{@parameters.join(", ")})"
+        writer.indent do
+          writer.puts parts.join
+        end
+        writer.puts "end", ""
+      else
+        writer.puts "#{@name.to_ruby_constant} = #{parts.join}", ""
+      end
     end
   end
   

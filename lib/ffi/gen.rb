@@ -123,10 +123,11 @@ class FFI::Gen
     end
   end
   
-  class Constant
-    def initialize(generator, name, value)
+  class Define
+    def initialize(generator, name, parameters, value)
       @generator = generator
       @name = name
+      @parameters = parameters
       @value = value
     end
   end
@@ -320,7 +321,9 @@ class FFI::Gen
       header_files << included_file if @headers.any? { |header| header.is_a?(Regexp) ? header =~ filename : filename.end_with?(header) }
     }, nil
     
-    @declarations = {}
+    @declarations = []
+    @declarations_by_name = {}
+    @declarations_by_type = {}
     unit_cursor = Clang.get_translation_unit_cursor translation_unit
     previous_declaration_end = Clang.get_cursor_location unit_cursor
     Clang.get_children(unit_cursor).each do |declaration|
@@ -340,6 +343,13 @@ class FFI::Gen
     end
 
     @declarations
+  end
+  
+  def add_declaration(name, type, declaration)
+    @declarations.delete declaration
+    @declarations << declaration
+    @declarations_by_name[name] = declaration unless name.nil?
+    @declarations_by_type[type] = declaration unless type.nil?
   end
   
   def read_declaration(declaration, comment)
@@ -374,7 +384,24 @@ class FFI::Gen
         begin
           value_cursor = Clang.get_children(enum_constant).first
           constant_value = if value_cursor
-            eval read_value(Clang.get_tokens(translation_unit, Clang.get_cursor_extent(value_cursor)))
+            parts = []
+            Clang.get_tokens(translation_unit, Clang.get_cursor_extent(value_cursor)).each do |token|
+              spelling = Clang.get_token_spelling(translation_unit, token).to_s_and_dispose
+              case Clang.get_token_kind(token)
+              when :literal
+                parts << spelling
+              when :punctuation
+                case spelling
+                when "+", "-", "<<", ">>", "(", ")"
+                  parts << spelling
+                else
+                  raise ArgumentError
+                end
+              else
+                raise ArgumentError
+              end
+            end
+            eval parts.join
           else
             next_constant_value
           end
@@ -387,10 +414,10 @@ class FFI::Gen
       end
 
       enum = Enum.new self, name, constants, enum_description
-      @declarations[Clang.get_cursor_type(declaration)] = enum
+      add_declaration name.raw, Clang.get_cursor_type(declaration), enum
       
     when :struct_decl, :union_decl
-      struct = @declarations.delete(Clang.get_cursor_type(declaration)) || StructOrUnion.new(self, name, (declaration[:kind] == :union_decl))
+      struct = @declarations_by_type[Clang.get_cursor_type(declaration)] || StructOrUnion.new(self, name, (declaration[:kind] == :union_decl))
       raise if not struct.fields.empty?
       struct.description.concat comment
       
@@ -420,7 +447,7 @@ class FFI::Gen
         
         if nested_declaration
           read_declaration nested_declaration, []
-          decl = @declarations[Clang.get_cursor_type(nested_declaration)]
+          decl = @declarations_by_type[Clang.get_cursor_type(nested_declaration)]
           decl.name = Name.new(name.parts + field_name.parts) if decl and decl.name.empty?
         end
         
@@ -428,7 +455,7 @@ class FFI::Gen
         struct.fields << { name: field_name, type: field_type, comment: field_comment }
       end
       
-      @declarations[Clang.get_cursor_type(declaration)] = struct
+      add_declaration name.raw, Clang.get_cursor_type(declaration), struct
     
     when :function_decl
       function_description = []
@@ -465,7 +492,7 @@ class FFI::Gen
       end
       
       function = FunctionOrCallback.new self, name, parameters, return_type, false, @blocking.include?(name.raw), function_description, return_value_description
-      @declarations[declaration] = function
+      add_declaration name.raw, nil, function
       
       pointee_declaration = first_parameter_type && get_pointee_declaration(first_parameter_type)
       if pointee_declaration
@@ -483,7 +510,7 @@ class FFI::Gen
     when :typedef_decl
       typedef_children = Clang.get_children declaration
       if typedef_children.size == 1
-        child_declaration = @declarations[Clang.get_cursor_type(typedef_children.first)]
+        child_declaration = @declarations_by_type[Clang.get_cursor_type(typedef_children.first)]
         child_declaration.name = name if child_declaration and child_declaration.name.empty?
         
       elsif typedef_children.size > 1
@@ -497,15 +524,93 @@ class FFI::Gen
         end
 
         callback = FunctionOrCallback.new self, name, parameters, return_type, true, false, comment, []
-        @declarations[Clang.get_cursor_type(declaration)] = callback
+        add_declaration name.raw, Clang.get_cursor_type(declaration), callback
       end
         
     when :macro_definition
-      tokens = Clang.get_tokens translation_unit, Clang.get_cursor_extent(declaration)
+      tokens = Clang.get_tokens(translation_unit, Clang.get_cursor_extent(declaration)).map { |token|
+        [Clang.get_token_kind(token), Clang.get_token_spelling(translation_unit, token).to_s_and_dispose]
+      }
       if tokens.size > 1
+        tokens.shift
         begin
-          value = read_value tokens[1..-1]
-          @declarations[name] ||= Constant.new self, name, value
+          parameters = nil
+          if tokens.first[1] == "("
+            tokens_backup = tokens.dup
+            begin
+              parameters = []
+              tokens.shift
+              loop do
+                kind, spelling = tokens.shift
+                case kind
+                when :identifier
+                  parameters << spelling
+                when :punctuation
+                  break if spelling == ")"
+                  raise ArgumentError unless spelling == ","
+                else
+                  raise ArgumentError
+                end
+              end
+            rescue ArgumentError
+              parameters = nil
+              tokens = tokens_backup
+            end
+          end
+          value = []
+          until tokens.empty?
+            kind, spelling = tokens.shift
+            case kind
+            when :literal
+              value << spelling
+            when :punctuation
+              case spelling
+              when "+", "-", "<<", ">>", ")"
+                value << spelling
+              when ","
+                value << ", "
+              when "("
+                if tokens[1][1] == ")"
+                  tokens.delete_at 1
+                else
+                  value << spelling
+                end
+              else
+                raise ArgumentError
+              end
+            when :identifier
+              raise ArgumentError unless parameters
+              if parameters.include? spelling
+                value << spelling
+              elsif spelling == "NULL"
+                value << "nil"
+              else
+                if not tokens.empty? and tokens.first[1] == "("
+                  tokens.shift
+                  if spelling == "strlen"
+                    argument_kind, argument_spelling = tokens.shift
+                    second_token_kind, second_token_spelling = tokens.shift
+                    raise ArgumentError unless argument_kind == :identifier and second_token_spelling == ")"
+                    value << "#{argument_spelling}.length"
+                  else
+                    value << [:method, read_name(spelling)]
+                    value << "("
+                  end
+                else
+                  value << [:constant, read_name(spelling)]
+                end
+              end
+            when :keyword
+              raise ArgumentError unless spelling == "sizeof" and tokens[0][1] == "(" and tokens[1][0] == :literal and tokens[2][1] == ")"
+              tokens.shift
+              argument_kind, argument_spelling = tokens.shift
+              value << "#{argument_spelling}.length"
+              tokens.shift
+            else
+              raise ArgumentError
+            end
+          end
+          add_declaration name.raw, nil, Define.new(self, name, parameters, value)
         rescue ArgumentError
           puts "Warning: Could not process value of macro \"#{name.raw}\""
         end
@@ -525,9 +630,9 @@ class FFI::Gen
       when :char_s
         StringType.new
       when :record
-        @declarations[Clang.get_cursor_type(Clang.get_type_declaration(pointee_type))]
+        @declarations_by_type[Clang.get_cursor_type(Clang.get_type_declaration(pointee_type))]
       when :function_proto
-        @declarations[full_type]
+        @declarations_by_type[full_type]
       else
         nil
       end
@@ -557,11 +662,11 @@ class FFI::Gen
       
       type
     when :record
-      type = @declarations[canonical_type]
+      type = @declarations_by_type[canonical_type]
       type &&= ByValueType.new(type)
       type || UnknownType.new # TODO
     when :enum
-      @declarations[canonical_type] || UnknownType.new # TODO
+      @declarations_by_type[canonical_type] || UnknownType.new # TODO
     when :constant_array
       ConstantArrayType.new resolve_type(Clang.get_array_element_type(canonical_type)), Clang.get_array_size(canonical_type)
     when :unexposed
@@ -571,31 +676,10 @@ class FFI::Gen
     end
   end
   
-  def read_name(cursor)
-    raw = Clang.get_cursor_spelling(cursor).to_s_and_dispose
-    parts = raw.sub(/^(#{@prefixes.join('|')})/, '').split(/_|(?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z])/).reject(&:empty?)
-    Name.new parts, raw
-  end
-  
-  def read_value(tokens)
-    parts = []
-    tokens.each do |token|
-      spelling = Clang.get_token_spelling(translation_unit, token).to_s_and_dispose
-      case Clang.get_token_kind(token)
-      when :literal
-        parts << spelling
-      when :punctuation
-        case spelling
-        when "+", "-", "<<", ">>", "(", ")"
-          parts << spelling
-        else
-          raise ArgumentError
-        end
-      else
-        raise ArgumentError
-      end
-    end
-    parts.join
+  def read_name(source)
+    source = Clang.get_cursor_spelling(source).to_s_and_dispose if source.is_a? Clang::Cursor
+    parts = source.sub(/^(#{@prefixes.join('|')})/, '').split(/_|(?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z])/).reject(&:empty?)
+    Name.new parts, source
   end
   
   def get_pointee_declaration(type)
@@ -603,7 +687,7 @@ class FFI::Gen
     return nil if canonical_type[:kind] != :pointer
     pointee_type = Clang.get_pointee_type canonical_type
     return nil if pointee_type[:kind] != :record
-    @declarations[Clang.get_cursor_type(Clang.get_type_declaration(pointee_type))]
+    @declarations_by_type[Clang.get_cursor_type(Clang.get_type_declaration(pointee_type))]
   end
   
   def extract_comment(translation_unit, range, search_backwards = true)
