@@ -290,7 +290,7 @@ class FFI::Gen
     end
 
     def ruby_ffi_type
-      :char
+      ":char"
     end
   end
   
