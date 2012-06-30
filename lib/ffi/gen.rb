@@ -423,36 +423,40 @@ class FFI::Gen
       
       struct_children = Clang.get_children declaration
       previous_field_end = Clang.get_cursor_location declaration
+      last_nested_declaration = nil
       until struct_children.empty?
-        nested_declaration = [:struct_decl, :union_decl].include?(struct_children.first[:kind]) ? struct_children.shift : nil
-        field = struct_children.shift
-        raise if field[:kind] != :field_decl
-        
-        field_name = read_name field
-        field_extent = Clang.get_cursor_extent field
-        
-        field_comment_range = Clang.get_range previous_field_end, Clang.get_range_start(field_extent)
-        field_comment, _ = extract_comment translation_unit, field_comment_range
-        
-        # check for comment starting on same line
-        next_field_start = struct_children.first ? Clang.get_cursor_location(struct_children.first) : Clang.get_range_end(Clang.get_cursor_extent(declaration))
-        following_comment_range = Clang.get_range Clang.get_range_end(field_extent), next_field_start
-        following_comment, following_comment_token = extract_comment translation_unit, following_comment_range, false
-        if following_comment_token and Clang.get_spelling_location_data(Clang.get_token_location(translation_unit, following_comment_token))[:line] == Clang.get_spelling_location_data(Clang.get_range_end(field_extent))[:line]
-          field_comment = following_comment
-          previous_field_end = Clang.get_range_end Clang.get_token_extent(translation_unit, following_comment_token)
+        child = struct_children.shift
+        case child[:kind]
+        when :struct_decl, :union_decl
+          read_declaration child, []
+          last_nested_declaration = @declarations_by_type[Clang.get_cursor_type(child)]
+        when :field_decl
+          field_name = read_name child
+          field_extent = Clang.get_cursor_extent child
+          
+          field_comment_range = Clang.get_range previous_field_end, Clang.get_range_start(field_extent)
+          field_comment, _ = extract_comment translation_unit, field_comment_range
+          
+          # check for comment starting on same line
+          next_field_start = struct_children.first ? Clang.get_cursor_location(struct_children.first) : Clang.get_range_end(Clang.get_cursor_extent(declaration))
+          following_comment_range = Clang.get_range Clang.get_range_end(field_extent), next_field_start
+          following_comment, following_comment_token = extract_comment translation_unit, following_comment_range, false
+          if following_comment_token and Clang.get_spelling_location_data(Clang.get_token_location(translation_unit, following_comment_token))[:line] == Clang.get_spelling_location_data(Clang.get_range_end(field_extent))[:line]
+            field_comment = following_comment
+            previous_field_end = Clang.get_range_end Clang.get_token_extent(translation_unit, following_comment_token)
+          else
+            previous_field_end = Clang.get_range_end field_extent
+          end
+          
+          field_type = resolve_type Clang.get_cursor_type(child)
+          if last_nested_declaration and last_nested_declaration.name.empty?
+            last_nested_declaration.name = Name.new(name.parts + field_name.parts)
+          end
+          last_nested_declaration = nil
+          struct.fields << { name: field_name, type: field_type, comment: field_comment }
         else
-          previous_field_end = Clang.get_range_end field_extent
+          raise
         end
-        
-        if nested_declaration
-          read_declaration nested_declaration, []
-          decl = @declarations_by_type[Clang.get_cursor_type(nested_declaration)]
-          decl.name = Name.new(name.parts + field_name.parts) if decl and decl.name.empty?
-        end
-        
-        field_type = resolve_type Clang.get_cursor_type(field)
-        struct.fields << { name: field_name, type: field_type, comment: field_comment }
       end
       
       add_declaration name.raw, Clang.get_cursor_type(declaration), struct
@@ -669,7 +673,7 @@ class FFI::Gen
       @declarations_by_type[canonical_type] || UnknownType.new # TODO
     when :constant_array
       ConstantArrayType.new resolve_type(Clang.get_array_element_type(canonical_type)), Clang.get_array_size(canonical_type)
-    when :unexposed
+    when :unexposed, :function_proto
       UnknownType.new
     else
       raise NotImplementedError, "No translation for values of type #{canonical_type[:kind]}"
