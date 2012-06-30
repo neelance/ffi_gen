@@ -12,6 +12,11 @@ module CEF
     end
   end
   
+  # (Not documented)
+  class CefSchemeHandlerFactoryT < FFI::Struct
+    layout :dummy, :char
+  end
+  
   # Register a scheme handler factory for the specified |scheme_name| and
   # optional |domain_name|. An NULL |domain_name| value for a standard scheme
   # will cause the factory to match all domain names. The |domain_name| value
@@ -22,11 +27,6 @@ module CEF
   # function may be called multiple times to change or remove the factory that
   # matches the specified |scheme_name| and optional |domain_name|. Returns false
   # (0) if an error occurs. This function may be called on any thread.
-  class CefSchemeHandlerFactoryT < FFI::Struct
-    layout :dummy, :char
-  end
-  
-  # (Not documented)
   # 
   # @method register_scheme_handler_factory(scheme_name, domain_name, factory)
   # @param [FFI::Pointer(*StringT)] scheme_name 

@@ -12,12 +12,12 @@ module CEF
     end
   end
   
-  # Visit web plugin information.
+  # (Not documented)
   class CefWebPluginInfoVisitorT < FFI::Struct
     layout :dummy, :char
   end
   
-  # (Not documented)
+  # Visit web plugin information.
   # 
   # @method visit_web_plugin_info(visitor)
   # @param [CefWebPluginInfoVisitorT] visitor 

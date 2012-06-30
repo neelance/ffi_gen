@@ -66,13 +66,13 @@ module CEF
            :eof, :pointer
   end
   
-  # Create a new cef_zip_reader_t object. The returned object's functions can
-  # only be called from the thread that created the object.
+  # (Not documented)
   class CefStreamReaderT < FFI::Struct
     layout :dummy, :char
   end
   
-  # (Not documented)
+  # Create a new cef_zip_reader_t object. The returned object's functions can
+  # only be called from the thread that created the object.
   # 
   # @method zip_reader_create(stream)
   # @param [CefStreamReaderT] stream 

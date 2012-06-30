@@ -24,14 +24,14 @@ module CEF
   # @scope class
   attach_function :currently_on, :cef_currently_on, [:char], :int
   
-  # Post a task for execution on the specified thread. This function may be
-  # called on any thread. It is an error to request a thread from the wrong
-  # process.
+  # (Not documented)
   class CefTaskT < FFI::Struct
     layout :dummy, :char
   end
   
-  # (Not documented)
+  # Post a task for execution on the specified thread. This function may be
+  # called on any thread. It is an error to request a thread from the wrong
+  # process.
   # 
   # @method post_task(thread_id, task)
   # @param [unknown] thread_id 
@@ -40,14 +40,14 @@ module CEF
   # @scope class
   attach_function :post_task, :cef_post_task, [:char, CefTaskT], :int
   
-  # Post a task for delayed execution on the specified thread. This function may
-  # be called on any thread. It is an error to request a thread from the wrong
-  # process.
+  # (Not documented)
   class CefTaskT < FFI::Struct
     layout :dummy, :char
   end
   
-  # (Not documented)
+  # Post a task for delayed execution on the specified thread. This function may
+  # be called on any thread. It is an error to request a thread from the wrong
+  # process.
   # 
   # @method post_delayed_task(thread_id, task, delay_ms)
   # @param [unknown] thread_id 

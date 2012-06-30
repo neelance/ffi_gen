@@ -12,7 +12,8 @@ module CEF
     end
   end
   
-  # (Not documented)
+  # Structure defining the reference count implementation functions. All
+  # framework structures must include the cef_base_t structure first.
   # 
   # = Fields:
   # :size ::

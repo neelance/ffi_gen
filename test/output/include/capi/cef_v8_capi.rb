@@ -12,6 +12,11 @@ module CEF
     end
   end
   
+  # (Not documented)
+  class CefV8handlerT < FFI::Struct
+    layout :dummy, :char
+  end
+  
   # Register a new V8 extension with the specified JavaScript extension code and
   # handler. Functions implemented by the handler are prototyped using the
   # keyword 'native'. The calling of a native function is restricted to the scope
@@ -66,11 +71,6 @@ module CEF
   #   // Call another function.
   #   example.test.increment();
   # </pre>
-  class CefV8handlerT < FFI::Struct
-    layout :dummy, :char
-  end
-  
-  # (Not documented)
   # 
   # @method register_extension(extension_name, javascript_code, handler)
   # @param [FFI::Pointer(*StringT)] extension_name 

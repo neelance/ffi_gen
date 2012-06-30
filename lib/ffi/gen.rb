@@ -322,16 +322,27 @@ class FFI::Gen
     declaration_cursors.delete_if { |cursor| [:macro_expansion, :inclusion_directive, :var_decl].include? cursor[:kind] }
     declaration_cursors.delete_if { |cursor| !header_files.include?(Clang.get_spelling_location_data(Clang.get_cursor_location(cursor))[:file]) }
     
+    is_nested_declaration = []
+    min_offset = Clang.get_spelling_location_data(Clang.get_cursor_location(declaration_cursors.last))[:offset]
+    declaration_cursors.reverse_each do |declaration_cursor|
+      offset = Clang.get_spelling_location_data(Clang.get_cursor_location(declaration_cursor))[:offset]
+      is_nested_declaration.unshift(offset > min_offset)
+      min_offset = offset if offset < min_offset
+    end
+    
     @declarations = []
     @declarations_by_name = {}
     @declarations_by_type = {}
     previous_declaration_end = Clang.get_cursor_location unit_cursor
-    declaration_cursors.each do |declaration_cursor|
-      comment_range = Clang.get_range previous_declaration_end, Clang.get_cursor_location(declaration_cursor)
-      comment, _ = extract_comment translation_unit, comment_range
-      previous_declaration_end = Clang.get_range_end Clang.get_cursor_extent(declaration_cursor) unless comment.nil?
+    declaration_cursors.each_with_index do |declaration_cursor, index|
+      comment = []
+      unless is_nested_declaration[index]
+        comment_range = Clang.get_range previous_declaration_end, Clang.get_cursor_location(declaration_cursor)
+        comment, _ = extract_comment translation_unit, comment_range
+        previous_declaration_end = Clang.get_range_end Clang.get_cursor_extent(declaration_cursor)
+      end
       
-      read_declaration declaration_cursor, (comment || [])
+      read_declaration declaration_cursor, comment
     end
 
     @declarations
@@ -363,7 +374,6 @@ class FFI::Gen
         constant_location = Clang.get_cursor_location enum_constant
         constant_comment_range = Clang.get_range previous_constant_location, constant_location
         constant_description, _ = extract_comment translation_unit, constant_comment_range
-        constant_description ||= []
         constant_description.concat(constant_descriptions[constant_name.raw] || [])
         previous_constant_location = constant_location
         
@@ -435,7 +445,7 @@ class FFI::Gen
           field_type = resolve_type Clang.get_cursor_type(child)
           last_nested_declaration.name ||= Name.new(name.parts + field_name.parts) if last_nested_declaration
           last_nested_declaration = nil
-          struct.fields << { name: field_name, type: field_type, comment: (field_comment || []) }
+          struct.fields << { name: field_name, type: field_type, comment: field_comment }
         else
           raise
         end

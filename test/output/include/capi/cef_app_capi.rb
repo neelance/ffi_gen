@@ -12,6 +12,11 @@ module CEF
     end
   end
   
+  # (Not documented)
+  class CefAppT < FFI::Struct
+    layout :dummy, :char
+  end
+  
   # This function should be called from the application entry point function to
   # execute a secondary process. It can be used to run secondary processes from
   # the browser client executable (default behavior) or from a separate
@@ -20,11 +25,6 @@ module CEF
   # it will return immediately with a value of -1. If called for a recognized
   # secondary process it will block until the process should exit and then return
   # the process exit code. The |application| parameter may be NULL.
-  class CefAppT < FFI::Struct
-    layout :dummy, :char
-  end
-  
-  # (Not documented)
   # 
   # @method execute_process(args, application)
   # @param [FFI::Pointer(*CefMainArgsT)] args 
@@ -33,15 +33,15 @@ module CEF
   # @scope class
   attach_function :execute_process, :cef_execute_process, [:pointer, CefAppT], :int
   
-  # This function should be called on the main application thread to initialize
-  # the CEF browser process. The |application| parameter may be NULL. A return
-  # value of true (1) indicates that it succeeded and false (0) indicates that it
-  # failed.
+  # (Not documented)
   class CefAppT < FFI::Struct
     layout :dummy, :char
   end
   
-  # (Not documented)
+  # This function should be called on the main application thread to initialize
+  # the CEF browser process. The |application| parameter may be NULL. A return
+  # value of true (1) indicates that it succeeded and false (0) indicates that it
+  # failed.
   # 
   # @method initialize(args, settings, application)
   # @param [FFI::Pointer(*CefMainArgsT)] args 
