@@ -12,11 +12,13 @@ Features
 * Generation of FFI methods, structures, unions, enumerations and callbacks
 * Generation of YARD documentation comments
 * Tested with headers of the following libraries:
+  * Cairo
+  * CEF (Chromium Embedded Framework)
   * Clang
+  * LibSSH2
   * LLVM
   * OpenGL
   * SQLite3
-  * Cairo
 
 
 Requirements
