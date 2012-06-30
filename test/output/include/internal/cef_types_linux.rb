@@ -12,7 +12,7 @@ module CEF
     end
   end
   
-  # (Not documented)
+  # Structure representing CefExecuteProcess arguments.
   # 
   # = Fields:
   # :argc ::
@@ -24,7 +24,7 @@ module CEF
            :argv, :pointer
   end
   
-  # ///
+  # Class representing window information.
   # 
   # = Fields:
   # :parent_widget ::

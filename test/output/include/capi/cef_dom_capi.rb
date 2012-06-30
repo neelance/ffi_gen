@@ -17,55 +17,61 @@ module CEF
     layout :dummy, :char
   end
   
-  # (Not documented)
+  # Structure to implement for visiting the DOM. The functions of this structure
+  # will be called on the render process main thread.
   # 
   # = Fields:
   # :base ::
-  #   (unknown) ///
+  #   (unknown) Base structure.
   # :visit ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Method executed for visiting the DOM. The document object passed to this
+  #   function represents a snapshot of the DOM at the time this function is
+  #   executed. DOM objects are only valid for the scope of this function. Do not
+  #   keep references to or attempt to access any DOM objects outside the scope
+  #   of this function.
   class CefDomvisitorT < FFI::Struct
     layout :base, :char,
            :visit, :pointer
   end
   
-  # ///
+  # Structure used to represent a DOM document. The functions of this structure
+  # should only be called on the render process main thread thread.
   # 
   # = Fields:
   # :base ::
-  #   (unknown) ///
+  #   (unknown) Base structure.
   # :get_type ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the document type.
   # :get_document ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the root document node.
   # :get_body ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the BODY node of an HTML document.
   # :get_head ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the HEAD node of an HTML document.
   # :get_title ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :get_element_by_id ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the document element with the specified ID value.
   # :get_focused_node ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the node that currently has keyboard focus.
   # :has_selection ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if a portion of the document is selected.
   # :get_selection_start_node ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the selection start node.
   # :get_selection_start_offset ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the selection offset within the start node.
   # :get_selection_end_node ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the selection end node.
   # :get_selection_end_offset ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the selection offset within the end node.
   # :get_selection_as_markup ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :get_selection_as_text ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :get_base_url ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :get_complete_url ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   class CefDomdocumentT < FFI::Struct
     layout :base, :char,
            :get_type, :pointer,
@@ -91,63 +97,73 @@ module CEF
     layout :dummy, :char
   end
   
-  # ///
+  # Structure used to represent a DOM node. The functions of this structure
+  # should only be called on the render process main thread.
   # 
   # = Fields:
   # :base ::
-  #   (unknown) ///
+  #   (unknown) Base structure.
   # :get_type ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the type for this node.
   # :is_text ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if this is a text node.
   # :is_element ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if this is an element node.
   # :is_editable ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if this is an editable node.
   # :is_form_control_element ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if this is a form control element node.
   # :get_form_control_element_type ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :is_same ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if this object is pointing to the same handle as |that|
+  #   object.
   # :get_name ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :get_value ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :set_value ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Set the value of this node. Returns true (1) on success.
   # :get_as_markup ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :get_document ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the document associated with this node.
   # :get_parent ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the parent node.
   # :get_previous_sibling ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the previous sibling node.
   # :get_next_sibling ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the next sibling node.
   # :has_children ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if this node has child nodes.
   # :get_first_child ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Return the first child node.
   # :get_last_child ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the last child node.
   # :add_event_listener ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Add an event listener to this node for the specified event type. If
+  #   |useCapture| is true (1) then this listener will be considered a capturing
+  #   listener. Capturing listeners will recieve all events of the specified type
+  #   before the events are dispatched to any other event targets beneath the
+  #   current node in the tree. Events which are bubbling upwards through the
+  #   tree will not trigger a capturing listener. Separate calls to this function
+  #   can be used to register the same listener with and without capture. See
+  #   WebCore/dom/EventNames.h for the list of supported event types.
   # :get_element_tag_name ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :has_element_attributes ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if this element has attributes.
   # :has_element_attribute ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if this element has an attribute named |attrName|.
   # :get_element_attribute ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :get_element_attributes ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns a map of all element attributes.
   # :set_element_attribute ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Set the value for the element attribute named |attrName|. Returns true (1)
+  #   on success.
   # :get_element_inner_text ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   class CefDomnodeT < FFI::Struct
     layout :base, :char,
            :get_type, :pointer,
@@ -178,27 +194,28 @@ module CEF
            :get_element_inner_text, :pointer
   end
   
-  # ///
+  # Structure used to represent a DOM event. The functions of this structure
+  # should only be called on the render process main thread.
   # 
   # = Fields:
   # :base ::
-  #   (unknown) ///
+  #   (unknown) Base structure.
   # :get_type ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :get_category ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the event category.
   # :get_phase ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the event processing phase.
   # :can_bubble ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if the event can bubble up the tree.
   # :can_cancel ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if the event can be canceled.
   # :get_document ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the document associated with this event.
   # :get_target ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the target of the event.
   # :get_current_target ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the current target of the event.
   class CefDomeventT < FFI::Struct
     layout :base, :char,
            :get_type, :pointer,
@@ -211,13 +228,18 @@ module CEF
            :get_current_target, :pointer
   end
   
-  # ///
+  # Structure to implement for handling DOM events. The functions of this
+  # structure will be called on the render process main thread.
   # 
   # = Fields:
   # :base ::
-  #   (unknown) ///
+  #   (unknown) Base structure.
   # :handle_event ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Called when an event is received. The event object passed to this function
+  #   contains a snapshot of the DOM at the time this function is executed. DOM
+  #   objects are only valid for the scope of this function. Do not keep
+  #   references to or attempt to access any DOM objects outside the scope of
+  #   this function.
   class CefDomeventListenerT < FFI::Struct
     layout :base, :char,
            :handle_event, :pointer

@@ -12,25 +12,25 @@ module CEF
     end
   end
   
-  # (Not documented)
+  # Time information. Values should always be in UTC.
   # 
   # = Fields:
   # :year ::
-  #   (Integer) // Four digit year "2007"
+  #   (Integer) Four digit year "2007"
   # :month ::
-  #   (Integer) // 1-based month (values 1 = January, etc.)
+  #   (Integer) 1-based month (values 1 = January, etc.)
   # :day_of_week ::
-  #   (Integer) // 0-based day of week (0 = Sunday, etc.)
+  #   (Integer) 0-based day of week (0 = Sunday, etc.)
   # :day_of_month ::
-  #   (Integer) // 1-based day of month (1-31)
+  #   (Integer) 1-based day of month (1-31)
   # :hour ::
-  #   (Integer) // Hour within the current day (0-23)
+  #   (Integer) Hour within the current day (0-23)
   # :minute ::
-  #   (Integer) // Minute within the current hour (0-59)
+  #   (Integer) Minute within the current hour (0-59)
   # :second ::
-  #   (Integer) // Second within the current minute (0-59 plus leap
+  #   (Integer) Second within the current minute (0-59 plus leap
   # :millisecond ::
-  #   (Integer) // Milliseconds within the current second (0-999)
+  #   (Integer) Milliseconds within the current second (0-999)
   class CefTimeT < FFI::Struct
     layout :year, :int,
            :month, :int,
@@ -42,7 +42,8 @@ module CEF
            :millisecond, :int
   end
   
-  # (Not documented)
+  # Converts cef_time_t to/from time_t. Returns true (1) on success and false (0)
+  # on failure.
   # 
   # @method time_to_timet(time, time)
   # @param [CefTimeT] time 
@@ -60,7 +61,10 @@ module CEF
   # @scope class
   attach_function :time_from_timet, :cef_time_from_timet, [:long, CefTimeT], :int
   
-  # (Not documented)
+  # Converts cef_time_t to/from a double which is the number of seconds since
+  # epoch (Jan 1, 1970). Webkit uses this format to represent time. A value of 0
+  # means "not initialized". Returns true (1) on success and false (0) on
+  # failure.
   # 
   # @method time_to_doublet(time, time)
   # @param [CefTimeT] time 

@@ -12,19 +12,21 @@ module CEF
     end
   end
   
-  # (Not documented)
+  # Structure the client can implement to provide a custom stream reader. The
+  # functions of this structure may be called on any thread.
   # 
   # = Fields:
   # :base ::
-  #   (unknown) ///
+  #   (unknown) Base structure.
   # :read ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Read raw binary data.
   # :seek ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Seek to the specified offset position. |whence| may be any one of SEEK_CUR,
+  #   SEEK_END or SEEK_SET. Return zero on success and non-zero on failure.
   # :tell ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Return the current offset position.
   # :eof ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Return non-zero if at end of file.
   class CefReadHandlerT < FFI::Struct
     layout :base, :char,
            :read, :pointer,
@@ -33,19 +35,21 @@ module CEF
            :eof, :pointer
   end
   
-  # ///
+  # Structure used to read data from a stream. The functions of this structure
+  # may be called on any thread.
   # 
   # = Fields:
   # :base ::
-  #   (unknown) ///
+  #   (unknown) Base structure.
   # :read ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Read raw binary data.
   # :seek ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Seek to the specified offset position. |whence| may be any one of SEEK_CUR,
+  #   SEEK_END or SEEK_SET. Returns zero on success and non-zero on failure.
   # :tell ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Return the current offset position.
   # :eof ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Return non-zero if at end of file.
   class CefStreamReaderT < FFI::Struct
     layout :base, :char,
            :read, :pointer,
@@ -54,7 +58,7 @@ module CEF
            :eof, :pointer
   end
   
-  # (Not documented)
+  # Create a new cef_stream_reader_t object from a file.
   # 
   # @method stream_reader_create_for_file(file_name)
   # @param [FFI::Pointer(*StringT)] file_name 
@@ -62,7 +66,7 @@ module CEF
   # @scope class
   attach_function :stream_reader_create_for_file, :cef_stream_reader_create_for_file, [:pointer], CefStreamReaderT
   
-  # (Not documented)
+  # Create a new cef_stream_reader_t object from data.
   # 
   # @method stream_reader_create_for_data(data, size)
   # @param [FFI::Pointer(*Void)] data 
@@ -71,7 +75,7 @@ module CEF
   # @scope class
   attach_function :stream_reader_create_for_data, :cef_stream_reader_create_for_data, [:pointer, :ulong], CefStreamReaderT
   
-  # (Not documented)
+  # Create a new cef_stream_reader_t object from a custom handler.
   # 
   # @method stream_reader_create_for_handler(handler)
   # @param [CefReadHandlerT] handler 
@@ -79,19 +83,21 @@ module CEF
   # @scope class
   attach_function :stream_reader_create_for_handler, :cef_stream_reader_create_for_handler, [CefReadHandlerT], CefStreamReaderT
   
-  # ///
+  # Structure the client can implement to provide a custom stream writer. The
+  # functions of this structure may be called on any thread.
   # 
   # = Fields:
   # :base ::
-  #   (unknown) ///
+  #   (unknown) Base structure.
   # :write ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Write raw binary data.
   # :seek ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Seek to the specified offset position. |whence| may be any one of SEEK_CUR,
+  #   SEEK_END or SEEK_SET. Return zero on success and non-zero on failure.
   # :tell ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Return the current offset position.
   # :flush ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Flush the stream.
   class CefWriteHandlerT < FFI::Struct
     layout :base, :char,
            :write, :pointer,
@@ -100,19 +106,21 @@ module CEF
            :flush, :pointer
   end
   
-  # ///
+  # Structure used to write data to a stream. The functions of this structure may
+  # be called on any thread.
   # 
   # = Fields:
   # :base ::
-  #   (unknown) ///
+  #   (unknown) Base structure.
   # :write ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Write raw binary data.
   # :seek ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Seek to the specified offset position. |whence| may be any one of SEEK_CUR,
+  #   SEEK_END or SEEK_SET. Returns zero on success and non-zero on failure.
   # :tell ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Return the current offset position.
   # :flush ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Flush the stream.
   class CefStreamWriterT < FFI::Struct
     layout :base, :char,
            :write, :pointer,
@@ -121,7 +129,7 @@ module CEF
            :flush, :pointer
   end
   
-  # (Not documented)
+  # Create a new cef_stream_writer_t object for a file.
   # 
   # @method stream_writer_create_for_file(file_name)
   # @param [FFI::Pointer(*StringT)] file_name 
@@ -129,7 +137,7 @@ module CEF
   # @scope class
   attach_function :stream_writer_create_for_file, :cef_stream_writer_create_for_file, [:pointer], CefStreamWriterT
   
-  # (Not documented)
+  # Create a new cef_stream_writer_t object for a custom handler.
   # 
   # @method stream_writer_create_for_handler(handler)
   # @param [CefWriteHandlerT] handler 

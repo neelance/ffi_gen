@@ -12,109 +12,139 @@ module CEF
     end
   end
   
-  # (Not documented)
+  # Supports creation and modification of menus. See cef_menu_id_t for the
+  # command ids that have default implementations. All user-defined command ids
+  # should be between MENU_ID_USER_FIRST and MENU_ID_USER_LAST. The functions of
+  # this structure can only be accessed on the browser process the UI thread.
   # 
   # = Fields:
   # :base ::
-  #   (unknown) ///
+  #   (unknown) Base structure.
   # :clear ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Clears the menu. Returns true (1) on success.
   # :get_count ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the number of items in this menu.
   # :add_separator ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Add a separator to the menu. Returns true (1) on success.
   # :add_item ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Add an item to the menu. Returns true (1) on success.
   # :add_check_item ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Add a check item to the menu. Returns true (1) on success.
   # :add_radio_item ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Add a radio item to the menu. Only a single item with the specified
+  #   |group_id| can be checked at a time. Returns true (1) on success.
   # :add_sub_menu ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Add a sub-menu to the menu. The new sub-menu is returned.
   # :insert_separator_at ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Insert a separator in the menu at the specified |index|. Returns true (1)
+  #   on success.
   # :insert_item_at ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Insert an item in the menu at the specified |index|. Returns true (1) on
+  #   success.
   # :insert_check_item_at ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Insert a check item in the menu at the specified |index|. Returns true (1)
+  #   on success.
   # :insert_radio_item_at ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Insert a radio item in the menu at the specified |index|. Only a single
+  #   item with the specified |group_id| can be checked at a time. Returns true
+  #   (1) on success.
   # :insert_sub_menu_at ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Insert a sub-menu in the menu at the specified |index|. The new sub-menu is
+  #   returned.
   # :remove ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Removes the item with the specified |command_id|. Returns true (1) on
+  #   success.
   # :remove_at ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Removes the item at the specified |index|. Returns true (1) on success.
   # :get_index_of ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the index associated with the specified |command_id| or -1 if not
+  #   found due to the command id not existing in the menu.
   # :get_command_id_at ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the command id at the specified |index| or -1 if not found due to
+  #   invalid range or the index being a separator.
   # :set_command_id_at ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Sets the command id at the specified |index|. Returns true (1) on success.
   # :get_label ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :get_label_at ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :set_label ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Sets the label for the specified |command_id|. Returns true (1) on success.
   # :set_label_at ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Set the label at the specified |index|. Returns true (1) on success.
   # :get_type ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the item type for the specified |command_id|.
   # :get_type_at ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the item type at the specified |index|.
   # :get_group_id ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the group id for the specified |command_id| or -1 if invalid.
   # :get_group_id_at ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the group id at the specified |index| or -1 if invalid.
   # :set_group_id ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Sets the group id for the specified |command_id|. Returns true (1) on
+  #   success.
   # :set_group_id_at ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Sets the group id at the specified |index|. Returns true (1) on success.
   # :get_sub_menu ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the submenu for the specified |command_id| or NULL if invalid.
   # :get_sub_menu_at ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the submenu at the specified |index| or NULL if invalid.
   # :is_visible ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if the specified |command_id| is visible.
   # :is_visible_at ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if the specified |index| is visible.
   # :set_visible ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Change the visibility of the specified |command_id|. Returns true (1) on
+  #   success.
   # :set_visible_at ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Change the visibility at the specified |index|. Returns true (1) on
+  #   success.
   # :is_enabled ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if the specified |command_id| is enabled.
   # :is_enabled_at ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if the specified |index| is enabled.
   # :set_enabled ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Change the enabled status of the specified |command_id|. Returns true (1)
+  #   on success.
   # :set_enabled_at ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Change the enabled status at the specified |index|. Returns true (1) on
+  #   success.
   # :is_checked ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if the specified |command_id| is checked. Only applies to
+  #   check and radio items.
   # :is_checked_at ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if the specified |index| is checked. Only applies to check
+  #   and radio items.
   # :set_checked ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Check the specified |command_id|. Only applies to check and radio items.
+  #   Returns true (1) on success.
   # :set_checked_at ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Check the specified |index|. Only applies to check and radio items. Returns
+  #   true (1) on success.
   # :has_accelerator ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if the specified |command_id| has a keyboard accelerator
+  #   assigned.
   # :has_accelerator_at ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if the specified |index| has a keyboard accelerator
+  #   assigned.
   # :set_accelerator ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Set the keyboard accelerator for the specified |command_id|. |key_code| can
+  #   be any virtual key or character value. Returns true (1) on success.
   # :set_accelerator_at ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Set the keyboard accelerator at the specified |index|. |key_code| can be
+  #   any virtual key or character value. Returns true (1) on success.
   # :remove_accelerator ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Remove the keyboard accelerator for the specified |command_id|. Returns
+  #   true (1) on success.
   # :remove_accelerator_at ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Remove the keyboard accelerator at the specified |index|. Returns true (1)
+  #   on success.
   # :get_accelerator ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Retrieves the keyboard accelerator for the specified |command_id|. Returns
+  #   true (1) on success.
   # :get_accelerator_at ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Retrieves the keyboard accelerator for the specified |index|. Returns true
+  #   (1) on success.
   class CefMenuModelT < FFI::Struct
     layout :base, :char,
            :clear, :pointer,

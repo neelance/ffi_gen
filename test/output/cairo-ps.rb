@@ -12,15 +12,19 @@ module Cairo
     end
   end
   
-  # (Not documented)
+  # cairo_ps_level_t:
+  # 
+  # #cairo_ps_level_t is used to describe the language level of the
+  # PostScript Language Reference that a generated PostScript file will
+  # conform to.
   # 
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:ps_level).</em>
   # 
   # === Options:
   # :_2 ::
-  #   
+  #   The language level 2 of the PostScript specification.
   # :_3 ::
-  #   
+  #   The language level 3 of the PostScript specification.
   # 
   # @method _enum_ps_level_
   # @return [Symbol]

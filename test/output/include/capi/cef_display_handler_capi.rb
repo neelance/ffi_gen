@@ -47,23 +47,31 @@ module CEF
     layout :dummy, :char
   end
   
-  # (Not documented)
+  # Implement this structure to handle events related to browser display state.
+  # The functions of this structure will be called on the UI thread.
   # 
   # = Fields:
   # :base ::
-  #   (unknown) ///
+  #   (unknown) Base structure.
   # :on_loading_state_change ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Called when the loading state has changed.
   # :on_address_change ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Called when a frame's address has changed.
   # :on_title_change ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Called when the page title changes.
   # :on_tooltip ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Called when the browser is about to display a tooltip. |text| contains the
+  #   text that will be displayed in the tooltip. To handle the display of the
+  #   tooltip yourself return true (1). Otherwise, you can optionally modify
+  #   |text| and then return false (0) to allow the browser to display the
+  #   tooltip.
   # :on_status_message ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Called when the browser receives a status message. |text| contains the text
+  #   that will be displayed in the status message and |type| indicates the
+  #   status message type.
   # :on_console_message ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Called to display a console message. Return true (1) to stop the message
+  #   from being output to the console.
   class CefDisplayHandlerT < FFI::Struct
     layout :base, :char,
            :on_loading_state_change, :pointer,

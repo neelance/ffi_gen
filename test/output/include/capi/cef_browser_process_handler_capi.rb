@@ -17,15 +17,20 @@ module CEF
     layout :dummy, :char
   end
   
-  # (Not documented)
+  # Structure used to implement browser process callbacks. The functions of this
+  # structure will be called on the browser process main thread unless otherwise
+  # indicated.
   # 
   # = Fields:
   # :base ::
-  #   (unknown) ///
+  #   (unknown) Base structure.
   # :get_proxy_handler ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Return the handler for proxy events. If no handler is returned the default
+  #   system handler will be used. This function is called on the browser process
+  #   IO thread.
   # :on_context_initialized ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Called on the browser process UI thread immediately after the CEF context
+  #   has been initialized.
   class CefBrowserProcessHandlerT < FFI::Struct
     layout :base, :char,
            :get_proxy_handler, :pointer,

@@ -12,7 +12,60 @@ module CEF
     end
   end
   
-  # (Not documented)
+  # Register a new V8 extension with the specified JavaScript extension code and
+  # handler. Functions implemented by the handler are prototyped using the
+  # keyword 'native'. The calling of a native function is restricted to the scope
+  # in which the prototype of the native function is defined. This function may
+  # only be called on the render process main thread.
+  # 
+  # Example JavaScript extension code: <pre>
+  #   // create the 'example' global object if it doesn't already exist.
+  #   if (!example)
+  #     example = {};
+  #   // create the 'example.test' global object if it doesn't already exist.
+  #   if (!example.test)
+  #     example.test = {};
+  #   (function() {
+  #     // Define the function 'example.test.myfunction'.
+  #     example.test.myfunction = function() {
+  #       // Call CefV8Handler::Execute() with the function name 'MyFunction'
+  #       // and no arguments.
+  #       native function MyFunction();
+  #       return MyFunction();
+  #     };
+  #     // Define the getter function for parameter 'example.test.myparam'.
+  #     example.test.__defineGetter__('myparam', function() {
+  #       // Call CefV8Handler::Execute() with the function name 'GetMyParam'
+  #       // and no arguments.
+  #       native function GetMyParam();
+  #       return GetMyParam();
+  #     });
+  #     // Define the setter function for parameter 'example.test.myparam'.
+  #     example.test.__defineSetter__('myparam', function(b) {
+  #       // Call CefV8Handler::Execute() with the function name 'SetMyParam'
+  #       // and a single argument.
+  #       native function SetMyParam();
+  #       if(b) SetMyParam(b);
+  #     });
+  # 
+  #     // Extension definitions can also contain normal JavaScript variables
+  #     // and functions.
+  #     var myint = 0;
+  #     example.test.increment = function() {
+  #       myint += 1;
+  #       return myint;
+  #     };
+  #   })();
+  # </pre> Example usage in the page: <pre>
+  #   // Call the function.
+  #   example.test.myfunction();
+  #   // Set the parameter.
+  #   example.test.myparam = value;
+  #   // Get the parameter.
+  #   value = example.test.myparam;
+  #   // Call another function.
+  #   example.test.increment();
+  # </pre>
   class CefV8handlerT < FFI::Struct
     layout :dummy, :char
   end
@@ -42,25 +95,36 @@ module CEF
     layout :dummy, :char
   end
   
-  # ///
+  # Structure that encapsulates a V8 context handle. The functions of this
+  # structure may only be called on the render process main thread.
   # 
   # = Fields:
   # :base ::
-  #   (unknown) ///
+  #   (unknown) Base structure.
   # :get_browser ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the browser for this context.
   # :get_frame ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the frame for this context.
   # :get_global ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the global object for this context. The context must be entered
+  #   before calling this function.
   # :enter ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Enter this context. A context must be explicitly entered before creating a
+  #   V8 Object, Array, Function or Date asynchronously. exit() must be called
+  #   the same number of times as enter() before releasing this context. V8
+  #   objects belong to the context in which they are created. Returns true (1)
+  #   if the scope was entered successfully.
   # :exit ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Exit this context. Call this function only after calling enter(). Returns
+  #   true (1) if the scope was exited successfully.
   # :is_same ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if this object is pointing to the same handle as |that|
+  #   object.
   # :eval ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Evaluates the specified JavaScript code using this context's global object.
+  #   On success |retval| will be set to the return value, if any, and the
+  #   function will return true (1). On failure |exception| will be set to the
+  #   exception, if any, and the function will return false (0).
   class CefV8contextT < FFI::Struct
     layout :base, :char,
            :get_browser, :pointer,
@@ -72,75 +136,97 @@ module CEF
            :eval, :pointer
   end
   
-  # (Not documented)
+  # Returns the current (top) context object in the V8 context stack.
   # 
   # @method v8context_get_current_context()
   # @return [CefV8contextT] 
   # @scope class
   attach_function :v8context_get_current_context, :cef_v8context_get_current_context, [], CefV8contextT
   
-  # (Not documented)
+  # Returns the entered (bottom) context object in the V8 context stack.
   # 
   # @method v8context_get_entered_context()
   # @return [CefV8contextT] 
   # @scope class
   attach_function :v8context_get_entered_context, :cef_v8context_get_entered_context, [], CefV8contextT
   
-  # (Not documented)
+  # Returns true (1) if V8 is currently inside a context.
   # 
   # @method v8context_in_context()
   # @return [Integer] 
   # @scope class
   attach_function :v8context_in_context, :cef_v8context_in_context, [], :int
   
-  # ///
+  # Structure that should be implemented to handle V8 function calls. The
+  # functions of this structure will always be called on the render process main
+  # thread.
   # 
   # = Fields:
   # :base ::
-  #   (unknown) ///
+  #   (unknown) Base structure.
   # :execute ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Handle execution of the function identified by |name|. |object| is the
+  #   receiver ('this' object) of the function. |arguments| is the list of
+  #   arguments passed to the function. If execution succeeds set |retval| to the
+  #   function return value. If execution fails set |exception| to the exception
+  #   that will be thrown. Return true (1) if execution was handled.
   class CefV8handlerT < FFI::Struct
     layout :base, :char,
            :execute, :pointer
   end
   
-  # ///
+  # Structure that should be implemented to handle V8 accessor calls. Accessor
+  # identifiers are registered by calling cef_v8value_t::set_value_byaccessor().
+  # The functions of this structure will always be called on the render process
+  # main thread.
   # 
   # = Fields:
   # :base ::
-  #   (unknown) ///
+  #   (unknown) Base structure.
   # :get ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Handle retrieval the accessor value identified by |name|. |object| is the
+  #   receiver ('this' object) of the accessor. If retrieval succeeds set
+  #   |retval| to the return value. If retrieval fails set |exception| to the
+  #   exception that will be thrown. Return true (1) if accessor retrieval was
+  #   handled.
   # :set ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Handle assignment of the accessor value identified by |name|. |object| is
+  #   the receiver ('this' object) of the accessor. |value| is the new value
+  #   being assigned to the accessor. If assignment fails set |exception| to the
+  #   exception that will be thrown. Return true (1) if accessor assignment was
+  #   handled.
   class CefV8accessorT < FFI::Struct
     layout :base, :char,
            :get, :pointer,
            :set, :pointer
   end
   
-  # ///
+  # Structure representing a V8 exception.
   # 
   # = Fields:
   # :base ::
-  #   (unknown) ///
+  #   (unknown) Base structure.
   # :get_message ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :get_source_line ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :get_script_resource_name ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :get_line_number ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the 1-based number of the line where the error occurred or 0 if the
+  #   line number is unknown.
   # :get_start_position ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the index within the script of the first character where the error
+  #   occurred.
   # :get_end_position ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the index within the script of the last character where the error
+  #   occurred.
   # :get_start_column ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the index within the line of the first character where the error
+  #   occurred.
   # :get_end_column ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the index within the line of the last character where the error
+  #   occurred.
   class CefV8exceptionT < FFI::Struct
     layout :base, :char,
            :get_message, :pointer,
@@ -153,97 +239,154 @@ module CEF
            :get_end_column, :pointer
   end
   
-  # ///
+  # Structure representing a V8 value. The functions of this structure may only
+  # be called on the render process main thread.
   # 
   # = Fields:
   # :base ::
-  #   (unknown) ///
+  #   (unknown) Base structure.
   # :is_undefined ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) True if the value type is undefined.
   # :is_null ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) True if the value type is null.
   # :is_bool ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) True if the value type is bool.
   # :is_int ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) True if the value type is int.
   # :is_uint ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) True if the value type is unsigned int.
   # :is_double ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) True if the value type is double.
   # :is_date ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) True if the value type is Date.
   # :is_string ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) True if the value type is string.
   # :is_object ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) True if the value type is object.
   # :is_array ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) True if the value type is array.
   # :is_function ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) True if the value type is function.
   # :is_same ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if this object is pointing to the same handle as |that|
+  #   object.
   # :get_bool_value ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Return a bool value.  The underlying data will be converted to if
+  #   necessary.
   # :get_int_value ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Return an int value.  The underlying data will be converted to if
+  #   necessary.
   # :get_uint_value ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Return an unisgned int value.  The underlying data will be converted to if
+  #   necessary.
   # :get_double_value ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Return a double value.  The underlying data will be converted to if
+  #   necessary.
   # :get_date_value ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Return a Date value.  The underlying data will be converted to if
+  #   necessary.
   # :get_string_value ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :is_user_created ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if this is a user created object.
   # :has_exception ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if the last function call resulted in an exception. This
+  #   attribute exists only in the scope of the current CEF value object.
   # :get_exception ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the exception resulting from the last function call. This attribute
+  #   exists only in the scope of the current CEF value object.
   # :clear_exception ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Clears the last exception and returns true (1) on success.
   # :will_rethrow_exceptions ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if this object will re-throw future exceptions. This
+  #   attribute exists only in the scope of the current CEF value object.
   # :set_rethrow_exceptions ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Set whether this object will re-throw future exceptions. By default
+  #   exceptions are not re-thrown. If a exception is re-thrown the current
+  #   context should not be accessed again until after the exception has been
+  #   caught and not re-thrown. Returns true (1) on success. This attribute
+  #   exists only in the scope of the current CEF value object.
   # :has_value_bykey ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if the object has a value with the specified identifier.
   # :has_value_byindex ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if the object has a value with the specified identifier.
   # :delete_value_bykey ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Deletes the value with the specified identifier and returns true (1) on
+  #   success. Returns false (0) if this function is called incorrectly or an
+  #   exception is thrown. For read-only and don't-delete values this function
+  #   will return true (1) even though deletion failed.
   # :delete_value_byindex ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Deletes the value with the specified identifier and returns true (1) on
+  #   success. Returns false (0) if this function is called incorrectly, deletion
+  #   fails or an exception is thrown. For read-only and don't-delete values this
+  #   function will return true (1) even though deletion failed.
   # :get_value_bykey ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the value with the specified identifier on success. Returns NULL if
+  #   this function is called incorrectly or an exception is thrown.
   # :get_value_byindex ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the value with the specified identifier on success. Returns NULL if
+  #   this function is called incorrectly or an exception is thrown.
   # :set_value_bykey ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Associates a value with the specified identifier and returns true (1) on
+  #   success. Returns false (0) if this function is called incorrectly or an
+  #   exception is thrown. For read-only values this function will return true
+  #   (1) even though assignment failed.
   # :set_value_byindex ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Associates a value with the specified identifier and returns true (1) on
+  #   success. Returns false (0) if this function is called incorrectly or an
+  #   exception is thrown. For read-only values this function will return true
+  #   (1) even though assignment failed.
   # :set_value_byaccessor ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Registers an identifier and returns true (1) on success. Access to the
+  #   identifier will be forwarded to the cef_v8accessor_t instance passed to
+  #   cef_v8value_t::cef_v8value_create_object(). Returns false (0) if this
+  #   function is called incorrectly or an exception is thrown. For read-only
+  #   values this function will return true (1) even though assignment failed.
   # :get_keys ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Read the keys for the object's values into the specified vector. Integer-
+  #   based keys will also be returned as strings.
   # :set_user_data ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Sets the user data for this object and returns true (1) on success. Returns
+  #   false (0) if this function is called incorrectly. This function can only be
+  #   called on user created objects.
   # :get_user_data ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the user data, if any, assigned to this object.
   # :get_externally_allocated_memory ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the amount of externally allocated memory registered for the
+  #   object.
   # :adjust_externally_allocated_memory ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Adjusts the amount of registered external memory for the object. Used to
+  #   give V8 an indication of the amount of externally allocated memory that is
+  #   kept alive by JavaScript objects. V8 uses this information to decide when
+  #   to perform global garbage collection. Each cef_v8value_t tracks the amount
+  #   of external memory associated with it and automatically decreases the
+  #   global total by the appropriate amount on its destruction.
+  #   |change_in_bytes| specifies the number of bytes to adjust by. This function
+  #   returns the number of bytes associated with the object after the
+  #   adjustment. This function can only be called on user created objects.
   # :get_array_length ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the number of elements in the array.
   # :get_function_name ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :get_function_handler ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the function handler or NULL if not a CEF-created function.
   # :execute_function ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Execute the function using the current V8 context. This function should
+  #   only be called from within the scope of a cef_v8handler_t or
+  #   cef_v8accessor_t callback, or in combination with calling enter() and
+  #   exit() on a stored cef_v8context_t reference. |object| is the receiver
+  #   ('this' object) of the function. If |object| is NULL the current context's
+  #   global object will be used. |arguments| is the list of arguments that will
+  #   be passed to the function. Returns the function return value on success.
+  #   Returns NULL if this function is called incorrectly or an exception is
+  #   thrown.
   # :execute_function_with_context ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Execute the function using the specified V8 context. |object| is the
+  #   receiver ('this' object) of the function. If |object| is NULL the specified
+  #   context's global object will be used. |arguments| is the list of arguments
+  #   that will be passed to the function. Returns the function return value on
+  #   success. Returns NULL if this function is called incorrectly or an
+  #   exception is thrown.
   class CefV8valueT < FFI::Struct
     layout :base, :char,
            :is_undefined, :pointer,
@@ -291,21 +434,21 @@ module CEF
            :execute_function_with_context, :pointer
   end
   
-  # (Not documented)
+  # Create a new cef_v8value_t object of type undefined.
   # 
   # @method v8value_create_undefined()
   # @return [CefV8valueT] 
   # @scope class
   attach_function :v8value_create_undefined, :cef_v8value_create_undefined, [], CefV8valueT
   
-  # (Not documented)
+  # Create a new cef_v8value_t object of type null.
   # 
   # @method v8value_create_null()
   # @return [CefV8valueT] 
   # @scope class
   attach_function :v8value_create_null, :cef_v8value_create_null, [], CefV8valueT
   
-  # (Not documented)
+  # Create a new cef_v8value_t object of type bool.
   # 
   # @method v8value_create_bool(value)
   # @param [Integer] value 
@@ -313,7 +456,7 @@ module CEF
   # @scope class
   attach_function :v8value_create_bool, :cef_v8value_create_bool, [:int], CefV8valueT
   
-  # (Not documented)
+  # Create a new cef_v8value_t object of type int.
   # 
   # @method v8value_create_int(value)
   # @param [Integer] value 
@@ -321,7 +464,7 @@ module CEF
   # @scope class
   attach_function :v8value_create_int, :cef_v8value_create_int, [:int], CefV8valueT
   
-  # (Not documented)
+  # Create a new cef_v8value_t object of type unsigned int.
   # 
   # @method v8value_create_uint(value)
   # @param [Integer] value 
@@ -329,7 +472,7 @@ module CEF
   # @scope class
   attach_function :v8value_create_uint, :cef_v8value_create_uint, [:uint], CefV8valueT
   
-  # (Not documented)
+  # Create a new cef_v8value_t object of type double.
   # 
   # @method v8value_create_double(value)
   # @param [Float] value 
@@ -337,7 +480,10 @@ module CEF
   # @scope class
   attach_function :v8value_create_double, :cef_v8value_create_double, [:double], CefV8valueT
   
-  # (Not documented)
+  # Create a new cef_v8value_t object of type Date. This function should only be
+  # called from within the scope of a cef_v8context_tHandler, cef_v8handler_t or
+  # cef_v8accessor_t callback, or in combination with calling enter() and exit()
+  # on a stored cef_v8context_t reference.
   # 
   # @method v8value_create_date(date)
   # @param [FFI::Pointer(*TimeT)] date 
@@ -345,7 +491,7 @@ module CEF
   # @scope class
   attach_function :v8value_create_date, :cef_v8value_create_date, [:pointer], CefV8valueT
   
-  # (Not documented)
+  # Create a new cef_v8value_t object of type string.
   # 
   # @method v8value_create_string(value)
   # @param [FFI::Pointer(*StringT)] value 
@@ -353,7 +499,11 @@ module CEF
   # @scope class
   attach_function :v8value_create_string, :cef_v8value_create_string, [:pointer], CefV8valueT
   
-  # (Not documented)
+  # Create a new cef_v8value_t object of type object with optional accessor. This
+  # function should only be called from within the scope of a
+  # cef_v8context_tHandler, cef_v8handler_t or cef_v8accessor_t callback, or in
+  # combination with calling enter() and exit() on a stored cef_v8context_t
+  # reference.
   # 
   # @method v8value_create_object(accessor)
   # @param [CefV8accessorT] accessor 
@@ -361,7 +511,11 @@ module CEF
   # @scope class
   attach_function :v8value_create_object, :cef_v8value_create_object, [CefV8accessorT], CefV8valueT
   
-  # (Not documented)
+  # Create a new cef_v8value_t object of type array with the specified |length|.
+  # If |length| is negative the returned array will have length 0. This function
+  # should only be called from within the scope of a cef_v8context_tHandler,
+  # cef_v8handler_t or cef_v8accessor_t callback, or in combination with calling
+  # enter() and exit() on a stored cef_v8context_t reference.
   # 
   # @method v8value_create_array(length)
   # @param [Integer] length 
@@ -369,7 +523,10 @@ module CEF
   # @scope class
   attach_function :v8value_create_array, :cef_v8value_create_array, [:int], CefV8valueT
   
-  # (Not documented)
+  # Create a new cef_v8value_t object of type function. This function should only
+  # be called from within the scope of a cef_v8context_tHandler, cef_v8handler_t
+  # or cef_v8accessor_t callback, or in combination with calling enter() and
+  # exit() on a stored cef_v8context_t reference.
   # 
   # @method v8value_create_function(name, handler)
   # @param [FFI::Pointer(*StringT)] name 

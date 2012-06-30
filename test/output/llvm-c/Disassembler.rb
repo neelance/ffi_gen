@@ -90,7 +90,7 @@ module LLVM
            :value, :ulong
   end
   
-  # symbol value if name is NULL
+  # (Not documented)
   # 
   # = Fields:
   # :add_symbol ::

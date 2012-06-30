@@ -12,15 +12,20 @@ module Cairo
     end
   end
   
-  # (Not documented)
+  # cairo_pdf_version_t:
+  # 
+  # #cairo_pdf_version_t is used to describe the version number of the PDF
+  # specification that a generated PDF file will conform to.
+  # 
+  # Since 1.10
   # 
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:pdf_version).</em>
   # 
   # === Options:
   # :_1_4 ::
-  #   
+  #   The version 1.4 of the PDF specification.
   # :_1_5 ::
-  #   
+  #   The version 1.5 of the PDF specification.
   # 
   # @method _enum_pdf_version_
   # @return [Symbol]

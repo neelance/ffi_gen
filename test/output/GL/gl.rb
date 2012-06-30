@@ -1620,7 +1620,7 @@ module GL
   
   OES_EGL_IMAGE = 1
   
-  # (Not documented)
+  # Miscellaneous
   # 
   # @method clear_index(c)
   # @param [Float] c 
@@ -1860,7 +1860,7 @@ module GL
   # @scope class
   attach_function :enable_client_state, :glEnableClientState, [:uint], :void
   
-  # (Not documented)
+  # 1.1
   # 
   # @method disable_client_state(cap)
   # @param [Integer] cap 
@@ -1868,7 +1868,7 @@ module GL
   # @scope class
   attach_function :disable_client_state, :glDisableClientState, [:uint], :void
   
-  # (Not documented)
+  # 1.1
   # 
   # @method get_booleanv(pname, params)
   # @param [Integer] pname 
@@ -1927,14 +1927,14 @@ module GL
   # @scope class
   attach_function :push_client_attrib, :glPushClientAttrib, [:uint], :void
   
-  # (Not documented)
+  # 1.1
   # 
   # @method pop_client_attrib()
   # @return [nil] 
   # @scope class
   attach_function :pop_client_attrib, :glPopClientAttrib, [], :void
   
-  # (Not documented)
+  # 1.1
   # 
   # @method render_mode(mode)
   # @param [Integer] mode 
@@ -1980,7 +1980,7 @@ module GL
   # @scope class
   attach_function :hint, :glHint, [:uint, :uint], :void
   
-  # (Not documented)
+  # Depth Buffer
   # 
   # @method clear_depth(depth)
   # @param [Float] depth 
@@ -2013,7 +2013,7 @@ module GL
   # @scope class
   attach_function :depth_range, :glDepthRange, [:double, :double], :void
   
-  # (Not documented)
+  # Accumulation Buffer
   # 
   # @method clear_accum(red, green, blue, alpha)
   # @param [Float] red 
@@ -2033,7 +2033,7 @@ module GL
   # @scope class
   attach_function :accum, :glAccum, [:uint, :float], :void
   
-  # (Not documented)
+  # Transformation
   # 
   # @method matrix_mode(mode)
   # @param [Integer] mode 
@@ -2193,7 +2193,7 @@ module GL
   # @scope class
   attach_function :translatef, :glTranslatef, [:float, :float, :float], :void
   
-  # (Not documented)
+  # Display Lists
   # 
   # @method is_list(list)
   # @param [Integer] list 
@@ -2260,7 +2260,7 @@ module GL
   # @scope class
   attach_function :list_base, :glListBase, [:uint], :void
   
-  # (Not documented)
+  # Drawing Functions
   # 
   # @method begin_(mode)
   # @param [Integer] mode 
@@ -2621,7 +2621,7 @@ module GL
   # @scope class
   attach_function :indexub, :glIndexub, [:uchar], :void
   
-  # (Not documented)
+  # 1.1
   # 
   # @method indexdv(c)
   # @param [FFI::Pointer(*GLdouble)] c 
@@ -2661,7 +2661,7 @@ module GL
   # @scope class
   attach_function :indexubv, :glIndexubv, [:pointer], :void
   
-  # (Not documented)
+  # 1.1
   # 
   # @method color3b(red, green, blue)
   # @param [Integer] red 
@@ -3533,7 +3533,7 @@ module GL
   # @scope class
   attach_function :rectsv, :glRectsv, [:pointer, :pointer], :void
   
-  # (Not documented)
+  # Vertex Arrays  (1.1)
   # 
   # @method vertex_pointer(size, type, stride, ptr)
   # @param [Integer] size 
@@ -3643,7 +3643,7 @@ module GL
   # @scope class
   attach_function :interleaved_arrays, :glInterleavedArrays, [:uint, :int, :pointer], :void
   
-  # (Not documented)
+  # Lighting
   # 
   # @method shade_model(mode)
   # @param [Integer] mode 
@@ -3816,7 +3816,7 @@ module GL
   # @scope class
   attach_function :color_material, :glColorMaterial, [:uint, :uint], :void
   
-  # (Not documented)
+  # Raster functions
   # 
   # @method pixel_zoom(xfactor, yfactor)
   # @param [Float] xfactor 
@@ -3970,7 +3970,7 @@ module GL
   # @scope class
   attach_function :copy_pixels, :glCopyPixels, [:int, :int, :int, :int, :uint], :void
   
-  # (Not documented)
+  # Stenciling
   # 
   # @method stencil_func(func, ref, mask)
   # @param [Integer] func 
@@ -4006,7 +4006,7 @@ module GL
   # @scope class
   attach_function :clear_stencil, :glClearStencil, [:int], :void
   
-  # (Not documented)
+  # Texture mapping
   # 
   # @method tex_gend(coord, pname, param)
   # @param [Integer] coord 
@@ -4281,7 +4281,7 @@ module GL
   # @scope class
   attach_function :get_tex_image, :glGetTexImage, [:uint, :int, :uint, :uint, :pointer], :void
   
-  # (Not documented)
+  # 1.1 functions
   # 
   # @method gen_textures(n, textures)
   # @param [Integer] n 
@@ -4423,7 +4423,7 @@ module GL
   # @scope class
   attach_function :copy_tex_sub_image2d, :glCopyTexSubImage2D, [:uint, :int, :int, :int, :int, :int, :int, :int], :void
   
-  # (Not documented)
+  # Evaluators
   # 
   # @method map1d(target, u1, u2, stride, order, points)
   # @param [Integer] target 
@@ -4664,7 +4664,7 @@ module GL
   # @scope class
   attach_function :eval_mesh2, :glEvalMesh2, [:uint, :int, :int, :int, :int], :void
   
-  # (Not documented)
+  # Fog
   # 
   # @method fogf(pname, param)
   # @param [Integer] pname 
@@ -4700,7 +4700,7 @@ module GL
   # @scope class
   attach_function :fogiv, :glFogiv, [:uint, :pointer], :void
   
-  # (Not documented)
+  # Selection and Feedback
   # 
   # @method feedback_buffer(size, type, buffer)
   # @param [Integer] size 
@@ -4757,7 +4757,7 @@ module GL
   # @scope class
   attach_function :pop_name, :glPopName, [], :void
   
-  # (Not documented)
+  # OpenGL 1.2
   # 
   # @method draw_range_elements(mode, start, end_, count, type, indices)
   # @param [Integer] mode 
@@ -4889,7 +4889,7 @@ module GL
   # @scope class
   callback :pfnglcopytexsubimage3dproc, [:int, :int, :int, :int, :int, :int, :int, :int], :uint
   
-  # (Not documented)
+  # GL_ARB_imaging
   # 
   # @method color_table(target, internalformat, width, format, type, table)
   # @param [Integer] target 
@@ -5273,7 +5273,7 @@ module GL
   # @scope class
   callback :pfnglblendcolorproc, [:float, :float, :float], :float
   
-  # (Not documented)
+  # texture_border_clamp
   # 
   # @method active_texture(texture)
   # @param [Integer] texture 
@@ -5865,7 +5865,7 @@ module GL
   # @scope class
   callback :pfnglgetcompressedteximageproc, [:int, :pointer], :uint
   
-  # (Not documented)
+  # GL_ARB_multitexture (ARB extension 1 and OpenGL 1.2.1)
   # 
   # @method active_texture_arb(texture)
   # @param [Integer] texture 
@@ -6537,7 +6537,7 @@ module GL
   # @scope class
   callback :pfnglmultitexcoord4svarbproc, [:pointer], :uint
   
-  # (Not documented)
+  # GL_GLEXT_LEGACY
   # 
   # @method create_debug_object_mesa()
   # @return [Integer] 
@@ -6608,7 +6608,8 @@ module GL
   # @scope class
   attach_function :get_program_registerfv_mesa, :glGetProgramRegisterfvMESA, [:uint, :int, :pointer, :pointer], :void
   
-  # (Not documented)
+  # (temporarily) disabled because of collision with typedef in glext.h
+  # that happens if apps include both gl.h and glext.h
   # 
   # @method blend_equation_separate_ati(mode_rgb, mode_a)
   # @param [Integer] mode_rgb 

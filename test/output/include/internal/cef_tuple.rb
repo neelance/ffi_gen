@@ -12,7 +12,7 @@ module CEF
     end
   end
   
-  # (Not documented)
+  # output (a "tier").  See MakeRefTuple and its usages.
   # 
   # = Fields:
   # :value_tuple ::
@@ -27,7 +27,7 @@ module CEF
            :param_tuple, :char
   end
   
-  # (Not documented)
+  # argument types.
   # 
   # @method make_tuple()
   # @return [Tuple0] 

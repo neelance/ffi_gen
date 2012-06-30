@@ -12,14 +12,14 @@ module CEF
     end
   end
   
-  # (Not documented)
+  # Allocate a new string map.
   # 
   # @method string_map_alloc()
   # @return [FFI::Pointer(StringMapT)] 
   # @scope class
   attach_function :string_map_alloc, :cef_string_map_alloc, [], :pointer
   
-  # (Not documented)
+  # Return the number of elements in the string map.
   # 
   # @method string_map_size(map)
   # @param [FFI::Pointer(StringMapT)] map 
@@ -27,7 +27,7 @@ module CEF
   # @scope class
   attach_function :string_map_size, :cef_string_map_size, [:pointer], :int
   
-  # (Not documented)
+  # Return the value assigned to the specified key.
   # 
   # @method string_map_find(map, key, value)
   # @param [FFI::Pointer(StringMapT)] map 
@@ -37,7 +37,7 @@ module CEF
   # @scope class
   attach_function :string_map_find, :cef_string_map_find, [:pointer, :pointer, :pointer], :int
   
-  # (Not documented)
+  # Return the key at the specified zero-based string map index.
   # 
   # @method string_map_key(map, index, key)
   # @param [FFI::Pointer(StringMapT)] map 
@@ -47,7 +47,7 @@ module CEF
   # @scope class
   attach_function :string_map_key, :cef_string_map_key, [:pointer, :int, :pointer], :int
   
-  # (Not documented)
+  # Return the value at the specified zero-based string map index.
   # 
   # @method string_map_value(map, index, value)
   # @param [FFI::Pointer(StringMapT)] map 
@@ -57,7 +57,7 @@ module CEF
   # @scope class
   attach_function :string_map_value, :cef_string_map_value, [:pointer, :int, :pointer], :int
   
-  # (Not documented)
+  # Append a new key/value pair at the end of the string map.
   # 
   # @method string_map_append(map, key, value)
   # @param [FFI::Pointer(StringMapT)] map 
@@ -67,7 +67,7 @@ module CEF
   # @scope class
   attach_function :string_map_append, :cef_string_map_append, [:pointer, :pointer, :pointer], :int
   
-  # (Not documented)
+  # Clear the string map.
   # 
   # @method string_map_clear(map)
   # @param [FFI::Pointer(StringMapT)] map 
@@ -75,7 +75,7 @@ module CEF
   # @scope class
   attach_function :string_map_clear, :cef_string_map_clear, [:pointer], :void
   
-  # (Not documented)
+  # Free the string map.
   # 
   # @method string_map_free(map)
   # @param [FFI::Pointer(StringMapT)] map 

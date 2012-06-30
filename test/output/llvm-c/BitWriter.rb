@@ -12,7 +12,7 @@ module LLVM
     end
   end
   
-  # (Not documented)
+  # Writes a module to the specified path. Returns 0 on success.
   # 
   # @method write_bitcode_to_file(m, path)
   # @param [FFI::Pointer(ModuleRef)] m 

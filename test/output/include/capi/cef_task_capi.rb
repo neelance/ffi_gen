@@ -12,7 +12,11 @@ module CEF
     end
   end
   
-  # (Not documented)
+  # CEF maintains multiple internal threads that are used for handling different
+  # types of tasks in different processes. See the cef_thread_id_t definitions in
+  # cef_types.h for more information. This function will return true (1) if
+  # called on the specified thread. It is an error to request a thread from the
+  # wrong process.
   # 
   # @method currently_on(thread_id)
   # @param [unknown] thread_id 
@@ -20,7 +24,9 @@ module CEF
   # @scope class
   attach_function :currently_on, :cef_currently_on, [:char], :int
   
-  # ///
+  # Post a task for execution on the specified thread. This function may be
+  # called on any thread. It is an error to request a thread from the wrong
+  # process.
   class CefTaskT < FFI::Struct
     layout :dummy, :char
   end
@@ -34,7 +40,9 @@ module CEF
   # @scope class
   attach_function :post_task, :cef_post_task, [:char, CefTaskT], :int
   
-  # ///
+  # Post a task for delayed execution on the specified thread. This function may
+  # be called on any thread. It is an error to request a thread from the wrong
+  # process.
   class CefTaskT < FFI::Struct
     layout :dummy, :char
   end
@@ -49,13 +57,14 @@ module CEF
   # @scope class
   attach_function :post_delayed_task, :cef_post_delayed_task, [:char, CefTaskT, :long], :int
   
-  # ///
+  # Implement this structure for task execution. The functions of this structure
+  # may be called on any thread.
   # 
   # = Fields:
   # :base ::
-  #   (unknown) ///
+  #   (unknown) Base structure.
   # :execute ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Method that will be executed. |threadId| is the thread executing the call.
   class CefTaskT < FFI::Struct
     layout :base, :char,
            :execute, :pointer

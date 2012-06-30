@@ -12,15 +12,15 @@ module CEF
     end
   end
   
-  # (Not documented)
+  # Generic callback structure used for asynchronous continuation.
   # 
   # = Fields:
   # :base ::
-  #   (unknown) ///
+  #   (unknown) Base structure.
   # :cont ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Continue processing.
   # :cancel ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Cancel processing.
   class CefCallbackT < FFI::Struct
     layout :base, :char,
            :cont, :pointer,

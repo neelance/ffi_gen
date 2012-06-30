@@ -12,14 +12,14 @@ module CEF
     end
   end
   
-  # (Not documented)
+  # Allocate a new string multimap.
   # 
   # @method string_multimap_alloc()
   # @return [FFI::Pointer(StringMultimapT)] 
   # @scope class
   attach_function :string_multimap_alloc, :cef_string_multimap_alloc, [], :pointer
   
-  # (Not documented)
+  # Return the number of elements in the string multimap.
   # 
   # @method string_multimap_size(map)
   # @param [FFI::Pointer(StringMultimapT)] map 
@@ -27,7 +27,7 @@ module CEF
   # @scope class
   attach_function :string_multimap_size, :cef_string_multimap_size, [:pointer], :int
   
-  # (Not documented)
+  # Return the number of values with the specified key.
   # 
   # @method string_multimap_find_count(map, key)
   # @param [FFI::Pointer(StringMultimapT)] map 
@@ -36,7 +36,7 @@ module CEF
   # @scope class
   attach_function :string_multimap_find_count, :cef_string_multimap_find_count, [:pointer, :pointer], :int
   
-  # (Not documented)
+  # Return the value_index-th value with the specified key.
   # 
   # @method string_multimap_enumerate(map, key, value_index, value)
   # @param [FFI::Pointer(StringMultimapT)] map 
@@ -47,7 +47,7 @@ module CEF
   # @scope class
   attach_function :string_multimap_enumerate, :cef_string_multimap_enumerate, [:pointer, :pointer, :int, :pointer], :int
   
-  # (Not documented)
+  # Return the key at the specified zero-based string multimap index.
   # 
   # @method string_multimap_key(map, index, key)
   # @param [FFI::Pointer(StringMultimapT)] map 
@@ -57,7 +57,7 @@ module CEF
   # @scope class
   attach_function :string_multimap_key, :cef_string_multimap_key, [:pointer, :int, :pointer], :int
   
-  # (Not documented)
+  # Return the value at the specified zero-based string multimap index.
   # 
   # @method string_multimap_value(map, index, value)
   # @param [FFI::Pointer(StringMultimapT)] map 
@@ -67,7 +67,7 @@ module CEF
   # @scope class
   attach_function :string_multimap_value, :cef_string_multimap_value, [:pointer, :int, :pointer], :int
   
-  # (Not documented)
+  # Append a new key/value pair at the end of the string multimap.
   # 
   # @method string_multimap_append(map, key, value)
   # @param [FFI::Pointer(StringMultimapT)] map 
@@ -77,7 +77,7 @@ module CEF
   # @scope class
   attach_function :string_multimap_append, :cef_string_multimap_append, [:pointer, :pointer, :pointer], :int
   
-  # (Not documented)
+  # Clear the string multimap.
   # 
   # @method string_multimap_clear(map)
   # @param [FFI::Pointer(StringMultimapT)] map 
@@ -85,7 +85,7 @@ module CEF
   # @scope class
   attach_function :string_multimap_clear, :cef_string_multimap_clear, [:pointer], :void
   
-  # (Not documented)
+  # Free the string multimap.
   # 
   # @method string_multimap_free(map)
   # @param [FFI::Pointer(StringMultimapT)] map 

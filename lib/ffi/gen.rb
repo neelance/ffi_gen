@@ -317,25 +317,21 @@ class FFI::Gen
       header_files << included_file if @headers.any? { |header| header.is_a?(Regexp) ? header =~ filename : filename.end_with?(header) }
     }, nil
     
+    unit_cursor = Clang.get_translation_unit_cursor translation_unit
+    declaration_cursors = Clang.get_children unit_cursor
+    declaration_cursors.delete_if { |cursor| [:macro_expansion, :inclusion_directive, :var_decl].include? cursor[:kind] }
+    declaration_cursors.delete_if { |cursor| !header_files.include?(Clang.get_spelling_location_data(Clang.get_cursor_location(cursor))[:file]) }
+    
     @declarations = []
     @declarations_by_name = {}
     @declarations_by_type = {}
-    unit_cursor = Clang.get_translation_unit_cursor translation_unit
     previous_declaration_end = Clang.get_cursor_location unit_cursor
-    Clang.get_children(unit_cursor).each do |declaration_cursor|
-      file = Clang.get_spelling_location_data(Clang.get_cursor_location(declaration_cursor))[:file]
-      
-      extent = Clang.get_cursor_extent declaration_cursor
-      comment_range = Clang.get_range previous_declaration_end, Clang.get_range_start(extent)
-      unless [:enum_decl, :struct_decl, :union_decl].include? declaration_cursor[:kind] # keep comment for typedef_decl
-        previous_declaration_end = Clang.get_range_end extent
-      end 
-      
-      next if not header_files.include? file
-      
+    declaration_cursors.each do |declaration_cursor|
+      comment_range = Clang.get_range previous_declaration_end, Clang.get_cursor_location(declaration_cursor)
       comment, _ = extract_comment translation_unit, comment_range
+      previous_declaration_end = Clang.get_range_end Clang.get_cursor_extent(declaration_cursor) unless comment.nil?
       
-      read_declaration declaration_cursor, comment
+      read_declaration declaration_cursor, (comment || [])
     end
 
     @declarations
@@ -367,6 +363,7 @@ class FFI::Gen
         constant_location = Clang.get_cursor_location enum_constant
         constant_comment_range = Clang.get_range previous_constant_location, constant_location
         constant_description, _ = extract_comment translation_unit, constant_comment_range
+        constant_description ||= []
         constant_description.concat(constant_descriptions[constant_name.raw] || [])
         previous_constant_location = constant_location
         
@@ -438,7 +435,7 @@ class FFI::Gen
           field_type = resolve_type Clang.get_cursor_type(child)
           last_nested_declaration.name ||= Name.new(name.parts + field_name.parts) if last_nested_declaration
           last_nested_declaration = nil
-          struct.fields << { name: field_name, type: field_type, comment: field_comment }
+          struct.fields << { name: field_name, type: field_type, comment: (field_comment || []) }
         else
           raise
         end
@@ -611,7 +608,8 @@ class FFI::Gen
       end
     
     else
-      nil
+      raise declaration_cursor[:kind].to_s
+
     end
     
     return nil if declaration.nil?
@@ -698,22 +696,29 @@ class FFI::Gen
   
   def extract_comment(translation_unit, range, search_backwards = true)
     tokens = Clang.get_tokens translation_unit, range
+    
     iterator = search_backwards ? tokens.reverse_each : tokens.each
+    comment_lines = []
+    comment_token = nil
+    comment_block = false
     iterator.each do |token|
-      if Clang.get_token_kind(token) == :comment
-        comment = Clang.get_token_spelling(translation_unit, token).to_s_and_dispose
-        lines = comment.split("\n").map { |line|
-          line.sub!(/\ ?\*+\/\s*$/, '')
-          line.sub!(/^\s*\/?\*+ ?/, '')
-          line.gsub!(/\\(brief|determine) /, '')
-          line.gsub!('[', '(')
-          line.gsub!(']', ')')
-          line
-        }
-        return lines, token
-      end
+      next if Clang.get_token_kind(token) != :comment
+      comment = Clang.get_token_spelling(translation_unit, token).to_s_and_dispose
+      lines = comment.split("\n").map { |line|
+        line.sub!(/\ ?\*+\/\s*$/, '')
+        line.sub!(/^\s*\/?[*\/]+ ?/, '')
+        line.gsub!(/\\(brief|determine) /, '')
+        line.gsub!('[', '(')
+        line.gsub!(']', ')')
+        line
+      }
+      comment_lines = lines + comment_lines
+      comment_token = token
+      comment_block = !comment_block if comment == "///"
+      break unless comment_block and search_backwards
     end
-    return [], nil
+
+    return comment_lines, comment_token
   end
   
   def self.generate(options = {})

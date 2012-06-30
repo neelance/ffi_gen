@@ -12,13 +12,14 @@ module CEF
     end
   end
   
-  # (Not documented)
+  # Callback structure used for asynchronous continuation of geolocation
+  # permission requests.
   # 
   # = Fields:
   # :base ::
-  #   (unknown) ///
+  #   (unknown) Base structure.
   # :cont ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Call to allow or deny geolocation access.
   class CefGeolocationCallbackT < FFI::Struct
     layout :base, :char,
            :cont, :pointer
@@ -34,15 +35,23 @@ module CEF
     layout :dummy, :char
   end
   
-  # ///
+  # Implement this structure to handle events related to geolocation permission
+  # requests. The functions of this structure will be called on the browser
+  # process IO thread.
   # 
   # = Fields:
   # :base ::
-  #   (unknown) ///
+  #   (unknown) Base structure.
   # :on_request_geolocation_permission ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Called when a page requests permission to access geolocation information.
+  #   |requesting_url| is the URL requesting permission and |request_id| is the
+  #   unique ID for the permission request. Call
+  #   cef_geolocation_callback_t::Continue to allow or deny the permission
+  #   request.
   # :on_cancel_geolocation_permission ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Called when a geolocation access request is canceled. |requesting_url| is
+  #   the URL that originally requested permission and |request_id| is the unique
+  #   ID for the permission request.
   class CefGeolocationHandlerT < FFI::Struct
     layout :base, :char,
            :on_request_geolocation_permission, :pointer,

@@ -45,7 +45,9 @@ module LLVM
     layout :dummy, :char
   end
   
-  # (Not documented)
+  # LLVMInitializeAllTargetInfos - The main program should call this function if
+  #     it wants access to all available targets that LLVM is configured to
+  #     support.
   # 
   # @method initialize_all_target_infos()
   # @return [nil] 

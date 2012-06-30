@@ -22,51 +22,56 @@ module CEF
     layout :dummy, :char
   end
   
-  # (Not documented)
+  # Structure used to represent a browser window. When used in the browser
+  # process the functions of this structure may be called on any thread unless
+  # otherwise indicated in the comments. When used in the render process the
+  # functions of this structure may only be called on the main thread.
   # 
   # = Fields:
   # :base ::
-  #   (unknown) ///
+  #   (unknown) Base structure.
   # :get_host ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the browser host object. This function can only be called in the
+  #   browser process.
   # :can_go_back ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if the browser can navigate backwards.
   # :go_back ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Navigate backwards.
   # :can_go_forward ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if the browser can navigate forwards.
   # :go_forward ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Navigate forwards.
   # :is_loading ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if the browser is currently loading.
   # :reload ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Reload the current page.
   # :reload_ignore_cache ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Reload the current page ignoring any cached data.
   # :stop_load ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Stop loading the page.
   # :get_identifier ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the globally unique identifier for this browser.
   # :is_popup ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if the window is a popup window.
   # :has_document ::
-  #   (FFI::Pointer(*)) // Returns true (1) if a document has been loaded in the browser.
+  #   (FFI::Pointer(*)) Returns true (1) if a document has been loaded in the browser.
   # :get_main_frame ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the main (top-level) frame for the browser window.
   # :get_focused_frame ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the focused frame for the browser window.
   # :get_frame_byident ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the frame with the specified identifier, or NULL if not found.
   # :get_frame ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the frame with the specified name, or NULL if not found.
   # :get_frame_count ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the number of frames that currently exist.
   # :get_frame_identifiers ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the identifiers of all existing frames.
   # :get_frame_names ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the names of all existing frames.
   # :send_process_message ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Send a message to the specified |target_process|. Returns true (1) if the
+  #   message was sent successfully.
   class CefBrowserT < FFI::Struct
     layout :base, :char,
            :get_host, :pointer,
@@ -96,19 +101,25 @@ module CEF
     layout :dummy, :char
   end
   
-  # ///
+  # Structure used to represent the browser process aspects of a browser window.
+  # The functions of this structure can only be called in the browser process.
+  # They may be called on any thread in that process unless otherwise indicated
+  # in the comments.
   # 
   # = Fields:
   # :base ::
-  #   (unknown) ///
+  #   (unknown) Base structure.
   # :get_browser ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the hosted browser object.
   # :parent_window_will_close ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Call this function before destroying a contained browser window. This
+  #   function performs any internal cleanup that may be needed before the
+  #   browser window is destroyed.
   # :close_browser ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Closes this browser window.
   # :set_focus ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Set focus for the browser window. If |enable| is true (1) focus will be set
+  #   to the window. Otherwise, focus will be removed.
   # :get_window_handle ::
   #   (FFI::Pointer(*)) 
   # :get_opener_window_handle ::
@@ -116,11 +127,11 @@ module CEF
   # :get_client ::
   #   (FFI::Pointer(*)) 
   # :get_dev_tools_url ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :get_zoom_level ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Get the zoom level. This function can only be called on the UI thread.
   # :set_zoom_level ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Change the zoom level to the specified value.
   class CefBrowserHostT < FFI::Struct
     layout :base, :char,
            :get_browser, :pointer,
@@ -135,7 +146,10 @@ module CEF
            :set_zoom_level, :pointer
   end
   
-  # (Not documented)
+  # Create a new browser window using the window parameters specified by
+  # |windowInfo|. All values will be copied internally and the actual window will
+  # be created on the UI thread. This function can be called on any browser
+  # process thread and will not block.
   # 
   # @method browser_host_create_browser(window_info, client, url, settings)
   # @param [FFI::Pointer(*WindowInfoT)] window_info 
@@ -146,7 +160,9 @@ module CEF
   # @scope class
   attach_function :browser_host_create_browser, :cef_browser_host_create_browser, [:pointer, CefClientT, :pointer, :pointer], :int
   
-  # (Not documented)
+  # Create a new browser window using the window parameters specified by
+  # |windowInfo|. This function can only be called on the browser process UI
+  # thread.
   # 
   # @method browser_host_create_browser_sync(window_info, client, url, settings)
   # @param [FFI::Pointer(*WindowInfoT)] window_info 

@@ -12,21 +12,23 @@ module CEF
     end
   end
   
-  # (Not documented)
+  # Structure representing a binary value. Can be used on any process and thread.
   # 
   # = Fields:
   # :base ::
-  #   (unknown) ///
+  #   (unknown) Base structure.
   # :is_valid ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if this object is valid. Do not call any other functions
+  #   if this function returns false (0).
   # :is_owned ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if this object is currently owned by another object.
   # :copy ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns a copy of this object. The data in this object will also be copied.
   # :get_size ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the data size.
   # :get_data ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Read up to |buffer_size| number of bytes into |buffer|. Reading begins at
+  #   the specified byte |data_offset|. Returns the number of bytes read.
   class CefBinaryValueT < FFI::Struct
     layout :base, :char,
            :is_valid, :pointer,
@@ -36,7 +38,8 @@ module CEF
            :get_data, :pointer
   end
   
-  # (Not documented)
+  # Creates a new object that is not owned by any other object. The specified
+  # |data| will be copied.
   # 
   # @method binary_value_create(data, data_size)
   # @param [FFI::Pointer(*Void)] data 
@@ -45,61 +48,85 @@ module CEF
   # @scope class
   attach_function :binary_value_create, :cef_binary_value_create, [:pointer, :ulong], CefBinaryValueT
   
-  # ///
+  # Structure representing a dictionary value. Can be used on any process and
+  # thread.
   # 
   # = Fields:
   # :base ::
-  #   (unknown) ///
+  #   (unknown) Base structure.
   # :is_valid ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if this object is valid. Do not call any other functions
+  #   if this function returns false (0).
   # :is_owned ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if this object is currently owned by another object.
   # :is_read_only ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if the values of this object are read-only. Some APIs may
+  #   expose read-only objects.
   # :copy ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns a writable copy of this object. If |exclude_NULL_children| is true
+  #   (1) any NULL dictionaries or lists will be excluded from the copy.
   # :get_size ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the number of values.
   # :clear ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Removes all values. Returns true (1) on success.
   # :has_key ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if the current dictionary has a value for the given key.
   # :get_keys ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Reads all keys for this dictionary into the specified vector.
   # :remove ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Removes the value at the specified key. Returns true (1) is the value was
+  #   removed successfully.
   # :get_type ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the value type for the specified key.
   # :get_bool ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the value at the specified key as type bool.
   # :get_int ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the value at the specified key as type int.
   # :get_double ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the value at the specified key as type double.
   # :get_string ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :get_binary ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the value at the specified key as type binary.
   # :get_dictionary ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the value at the specified key as type dictionary.
   # :get_list ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the value at the specified key as type list.
   # :set_null ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Sets the value at the specified key as type null. Returns true (1) if the
+  #   value was set successfully.
   # :set_bool ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Sets the value at the specified key as type bool. Returns true (1) if the
+  #   value was set successfully.
   # :set_int ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Sets the value at the specified key as type int. Returns true (1) if the
+  #   value was set successfully.
   # :set_double ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Sets the value at the specified key as type double. Returns true (1) if the
+  #   value was set successfully.
   # :set_string ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Sets the value at the specified key as type string. Returns true (1) if the
+  #   value was set successfully.
   # :set_binary ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Sets the value at the specified key as type binary. Returns true (1) if the
+  #   value was set successfully. If |value| is currently owned by another object
+  #   then the value will be copied and the |value| reference will not change.
+  #   Otherwise, ownership will be transferred to this object and the |value|
+  #   reference will be invalidated.
   # :set_dictionary ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Sets the value at the specified key as type dict. Returns true (1) if the
+  #   value was set successfully. After calling this function the |value| object
+  #   will no longer be valid. If |value| is currently owned by another object
+  #   then the value will be copied and the |value| reference will not change.
+  #   Otherwise, ownership will be transferred to this object and the |value|
+  #   reference will be invalidated.
   # :set_list ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Sets the value at the specified key as type list. Returns true (1) if the
+  #   value was set successfully. After calling this function the |value| object
+  #   will no longer be valid. If |value| is currently owned by another object
+  #   then the value will be copied and the |value| reference will not change.
+  #   Otherwise, ownership will be transferred to this object and the |value|
+  #   reference will be invalidated.
   class CefDictionaryValueT < FFI::Struct
     layout :base, :char,
            :is_valid, :pointer,
@@ -129,66 +156,89 @@ module CEF
            :set_list, :pointer
   end
   
-  # (Not documented)
+  # Creates a new object that is not owned by any other object.
   # 
   # @method dictionary_value_create()
   # @return [CefDictionaryValueT] 
   # @scope class
   attach_function :dictionary_value_create, :cef_dictionary_value_create, [], CefDictionaryValueT
   
-  # ///
+  # Structure representing a list value. Can be used on any process and thread.
   # 
   # = Fields:
   # :base ::
-  #   (unknown) ///
+  #   (unknown) Base structure.
   # :is_valid ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if this object is valid. Do not call any other functions
+  #   if this function returns false (0).
   # :is_owned ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if this object is currently owned by another object.
   # :is_read_only ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if the values of this object are read-only. Some APIs may
+  #   expose read-only objects.
   # :copy ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns a writable copy of this object.
   # :set_size ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Sets the number of values. If the number of values is expanded all new
+  #   value slots will default to type null. Returns true (1) on success.
   # :get_size ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the number of values.
   # :clear ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Removes all values. Returns true (1) on success.
   # :remove ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Removes the value at the specified index.
   # :get_type ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the value type at the specified index.
   # :get_bool ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the value at the specified index as type bool.
   # :get_int ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the value at the specified index as type int.
   # :get_double ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the value at the specified index as type double.
   # :get_string ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :get_binary ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the value at the specified index as type binary.
   # :get_dictionary ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the value at the specified index as type dictionary.
   # :get_list ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the value at the specified index as type list.
   # :set_null ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Sets the value at the specified index as type null. Returns true (1) if the
+  #   value was set successfully.
   # :set_bool ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Sets the value at the specified index as type bool. Returns true (1) if the
+  #   value was set successfully.
   # :set_int ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Sets the value at the specified index as type int. Returns true (1) if the
+  #   value was set successfully.
   # :set_double ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Sets the value at the specified index as type double. Returns true (1) if
+  #   the value was set successfully.
   # :set_string ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Sets the value at the specified index as type string. Returns true (1) if
+  #   the value was set successfully.
   # :set_binary ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Sets the value at the specified index as type binary. Returns true (1) if
+  #   the value was set successfully. After calling this function the |value|
+  #   object will no longer be valid. If |value| is currently owned by another
+  #   object then the value will be copied and the |value| reference will not
+  #   change. Otherwise, ownership will be transferred to this object and the
+  #   |value| reference will be invalidated.
   # :set_dictionary ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Sets the value at the specified index as type dict. Returns true (1) if the
+  #   value was set successfully. After calling this function the |value| object
+  #   will no longer be valid. If |value| is currently owned by another object
+  #   then the value will be copied and the |value| reference will not change.
+  #   Otherwise, ownership will be transferred to this object and the |value|
+  #   reference will be invalidated.
   # :set_list ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Sets the value at the specified index as type list. Returns true (1) if the
+  #   value was set successfully. After calling this function the |value| object
+  #   will no longer be valid. If |value| is currently owned by another object
+  #   then the value will be copied and the |value| reference will not change.
+  #   Otherwise, ownership will be transferred to this object and the |value|
+  #   reference will be invalidated.
   class CefListValueT < FFI::Struct
     layout :base, :char,
            :is_valid, :pointer,
@@ -217,7 +267,7 @@ module CEF
            :set_list, :pointer
   end
   
-  # (Not documented)
+  # Creates a new object that is not owned by any other object.
   # 
   # @method list_value_create()
   # @return [CefListValueT] 

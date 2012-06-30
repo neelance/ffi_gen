@@ -67,31 +67,36 @@ module CEF
     layout :dummy, :char
   end
   
-  # (Not documented)
+  # Implement this structure to provide handler implementations.
   # 
   # = Fields:
   # :base ::
-  #   (unknown) ///
+  #   (unknown) Base structure.
   # :get_context_menu_handler ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Return the handler for context menus. If no handler is provided the default
+  #   implementation will be used.
   # :get_display_handler ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Return the handler for browser display state events.
   # :get_focus_handler ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Return the handler for focus events.
   # :get_geolocation_handler ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Return the handler for geolocation permissions requests. If no handler is
+  #   provided geolocation access will be denied by default.
   # :get_jsdialog_handler ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Return the handler for JavaScript dialogs. If no handler is provided the
+  #   default implementation will be used.
   # :get_keyboard_handler ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Return the handler for keyboard events.
   # :get_life_span_handler ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Return the handler for browser life span events.
   # :get_load_handler ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Return the handler for browser load status events.
   # :get_request_handler ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Return the handler for browser request events.
   # :on_process_message_received ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Called when a new message is received from a different process. Return true
+  #   (1) if the message was handled or false (0) otherwise. Do not keep a
+  #   reference to or attempt to access the message outside of this callback.
   class CefClientT < FFI::Struct
     layout :base, :char,
            :get_context_menu_handler, :pointer,

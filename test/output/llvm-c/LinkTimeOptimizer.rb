@@ -12,7 +12,7 @@ module LLVM
     end
   end
   
-  # /// This should map exactly onto the C++ enumerator LTOStatus.
+  # This should map exactly onto the C++ enumerator LTOStatus.
   # 
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:llvm_lto_status).</em>
   # 
@@ -36,7 +36,7 @@ module LLVM
   # :asm_failure ::
   #   
   # :null_object ::
-  #   //  Added C-specific error codes
+  #   Added C-specific error codes
   # 
   # @method _enum_llvm_lto_status_
   # @return [Symbol]
@@ -54,7 +54,7 @@ module LLVM
     :null_object, 9
   ]
   
-  # /// extern "C" helps, because dlopen() interface uses name to find the symbol.
+  # extern "C" helps, because dlopen() interface uses name to find the symbol.
   # 
   # @method llvm_create_optimizer()
   # @return [FFI::Pointer(LlvmLtoT)] 

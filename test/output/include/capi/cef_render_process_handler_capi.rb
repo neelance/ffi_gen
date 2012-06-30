@@ -77,27 +77,38 @@ module CEF
     layout :dummy, :char
   end
   
-  # (Not documented)
+  # Structure used to implement render process callbacks. The functions of this
+  # structure will always be called on the render process main thread.
   # 
   # = Fields:
   # :base ::
-  #   (unknown) ///
+  #   (unknown) Base structure.
   # :on_render_thread_created ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Called after the render process main thread has been created.
   # :on_web_kit_initialized ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Called after WebKit has been initialized.
   # :on_browser_created ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Called after a browser has been created.
   # :on_browser_destroyed ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Called before a browser is destroyed.
   # :on_context_created ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Called immediately after the V8 context for a frame has been created. To
+  #   retrieve the JavaScript 'window' object use the
+  #   cef_v8context_t::get_global() function.
   # :on_context_released ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Called immediately before the V8 context for a frame is released. No
+  #   references to the context should be kept after this function is called.
   # :on_focused_node_changed ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Called when a new node in the the browser gets focus. The |node| value may
+  #   be NULL if no specific node has gained focus. The node object passed to
+  #   this function represents a snapshot of the DOM at the time this function is
+  #   executed. DOM objects are only valid for the scope of this function. Do not
+  #   keep references to or attempt to access any DOM objects outside the scope
+  #   of this function.
   # :on_process_message_received ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Called when a new message is received from a different process. Return true
+  #   (1) if the message was handled or false (0) otherwise. Do not keep a
+  #   reference to or attempt to access the message outside of this callback.
   class CefRenderProcessHandlerT < FFI::Struct
     layout :base, :char,
            :on_render_thread_created, :pointer,

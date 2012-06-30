@@ -12,7 +12,7 @@ module CEF
     end
   end
   
-  # ///
+  # Log severity levels.
   # 
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:log_severity_t).</em>
   # 
@@ -28,7 +28,7 @@ module CEF
   # :logseverity_error_report ::
   #   
   # :logseverity_disable ::
-  #   // Disables logging completely.
+  #   Disables logging completely.
   # 
   # @method _enum_log_severity_t_
   # @return [Symbol]
@@ -42,43 +42,79 @@ module CEF
     :logseverity_disable, 99
   ]
   
-  # ///
+  # Initialization settings. Specify NULL or 0 to get the recommended default
+  # values.
   # 
   # = Fields:
   # :size ::
-  #   (Integer) ///
+  #   (Integer) Size of this structure.
   # :single_process ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to use a single process for the browser and renderer. This
+  #   run mode is not officially supported by Chromium and is less stable than
+  #   the multi-process default.
   # :browser_subprocess_path ::
-  #   (unknown) ///
+  #   (unknown) The path to a separate executable that will be launched for sub-processes.
+  #   By default the browser process executable is used. See the comments on
+  #   CefExecuteProcess() for details.
   # :multi_threaded_message_loop ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to have the browser process message loop run in a separate
+  #   thread. If false (0) than the CefDoMessageLoopWork() function must be
+  #   called from your application message loop.
   # :command_line_args_disabled ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to disable configuration of browser process features using
+  #   standard CEF and Chromium command-line arguments. Configuration can still
+  #   be specified using CEF data structures or via the
+  #   CefApp::OnBeforeCommandLineProcessing() method.
   # :cache_path ::
-  #   (unknown) ///
+  #   (unknown) The location where cache data will be stored on disk. If empty an in-memory
+  #   cache will be used. HTML5 databases such as localStorage will only persist
+  #   across sessions if a cache path is specified.
   # :user_agent ::
-  #   (unknown) ///
+  #   (unknown) Value that will be returned as the User-Agent HTTP header. If empty the
+  #   default User-Agent string will be used.
   # :product_version ::
-  #   (unknown) ///
+  #   (unknown) Value that will be inserted as the product portion of the default
+  #   User-Agent string. If empty the Chromium product version will be used. If
+  #   |userAgent| is specified this value will be ignored.
   # :locale ::
-  #   (unknown) ///
+  #   (unknown) The locale string that will be passed to WebKit. If empty the default
+  #   locale of "en-US" will be used. This value is ignored on Linux where locale
+  #   is determined using environment variable parsing with the precedence order:
+  #   LANGUAGE, LC_ALL, LC_MESSAGES and LANG.
   # :log_file ::
-  #   (unknown) ///
+  #   (unknown) The directory and file name to use for the debug log. If empty, the
+  #   default name of "debug.log" will be used and the file will be written
+  #   to the application directory.
   # :log_severity ::
-  #   (Symbol from _enum_log_severity_t_) ///
+  #   (Symbol from _enum_log_severity_t_) The log severity. Only messages of this severity level or higher will be
+  #   logged.
   # :javascript_flags ::
-  #   (unknown) ///
+  #   (unknown) Custom flags that will be used when initializing the V8 JavaScript engine.
+  #   The consequences of using custom flags may not be well tested.
   # :auto_detect_proxy_settings_enabled ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to use the system proxy resolver on Windows when
+  #   "Automatically detect settings" is checked. This setting is disabled
+  #   by default for performance reasons.
   # :pack_file_path ::
-  #   (unknown) ///
+  #   (unknown) The fully qualified path for the cef.pak file. If this value is empty
+  #   the cef.pak file must be located in the module directory. This value is
+  #   ignored on Mac OS X where pack files are always loaded from the app bundle
+  #   resource directory.
   # :locales_dir_path ::
-  #   (unknown) ///
+  #   (unknown) The fully qualified path for the locales directory. If this value is empty
+  #   the locales directory must be located in the module directory. This value
+  #   is ignored on Mac OS X where pack files are always loaded from the app
+  #   bundle resource directory.
   # :pack_loading_disabled ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to disable loading of pack files for resources and locales.
+  #   A resource bundle handler must be provided for the browser and render
+  #   processes via CefApp::GetResourceBundleHandler() if loading of pack files
+  #   is disabled.
   # :remote_debugging_port ::
-  #   (Integer) ///
+  #   (Integer) Set to a value between 1024 and 65535 to enable remote debugging on the
+  #   specified port. For example, if 8080 is specified the remote debugging URL
+  #   will be http://localhost:8080. CEF can be remotely debugged from any CEF or
+  #   Chrome browser window.
   class CefSettingsT < FFI::Struct
     layout :size, :ulong,
            :single_process, :int,
@@ -99,13 +135,15 @@ module CEF
            :remote_debugging_port, :int
   end
   
-  # ///
+  # Browser initialization settings. Specify NULL or 0 to get the recommended
+  # default values. The consequences of using custom values may not be well
+  # tested.
   # 
   # = Fields:
   # :size ::
-  #   (Integer) ///
+  #   (Integer) Size of this structure.
   # :standard_font_family ::
-  #   (unknown) ///
+  #   (unknown) Font settings.
   # :fixed_font_family ::
   #   (unknown) 
   # :serif_font_family ::
@@ -125,81 +163,87 @@ module CEF
   # :minimum_logical_font_size ::
   #   (Integer) 
   # :remote_fonts_disabled ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to disable loading of fonts from remote sources.
   # :default_encoding ::
-  #   (unknown) ///
+  #   (unknown) Default encoding for Web content. If empty "ISO-8859-1" will be used.
   # :encoding_detector_enabled ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to attempt automatic detection of content encoding.
   # :javascript_disabled ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to disable JavaScript.
   # :javascript_open_windows_disallowed ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to disallow JavaScript from opening windows.
   # :javascript_close_windows_disallowed ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to disallow JavaScript from closing windows.
   # :javascript_access_clipboard_disallowed ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to disallow JavaScript from accessing the clipboard.
   # :dom_paste_disabled ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to disable DOM pasting in the editor. DOM pasting also
+  #   depends on |javascript_cannot_access_clipboard| being false (0).
   # :caret_browsing_enabled ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to enable drawing of the caret position.
   # :java_disabled ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to disable Java.
   # :plugins_disabled ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to disable plugins.
   # :universal_access_from_file_urls_allowed ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to allow access to all URLs from file URLs.
   # :file_access_from_file_urls_allowed ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to allow access to file URLs from other file URLs.
   # :web_security_disabled ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to allow risky security behavior such as cross-site
+  #   scripting (XSS). Use with extreme care.
   # :xss_auditor_enabled ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to enable console warnings about XSS attempts.
   # :image_load_disabled ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to suppress the network load of image URLs.  A cached
+  #   image will still be rendered if requested.
   # :shrink_standalone_images_to_fit ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to shrink standalone images to fit the page.
   # :site_specific_quirks_disabled ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to disable browser backwards compatibility features.
   # :text_area_resize_disabled ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to disable resize of text areas.
   # :page_cache_disabled ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to disable use of the page cache.
   # :tab_to_links_disabled ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to not have the tab key advance focus to links.
   # :hyperlink_auditing_disabled ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to disable hyperlink pings (<a ping> and window.sendPing).
   # :user_style_sheet_enabled ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to enable the user style sheet for all pages.
   # :user_style_sheet_location ::
-  #   (unknown) ///
+  #   (unknown) Location of the user style sheet. This must be a data URL of the form
+  #   "data:text/css;charset=utf-8;base64,csscontent" where "csscontent" is the
+  #   base64 encoded contents of the CSS file.
   # :author_and_user_styles_disabled ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to disable style sheets.
   # :local_storage_disabled ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to disable local storage.
   # :databases_disabled ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to disable databases.
   # :application_cache_disabled ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to disable application cache.
   # :webgl_disabled ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to disable WebGL.
   # :accelerated_compositing_disabled ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to disable accelerated compositing.
   # :accelerated_layers_disabled ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to disable accelerated layers. This affects features like
+  #   3D CSS transforms.
   # :accelerated_video_disabled ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to disable accelerated video.
   # :accelerated_2d_canvas_disabled ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to disable accelerated 2d canvas.
   # :accelerated_painting_enabled ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to enable accelerated painting.
   # :accelerated_filters_enabled ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to enable accelerated filters.
   # :accelerated_plugins_disabled ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to disable accelerated plugins.
   # :developer_tools_disabled ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to disable developer tools (WebKit inspector).
   # :fullscreen_enabled ::
-  #   (Integer) ///
+  #   (Integer) Set to true (1) to enable fullscreen mode.
   class CefBrowserSettingsT < FFI::Struct
     layout :size, :ulong,
            :standard_font_family, :char,
@@ -252,25 +296,26 @@ module CEF
            :fullscreen_enabled, :int
   end
   
-  # ///
+  # URL component parts.
   # 
   # = Fields:
   # :spec ::
-  #   (unknown) ///
+  #   (unknown) The complete URL specification.
   # :scheme ::
-  #   (unknown) ///
+  #   (unknown) Scheme component not including the colon (e.g., "http").
   # :username ::
-  #   (unknown) ///
+  #   (unknown) User name component.
   # :password ::
-  #   (unknown) ///
+  #   (unknown) Password component.
   # :host ::
-  #   (unknown) ///
+  #   (unknown) Host component. This may be a hostname, an IPv4 address or an IPv6 literal
+  #   surrounded by square brackets (e.g., "(2001:db8::1)").
   # :port ::
-  #   (unknown) ///
+  #   (unknown) Port number component.
   # :path ::
-  #   (unknown) ///
+  #   (unknown) Path component including the first slash following the host.
   # :query ::
-  #   (unknown) ///
+  #   (unknown) Query string component (i.e., everything following the '?').
   class CefUrlpartsT < FFI::Struct
     layout :spec, :char,
            :scheme, :char,
@@ -282,27 +327,32 @@ module CEF
            :query, :char
   end
   
-  # ///
+  # Cookie information.
   # 
   # = Fields:
   # :name ::
-  #   (unknown) ///
+  #   (unknown) The cookie name.
   # :value ::
-  #   (unknown) ///
+  #   (unknown) The cookie value.
   # :domain ::
-  #   (unknown) ///
+  #   (unknown) If |domain| is empty a host cookie will be created instead of a domain
+  #   cookie. Domain cookies are stored with a leading "." and are visible to
+  #   sub-domains whereas host cookies are not.
   # :path ::
-  #   (unknown) ///
+  #   (unknown) If |path| is non-empty only URLs at or below the path will get the cookie
+  #   value.
   # :secure ::
-  #   (Integer) ///
+  #   (Integer) If |secure| is true the cookie will only be sent for HTTPS requests.
   # :httponly ::
-  #   (Integer) ///
+  #   (Integer) If |httponly| is true the cookie will only be sent for HTTP requests.
   # :creation ::
-  #   (unknown) ///
+  #   (unknown) The cookie creation date. This is automatically populated by the system on
+  #   cookie creation.
   # :last_access ::
-  #   (unknown) ///
+  #   (unknown) The cookie last access date. This is automatically populated by the system
+  #   on access.
   # :has_expires ::
-  #   (Integer) ///
+  #   (Integer) The cookie expiration date is only valid if |has_expires| is true.
   # :expires ::
   #   (unknown) 
   class CefCookieT < FFI::Struct
@@ -318,7 +368,7 @@ module CEF
            :expires, :char
   end
   
-  # ///
+  # Storage types.
   # 
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:storage_type_t).</em>
   # 
@@ -336,7 +386,8 @@ module CEF
     :st_sessionstorage, 1
   ]
   
-  # ///
+  # Supported error code values. See net\base\net_error_list.h for complete
+  # descriptions of the error codes.
   # 
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:errorcode_t).</em>
   # 
@@ -495,7 +546,7 @@ module CEF
     :err_insecure_response, -501
   ]
   
-  # ///
+  # V8 access control values.
   # 
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:v8_accesscontrol_t).</em>
   # 
@@ -519,7 +570,7 @@ module CEF
     :access_control_prohibits_overwriting, 4
   ]
   
-  # ///
+  # V8 property attribute values.
   # 
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:v8_propertyattribute_t).</em>
   # 
@@ -527,11 +578,11 @@ module CEF
   # :property_attribute_none ::
   #   
   # :property_attribute_readonly ::
-  #   //   Configurable
+  #   Configurable
   # :property_attribute_dontenum ::
-  #   // Not writeable
+  #   Not writeable
   # :property_attribute_dontdelete ::
-  #   // Not enumerable
+  #   Not enumerable
   # 
   # @method _enum_v8_propertyattribute_t_
   # @return [Symbol]
@@ -543,7 +594,7 @@ module CEF
     :property_attribute_dontdelete, 4
   ]
   
-  # ///
+  # Post data elements may represent either bytes or files.
   # 
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:postdataelement_type_t).</em>
   # 
@@ -564,29 +615,32 @@ module CEF
     :pde_type_file, 2
   ]
   
-  # ///
+  # Flags used to customize the behavior of CefURLRequest.
   # 
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:urlrequest_flags_t).</em>
   # 
   # === Options:
   # :ur_flag_none ::
-  #   ///
+  #   Default behavior.
   # :ur_flag_skip_cache ::
-  #   ///
+  #   If set the cache will be skipped when handling the request.
   # :ur_flag_allow_cached_credentials ::
-  #   ///
+  #   If set user name, password, and cookies may be sent with the request.
   # :ur_flag_allow_cookies ::
-  #   ///
+  #   If set cookies may be sent with the request and saved from the response.
+  #   UR_FLAG_ALLOW_CACHED_CREDENTIALS must also be set.
   # :ur_flag_report_upload_progress ::
-  #   ///
+  #   If set upload progress events will be generated when a request has a body.
   # :ur_flag_report_load_timing ::
-  #   ///
+  #   If set load timing info will be collected for the request.
   # :ur_flag_report_raw_headers ::
-  #   ///
+  #   If set the headers sent and received for the request will be recorded.
   # :ur_flag_no_download_data ::
-  #   ///
+  #   If set the CefURLRequestClient::OnDownloadData method will not be called.
   # :ur_flag_no_retry_on_5xx ::
-  #   ///
+  #   If set 5XX redirect errors will be propagated to the observer instead of
+  #   automatically re-tried. This currently only applies for requests
+  #   originated in the browser process.
   # 
   # @method _enum_urlrequest_flags_t_
   # @return [Symbol]
@@ -603,23 +657,26 @@ module CEF
     :ur_flag_no_retry_on_5xx, 128
   ]
   
-  # ///
+  # Flags that represent CefURLRequest status.
   # 
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:urlrequest_status_t).</em>
   # 
   # === Options:
   # :ur_unknown ::
-  #   ///
+  #   Unknown status.
   # :ur_success ::
-  #   ///
+  #   Request succeeded.
   # :ur_io_pending ::
-  #   ///
+  #   An IO request is pending, and the caller will be informed when it is
+  #   completed.
   # :ur_handled_externally ::
-  #   ///
+  #   Request was successful but was handled by an external program, so there
+  #   is no response data. This usually means the current page should not be
+  #   navigated, but no error should be displayed.
   # :ur_canceled ::
-  #   ///
+  #   Request was canceled programatically.
   # :ur_failed ::
-  #   ///
+  #   Request failed for some reason.
   # 
   # @method _enum_urlrequest_status_t_
   # @return [Symbol]
@@ -633,7 +690,7 @@ module CEF
     :ur_failed, 5
   ]
   
-  # ///
+  # Structure representing a rectangle.
   # 
   # = Fields:
   # :x ::
@@ -651,15 +708,15 @@ module CEF
            :height, :int
   end
   
-  # ///
+  # Existing process IDs.
   # 
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:process_id_t).</em>
   # 
   # === Options:
   # :pid_browser ::
-  #   ///
+  #   Browser process.
   # :pid_renderer ::
-  #   ///
+  #   Renderer process.
   # 
   # @method _enum_process_id_t_
   # @return [Symbol]
@@ -669,27 +726,30 @@ module CEF
     :pid_renderer, 1
   ]
   
-  # ///
+  # Existing thread IDs.
   # 
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:thread_id_t).</em>
   # 
   # === Options:
   # :tid_ui ::
-  #   ///
+  #   The main thread in the browser. This will be the same as the main
+  #   application thread if CefInitialize() is called with a
+  #   CefSettings.multi_threaded_message_loop value of false.
   # :tid_db ::
-  #   ///
+  #   Used to interact with the database.
   # :tid_file ::
-  #   ///
+  #   Used to interact with the file system.
   # :tid_file_user_blocking ::
-  #   ///
+  #   Used for file system operations that block user interactions.
+  #   Responsiveness of this thread affects users.
   # :tid_process_launcher ::
-  #   ///
+  #   Used to launch and terminate browser processes.
   # :tid_cache ::
-  #   ///
+  #   Used to handle slow HTTP cache operations.
   # :tid_io ::
-  #   ///
+  #   Used to process IPC and network messages.
   # :tid_renderer ::
-  #   ///
+  #   The main thread in the renderer. Used for all WebKit and V8 interaction.
   # 
   # @method _enum_thread_id_t_
   # @return [Symbol]
@@ -705,7 +765,7 @@ module CEF
     :tid_renderer, 7
   ]
   
-  # ///
+  # Supported value types.
   # 
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:value_type_t).</em>
   # 
@@ -744,7 +804,7 @@ module CEF
     :vtype_list, 8
   ]
   
-  # ///
+  # Supported JavaScript dialog types.
   # 
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:jsdialog_type_t).</em>
   # 
@@ -765,13 +825,14 @@ module CEF
     :jsdialogtype_prompt, 2
   ]
   
-  # ///
+  # Supported menu IDs. Non-English translations can be provided for the
+  # IDS_MENU_* strings in CefResourceBundleHandler::GetLocalizedString().
   # 
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:menu_id_t).</em>
   # 
   # === Options:
   # :back ::
-  #   // Navigation.
+  #   Navigation.
   # :forward ::
   #   
   # :reload ::
@@ -781,7 +842,7 @@ module CEF
   # :stopload ::
   #   
   # :undo ::
-  #   // Editing.
+  #   Editing.
   # :redo_ ::
   #   
   # :cut ::
@@ -795,13 +856,13 @@ module CEF
   # :select_all ::
   #   
   # :find ::
-  #   // Miscellaneous.
+  #   Miscellaneous.
   # :print ::
   #   
   # :view_source ::
   #   
   # :user_first ::
-  #   // defined in the tools/gritsettings/resource_ids file.
+  #   defined in the tools/gritsettings/resource_ids file.
   # :user_last ::
   #   
   # 
@@ -828,7 +889,7 @@ module CEF
     :user_last, 28500
   ]
   
-  # ///
+  # Supported event bit flags.
   # 
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:event_flags_t).</em>
   # 
@@ -850,9 +911,9 @@ module CEF
   # :eventflag_right_mouse_button ::
   #   
   # :eventflag_command_down ::
-  #   // Mac OS-X command key.
+  #   Mac OS-X command key.
   # :eventflag_extended ::
-  #   // Windows extended key (see WM_KEYDOWN doc).
+  #   Windows extended key (see WM_KEYDOWN doc).
   # 
   # @method _enum_event_flags_t_
   # @return [Symbol]
@@ -870,7 +931,7 @@ module CEF
     :eventflag_extended, 256
   ]
   
-  # ///
+  # Supported menu item types.
   # 
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:menu_item_type_t).</em>
   # 
@@ -900,25 +961,25 @@ module CEF
     :menuitemtype_submenu, 5
   ]
   
-  # ///
+  # Supported context menu type flags.
   # 
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:context_menu_type_flags_t).</em>
   # 
   # === Options:
   # :cm_typeflag_none ::
-  #   ///
+  #   No node is selected.
   # :cm_typeflag_page ::
-  #   ///
+  #   The top page is selected.
   # :cm_typeflag_frame ::
-  #   ///
+  #   A subframe page is selected.
   # :cm_typeflag_link ::
-  #   ///
+  #   A link is selected.
   # :cm_typeflag_media ::
-  #   ///
+  #   A media node is selected.
   # :cm_typeflag_selection ::
-  #   ///
+  #   There is a textual or mixed selection that is selected.
   # :cm_typeflag_editable ::
-  #   ///
+  #   An editable element is selected.
   # 
   # @method _enum_context_menu_type_flags_t_
   # @return [Symbol]
@@ -933,23 +994,23 @@ module CEF
     :cm_typeflag_editable, 32
   ]
   
-  # ///
+  # Supported context menu media types.
   # 
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:context_menu_media_type_t).</em>
   # 
   # === Options:
   # :cm_mediatype_none ::
-  #   ///
+  #   No special node is in context.
   # :cm_mediatype_image ::
-  #   ///
+  #   An image node is selected.
   # :cm_mediatype_video ::
-  #   ///
+  #   A video node is selected.
   # :cm_mediatype_audio ::
-  #   ///
+  #   An audio node is selected.
   # :cm_mediatype_file ::
-  #   ///
+  #   A file node is selected.
   # :cm_mediatype_plugin ::
-  #   ///
+  #   A plugin node is selected.
   # 
   # @method _enum_context_menu_media_type_t_
   # @return [Symbol]
@@ -963,7 +1024,7 @@ module CEF
     :cm_mediatype_plugin, 5
   ]
   
-  # ///
+  # Supported context menu media state bit flags.
   # 
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:context_menu_media_state_flags_t).</em>
   # 
@@ -1008,7 +1069,7 @@ module CEF
     :cm_mediaflag_can_rotate, 512
   ]
   
-  # ///
+  # Supported context menu edit state bit flags.
   # 
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:context_menu_edit_state_flags_t).</em>
   # 
@@ -1047,7 +1108,7 @@ module CEF
     :cm_editflag_can_translate, 128
   ]
   
-  # ///
+  # Key event types.
   # 
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:key_event_type_t).</em>
   # 
@@ -1071,7 +1132,7 @@ module CEF
     :keyevent_char, 3
   ]
   
-  # ///
+  # Key event modifiers.
   # 
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:key_event_modifiers_t).</em>
   # 
@@ -1098,25 +1159,33 @@ module CEF
     :keypad, 16
   ]
   
-  # ///
+  # Structure representing keyboard event information.
   # 
   # = Fields:
   # :type ::
-  #   (Symbol from _enum_key_event_type_t_) ///
+  #   (Symbol from _enum_key_event_type_t_) The type of keyboard event.
   # :modifiers ::
-  #   (Integer) ///
+  #   (Integer) Bit flags describing any pressed modifier keys. See
+  #   cef_key_event_modifiers_t for values.
   # :windows_key_code ::
-  #   (Integer) ///
+  #   (Integer) The Windows key code for the key event. This value is used by the DOM
+  #   specification. Sometimes it comes directly from the event (i.e. on
+  #   Windows) and sometimes it's determined using a mapping function. See
+  #   WebCore/platform/chromium/KeyboardCodes.h for the list of values.
   # :native_key_code ::
-  #   (Integer) ///
+  #   (Integer) The actual key code genenerated by the platform.
   # :is_system_key ::
-  #   (Integer) ///
+  #   (Integer) Indicates whether the event is considered a "system key" event (see
+  #   http://msdn.microsoft.com/en-us/library/ms646286(VS.85).aspx for details).
+  #   This value will always be false on non-Windows platforms.
   # :character ::
-  #   (Integer) ///
+  #   (Integer) The character generated by the keystroke.
   # :unmodified_character ::
-  #   (Integer) ///
+  #   (Integer) Same as |character| but unmodified by any concurrently-held modifiers
+  #   (except shift). This is useful for working out shortcut keys.
   # :focus_on_editable_field ::
-  #   (Integer) ///
+  #   (Integer) True if the focus is currently on an editable field on the page. This is
+  #   useful for determining if standard key events should be intercepted.
   class CefKeyEventT < FFI::Struct
     layout :type, :key_event_type_t,
            :modifiers, :int,
@@ -1128,15 +1197,15 @@ module CEF
            :focus_on_editable_field, :int
   end
   
-  # ///
+  # Focus sources.
   # 
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:focus_source_t).</em>
   # 
   # === Options:
   # :navigation ::
-  #   ///
+  #   The source is explicit navigation via the API (LoadURL(), etc).
   # :system ::
-  #   ///
+  #   The source is a system-generated focus event.
   # 
   # @method _enum_focus_source_t_
   # @return [Symbol]
@@ -1146,7 +1215,10 @@ module CEF
     :system, 1
   ]
   
-  # ///
+  # Supported XML encoding types. The parser supports ASCII, ISO-8859-1, and
+  # UTF16 (LE and BE) by default. All other types must be translated to UTF8
+  # before being passed to the parser. If a BOM is detected and the correct
+  # decoder is available then that decoder will be used automatically.
   # 
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:xml_encoding_type_t).</em>
   # 
@@ -1173,7 +1245,7 @@ module CEF
     :ascii, 4
   ]
   
-  # ///
+  # XML node types.
   # 
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:xml_node_type_t).</em>
   # 
@@ -1218,7 +1290,7 @@ module CEF
     :comment, 10
   ]
   
-  # ///
+  # Status message types.
   # 
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:handler_statustype_t).</em>
   # 
@@ -1239,7 +1311,7 @@ module CEF
     :keyboard_focus_url, 2
   ]
   
-  # ///
+  # Popup window features.
   # 
   # = Fields:
   # :x ::
@@ -1296,7 +1368,7 @@ module CEF
            :additional_features, :pointer
   end
   
-  # ///
+  # Proxy types.
   # 
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:proxy_type_t).</em>
   # 
@@ -1317,7 +1389,7 @@ module CEF
     :pac_string, 2
   ]
   
-  # ///
+  # Proxy information.
   # 
   # = Fields:
   # :proxy_type ::
@@ -1329,7 +1401,7 @@ module CEF
            :proxy_list, :char
   end
   
-  # ///
+  # DOM document types.
   # 
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:dom_document_type_t).</em>
   # 
@@ -1353,7 +1425,7 @@ module CEF
     :plugin, 3
   ]
   
-  # ///
+  # DOM event category flags.
   # 
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:dom_event_category_t).</em>
   # 
@@ -1425,7 +1497,7 @@ module CEF
     :before_load, 262144
   ]
   
-  # ///
+  # DOM event processing phases.
   # 
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:dom_event_phase_t).</em>
   # 
@@ -1449,7 +1521,7 @@ module CEF
     :bubbling, 3
   ]
   
-  # ///
+  # DOM node types.
   # 
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:dom_node_type_t).</em>
   # 

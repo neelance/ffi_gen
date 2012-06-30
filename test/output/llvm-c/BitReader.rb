@@ -12,7 +12,9 @@ module LLVM
     end
   end
   
-  # (Not documented)
+  # Builds a module from the bitcode in the specified memory buffer, returning a
+  #    reference to the module via the OutModule parameter. Returns 0 on success.
+  #    Optionally returns a human-readable error message via OutMessage.
   # 
   # @method parse_bitcode(mem_buf, out_module, out_message)
   # @param [FFI::Pointer(MemoryBufferRef)] mem_buf 

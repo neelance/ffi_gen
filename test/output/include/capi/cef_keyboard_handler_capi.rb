@@ -22,15 +22,19 @@ module CEF
     layout :dummy, :char
   end
   
-  # (Not documented)
+  # Implement this structure to handle events related to keyboard input. The
+  # functions of this structure will be called on the UI thread.
   # 
   # = Fields:
   # :base ::
-  #   (unknown) ///
+  #   (unknown) Base structure.
   # :on_pre_key_event ::
-  #   (FFI::Pointer(*)) // shortcut set |is_keyboard_shortcut| to true (1) and return false (0).
+  #   (FFI::Pointer(*)) shortcut set |is_keyboard_shortcut| to true (1) and return false (0).
   # :on_key_event ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Called after the renderer and JavaScript in the page has had a chance to
+  #   handle the event. |event| contains information about the keyboard event.
+  #   |os_event| is the operating system event message, if any. Return true (1)
+  #   if the keyboard event was handled or false (0) otherwise.
   class CefKeyboardHandlerT < FFI::Struct
     layout :base, :char,
            :on_pre_key_event, :pointer,

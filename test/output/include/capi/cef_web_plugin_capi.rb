@@ -12,7 +12,7 @@ module CEF
     end
   end
   
-  # (Not documented)
+  # Visit web plugin information.
   class CefWebPluginInfoVisitorT < FFI::Struct
     layout :dummy, :char
   end
@@ -25,19 +25,19 @@ module CEF
   # @scope class
   attach_function :visit_web_plugin_info, :cef_visit_web_plugin_info, [CefWebPluginInfoVisitorT], :void
   
-  # ///
+  # Information about a specific web plugin.
   # 
   # = Fields:
   # :base ::
-  #   (unknown) ///
+  #   (unknown) Base structure.
   # :get_name ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :get_path ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :get_version ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :get_description ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   class CefWebPluginInfoT < FFI::Struct
     layout :base, :char,
            :get_name, :pointer,
@@ -46,13 +46,17 @@ module CEF
            :get_description, :pointer
   end
   
-  # ///
+  # Structure to implement for visiting web plugin information. The functions of
+  # this structure will be called on the UI thread.
   # 
   # = Fields:
   # :base ::
-  #   (unknown) ///
+  #   (unknown) Base structure.
   # :visit ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Method that will be called once for each plugin. |count| is the 0-based
+  #   index for the current plugin. |total| is the total number of plugins.
+  #   Return false (0) to stop visiting plugins. This function may never be
+  #   called if no plugins are found.
   class CefWebPluginInfoVisitorT < FFI::Struct
     layout :base, :char,
            :visit, :pointer

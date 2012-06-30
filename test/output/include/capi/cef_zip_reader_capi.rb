@@ -12,35 +12,44 @@ module CEF
     end
   end
   
-  # (Not documented)
+  # Structure that supports the reading of zip archives via the zlib unzip API.
+  # The functions of this structure should only be called on the thread that
+  # creates the object.
   # 
   # = Fields:
   # :base ::
-  #   (unknown) ///
+  #   (unknown) Base structure.
   # :move_to_first_file ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Moves the cursor to the first file in the archive. Returns true (1) if the
+  #   cursor position was set successfully.
   # :move_to_next_file ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Moves the cursor to the next file in the archive. Returns true (1) if the
+  #   cursor position was set successfully.
   # :move_to_file ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Moves the cursor to the specified file in the archive. If |caseSensitive|
+  #   is true (1) then the search will be case sensitive. Returns true (1) if the
+  #   cursor position was set successfully.
   # :close ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Closes the archive. This should be called directly to ensure that cleanup
+  #   occurs on the correct thread.
   # :get_file_name ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :get_file_size ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the uncompressed size of the file.
   # :get_file_last_modified ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the last modified timestamp for the file.
   # :open_file ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Opens the file for reading of uncompressed data. A read password may
+  #   optionally be specified.
   # :close_file ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Closes the file.
   # :read_file ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Read uncompressed file contents into the specified buffer. Returns < 0 if
+  #   an error occurred, 0 if at the end of file, or the number of bytes read.
   # :tell ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the current offset in the uncompressed file contents.
   # :eof ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if at end of the file contents.
   class CefZipReaderT < FFI::Struct
     layout :base, :char,
            :move_to_first_file, :pointer,
@@ -57,7 +66,8 @@ module CEF
            :eof, :pointer
   end
   
-  # ///
+  # Create a new cef_zip_reader_t object. The returned object's functions can
+  # only be called from the thread that created the object.
   class CefStreamReaderT < FFI::Struct
     layout :dummy, :char
   end

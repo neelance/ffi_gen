@@ -12,14 +12,14 @@ module CEF
     end
   end
   
-  # (Not documented)
+  # Allocate a new string map.
   # 
   # @method string_list_alloc()
   # @return [FFI::Pointer(StringListT)] 
   # @scope class
   attach_function :string_list_alloc, :cef_string_list_alloc, [], :pointer
   
-  # (Not documented)
+  # Return the number of elements in the string list.
   # 
   # @method string_list_size(list)
   # @param [FFI::Pointer(StringListT)] list 
@@ -27,7 +27,8 @@ module CEF
   # @scope class
   attach_function :string_list_size, :cef_string_list_size, [:pointer], :int
   
-  # (Not documented)
+  # Retrieve the value at the specified zero-based string list index. Returns
+  # true (1) if the value was successfully retrieved.
   # 
   # @method string_list_value(list, index, value)
   # @param [FFI::Pointer(StringListT)] list 
@@ -37,7 +38,7 @@ module CEF
   # @scope class
   attach_function :string_list_value, :cef_string_list_value, [:pointer, :int, :pointer], :int
   
-  # (Not documented)
+  # Append a new value at the end of the string list.
   # 
   # @method string_list_append(list, value)
   # @param [FFI::Pointer(StringListT)] list 
@@ -46,7 +47,7 @@ module CEF
   # @scope class
   attach_function :string_list_append, :cef_string_list_append, [:pointer, :pointer], :void
   
-  # (Not documented)
+  # Clear the string list.
   # 
   # @method string_list_clear(list)
   # @param [FFI::Pointer(StringListT)] list 
@@ -54,7 +55,7 @@ module CEF
   # @scope class
   attach_function :string_list_clear, :cef_string_list_clear, [:pointer], :void
   
-  # (Not documented)
+  # Free the string list.
   # 
   # @method string_list_free(list)
   # @param [FFI::Pointer(StringListT)] list 
@@ -62,7 +63,7 @@ module CEF
   # @scope class
   attach_function :string_list_free, :cef_string_list_free, [:pointer], :void
   
-  # (Not documented)
+  # Creates a copy of an existing string list.
   # 
   # @method string_list_copy(list)
   # @param [FFI::Pointer(StringListT)] list 

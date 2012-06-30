@@ -12,47 +12,62 @@ module CEF
     end
   end
   
-  # (Not documented)
+  # Structure used to create and/or parse command line arguments. Arguments with
+  # '--', '-' and, on Windows, '/' prefixes are considered switches. Switches
+  # will always precede any arguments without switch prefixes. Switches can
+  # optionally have a value specified using the '=' delimiter (e.g.
+  # "-switch=value"). An argument of "--" will terminate switch parsing with all
+  # subsequent tokens, regardless of prefix, being interpreted as non-switch
+  # arguments. Switch names are considered case-insensitive. This structure can
+  # be used before cef_initialize() is called.
   # 
   # = Fields:
   # :base ::
-  #   (unknown) ///
+  #   (unknown) Base structure.
   # :is_valid ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if this object is valid. Do not call any other functions
+  #   if this function returns false (0).
   # :is_read_only ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if the values of this object are read-only. Some APIs may
+  #   expose read-only objects.
   # :copy ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns a writable copy of this object.
   # :init_from_argv ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Initialize the command line with the specified |argc| and |argv| values.
+  #   The first argument must be the name of the program. This function is only
+  #   supported on non-Windows platforms.
   # :init_from_string ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Initialize the command line with the string returned by calling
+  #   GetCommandLineW(). This function is only supported on Windows.
   # :reset ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Reset the command-line switches and arguments but leave the program
+  #   component unchanged.
   # :get_command_line_string ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :get_program ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :set_program ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Set the program part of the command line string (the first item).
   # :has_switches ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if the command line has switches.
   # :has_switch ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if the command line contains the given switch.
   # :get_switch_value ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :get_switches ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the map of switch names and values. If a switch has no value an
+  #   NULL string is returned.
   # :append_switch ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Add a switch to the end of the command line. If the switch has no value
+  #   pass an NULL value string.
   # :append_switch_with_value ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Add a switch with the specified value to the end of the command line.
   # :has_arguments ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) True if there are remaining command line arguments.
   # :get_arguments ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Get the remaining command line arguments.
   # :append_argument ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Add an argument to the end of the command line.
   class CefCommandLineT < FFI::Struct
     layout :base, :char,
            :is_valid, :pointer,
@@ -75,14 +90,15 @@ module CEF
            :append_argument, :pointer
   end
   
-  # (Not documented)
+  # Create a new cef_command_line_t instance.
   # 
   # @method command_line_create()
   # @return [CefCommandLineT] 
   # @scope class
   attach_function :command_line_create, :cef_command_line_create, [], CefCommandLineT
   
-  # (Not documented)
+  # Returns the singleton global cef_command_line_t object. The returned object
+  # will be read-only.
   # 
   # @method command_line_get_global()
   # @return [CefCommandLineT] 

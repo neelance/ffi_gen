@@ -12,39 +12,43 @@ module CEF
     end
   end
   
-  # (Not documented)
+  # Structure used to represent a web request. The functions of this structure
+  # may be called on any thread.
   # 
   # = Fields:
   # :base ::
-  #   (unknown) ///
+  #   (unknown) Base structure.
   # :is_read_only ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if this object is read-only.
   # :get_url ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :set_url ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Set the fully qualified URL.
   # :get_method ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :set_method ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Set the request function type.
   # :get_post_data ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Get the post data.
   # :set_post_data ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Set the post data.
   # :get_header_map ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Get the header values.
   # :set_header_map ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Set the header values.
   # :set ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Set all values at one time.
   # :get_flags ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Get the flags used in combination with cef_urlrequest_t. See
+  #   cef_urlrequest_flags_t for supported values.
   # :set_flags ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Set the flags used in combination with cef_urlrequest_t.  See
+  #   cef_urlrequest_flags_t for supported values.
   # :get_first_party_for_cookies ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :set_first_party_for_cookies ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Get the URL to the first party for cookies used in combination with
+  #   cef_urlrequest_t.
   class CefRequestT < FFI::Struct
     layout :base, :char,
            :is_read_only, :pointer,
@@ -63,7 +67,7 @@ module CEF
            :set_first_party_for_cookies, :pointer
   end
   
-  # (Not documented)
+  # Create a new cef_request_t object.
   # 
   # @method request_create()
   # @return [CefRequestT] 
@@ -85,23 +89,25 @@ module CEF
     layout :dummy, :char
   end
   
-  # ///
+  # Structure used to represent post data for a web request. The functions of
+  # this structure may be called on any thread.
   # 
   # = Fields:
   # :base ::
-  #   (unknown) ///
+  #   (unknown) Base structure.
   # :is_read_only ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if this object is read-only.
   # :get_element_count ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the number of existing post data elements.
   # :get_elements ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Retrieve the post data elements.
   # :remove_element ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Remove the specified post data element.  Returns true (1) if the removal
+  #   succeeds.
   # :add_element ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Add the specified post data element.  Returns true (1) if the add succeeds.
   # :remove_elements ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Remove all existing post data elements.
   class CefPostDataT < FFI::Struct
     layout :base, :char,
            :is_read_only, :pointer,
@@ -112,34 +118,37 @@ module CEF
            :remove_elements, :pointer
   end
   
-  # (Not documented)
+  # Create a new cef_post_data_t object.
   # 
   # @method post_data_create()
   # @return [CefPostDataT] 
   # @scope class
   attach_function :post_data_create, :cef_post_data_create, [], CefPostDataT
   
-  # ///
+  # Structure used to represent a single element in the request post data. The
+  # functions of this structure may be called on any thread.
   # 
   # = Fields:
   # :base ::
-  #   (unknown) ///
+  #   (unknown) Base structure.
   # :is_read_only ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if this object is read-only.
   # :set_to_empty ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Remove all contents from the post data element.
   # :set_to_file ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) The post data element will represent a file.
   # :set_to_bytes ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) The post data element will represent bytes.  The bytes passed in will be
+  #   copied.
   # :get_type ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Return the type of this post data element.
   # :get_file ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :get_bytes_count ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Return the number of bytes.
   # :get_bytes ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Read up to |size| bytes into |bytes| and return the number of bytes
+  #   actually read.
   class CefPostDataElementT < FFI::Struct
     layout :base, :char,
            :is_read_only, :pointer,
@@ -152,7 +161,7 @@ module CEF
            :get_bytes, :pointer
   end
   
-  # (Not documented)
+  # Create a new cef_post_data_element_t object.
   # 
   # @method post_data_element_create()
   # @return [CefPostDataElementT] 

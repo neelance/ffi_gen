@@ -12,7 +12,7 @@ module LLVM
     end
   end
   
-  # (Not documented)
+  # See llvm::createAggressiveDCEPass function.
   # 
   # @method add_aggressive_dce_pass(pm)
   # @param [FFI::Pointer(PassManagerRef)] pm 

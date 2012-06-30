@@ -12,15 +12,18 @@ module Cairo
     end
   end
   
-  # (Not documented)
+  # cairo_svg_version_t:
+  # 
+  # #cairo_svg_version_t is used to describe the version number of the SVG
+  # specification that a generated SVG file will conform to.
   # 
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:svg_version).</em>
   # 
   # === Options:
   # :_1_1 ::
-  #   
+  #   The version 1.1 of the SVG specification.
   # :_1_2 ::
-  #   
+  #   The version 1.2 of the SVG specification.
   # 
   # @method _enum_svg_version_
   # @return [Symbol]

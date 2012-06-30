@@ -24,7 +24,7 @@ module CEF
     string_utf16_set(src, src_len, output, TRUE)
   end
   
-  # // functions if you want this managed for you.
+  # functions if you want this managed for you.
   # 
   # = Fields:
   # :str ::
@@ -69,7 +69,9 @@ module CEF
            :dtor, :pointer
   end
   
-  # (Not documented)
+  # These functions set string values. If |copy| is true (1) the value will be
+  # copied instead of referenced. It is up to the user to properly manage
+  # the lifespan of references.
   # 
   # @method string_wide_set(src, src_len, output, copy)
   # @param [FFI::Pointer(*WcharT)] src 
@@ -102,7 +104,7 @@ module CEF
   # @scope class
   attach_function :string_utf16_set, :cef_string_utf16_set, [:pointer, :ulong, CefStringUtf16T, :int], :int
   
-  # (Not documented)
+  # These functions clear string values. The structure itself is not freed.
   # 
   # @method string_wide_clear(str)
   # @param [CefStringWideT] str 
@@ -126,7 +128,7 @@ module CEF
   # @scope class
   attach_function :string_utf16_clear, :cef_string_utf16_clear, [CefStringUtf16T], :void
   
-  # (Not documented)
+  # These functions compare two string values with the same results as strcmp().
   # 
   # @method string_wide_cmp(str1, str2)
   # @param [CefStringWideT] str1 
@@ -153,7 +155,10 @@ module CEF
   # @scope class
   attach_function :string_utf16_cmp, :cef_string_utf16_cmp, [CefStringUtf16T, CefStringUtf16T], :int
   
-  # (Not documented)
+  # These functions convert between UTF-8, -16, and -32 strings. They are
+  # potentially slow so unnecessary conversions should be avoided. The best
+  # possible result will always be written to |output| with the boolean return
+  # value indicating whether the conversion is 100% valid.
   # 
   # @method string_wide_to_utf8(src, src_len, output)
   # @param [FFI::Pointer(*WcharT)] src 
@@ -213,7 +218,9 @@ module CEF
   # @scope class
   attach_function :string_utf16_to_utf8, :cef_string_utf16_to_utf8, [:pointer, :ulong, CefStringUtf8T], :int
   
-  # (Not documented)
+  # These functions convert an ASCII string, typically a hardcoded constant, to a
+  # Wide/UTF16 string. Use instead of the UTF8 conversion routines if you know
+  # the string is ASCII.
   # 
   # @method string_ascii_to_wide(src, src_len, output)
   # @param [String] src 
@@ -233,7 +240,8 @@ module CEF
   # @scope class
   attach_function :string_ascii_to_utf16, :cef_string_ascii_to_utf16, [:string, :ulong, CefStringUtf16T], :int
   
-  # (Not documented)
+  # These functions allocate a new string structure. They must be freed by
+  # calling the associated free function.
   # 
   # @method string_userfree_wide_alloc()
   # @return [CefStringWideT] 
@@ -254,7 +262,8 @@ module CEF
   # @scope class
   attach_function :string_userfree_utf16_alloc, :cef_string_userfree_utf16_alloc, [], CefStringUtf16T
   
-  # (Not documented)
+  # These functions free the string structure allocated by the associated
+  # alloc function. Any string contents will first be cleared.
   # 
   # @method string_userfree_wide_free(str)
   # @param [CefStringWideT] str 

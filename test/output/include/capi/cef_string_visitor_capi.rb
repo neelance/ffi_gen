@@ -12,13 +12,13 @@ module CEF
     end
   end
   
-  # (Not documented)
+  # Implement this structure to receive string values asynchronously.
   # 
   # = Fields:
   # :base ::
-  #   (unknown) ///
+  #   (unknown) Base structure.
   # :visit ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Method that will be executed.
   class CefStringVisitorT < FFI::Struct
     layout :base, :char,
            :visit, :pointer

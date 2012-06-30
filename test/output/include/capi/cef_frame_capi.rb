@@ -42,59 +42,73 @@ module CEF
     layout :dummy, :char
   end
   
-  # (Not documented)
+  # Structure used to represent a frame in the browser window. When used in the
+  # browser process the functions of this structure may be called on any thread
+  # unless otherwise indicated in the comments. When used in the render process
+  # the functions of this structure may only be called on the main thread.
   # 
   # = Fields:
   # :base ::
-  #   (unknown) ///
+  #   (unknown) Base structure.
   # :is_valid ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) True if this object is currently attached to a valid frame.
   # :undo ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Execute undo in this frame.
   # :redo_ ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Execute redo in this frame.
   # :cut ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Execute cut in this frame.
   # :copy ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Execute copy in this frame.
   # :paste ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Execute paste in this frame.
   # :del ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Execute delete in this frame.
   # :select_all ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Execute select all in this frame.
   # :view_source ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Save this frame's HTML source to a temporary file and open it in the
+  #   default text viewing application. This function can only be called from the
+  #   browser process.
   # :get_source ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Retrieve this frame's HTML source as a string sent to the specified
+  #   visitor.
   # :get_text ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Retrieve this frame's display text as a string sent to the specified
+  #   visitor.
   # :load_request ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Load the request represented by the |request| object.
   # :load_url ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Load the specified |url|.
   # :load_string ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Load the contents of |string_val| with the optional dummy target |url|.
   # :execute_java_script ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Execute a string of JavaScript code in this frame. The |script_url|
+  #   parameter is the URL where the script in question can be found, if any. The
+  #   renderer may request this URL to show the developer the source of the
+  #   error.  The |start_line| parameter is the base line number to use for error
+  #   reporting.
   # :is_main ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if this is the main (top-level) frame.
   # :is_focused ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if this is the focused frame.
   # :get_name ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :get_identifier ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the globally unique identifier for this frame.
   # :get_parent ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the parent of this frame or NULL if this is the main (top-level)
+  #   frame.
   # :get_url ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :get_browser ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the browser that this frame belongs to.
   # :get_v8context ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Get the V8 context associated with the frame. This function can only be
+  #   called from the render process.
   # :visit_dom ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Visit the DOM document. This function can only be called from the render
+  #   process.
   class CefFrameT < FFI::Struct
     layout :base, :char,
            :is_valid, :pointer,

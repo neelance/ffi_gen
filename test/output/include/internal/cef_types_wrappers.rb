@@ -12,7 +12,8 @@ module CEF
     end
   end
   
-  # (Not documented)
+  # Set this object's values. If |copy| is true the source structure's values
+  # will be copied instead of referenced.
   # 
   # = Fields:
   # :struct_type ::
@@ -24,7 +25,7 @@ module CEF
            :init, :char
   end
   
-  # ///
+  # Class representing a a keyboard event.
   # 
   # = Fields:
   # :struct_type ::
@@ -36,7 +37,7 @@ module CEF
            :init, :char
   end
   
-  # ///
+  # Class representing popup window features.
   # 
   # = Fields:
   # :struct_type ::
@@ -48,7 +49,7 @@ module CEF
            :init, :char
   end
   
-  # ///
+  # Class representing initialization settings.
   # 
   # = Fields:
   # :struct_type ::
@@ -60,7 +61,7 @@ module CEF
            :init, :char
   end
   
-  # ///
+  # Class representing browser initialization settings.
   # 
   # = Fields:
   # :struct_type ::
@@ -72,7 +73,7 @@ module CEF
            :init, :char
   end
   
-  # ///
+  # Class representing a URL's component parts.
   # 
   # = Fields:
   # :struct_type ::
@@ -84,7 +85,7 @@ module CEF
            :init, :char
   end
   
-  # // means "not initialized".
+  # means "not initialized".
   # 
   # = Fields:
   # :struct_type ::
@@ -96,7 +97,7 @@ module CEF
            :init, :char
   end
   
-  # ///
+  # Class representing a cookie.
   # 
   # = Fields:
   # :struct_type ::

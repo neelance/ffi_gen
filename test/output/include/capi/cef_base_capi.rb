@@ -16,13 +16,14 @@ module CEF
   # 
   # = Fields:
   # :size ::
-  #   (Integer) ///
+  #   (Integer) Size of the data structure.
   # :add_ref ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Increment the reference count.
   # :release ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Decrement the reference count.  Delete this object when no references
+  #   remain.
   # :get_refct ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the current number of references.
   class CefBaseT < FFI::Struct
     layout :size, :ulong,
            :add_ref, :pointer,

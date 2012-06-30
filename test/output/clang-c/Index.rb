@@ -3786,9 +3786,7 @@ module Clang
     :visit_continue, 1
   ]
   
-  # \defgroup CINDEX_HIGH Higher level API functions
-  # 
-  # @{
+  # (Not documented)
   # 
   # = Fields:
   # :context ::

@@ -12,7 +12,7 @@ module CEF
     end
   end
   
-  # (Not documented)
+  # Traits implementation for wide character strings.
   # 
   # = Fields:
   # :char_type ::
@@ -30,7 +30,7 @@ module CEF
            :clear, :char
   end
   
-  # (Not documented)
+  # Traits implementation for utf8 character strings.
   # 
   # = Fields:
   # :char_type ::
@@ -48,7 +48,7 @@ module CEF
            :clear, :char
   end
   
-  # (Not documented)
+  # Traits implementation for utf16 character strings.
   # 
   # = Fields:
   # :char_type ::

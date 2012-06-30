@@ -12,7 +12,13 @@ module LLVM
     end
   end
   
-  # (Not documented)
+  # !
+  #  @typedef EDByteReaderCallback
+  #  Interface to memory from which instructions may be read.
+  #  @param byte A pointer whose target should be filled in with the data returned.
+  #  @param address The address of the byte to be read.
+  #  @param arg An anonymous argument for client use.
+  #  @result 0 on success; -1 otherwise.
   # 
   # <em>This entry is only for documentation and no real method.</em>
   # 

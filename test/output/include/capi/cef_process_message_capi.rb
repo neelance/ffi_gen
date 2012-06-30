@@ -17,21 +17,23 @@ module CEF
     layout :dummy, :char
   end
   
-  # (Not documented)
+  # Structure representing a message. Can be used on any process and thread.
   # 
   # = Fields:
   # :base ::
-  #   (unknown) ///
+  #   (unknown) Base structure.
   # :is_valid ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if this object is valid. Do not call any other functions
+  #   if this function returns false (0).
   # :is_read_only ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if the values of this object are read-only. Some APIs may
+  #   expose read-only objects.
   # :copy ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns a writable copy of this object.
   # :get_name ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :get_argument_list ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the list of arguments.
   class CefProcessMessageT < FFI::Struct
     layout :base, :char,
            :is_valid, :pointer,
@@ -41,7 +43,7 @@ module CEF
            :get_argument_list, :pointer
   end
   
-  # (Not documented)
+  # Create a new cef_process_message_t object with the specified name.
   # 
   # @method process_message_create(name)
   # @param [FFI::Pointer(*StringT)] name 

@@ -12,7 +12,7 @@ module LLVM
     end
   end
   
-  # (Not documented)
+  # See llvm::createArgumentPromotionPass function.
   # 
   # @method add_argument_promotion_pass(pm)
   # @param [FFI::Pointer(PassManagerRef)] pm 

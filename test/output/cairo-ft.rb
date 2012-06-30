@@ -12,7 +12,7 @@ module Cairo
     end
   end
   
-  # (Not documented)
+  # Fontconfig/Freetype platform-specific font interface
   # 
   # @method ft_font_face_create_for_ft_face(face, load_flags)
   # @param [FFI::Pointer(FTFace)] face 

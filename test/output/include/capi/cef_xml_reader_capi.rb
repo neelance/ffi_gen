@@ -12,69 +12,82 @@ module CEF
     end
   end
   
-  # (Not documented)
+  # Structure that supports the reading of XML data via the libxml streaming API.
+  # The functions of this structure should only be called on the thread that
+  # creates the object.
   # 
   # = Fields:
   # :base ::
-  #   (unknown) ///
+  #   (unknown) Base structure.
   # :move_to_next_node ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Moves the cursor to the next node in the document. This function must be
+  #   called at least once to set the current cursor position. Returns true (1)
+  #   if the cursor position was set successfully.
   # :close ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Close the document. This should be called directly to ensure that cleanup
+  #   occurs on the correct thread.
   # :has_error ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if an error has been reported by the XML parser.
   # :get_error ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :get_type ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the node type.
   # :get_depth ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the node depth. Depth starts at 0 for the root node.
   # :get_local_name ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :get_prefix ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :get_qualified_name ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :get_namespace_uri ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :get_base_uri ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :get_xml_lang ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :is_empty_element ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if the node represents an NULL element. <a/> is considered
+  #   NULL but <a></a> is not.
   # :has_value ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if the node has a text value.
   # :get_value ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :has_attributes ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns true (1) if the node has attributes.
   # :get_attribute_count ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the number of attributes.
   # :get_attribute_byindex ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :get_attribute_byqname ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :get_attribute_bylname ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :get_inner_xml ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :get_outer_xml ::
-  #   (FFI::Pointer(*)) // The resulting string must be freed by calling cef_string_userfree_free().
+  #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :get_line_number ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Returns the line number for the current node.
   # :move_to_attribute_byindex ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Moves the cursor to the attribute at the specified 0-based index. Returns
+  #   true (1) if the cursor position was set successfully.
   # :move_to_attribute_byqname ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Moves the cursor to the attribute with the specified qualified name.
+  #   Returns true (1) if the cursor position was set successfully.
   # :move_to_attribute_bylname ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Moves the cursor to the attribute with the specified local name and
+  #   namespace URI. Returns true (1) if the cursor position was set
+  #   successfully.
   # :move_to_first_attribute ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Moves the cursor to the first attribute in the current element. Returns
+  #   true (1) if the cursor position was set successfully.
   # :move_to_next_attribute ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Moves the cursor to the next attribute in the current element. Returns true
+  #   (1) if the cursor position was set successfully.
   # :move_to_carrying_element ::
-  #   (FFI::Pointer(*)) ///
+  #   (FFI::Pointer(*)) Moves the cursor back to the carrying element. Returns true (1) if the
+  #   cursor position was set successfully.
   class CefXmlReaderT < FFI::Struct
     layout :base, :char,
            :move_to_next_node, :pointer,
@@ -108,7 +121,8 @@ module CEF
            :move_to_carrying_element, :pointer
   end
   
-  # ///
+  # Create a new cef_xml_reader_t object. The returned object's functions can
+  # only be called from the thread that created the object.
   class CefStreamReaderT < FFI::Struct
     layout :dummy, :char
   end
