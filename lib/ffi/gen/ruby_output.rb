@@ -39,7 +39,7 @@ class FFI::Gen
   
   class Enum
     def write_ruby(writer)
-      return if @name.empty?
+      return if @name.nil?
       shorten_names
       
       @constants.each do |constant|
@@ -267,7 +267,7 @@ class FFI::Gen
     end
     
     def ruby_description
-      "FFI::Pointer(#{'*' * @depth}#{@pointee_name.to_ruby_classname})"
+      "FFI::Pointer(#{'*' * @depth}#{@pointee_name ? @pointee_name.to_ruby_classname : ''})"
     end
   end
   

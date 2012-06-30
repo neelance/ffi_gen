@@ -4,9 +4,9 @@ class FFI::Gen
   require "ffi/gen/clang"
 
   class << Clang
-    def get_children(declaration)
+    def get_children(cursor)
       children = []
-      visit_children declaration, lambda { |child, child_parent, child_client_data|
+      visit_children cursor, lambda { |child, child_parent, child_client_data|
         children << child
         :continue
       }, nil
@@ -201,10 +201,6 @@ class FFI::Gen
       str = "#{str}_" if keyword_blacklist.include? str
       str
     end
-    
-    def empty?
-      @parts.empty?
-    end
   end
   
   class PrimitiveType < Type
@@ -326,12 +322,12 @@ class FFI::Gen
     @declarations_by_type = {}
     unit_cursor = Clang.get_translation_unit_cursor translation_unit
     previous_declaration_end = Clang.get_cursor_location unit_cursor
-    Clang.get_children(unit_cursor).each do |declaration|
-      file = Clang.get_spelling_location_data(Clang.get_cursor_location(declaration))[:file]
+    Clang.get_children(unit_cursor).each do |declaration_cursor|
+      file = Clang.get_spelling_location_data(Clang.get_cursor_location(declaration_cursor))[:file]
       
-      extent = Clang.get_cursor_extent declaration
+      extent = Clang.get_cursor_extent declaration_cursor
       comment_range = Clang.get_range previous_declaration_end, Clang.get_range_start(extent)
-      unless [:enum_decl, :struct_decl, :union_decl].include? declaration[:kind] # keep comment for typedef_decl
+      unless [:enum_decl, :struct_decl, :union_decl].include? declaration_cursor[:kind] # keep comment for typedef_decl
         previous_declaration_end = Clang.get_range_end extent
       end 
       
@@ -339,23 +335,16 @@ class FFI::Gen
       
       comment, _ = extract_comment translation_unit, comment_range
       
-      read_declaration declaration, comment
+      read_declaration declaration_cursor, comment
     end
 
     @declarations
   end
   
-  def add_declaration(name, type, declaration)
-    @declarations.delete declaration
-    @declarations << declaration
-    @declarations_by_name[name] = declaration unless name.nil?
-    @declarations_by_type[type] = declaration unless type.nil?
-  end
-  
-  def read_declaration(declaration, comment)
-    name = read_name declaration
-
-    case declaration[:kind]
+  def read_declaration(declaration_cursor, comment)
+    name = read_name declaration_cursor
+    
+    declaration = case declaration_cursor[:kind]
     when :enum_decl
       enum_description = []
       constant_descriptions = {}
@@ -370,9 +359,9 @@ class FFI::Gen
       end
       
       constants = []
-      previous_constant_location = Clang.get_cursor_location declaration
+      previous_constant_location = Clang.get_cursor_location declaration_cursor
       next_constant_value = 0
-      Clang.get_children(declaration).each do |enum_constant|
+      Clang.get_children(declaration_cursor).each do |enum_constant|
         constant_name = read_name enum_constant
         
         constant_location = Clang.get_cursor_location enum_constant
@@ -413,23 +402,21 @@ class FFI::Gen
         end
       end
 
-      enum = Enum.new self, name, constants, enum_description
-      add_declaration name.raw, Clang.get_cursor_type(declaration), enum
+      Enum.new self, name, constants, enum_description
       
     when :struct_decl, :union_decl
-      struct = @declarations_by_type[Clang.get_cursor_type(declaration)] || StructOrUnion.new(self, name, (declaration[:kind] == :union_decl))
+      struct = @declarations_by_type[Clang.get_cursor_type(declaration_cursor)] || StructOrUnion.new(self, name, (declaration_cursor[:kind] == :union_decl))
       raise if not struct.fields.empty?
       struct.description.concat comment
       
-      struct_children = Clang.get_children declaration
-      previous_field_end = Clang.get_cursor_location declaration
+      struct_children = Clang.get_children declaration_cursor
+      previous_field_end = Clang.get_cursor_location declaration_cursor
       last_nested_declaration = nil
       until struct_children.empty?
         child = struct_children.shift
         case child[:kind]
         when :struct_decl, :union_decl
-          read_declaration child, []
-          last_nested_declaration = @declarations_by_type[Clang.get_cursor_type(child)]
+          last_nested_declaration = read_declaration child, []
         when :field_decl
           field_name = read_name child
           field_extent = Clang.get_cursor_extent child
@@ -438,7 +425,7 @@ class FFI::Gen
           field_comment, _ = extract_comment translation_unit, field_comment_range
           
           # check for comment starting on same line
-          next_field_start = struct_children.first ? Clang.get_cursor_location(struct_children.first) : Clang.get_range_end(Clang.get_cursor_extent(declaration))
+          next_field_start = struct_children.first ? Clang.get_cursor_location(struct_children.first) : Clang.get_range_end(Clang.get_cursor_extent(declaration_cursor))
           following_comment_range = Clang.get_range Clang.get_range_end(field_extent), next_field_start
           following_comment, following_comment_token = extract_comment translation_unit, following_comment_range, false
           if following_comment_token and Clang.get_spelling_location_data(Clang.get_token_location(translation_unit, following_comment_token))[:line] == Clang.get_spelling_location_data(Clang.get_range_end(field_extent))[:line]
@@ -449,9 +436,7 @@ class FFI::Gen
           end
           
           field_type = resolve_type Clang.get_cursor_type(child)
-          if last_nested_declaration and last_nested_declaration.name.empty?
-            last_nested_declaration.name = Name.new(name.parts + field_name.parts)
-          end
+          last_nested_declaration.name ||= Name.new(name.parts + field_name.parts) if last_nested_declaration
           last_nested_declaration = nil
           struct.fields << { name: field_name, type: field_type, comment: field_comment }
         else
@@ -459,7 +444,7 @@ class FFI::Gen
         end
       end
       
-      add_declaration name.raw, Clang.get_cursor_type(declaration), struct
+      struct
     
     when :function_decl
       function_description = []
@@ -475,14 +460,15 @@ class FFI::Gen
         current_description << line
       end
       
-      return_type = resolve_type Clang.get_cursor_result_type(declaration)
+      return_type = resolve_type Clang.get_cursor_result_type(declaration_cursor)
       parameters = []
       first_parameter_type = nil
-      Clang.get_children(declaration).each do |function_child|
+      Clang.get_children(declaration_cursor).each do |function_child|
         next if function_child[:kind] != :parm_decl
         param_name = read_name function_child
         param_type = resolve_type Clang.get_cursor_type(function_child)
-        param_name = param_type.name if param_name.empty?
+        param_name ||= param_type.name
+        param_name ||= Name.new []
         first_parameter_type ||= Clang.get_cursor_type function_child
         tokens = Clang.get_tokens translation_unit, Clang.get_cursor_extent(function_child)
         is_array = tokens.any? { |t| Clang.get_token_spelling(translation_unit, t).to_s_and_dispose == "[" }
@@ -490,13 +476,12 @@ class FFI::Gen
       end
       
       parameters.each_with_index do |parameter, index|
-        parameter[:description] = parameter_descriptions[parameter[:name].raw]
+        parameter[:description] = parameter[:name] && parameter_descriptions[parameter[:name].raw]
         parameter[:description] ||= parameter_descriptions.values[index] if parameter_descriptions.size == parameters.size # workaround for wrong names
         parameter[:description] ||= []
       end
       
       function = FunctionOrCallback.new self, name, parameters, return_type, false, @blocking.include?(name.raw), function_description, return_value_description
-      add_declaration name.raw, nil, function
       
       pointee_declaration = first_parameter_type && get_pointee_declaration(first_parameter_type)
       if pointee_declaration
@@ -510,29 +495,31 @@ class FFI::Gen
           pointee_declaration.oo_functions << [Name.new(function_name_parts), function]
         end
       end
+      
+      function
     
     when :typedef_decl
-      typedef_children = Clang.get_children declaration
+      typedef_children = Clang.get_children declaration_cursor
       if typedef_children.size == 1
         child_declaration = @declarations_by_type[Clang.get_cursor_type(typedef_children.first)]
-        child_declaration.name = name if child_declaration and child_declaration.name.empty?
-        
+        child_declaration.name = name if child_declaration and child_declaration.name.nil?
+        nil
       elsif typedef_children.size > 1
         return_type = resolve_type Clang.get_cursor_type(typedef_children.first)
         parameters = []
         typedef_children[1..-1].each do |param_decl|
           param_name = read_name param_decl
           param_type = resolve_type Clang.get_cursor_type(param_decl)
-          param_name = param_type.name if param_name.empty?
+          param_name ||= param_type.name
           parameters << { name:param_name, type: param_type, description: [] }
         end
-
-        callback = FunctionOrCallback.new self, name, parameters, return_type, true, false, comment, []
-        add_declaration name.raw, Clang.get_cursor_type(declaration), callback
+        FunctionOrCallback.new self, name, parameters, return_type, true, false, comment, []
+      else
+        nil
       end
         
     when :macro_definition
-      tokens = Clang.get_tokens(translation_unit, Clang.get_cursor_extent(declaration)).map { |token|
+      tokens = Clang.get_tokens(translation_unit, Clang.get_cursor_extent(declaration_cursor)).map { |token|
         [Clang.get_token_kind(token), Clang.get_token_spelling(translation_unit, token).to_s_and_dispose]
       }
       if tokens.size > 1
@@ -614,13 +601,27 @@ class FFI::Gen
               raise ArgumentError
             end
           end
-          add_declaration name.raw, nil, Define.new(self, name, parameters, value)
+          Define.new(self, name, parameters, value)
         rescue ArgumentError
           puts "Warning: Could not process value of macro \"#{name.raw}\""
+          nil
         end
+      else
+        nil
       end
-      
+    
+    else
+      nil
     end
+    
+    return nil if declaration.nil?
+    @declarations.delete declaration
+    @declarations << declaration
+    @declarations_by_name[name] = name.raw unless name.nil?
+    type = Clang.get_cursor_type declaration_cursor
+    @declarations_by_type[type] = declaration unless type.nil?
+    
+    declaration
   end
   
   def resolve_type(full_type)
@@ -646,9 +647,9 @@ class FFI::Gen
         pointee_name = ""
         current_type = full_type
         loop do
-          declaration = Clang.get_type_declaration current_type
-          pointee_name = read_name declaration
-          break if not pointee_name.empty?
+          declaration_cursor = Clang.get_type_declaration current_type
+          pointee_name = read_name declaration_cursor
+          break if pointee_name
 
           case current_type[:kind]
           when :pointer
@@ -682,6 +683,7 @@ class FFI::Gen
   
   def read_name(source)
     source = Clang.get_cursor_spelling(source).to_s_and_dispose if source.is_a? Clang::Cursor
+    return nil if source.empty?
     parts = source.sub(/^(#{@prefixes.join('|')})/, '').split(/_|(?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z])/).reject(&:empty?)
     Name.new parts, source
   end

@@ -188,7 +188,7 @@ class FFI::Gen
       
       @parameters.each do |parameter|
         parameter[:type_data] = @generator.to_java_type parameter[:type], parameter[:is_array]
-        parameter[:java_name] = !parameter[:name].empty? ? parameter[:name].to_java_downcase : parameter[:type_data][:parameter_name]
+        parameter[:java_name] = parameter[:name] ? parameter[:name].to_java_downcase : parameter[:type_data][:parameter_name]
         parameter[:description] = []
       end
       return_type_data = @generator.to_java_type @return_type
