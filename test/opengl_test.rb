@@ -4,25 +4,19 @@ run_test(
   library_name:  "GL",
   ffi_lib:       "GL",
   prefixes:      ["gl", "GL_"],
-  file_mappings: {
-    "GL/gl.h" => "gl.rb"
-  }
+  files:         ["GL/gl.h"]
 )
 
 run_test(
   library_name:  "GLU",
   ffi_lib:       "GLU",
   prefixes:      ["glu", "GLU_"],
-  file_mappings: {
-    "GL/glu.h" => "glu.rb"
-  }
+  files:         ["GL/glu.h"]
 )
 
 run_test(
   library_name:  "GLUT",
   ffi_lib:       "glut",
   prefixes:      ["glut", "GLUT_"],
-  file_mappings: {
-    "GL/freeglut_std.h" => "glut.rb"
-  }
+  files:         ["GL/freeglut_std.h"]
 )

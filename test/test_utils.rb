@@ -1,9 +1,15 @@
 require "fileutils"
 require "ffi/gen"
 
+def find_headers(dir, prefix = "")
+  Dir.chdir dir do
+    return Dir.glob("#{prefix}**/*.h")
+  end
+end
+
 def run_test(options = {})
-  options[:file_mappings].each do |header, ruby_file|
-    output_file = File.join File.dirname(__FILE__), "output/#{options[:library_name]}/#{ruby_file}"
+  options[:files].each do |header|
+    output_file = "#{File.dirname(__FILE__)}/output/#{header.sub(/\.h$/, ".rb")}"
     FileUtils.mkdir_p File.dirname(output_file)
     
     FFI::Gen.generate(

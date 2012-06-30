@@ -39,6 +39,7 @@ class FFI::Gen
   
   class Enum
     def write_ruby(writer)
+      return if @name.empty?
       shorten_names
       
       @constants.each do |constant|
