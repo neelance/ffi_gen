@@ -263,7 +263,7 @@ class FFI::Gen
 
   def initialize(options = {})
     @module_name   = options[:module_name] or fail "No module name given."
-    @ffi_lib       = options[:ffi_lib] or fail "No FFI library given."
+    @ffi_lib       = options.fetch :ffi_lib, nil
     @headers       = options[:headers] or fail "No headers given."
     @cflags        = options.fetch :cflags, []
     @prefixes      = options.fetch :prefixes, []
