@@ -321,6 +321,11 @@ class FFI::Gen
     declaration_cursors = Clang.get_children unit_cursor
     declaration_cursors.delete_if { |cursor| [:macro_expansion, :inclusion_directive, :var_decl].include? cursor[:kind] }
     declaration_cursors.delete_if { |cursor| !header_files.include?(Clang.get_spelling_location_data(Clang.get_cursor_location(cursor))[:file]) }
+    declaration_cursors.sort_by!{|declaration|
+      #sort by file,line
+      location=Clang.get_spelling_location_data(Clang.get_cursor_location(declaration))
+      [header_files.index(location[:file]),location[:line]]
+    }
     
     is_nested_declaration = []
     min_offset = Clang.get_spelling_location_data(Clang.get_cursor_location(declaration_cursors.last))[:offset]
