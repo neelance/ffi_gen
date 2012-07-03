@@ -408,7 +408,7 @@ class FFI::Gen
           puts "Warning: Could not process value of enum constant \"#{constant_name.raw}\""
         end
       end
-
+      name ||= Name.new []
       Enum.new self, name, constants, enum_description
       
     when :struct_decl, :union_decl
