@@ -259,17 +259,18 @@ class FFI::Gen
     end
   end
   
-  attr_reader :module_name, :ffi_lib, :headers, :prefixes, :output, :cflags
+  attr_reader :module_name, :ffi_lib, :headers, :prefixes, :output, :cflags, :enum_as_constant
 
   def initialize(options = {})
-    @module_name   = options[:module_name] or fail "No module name given."
-    @ffi_lib       = options[:ffi_lib] or fail "No FFI library given."
-    @headers       = options[:headers] or fail "No headers given."
-    @cflags        = options.fetch :cflags, []
-    @prefixes      = options.fetch :prefixes, []
-    @blocking      = options.fetch :blocking, []
-    @ffi_lib_flags = options.fetch :ffi_lib_flags, nil
-    @output        = options.fetch :output, $stdout
+    @module_name      = options[:module_name] or fail "No module name given."
+    @ffi_lib          = options[:ffi_lib] or fail "No FFI library given."
+    @headers          = options[:headers] or fail "No headers given."
+    @cflags           = options.fetch :cflags, []
+    @prefixes         = options.fetch :prefixes, []
+    @blocking         = options.fetch :blocking, []
+    @ffi_lib_flags    = options.fetch :ffi_lib_flags, nil
+    @output           = options.fetch :output, $stdout
+    @enum_as_constant = options.fetch :enum_as_constant, false
     
     @translation_unit = nil
     @declarations = nil
@@ -409,8 +410,17 @@ class FFI::Gen
         end
       end
 
+      if @enum_as_constant
+        constants.each do|constant|
+          constant_name=constant[:name]
+          constant_value=constant[:value]
+          enum_define=Define.new(self,constant_name,nil,[constant_value])
+          @declarations.delete enum_define # TODO
+          @declarations << enum_define # TODO
+          @declarations_by_name[constant_name] = constant_name.raw unless constant_name.nil? # TODO
+        end
+      end
       Enum.new self, name, constants, enum_description
-      
     when :struct_decl, :union_decl
       struct = @declarations_by_type[Clang.get_cursor_type(declaration_cursor)] || StructOrUnion.new(self, name, (declaration_cursor[:kind] == :union_decl))
       raise if not struct.fields.empty?
