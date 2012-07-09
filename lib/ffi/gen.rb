@@ -124,6 +124,7 @@ class FFI::Gen
   end
   
   class Define
+    attr_reader :name
     def initialize(generator, name, parameters, value)
       @generator = generator
       @name = name
@@ -577,8 +578,11 @@ class FFI::Gen
                 raise ArgumentError
               end
             when :identifier
-              raise ArgumentError unless parameters
-              if parameters.include? spelling
+              identifier_declaration=@declarations.find{|declaration|
+                declaration.is_a?(Define) and declaration.name.raw==spelling
+              }
+              raise ArgumentError unless identifier_declaration or parameters
+              if identifier_declaration or parameters.include?(spelling)
                 value << spelling
               elsif spelling == "NULL"
                 value << "nil"
