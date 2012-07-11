@@ -145,7 +145,7 @@ module CEF
   # :get_accelerator_at ::
   #   (FFI::Pointer(*)) Retrieves the keyboard accelerator for the specified |index|. Returns true
   #   (1) on success.
-  class MenuModelT < FFI::Struct
+  class MenuModel < FFI::Struct
     layout :base, :char,
            :clear, :pointer,
            :get_count, :pointer,

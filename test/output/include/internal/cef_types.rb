@@ -14,7 +14,7 @@ module CEF
   
   # Log severity levels.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:log_severity_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:log_severity).</em>
   # 
   # === Options:
   # :logseverity_verbose ::
@@ -30,10 +30,10 @@ module CEF
   # :logseverity_disable ::
   #   Disables logging completely.
   # 
-  # @method _enum_log_severity_t_
+  # @method _enum_log_severity_
   # @return [Symbol]
   # @scope class
-  enum :log_severity_t, [
+  enum :log_severity, [
     :logseverity_verbose, -1,
     :logseverity_info, 0,
     :logseverity_warning, 1,
@@ -86,7 +86,7 @@ module CEF
   #   default name of "debug.log" will be used and the file will be written
   #   to the application directory.
   # :log_severity ::
-  #   (Symbol from _enum_log_severity_t_) The log severity. Only messages of this severity level or higher will be
+  #   (Symbol from _enum_log_severity_) The log severity. Only messages of this severity level or higher will be
   #   logged.
   # :javascript_flags ::
   #   (unknown) Custom flags that will be used when initializing the V8 JavaScript engine.
@@ -115,7 +115,7 @@ module CEF
   #   specified port. For example, if 8080 is specified the remote debugging URL
   #   will be http://localhost:8080. CEF can be remotely debugged from any CEF or
   #   Chrome browser window.
-  class SettingsT < FFI::Struct
+  class Settings < FFI::Struct
     layout :size, :ulong,
            :single_process, :int,
            :browser_subprocess_path, :char,
@@ -126,7 +126,7 @@ module CEF
            :product_version, :char,
            :locale, :char,
            :log_file, :char,
-           :log_severity, :log_severity_t,
+           :log_severity, :log_severity,
            :javascript_flags, :char,
            :auto_detect_proxy_settings_enabled, :int,
            :pack_file_path, :char,
@@ -244,7 +244,7 @@ module CEF
   #   (Integer) Set to true (1) to disable developer tools (WebKit inspector).
   # :fullscreen_enabled ::
   #   (Integer) Set to true (1) to enable fullscreen mode.
-  class BrowserSettingsT < FFI::Struct
+  class BrowserSettings < FFI::Struct
     layout :size, :ulong,
            :standard_font_family, :char,
            :fixed_font_family, :char,
@@ -316,7 +316,7 @@ module CEF
   #   (unknown) Path component including the first slash following the host.
   # :query ::
   #   (unknown) Query string component (i.e., everything following the '?').
-  class UrlpartsT < FFI::Struct
+  class Urlparts < FFI::Struct
     layout :spec, :char,
            :scheme, :char,
            :username, :char,
@@ -355,7 +355,7 @@ module CEF
   #   (Integer) The cookie expiration date is only valid if |has_expires| is true.
   # :expires ::
   #   (unknown) 
-  class CookieT < FFI::Struct
+  class Cookie < FFI::Struct
     layout :name, :char,
            :value, :char,
            :domain, :char,
@@ -370,7 +370,7 @@ module CEF
   
   # Storage types.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:storage_type_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:storage_type).</em>
   # 
   # === Options:
   # :st_localstorage ::
@@ -378,10 +378,10 @@ module CEF
   # :st_sessionstorage ::
   #   
   # 
-  # @method _enum_storage_type_t_
+  # @method _enum_storage_type_
   # @return [Symbol]
   # @scope class
-  enum :storage_type_t, [
+  enum :storage_type, [
     :st_localstorage, 0,
     :st_sessionstorage, 1
   ]
@@ -389,7 +389,7 @@ module CEF
   # Supported error code values. See net\base\net_error_list.h for complete
   # descriptions of the error codes.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:errorcode_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:errorcode).</em>
   # 
   # === Options:
   # :err_none ::
@@ -491,10 +491,10 @@ module CEF
   # :err_insecure_response ::
   #   
   # 
-  # @method _enum_errorcode_t_
+  # @method _enum_errorcode_
   # @return [Symbol]
   # @scope class
-  enum :errorcode_t, [
+  enum :errorcode, [
     :err_none, 0,
     :err_failed, -2,
     :err_aborted, -3,
@@ -548,7 +548,7 @@ module CEF
   
   # V8 access control values.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:v8_accesscontrol_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:v8_accesscontrol).</em>
   # 
   # === Options:
   # :access_control_default ::
@@ -560,10 +560,10 @@ module CEF
   # :access_control_prohibits_overwriting ::
   #   
   # 
-  # @method _enum_v8_accesscontrol_t_
+  # @method _enum_v8_accesscontrol_
   # @return [Symbol]
   # @scope class
-  enum :v8_accesscontrol_t, [
+  enum :v8_accesscontrol, [
     :access_control_default, 0,
     :access_control_all_can_read, 1,
     :access_control_all_can_write, 2,
@@ -572,7 +572,7 @@ module CEF
   
   # V8 property attribute values.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:v8_propertyattribute_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:v8_propertyattribute).</em>
   # 
   # === Options:
   # :property_attribute_none ::
@@ -584,10 +584,10 @@ module CEF
   # :property_attribute_dontdelete ::
   #   Not enumerable
   # 
-  # @method _enum_v8_propertyattribute_t_
+  # @method _enum_v8_propertyattribute_
   # @return [Symbol]
   # @scope class
-  enum :v8_propertyattribute_t, [
+  enum :v8_propertyattribute, [
     :property_attribute_none, 0,
     :property_attribute_readonly, 1,
     :property_attribute_dontenum, 2,
@@ -596,7 +596,7 @@ module CEF
   
   # Post data elements may represent either bytes or files.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:postdataelement_type_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:postdataelement_type).</em>
   # 
   # === Options:
   # :pde_type_empty ::
@@ -606,10 +606,10 @@ module CEF
   # :pde_type_file ::
   #   
   # 
-  # @method _enum_postdataelement_type_t_
+  # @method _enum_postdataelement_type_
   # @return [Symbol]
   # @scope class
-  enum :postdataelement_type_t, [
+  enum :postdataelement_type, [
     :pde_type_empty, 0,
     :pde_type_bytes, 1,
     :pde_type_file, 2
@@ -617,7 +617,7 @@ module CEF
   
   # Flags used to customize the behavior of CefURLRequest.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:urlrequest_flags_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:urlrequest_flags).</em>
   # 
   # === Options:
   # :ur_flag_none ::
@@ -642,10 +642,10 @@ module CEF
   #   automatically re-tried. This currently only applies for requests
   #   originated in the browser process.
   # 
-  # @method _enum_urlrequest_flags_t_
+  # @method _enum_urlrequest_flags_
   # @return [Symbol]
   # @scope class
-  enum :urlrequest_flags_t, [
+  enum :urlrequest_flags, [
     :ur_flag_none, 0,
     :ur_flag_skip_cache, 1,
     :ur_flag_allow_cached_credentials, 2,
@@ -659,7 +659,7 @@ module CEF
   
   # Flags that represent CefURLRequest status.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:urlrequest_status_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:urlrequest_status).</em>
   # 
   # === Options:
   # :ur_unknown ::
@@ -678,10 +678,10 @@ module CEF
   # :ur_failed ::
   #   Request failed for some reason.
   # 
-  # @method _enum_urlrequest_status_t_
+  # @method _enum_urlrequest_status_
   # @return [Symbol]
   # @scope class
-  enum :urlrequest_status_t, [
+  enum :urlrequest_status, [
     :ur_unknown, 0,
     :ur_success, 1,
     :ur_io_pending, 2,
@@ -701,7 +701,7 @@ module CEF
   #   (Integer) 
   # :height ::
   #   (Integer) 
-  class RectT < FFI::Struct
+  class Rect < FFI::Struct
     layout :x, :int,
            :y, :int,
            :width, :int,
@@ -710,7 +710,7 @@ module CEF
   
   # Existing process IDs.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:process_id_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:process_id).</em>
   # 
   # === Options:
   # :pid_browser ::
@@ -718,17 +718,17 @@ module CEF
   # :pid_renderer ::
   #   Renderer process.
   # 
-  # @method _enum_process_id_t_
+  # @method _enum_process_id_
   # @return [Symbol]
   # @scope class
-  enum :process_id_t, [
+  enum :process_id, [
     :pid_browser, 0,
     :pid_renderer, 1
   ]
   
   # Existing thread IDs.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:thread_id_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:thread_id).</em>
   # 
   # === Options:
   # :tid_ui ::
@@ -751,10 +751,10 @@ module CEF
   # :tid_renderer ::
   #   The main thread in the renderer. Used for all WebKit and V8 interaction.
   # 
-  # @method _enum_thread_id_t_
+  # @method _enum_thread_id_
   # @return [Symbol]
   # @scope class
-  enum :thread_id_t, [
+  enum :thread_id, [
     :tid_ui, 0,
     :tid_db, 1,
     :tid_file, 2,
@@ -767,7 +767,7 @@ module CEF
   
   # Supported value types.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:value_type_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:value_type).</em>
   # 
   # === Options:
   # :vtype_invalid ::
@@ -789,10 +789,10 @@ module CEF
   # :vtype_list ::
   #   
   # 
-  # @method _enum_value_type_t_
+  # @method _enum_value_type_
   # @return [Symbol]
   # @scope class
-  enum :value_type_t, [
+  enum :value_type, [
     :vtype_invalid, 0,
     :vtype_null, 1,
     :vtype_bool, 2,
@@ -806,7 +806,7 @@ module CEF
   
   # Supported JavaScript dialog types.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:jsdialog_type_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:jsdialog_type).</em>
   # 
   # === Options:
   # :jsdialogtype_alert ::
@@ -816,10 +816,10 @@ module CEF
   # :jsdialogtype_prompt ::
   #   
   # 
-  # @method _enum_jsdialog_type_t_
+  # @method _enum_jsdialog_type_
   # @return [Symbol]
   # @scope class
-  enum :jsdialog_type_t, [
+  enum :jsdialog_type, [
     :jsdialogtype_alert, 0,
     :jsdialogtype_confirm, 1,
     :jsdialogtype_prompt, 2
@@ -828,7 +828,7 @@ module CEF
   # Supported menu IDs. Non-English translations can be provided for the
   # IDS_MENU_* strings in CefResourceBundleHandler::GetLocalizedString().
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:menu_id_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:menu_id).</em>
   # 
   # === Options:
   # :back ::
@@ -866,10 +866,10 @@ module CEF
   # :user_last ::
   #   
   # 
-  # @method _enum_menu_id_t_
+  # @method _enum_menu_id_
   # @return [Symbol]
   # @scope class
-  enum :menu_id_t, [
+  enum :menu_id, [
     :back, 100,
     :forward, 101,
     :reload, 102,
@@ -891,7 +891,7 @@ module CEF
   
   # Supported event bit flags.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:event_flags_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:event_flags).</em>
   # 
   # === Options:
   # :eventflag_none ::
@@ -915,10 +915,10 @@ module CEF
   # :eventflag_extended ::
   #   Windows extended key (see WM_KEYDOWN doc).
   # 
-  # @method _enum_event_flags_t_
+  # @method _enum_event_flags_
   # @return [Symbol]
   # @scope class
-  enum :event_flags_t, [
+  enum :event_flags, [
     :eventflag_none, 0,
     :eventflag_caps_lock_down, 1,
     :eventflag_shift_down, 2,
@@ -933,7 +933,7 @@ module CEF
   
   # Supported menu item types.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:menu_item_type_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:menu_item_type).</em>
   # 
   # === Options:
   # :menuitemtype_none ::
@@ -949,10 +949,10 @@ module CEF
   # :menuitemtype_submenu ::
   #   
   # 
-  # @method _enum_menu_item_type_t_
+  # @method _enum_menu_item_type_
   # @return [Symbol]
   # @scope class
-  enum :menu_item_type_t, [
+  enum :menu_item_type, [
     :menuitemtype_none, 0,
     :menuitemtype_command, 1,
     :menuitemtype_check, 2,
@@ -963,7 +963,7 @@ module CEF
   
   # Supported context menu type flags.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:context_menu_type_flags_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:context_menu_type_flags).</em>
   # 
   # === Options:
   # :cm_typeflag_none ::
@@ -981,10 +981,10 @@ module CEF
   # :cm_typeflag_editable ::
   #   An editable element is selected.
   # 
-  # @method _enum_context_menu_type_flags_t_
+  # @method _enum_context_menu_type_flags_
   # @return [Symbol]
   # @scope class
-  enum :context_menu_type_flags_t, [
+  enum :context_menu_type_flags, [
     :cm_typeflag_none, 0,
     :cm_typeflag_page, 1,
     :cm_typeflag_frame, 2,
@@ -996,7 +996,7 @@ module CEF
   
   # Supported context menu media types.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:context_menu_media_type_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:context_menu_media_type).</em>
   # 
   # === Options:
   # :cm_mediatype_none ::
@@ -1012,10 +1012,10 @@ module CEF
   # :cm_mediatype_plugin ::
   #   A plugin node is selected.
   # 
-  # @method _enum_context_menu_media_type_t_
+  # @method _enum_context_menu_media_type_
   # @return [Symbol]
   # @scope class
-  enum :context_menu_media_type_t, [
+  enum :context_menu_media_type, [
     :cm_mediatype_none, 0,
     :cm_mediatype_image, 1,
     :cm_mediatype_video, 2,
@@ -1026,7 +1026,7 @@ module CEF
   
   # Supported context menu media state bit flags.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:context_menu_media_state_flags_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:context_menu_media_state_flags).</em>
   # 
   # === Options:
   # :cm_mediaflag_none ::
@@ -1052,10 +1052,10 @@ module CEF
   # :cm_mediaflag_can_rotate ::
   #   
   # 
-  # @method _enum_context_menu_media_state_flags_t_
+  # @method _enum_context_menu_media_state_flags_
   # @return [Symbol]
   # @scope class
-  enum :context_menu_media_state_flags_t, [
+  enum :context_menu_media_state_flags, [
     :cm_mediaflag_none, 0,
     :cm_mediaflag_error, 1,
     :cm_mediaflag_paused, 2,
@@ -1071,7 +1071,7 @@ module CEF
   
   # Supported context menu edit state bit flags.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:context_menu_edit_state_flags_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:context_menu_edit_state_flags).</em>
   # 
   # === Options:
   # :cm_editflag_none ::
@@ -1093,10 +1093,10 @@ module CEF
   # :cm_editflag_can_translate ::
   #   
   # 
-  # @method _enum_context_menu_edit_state_flags_t_
+  # @method _enum_context_menu_edit_state_flags_
   # @return [Symbol]
   # @scope class
-  enum :context_menu_edit_state_flags_t, [
+  enum :context_menu_edit_state_flags, [
     :cm_editflag_none, 0,
     :cm_editflag_can_undo, 1,
     :cm_editflag_can_redo, 2,
@@ -1110,7 +1110,7 @@ module CEF
   
   # Key event types.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:key_event_type_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:key_event_type).</em>
   # 
   # === Options:
   # :keyevent_rawkeydown ::
@@ -1122,10 +1122,10 @@ module CEF
   # :keyevent_char ::
   #   
   # 
-  # @method _enum_key_event_type_t_
+  # @method _enum_key_event_type_
   # @return [Symbol]
   # @scope class
-  enum :key_event_type_t, [
+  enum :key_event_type, [
     :keyevent_rawkeydown, 0,
     :keyevent_keydown, 1,
     :keyevent_keyup, 2,
@@ -1134,7 +1134,7 @@ module CEF
   
   # Key event modifiers.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:key_event_modifiers_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:key_event_modifiers).</em>
   # 
   # === Options:
   # :shift ::
@@ -1148,10 +1148,10 @@ module CEF
   # :keypad ::
   #   
   # 
-  # @method _enum_key_event_modifiers_t_
+  # @method _enum_key_event_modifiers_
   # @return [Symbol]
   # @scope class
-  enum :key_event_modifiers_t, [
+  enum :key_event_modifiers, [
     :shift, 1,
     :ctrl, 2,
     :alt, 4,
@@ -1163,7 +1163,7 @@ module CEF
   # 
   # = Fields:
   # :type ::
-  #   (Symbol from _enum_key_event_type_t_) The type of keyboard event.
+  #   (Symbol from _enum_key_event_type_) The type of keyboard event.
   # :modifiers ::
   #   (Integer) Bit flags describing any pressed modifier keys. See
   #   cef_key_event_modifiers_t for values.
@@ -1186,8 +1186,8 @@ module CEF
   # :focus_on_editable_field ::
   #   (Integer) True if the focus is currently on an editable field on the page. This is
   #   useful for determining if standard key events should be intercepted.
-  class KeyEventT < FFI::Struct
-    layout :type, :key_event_type_t,
+  class KeyEvent < FFI::Struct
+    layout :type, :key_event_type,
            :modifiers, :int,
            :windows_key_code, :int,
            :native_key_code, :int,
@@ -1199,7 +1199,7 @@ module CEF
   
   # Focus sources.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:focus_source_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:focus_source).</em>
   # 
   # === Options:
   # :navigation ::
@@ -1207,10 +1207,10 @@ module CEF
   # :system ::
   #   The source is a system-generated focus event.
   # 
-  # @method _enum_focus_source_t_
+  # @method _enum_focus_source_
   # @return [Symbol]
   # @scope class
-  enum :focus_source_t, [
+  enum :focus_source, [
     :navigation, 0,
     :system, 1
   ]
@@ -1220,7 +1220,7 @@ module CEF
   # before being passed to the parser. If a BOM is detected and the correct
   # decoder is available then that decoder will be used automatically.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:xml_encoding_type_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:xml_encoding_type).</em>
   # 
   # === Options:
   # :none ::
@@ -1234,10 +1234,10 @@ module CEF
   # :ascii ::
   #   
   # 
-  # @method _enum_xml_encoding_type_t_
+  # @method _enum_xml_encoding_type_
   # @return [Symbol]
   # @scope class
-  enum :xml_encoding_type_t, [
+  enum :xml_encoding_type, [
     :none, 0,
     :utf8, 1,
     :utf16le, 2,
@@ -1247,7 +1247,7 @@ module CEF
   
   # XML node types.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:xml_node_type_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:xml_node_type).</em>
   # 
   # === Options:
   # :unsupported ::
@@ -1273,10 +1273,10 @@ module CEF
   # :comment ::
   #   
   # 
-  # @method _enum_xml_node_type_t_
+  # @method _enum_xml_node_type_
   # @return [Symbol]
   # @scope class
-  enum :xml_node_type_t, [
+  enum :xml_node_type, [
     :unsupported, 0,
     :processing_instruction, 1,
     :document_type, 2,
@@ -1292,7 +1292,7 @@ module CEF
   
   # Status message types.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:handler_statustype_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:handler_statustype).</em>
   # 
   # === Options:
   # :text ::
@@ -1302,10 +1302,10 @@ module CEF
   # :keyboard_focus_url ::
   #   
   # 
-  # @method _enum_handler_statustype_t_
+  # @method _enum_handler_statustype_
   # @return [Symbol]
   # @scope class
-  enum :handler_statustype_t, [
+  enum :handler_statustype, [
     :text, 0,
     :mouseover_url, 1,
     :keyboard_focus_url, 2
@@ -1347,8 +1347,8 @@ module CEF
   # :dialog ::
   #   (Integer) 
   # :additional_features ::
-  #   (FFI::Pointer(StringListT)) 
-  class PopupFeaturesT < FFI::Struct
+  #   (FFI::Pointer(StringList)) 
+  class PopupFeatures < FFI::Struct
     layout :x, :int,
            :x_set, :int,
            :y, :int,
@@ -1370,7 +1370,7 @@ module CEF
   
   # Proxy types.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:proxy_type_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:proxy_type).</em>
   # 
   # === Options:
   # :direct ::
@@ -1380,10 +1380,10 @@ module CEF
   # :pac_string ::
   #   
   # 
-  # @method _enum_proxy_type_t_
+  # @method _enum_proxy_type_
   # @return [Symbol]
   # @scope class
-  enum :proxy_type_t, [
+  enum :proxy_type, [
     :direct, 0,
     :named, 1,
     :pac_string, 2
@@ -1393,17 +1393,17 @@ module CEF
   # 
   # = Fields:
   # :proxy_type ::
-  #   (Symbol from _enum_proxy_type_t_) 
+  #   (Symbol from _enum_proxy_type_) 
   # :proxy_list ::
   #   (unknown) 
-  class ProxyInfoT < FFI::Struct
-    layout :proxy_type, :proxy_type_t,
+  class ProxyInfo < FFI::Struct
+    layout :proxy_type, :proxy_type,
            :proxy_list, :char
   end
   
   # DOM document types.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:dom_document_type_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:dom_document_type).</em>
   # 
   # === Options:
   # :unknown ::
@@ -1415,10 +1415,10 @@ module CEF
   # :plugin ::
   #   
   # 
-  # @method _enum_dom_document_type_t_
+  # @method _enum_dom_document_type_
   # @return [Symbol]
   # @scope class
-  enum :dom_document_type_t, [
+  enum :dom_document_type, [
     :unknown, 0,
     :html, 1,
     :xhtml, 2,
@@ -1427,7 +1427,7 @@ module CEF
   
   # DOM event category flags.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:dom_event_category_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:dom_event_category).</em>
   # 
   # === Options:
   # :unknown ::
@@ -1471,10 +1471,10 @@ module CEF
   # :before_load ::
   #   
   # 
-  # @method _enum_dom_event_category_t_
+  # @method _enum_dom_event_category_
   # @return [Symbol]
   # @scope class
-  enum :dom_event_category_t, [
+  enum :dom_event_category, [
     :unknown, 0,
     :ui, 1,
     :mouse, 2,
@@ -1499,7 +1499,7 @@ module CEF
   
   # DOM event processing phases.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:dom_event_phase_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:dom_event_phase).</em>
   # 
   # === Options:
   # :unknown ::
@@ -1511,10 +1511,10 @@ module CEF
   # :bubbling ::
   #   
   # 
-  # @method _enum_dom_event_phase_t_
+  # @method _enum_dom_event_phase_
   # @return [Symbol]
   # @scope class
-  enum :dom_event_phase_t, [
+  enum :dom_event_phase, [
     :unknown, 0,
     :capturing, 1,
     :at_target, 2,
@@ -1523,7 +1523,7 @@ module CEF
   
   # DOM node types.
   # 
-  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:dom_node_type_t).</em>
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:dom_node_type).</em>
   # 
   # === Options:
   # :unsupported ::
@@ -1555,10 +1555,10 @@ module CEF
   # :xpath_namespace ::
   #   
   # 
-  # @method _enum_dom_node_type_t_
+  # @method _enum_dom_node_type_
   # @return [Symbol]
   # @scope class
-  enum :dom_node_type_t, [
+  enum :dom_node_type, [
     :unsupported, 0,
     :element, 1,
     :attribute, 2,

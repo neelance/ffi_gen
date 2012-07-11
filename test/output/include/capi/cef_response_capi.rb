@@ -38,7 +38,7 @@ module CEF
   #   (FFI::Pointer(*)) Get all response header fields.
   # :set_header_map ::
   #   (FFI::Pointer(*)) Set all response header fields.
-  class ResponseT < FFI::Struct
+  class Response < FFI::Struct
     layout :base, :char,
            :is_read_only, :pointer,
            :get_status, :pointer,
@@ -55,8 +55,8 @@ module CEF
   # Create a new cef_response_t object.
   # 
   # @method response_create()
-  # @return [ResponseT] 
+  # @return [Response] 
   # @scope class
-  attach_function :response_create, :cef_response_create, [], ResponseT
+  attach_function :response_create, :cef_response_create, [], Response
   
 end

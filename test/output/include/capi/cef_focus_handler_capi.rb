@@ -13,17 +13,17 @@ module CEF
   end
   
   # (Not documented)
-  class BrowserT < FFI::Struct
+  class Browser < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class BrowserT < FFI::Struct
+  class Browser < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class BrowserT < FFI::Struct
+  class Browser < FFI::Struct
     layout :dummy, :char
   end
   
@@ -44,7 +44,7 @@ module CEF
   #   focus to be set or true (1) to cancel setting the focus.
   # :on_got_focus ::
   #   (FFI::Pointer(*)) Called when the browser component has received focus.
-  class FocusHandlerT < FFI::Struct
+  class FocusHandler < FFI::Struct
     layout :base, :char,
            :on_take_focus, :pointer,
            :on_set_focus, :pointer,

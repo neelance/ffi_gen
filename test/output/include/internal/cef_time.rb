@@ -31,7 +31,22 @@ module CEF
   #   (Integer) Second within the current minute (0-59 plus leap
   # :millisecond ::
   #   (Integer) Milliseconds within the current second (0-999)
-  class TimeT < FFI::Struct
+  module TimeWrappers
+    # @param [FFI::Pointer(*Time)] time 
+    # @return [Integer] 
+    def to_timet(time)
+      CEF.time_to_timet(self, time)
+    end
+    
+    # @param [FFI::Pointer(*Double)] time 
+    # @return [Integer] 
+    def to_doublet(time)
+      CEF.time_to_doublet(self, time)
+    end
+  end
+  
+  class Time < FFI::Struct
+    include TimeWrappers
     layout :year, :int,
            :month, :int,
            :day_of_week, :int,
@@ -46,20 +61,20 @@ module CEF
   # on failure.
   # 
   # @method time_to_timet(time, time)
-  # @param [TimeT] time 
-  # @param [FFI::Pointer(*TimeT)] time 
+  # @param [Time] time 
+  # @param [FFI::Pointer(*Time)] time 
   # @return [Integer] 
   # @scope class
-  attach_function :time_to_timet, :cef_time_to_timet, [TimeT, :pointer], :int
+  attach_function :time_to_timet, :cef_time_to_timet, [Time, :pointer], :int
   
   # (Not documented)
   # 
   # @method time_from_timet(time, time)
   # @param [Integer] time 
-  # @param [TimeT] time 
+  # @param [Time] time 
   # @return [Integer] 
   # @scope class
-  attach_function :time_from_timet, :cef_time_from_timet, [:long, TimeT], :int
+  attach_function :time_from_timet, :cef_time_from_timet, [:long, Time], :int
   
   # Converts cef_time_t to/from a double which is the number of seconds since
   # epoch (Jan 1, 1970). Webkit uses this format to represent time. A value of 0
@@ -67,19 +82,19 @@ module CEF
   # failure.
   # 
   # @method time_to_doublet(time, time)
-  # @param [TimeT] time 
+  # @param [Time] time 
   # @param [FFI::Pointer(*Double)] time 
   # @return [Integer] 
   # @scope class
-  attach_function :time_to_doublet, :cef_time_to_doublet, [TimeT, :pointer], :int
+  attach_function :time_to_doublet, :cef_time_to_doublet, [Time, :pointer], :int
   
   # (Not documented)
   # 
   # @method time_from_doublet(time, time)
   # @param [Float] time 
-  # @param [TimeT] time 
+  # @param [Time] time 
   # @return [Integer] 
   # @scope class
-  attach_function :time_from_doublet, :cef_time_from_doublet, [:double, TimeT], :int
+  attach_function :time_from_doublet, :cef_time_from_doublet, [:double, Time], :int
   
 end

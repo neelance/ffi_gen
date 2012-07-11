@@ -13,12 +13,12 @@ module CEF
   end
   
   # (Not documented)
-  class FrameT < FFI::Struct
+  class Frame < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class ProcessMessageT < FFI::Struct
+  class ProcessMessage < FFI::Struct
     layout :dummy, :char
   end
   
@@ -72,7 +72,7 @@ module CEF
   # :send_process_message ::
   #   (FFI::Pointer(*)) Send a message to the specified |target_process|. Returns true (1) if the
   #   message was sent successfully.
-  class BrowserT < FFI::Struct
+  class Browser < FFI::Struct
     layout :base, :char,
            :get_host, :pointer,
            :can_go_back, :pointer,
@@ -97,7 +97,7 @@ module CEF
   end
   
   # (Not documented)
-  class ClientT < FFI::Struct
+  class Client < FFI::Struct
     layout :dummy, :char
   end
   
@@ -132,7 +132,7 @@ module CEF
   #   (FFI::Pointer(*)) Get the zoom level. This function can only be called on the UI thread.
   # :set_zoom_level ::
   #   (FFI::Pointer(*)) Change the zoom level to the specified value.
-  class BrowserHostT < FFI::Struct
+  class BrowserHost < FFI::Struct
     layout :base, :char,
            :get_browser, :pointer,
            :parent_window_will_close, :pointer,
@@ -152,25 +152,25 @@ module CEF
   # process thread and will not block.
   # 
   # @method browser_host_create_browser(window_info, client, url, settings)
-  # @param [FFI::Pointer(*WindowInfoT)] window_info 
-  # @param [ClientT] client 
-  # @param [FFI::Pointer(*StringT)] url 
-  # @param [FFI::Pointer(*BrowserSettingsT)] settings 
+  # @param [FFI::Pointer(*WindowInfo)] window_info 
+  # @param [Client] client 
+  # @param [FFI::Pointer(*String)] url 
+  # @param [FFI::Pointer(*BrowserSettings)] settings 
   # @return [Integer] 
   # @scope class
-  attach_function :browser_host_create_browser, :cef_browser_host_create_browser, [:pointer, ClientT, :pointer, :pointer], :int
+  attach_function :browser_host_create_browser, :cef_browser_host_create_browser, [:pointer, Client, :pointer, :pointer], :int
   
   # Create a new browser window using the window parameters specified by
   # |windowInfo|. This function can only be called on the browser process UI
   # thread.
   # 
   # @method browser_host_create_browser_sync(window_info, client, url, settings)
-  # @param [FFI::Pointer(*WindowInfoT)] window_info 
-  # @param [ClientT] client 
-  # @param [FFI::Pointer(*StringT)] url 
-  # @param [FFI::Pointer(*BrowserSettingsT)] settings 
-  # @return [BrowserT] 
+  # @param [FFI::Pointer(*WindowInfo)] window_info 
+  # @param [Client] client 
+  # @param [FFI::Pointer(*String)] url 
+  # @param [FFI::Pointer(*BrowserSettings)] settings 
+  # @return [Browser] 
   # @scope class
-  attach_function :browser_host_create_browser_sync, :cef_browser_host_create_browser_sync, [:pointer, ClientT, :pointer, :pointer], BrowserT
+  attach_function :browser_host_create_browser_sync, :cef_browser_host_create_browser_sync, [:pointer, Client, :pointer, :pointer], Browser
   
 end

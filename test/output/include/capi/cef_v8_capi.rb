@@ -13,7 +13,7 @@ module CEF
   end
   
   # (Not documented)
-  class V8handlerT < FFI::Struct
+  class V8handler < FFI::Struct
     layout :dummy, :char
   end
   
@@ -73,25 +73,25 @@ module CEF
   # </pre>
   # 
   # @method register_extension(extension_name, javascript_code, handler)
-  # @param [FFI::Pointer(*StringT)] extension_name 
-  # @param [FFI::Pointer(*StringT)] javascript_code 
-  # @param [V8handlerT] handler 
+  # @param [FFI::Pointer(*String)] extension_name 
+  # @param [FFI::Pointer(*String)] javascript_code 
+  # @param [V8handler] handler 
   # @return [Integer] 
   # @scope class
-  attach_function :register_extension, :cef_register_extension, [:pointer, :pointer, V8handlerT], :int
+  attach_function :register_extension, :cef_register_extension, [:pointer, :pointer, V8handler], :int
   
   # (Not documented)
-  class BrowserT < FFI::Struct
+  class Browser < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class FrameT < FFI::Struct
+  class Frame < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class V8exceptionT < FFI::Struct
+  class V8exception < FFI::Struct
     layout :dummy, :char
   end
   
@@ -125,7 +125,7 @@ module CEF
   #   On success |retval| will be set to the return value, if any, and the
   #   function will return true (1). On failure |exception| will be set to the
   #   exception, if any, and the function will return false (0).
-  class V8contextT < FFI::Struct
+  class V8context < FFI::Struct
     layout :base, :char,
            :get_browser, :pointer,
            :get_frame, :pointer,
@@ -139,16 +139,16 @@ module CEF
   # Returns the current (top) context object in the V8 context stack.
   # 
   # @method v8context_get_current_context()
-  # @return [V8contextT] 
+  # @return [V8context] 
   # @scope class
-  attach_function :v8context_get_current_context, :cef_v8context_get_current_context, [], V8contextT
+  attach_function :v8context_get_current_context, :cef_v8context_get_current_context, [], V8context
   
   # Returns the entered (bottom) context object in the V8 context stack.
   # 
   # @method v8context_get_entered_context()
-  # @return [V8contextT] 
+  # @return [V8context] 
   # @scope class
-  attach_function :v8context_get_entered_context, :cef_v8context_get_entered_context, [], V8contextT
+  attach_function :v8context_get_entered_context, :cef_v8context_get_entered_context, [], V8context
   
   # Returns true (1) if V8 is currently inside a context.
   # 
@@ -170,7 +170,7 @@ module CEF
   #   arguments passed to the function. If execution succeeds set |retval| to the
   #   function return value. If execution fails set |exception| to the exception
   #   that will be thrown. Return true (1) if execution was handled.
-  class V8handlerT < FFI::Struct
+  class V8handler < FFI::Struct
     layout :base, :char,
            :execute, :pointer
   end
@@ -195,7 +195,7 @@ module CEF
   #   being assigned to the accessor. If assignment fails set |exception| to the
   #   exception that will be thrown. Return true (1) if accessor assignment was
   #   handled.
-  class V8accessorT < FFI::Struct
+  class V8accessor < FFI::Struct
     layout :base, :char,
            :get, :pointer,
            :set, :pointer
@@ -227,7 +227,7 @@ module CEF
   # :get_end_column ::
   #   (FFI::Pointer(*)) Returns the index within the line of the last character where the error
   #   occurred.
-  class V8exceptionT < FFI::Struct
+  class V8exception < FFI::Struct
     layout :base, :char,
            :get_message, :pointer,
            :get_source_line, :pointer,
@@ -387,7 +387,7 @@ module CEF
   #   that will be passed to the function. Returns the function return value on
   #   success. Returns NULL if this function is called incorrectly or an
   #   exception is thrown.
-  class V8valueT < FFI::Struct
+  class V8value < FFI::Struct
     layout :base, :char,
            :is_undefined, :pointer,
            :is_null, :pointer,
@@ -437,48 +437,48 @@ module CEF
   # Create a new cef_v8value_t object of type undefined.
   # 
   # @method v8value_create_undefined()
-  # @return [V8valueT] 
+  # @return [V8value] 
   # @scope class
-  attach_function :v8value_create_undefined, :cef_v8value_create_undefined, [], V8valueT
+  attach_function :v8value_create_undefined, :cef_v8value_create_undefined, [], V8value
   
   # Create a new cef_v8value_t object of type null.
   # 
   # @method v8value_create_null()
-  # @return [V8valueT] 
+  # @return [V8value] 
   # @scope class
-  attach_function :v8value_create_null, :cef_v8value_create_null, [], V8valueT
+  attach_function :v8value_create_null, :cef_v8value_create_null, [], V8value
   
   # Create a new cef_v8value_t object of type bool.
   # 
   # @method v8value_create_bool(value)
   # @param [Integer] value 
-  # @return [V8valueT] 
+  # @return [V8value] 
   # @scope class
-  attach_function :v8value_create_bool, :cef_v8value_create_bool, [:int], V8valueT
+  attach_function :v8value_create_bool, :cef_v8value_create_bool, [:int], V8value
   
   # Create a new cef_v8value_t object of type int.
   # 
   # @method v8value_create_int(value)
   # @param [Integer] value 
-  # @return [V8valueT] 
+  # @return [V8value] 
   # @scope class
-  attach_function :v8value_create_int, :cef_v8value_create_int, [:int], V8valueT
+  attach_function :v8value_create_int, :cef_v8value_create_int, [:int], V8value
   
   # Create a new cef_v8value_t object of type unsigned int.
   # 
   # @method v8value_create_uint(value)
   # @param [Integer] value 
-  # @return [V8valueT] 
+  # @return [V8value] 
   # @scope class
-  attach_function :v8value_create_uint, :cef_v8value_create_uint, [:uint], V8valueT
+  attach_function :v8value_create_uint, :cef_v8value_create_uint, [:uint], V8value
   
   # Create a new cef_v8value_t object of type double.
   # 
   # @method v8value_create_double(value)
   # @param [Float] value 
-  # @return [V8valueT] 
+  # @return [V8value] 
   # @scope class
-  attach_function :v8value_create_double, :cef_v8value_create_double, [:double], V8valueT
+  attach_function :v8value_create_double, :cef_v8value_create_double, [:double], V8value
   
   # Create a new cef_v8value_t object of type Date. This function should only be
   # called from within the scope of a cef_v8context_tHandler, cef_v8handler_t or
@@ -486,18 +486,18 @@ module CEF
   # on a stored cef_v8context_t reference.
   # 
   # @method v8value_create_date(date)
-  # @param [FFI::Pointer(*TimeT)] date 
-  # @return [V8valueT] 
+  # @param [FFI::Pointer(*Time)] date 
+  # @return [V8value] 
   # @scope class
-  attach_function :v8value_create_date, :cef_v8value_create_date, [:pointer], V8valueT
+  attach_function :v8value_create_date, :cef_v8value_create_date, [:pointer], V8value
   
   # Create a new cef_v8value_t object of type string.
   # 
   # @method v8value_create_string(value)
-  # @param [FFI::Pointer(*StringT)] value 
-  # @return [V8valueT] 
+  # @param [FFI::Pointer(*String)] value 
+  # @return [V8value] 
   # @scope class
-  attach_function :v8value_create_string, :cef_v8value_create_string, [:pointer], V8valueT
+  attach_function :v8value_create_string, :cef_v8value_create_string, [:pointer], V8value
   
   # Create a new cef_v8value_t object of type object with optional accessor. This
   # function should only be called from within the scope of a
@@ -506,10 +506,10 @@ module CEF
   # reference.
   # 
   # @method v8value_create_object(accessor)
-  # @param [V8accessorT] accessor 
-  # @return [V8valueT] 
+  # @param [V8accessor] accessor 
+  # @return [V8value] 
   # @scope class
-  attach_function :v8value_create_object, :cef_v8value_create_object, [V8accessorT], V8valueT
+  attach_function :v8value_create_object, :cef_v8value_create_object, [V8accessor], V8value
   
   # Create a new cef_v8value_t object of type array with the specified |length|.
   # If |length| is negative the returned array will have length 0. This function
@@ -519,9 +519,9 @@ module CEF
   # 
   # @method v8value_create_array(length)
   # @param [Integer] length 
-  # @return [V8valueT] 
+  # @return [V8value] 
   # @scope class
-  attach_function :v8value_create_array, :cef_v8value_create_array, [:int], V8valueT
+  attach_function :v8value_create_array, :cef_v8value_create_array, [:int], V8value
   
   # Create a new cef_v8value_t object of type function. This function should only
   # be called from within the scope of a cef_v8context_tHandler, cef_v8handler_t
@@ -529,10 +529,10 @@ module CEF
   # exit() on a stored cef_v8context_t reference.
   # 
   # @method v8value_create_function(name, handler)
-  # @param [FFI::Pointer(*StringT)] name 
-  # @param [V8handlerT] handler 
-  # @return [V8valueT] 
+  # @param [FFI::Pointer(*String)] name 
+  # @param [V8handler] handler 
+  # @return [V8value] 
   # @scope class
-  attach_function :v8value_create_function, :cef_v8value_create_function, [:pointer, V8handlerT], V8valueT
+  attach_function :v8value_create_function, :cef_v8value_create_function, [:pointer, V8handler], V8value
   
 end

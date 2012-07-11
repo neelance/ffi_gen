@@ -47,9 +47,9 @@ module CEF
   # |source_origin| is invalid or the whitelist cannot be accessed.
   # 
   # @method add_cross_origin_whitelist_entry(source_origin, target_protocol, target_domain, allow_target_subdomains)
-  # @param [FFI::Pointer(*StringT)] source_origin 
-  # @param [FFI::Pointer(*StringT)] target_protocol 
-  # @param [FFI::Pointer(*StringT)] target_domain 
+  # @param [FFI::Pointer(*String)] source_origin 
+  # @param [FFI::Pointer(*String)] target_protocol 
+  # @param [FFI::Pointer(*String)] target_domain 
   # @param [Integer] allow_target_subdomains 
   # @return [Integer] 
   # @scope class
@@ -59,9 +59,9 @@ module CEF
   # |source_origin| is invalid or the whitelist cannot be accessed.
   # 
   # @method remove_cross_origin_whitelist_entry(source_origin, target_protocol, target_domain, allow_target_subdomains)
-  # @param [FFI::Pointer(*StringT)] source_origin 
-  # @param [FFI::Pointer(*StringT)] target_protocol 
-  # @param [FFI::Pointer(*StringT)] target_domain 
+  # @param [FFI::Pointer(*String)] source_origin 
+  # @param [FFI::Pointer(*String)] target_protocol 
+  # @param [FFI::Pointer(*String)] target_domain 
   # @param [Integer] allow_target_subdomains 
   # @return [Integer] 
   # @scope class

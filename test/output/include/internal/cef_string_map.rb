@@ -15,14 +15,14 @@ module CEF
   # Allocate a new string map.
   # 
   # @method string_map_alloc()
-  # @return [FFI::Pointer(StringMapT)] 
+  # @return [FFI::Pointer(StringMap)] 
   # @scope class
   attach_function :string_map_alloc, :cef_string_map_alloc, [], :pointer
   
   # Return the number of elements in the string map.
   # 
   # @method string_map_size(map)
-  # @param [FFI::Pointer(StringMapT)] map 
+  # @param [FFI::Pointer(StringMap)] map 
   # @return [Integer] 
   # @scope class
   attach_function :string_map_size, :cef_string_map_size, [:pointer], :int
@@ -30,9 +30,9 @@ module CEF
   # Return the value assigned to the specified key.
   # 
   # @method string_map_find(map, key, value)
-  # @param [FFI::Pointer(StringMapT)] map 
-  # @param [FFI::Pointer(*StringT)] key 
-  # @param [FFI::Pointer(*StringT)] value 
+  # @param [FFI::Pointer(StringMap)] map 
+  # @param [FFI::Pointer(*String)] key 
+  # @param [FFI::Pointer(*String)] value 
   # @return [Integer] 
   # @scope class
   attach_function :string_map_find, :cef_string_map_find, [:pointer, :pointer, :pointer], :int
@@ -40,9 +40,9 @@ module CEF
   # Return the key at the specified zero-based string map index.
   # 
   # @method string_map_key(map, index, key)
-  # @param [FFI::Pointer(StringMapT)] map 
+  # @param [FFI::Pointer(StringMap)] map 
   # @param [Integer] index 
-  # @param [FFI::Pointer(*StringT)] key 
+  # @param [FFI::Pointer(*String)] key 
   # @return [Integer] 
   # @scope class
   attach_function :string_map_key, :cef_string_map_key, [:pointer, :int, :pointer], :int
@@ -50,9 +50,9 @@ module CEF
   # Return the value at the specified zero-based string map index.
   # 
   # @method string_map_value(map, index, value)
-  # @param [FFI::Pointer(StringMapT)] map 
+  # @param [FFI::Pointer(StringMap)] map 
   # @param [Integer] index 
-  # @param [FFI::Pointer(*StringT)] value 
+  # @param [FFI::Pointer(*String)] value 
   # @return [Integer] 
   # @scope class
   attach_function :string_map_value, :cef_string_map_value, [:pointer, :int, :pointer], :int
@@ -60,9 +60,9 @@ module CEF
   # Append a new key/value pair at the end of the string map.
   # 
   # @method string_map_append(map, key, value)
-  # @param [FFI::Pointer(StringMapT)] map 
-  # @param [FFI::Pointer(*StringT)] key 
-  # @param [FFI::Pointer(*StringT)] value 
+  # @param [FFI::Pointer(StringMap)] map 
+  # @param [FFI::Pointer(*String)] key 
+  # @param [FFI::Pointer(*String)] value 
   # @return [Integer] 
   # @scope class
   attach_function :string_map_append, :cef_string_map_append, [:pointer, :pointer, :pointer], :int
@@ -70,7 +70,7 @@ module CEF
   # Clear the string map.
   # 
   # @method string_map_clear(map)
-  # @param [FFI::Pointer(StringMapT)] map 
+  # @param [FFI::Pointer(StringMap)] map 
   # @return [nil] 
   # @scope class
   attach_function :string_map_clear, :cef_string_map_clear, [:pointer], :void
@@ -78,7 +78,7 @@ module CEF
   # Free the string map.
   # 
   # @method string_map_free(map)
-  # @param [FFI::Pointer(StringMapT)] map 
+  # @param [FFI::Pointer(StringMap)] map 
   # @return [nil] 
   # @scope class
   attach_function :string_map_free, :cef_string_map_free, [:pointer], :void

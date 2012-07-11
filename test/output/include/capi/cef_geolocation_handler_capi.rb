@@ -20,18 +20,18 @@ module CEF
   #   (unknown) Base structure.
   # :cont ::
   #   (FFI::Pointer(*)) Call to allow or deny geolocation access.
-  class GeolocationCallbackT < FFI::Struct
+  class GeolocationCallback < FFI::Struct
     layout :base, :char,
            :cont, :pointer
   end
   
   # (Not documented)
-  class BrowserT < FFI::Struct
+  class Browser < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class BrowserT < FFI::Struct
+  class Browser < FFI::Struct
     layout :dummy, :char
   end
   
@@ -52,7 +52,7 @@ module CEF
   #   (FFI::Pointer(*)) Called when a geolocation access request is canceled. |requesting_url| is
   #   the URL that originally requested permission and |request_id| is the unique
   #   ID for the permission request.
-  class GeolocationHandlerT < FFI::Struct
+  class GeolocationHandler < FFI::Struct
     layout :base, :char,
            :on_request_geolocation_permission, :pointer,
            :on_cancel_geolocation_permission, :pointer

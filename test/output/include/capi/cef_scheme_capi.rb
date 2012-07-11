@@ -13,7 +13,7 @@ module CEF
   end
   
   # (Not documented)
-  class SchemeHandlerFactoryT < FFI::Struct
+  class SchemeHandlerFactory < FFI::Struct
     layout :dummy, :char
   end
   
@@ -29,12 +29,12 @@ module CEF
   # (0) if an error occurs. This function may be called on any thread.
   # 
   # @method register_scheme_handler_factory(scheme_name, domain_name, factory)
-  # @param [FFI::Pointer(*StringT)] scheme_name 
-  # @param [FFI::Pointer(*StringT)] domain_name 
-  # @param [SchemeHandlerFactoryT] factory 
+  # @param [FFI::Pointer(*String)] scheme_name 
+  # @param [FFI::Pointer(*String)] domain_name 
+  # @param [SchemeHandlerFactory] factory 
   # @return [Integer] 
   # @scope class
-  attach_function :register_scheme_handler_factory, :cef_register_scheme_handler_factory, [:pointer, :pointer, SchemeHandlerFactoryT], :int
+  attach_function :register_scheme_handler_factory, :cef_register_scheme_handler_factory, [:pointer, :pointer, SchemeHandlerFactory], :int
   
   # Clear all registered scheme handler factories. Returns false (0) on error.
   # This function may be called on any thread.
@@ -94,28 +94,28 @@ module CEF
   #   This function may be called on any thread. It should only be called once
   #   per unique |scheme_name| value. If |scheme_name| is already registered or
   #   if an error occurs this function will return false (0).
-  class SchemeRegistrarT < FFI::Struct
+  class SchemeRegistrar < FFI::Struct
     layout :base, :char,
            :add_custom_scheme, :pointer
   end
   
   # (Not documented)
-  class ResourceHandlerT < FFI::Struct
+  class ResourceHandler < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class BrowserT < FFI::Struct
+  class Browser < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class FrameT < FFI::Struct
+  class Frame < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class RequestT < FFI::Struct
+  class Request < FFI::Struct
     layout :dummy, :char
   end
   
@@ -132,7 +132,7 @@ module CEF
   #   the request or NULL if the request did not originate from a browser window
   #   (for example, if the request came from cef_urlrequest_t). The |request|
   #   object passed to this function will not contain cookie data.
-  class SchemeHandlerFactoryT < FFI::Struct
+  class SchemeHandlerFactory < FFI::Struct
     layout :base, :char,
            :create, :pointer
   end

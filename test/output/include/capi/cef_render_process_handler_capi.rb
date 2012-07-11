@@ -13,67 +13,67 @@ module CEF
   end
   
   # (Not documented)
-  class BrowserT < FFI::Struct
+  class Browser < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class BrowserT < FFI::Struct
+  class Browser < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class BrowserT < FFI::Struct
+  class Browser < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class FrameT < FFI::Struct
+  class Frame < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class V8contextT < FFI::Struct
+  class V8context < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class BrowserT < FFI::Struct
+  class Browser < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class FrameT < FFI::Struct
+  class Frame < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class V8contextT < FFI::Struct
+  class V8context < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class BrowserT < FFI::Struct
+  class Browser < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class FrameT < FFI::Struct
+  class Frame < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class DomnodeT < FFI::Struct
+  class Domnode < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class BrowserT < FFI::Struct
+  class Browser < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class ProcessMessageT < FFI::Struct
+  class ProcessMessage < FFI::Struct
     layout :dummy, :char
   end
   
@@ -109,7 +109,7 @@ module CEF
   #   (FFI::Pointer(*)) Called when a new message is received from a different process. Return true
   #   (1) if the message was handled or false (0) otherwise. Do not keep a
   #   reference to or attempt to access the message outside of this callback.
-  class RenderProcessHandlerT < FFI::Struct
+  class RenderProcessHandler < FFI::Struct
     layout :base, :char,
            :on_render_thread_created, :pointer,
            :on_web_kit_initialized, :pointer,

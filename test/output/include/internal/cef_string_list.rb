@@ -15,14 +15,14 @@ module CEF
   # Allocate a new string map.
   # 
   # @method string_list_alloc()
-  # @return [FFI::Pointer(StringListT)] 
+  # @return [FFI::Pointer(StringList)] 
   # @scope class
   attach_function :string_list_alloc, :cef_string_list_alloc, [], :pointer
   
   # Return the number of elements in the string list.
   # 
   # @method string_list_size(list)
-  # @param [FFI::Pointer(StringListT)] list 
+  # @param [FFI::Pointer(StringList)] list 
   # @return [Integer] 
   # @scope class
   attach_function :string_list_size, :cef_string_list_size, [:pointer], :int
@@ -31,9 +31,9 @@ module CEF
   # true (1) if the value was successfully retrieved.
   # 
   # @method string_list_value(list, index, value)
-  # @param [FFI::Pointer(StringListT)] list 
+  # @param [FFI::Pointer(StringList)] list 
   # @param [Integer] index 
-  # @param [FFI::Pointer(*StringT)] value 
+  # @param [FFI::Pointer(*String)] value 
   # @return [Integer] 
   # @scope class
   attach_function :string_list_value, :cef_string_list_value, [:pointer, :int, :pointer], :int
@@ -41,8 +41,8 @@ module CEF
   # Append a new value at the end of the string list.
   # 
   # @method string_list_append(list, value)
-  # @param [FFI::Pointer(StringListT)] list 
-  # @param [FFI::Pointer(*StringT)] value 
+  # @param [FFI::Pointer(StringList)] list 
+  # @param [FFI::Pointer(*String)] value 
   # @return [nil] 
   # @scope class
   attach_function :string_list_append, :cef_string_list_append, [:pointer, :pointer], :void
@@ -50,7 +50,7 @@ module CEF
   # Clear the string list.
   # 
   # @method string_list_clear(list)
-  # @param [FFI::Pointer(StringListT)] list 
+  # @param [FFI::Pointer(StringList)] list 
   # @return [nil] 
   # @scope class
   attach_function :string_list_clear, :cef_string_list_clear, [:pointer], :void
@@ -58,7 +58,7 @@ module CEF
   # Free the string list.
   # 
   # @method string_list_free(list)
-  # @param [FFI::Pointer(StringListT)] list 
+  # @param [FFI::Pointer(StringList)] list 
   # @return [nil] 
   # @scope class
   attach_function :string_list_free, :cef_string_list_free, [:pointer], :void
@@ -66,8 +66,8 @@ module CEF
   # Creates a copy of an existing string list.
   # 
   # @method string_list_copy(list)
-  # @param [FFI::Pointer(StringListT)] list 
-  # @return [FFI::Pointer(StringListT)] 
+  # @param [FFI::Pointer(StringList)] list 
+  # @return [FFI::Pointer(StringList)] 
   # @scope class
   attach_function :string_list_copy, :cef_string_list_copy, [:pointer], :pointer
   

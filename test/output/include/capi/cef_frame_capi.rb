@@ -13,32 +13,32 @@ module CEF
   end
   
   # (Not documented)
-  class StringVisitorT < FFI::Struct
+  class StringVisitor < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class StringVisitorT < FFI::Struct
+  class StringVisitor < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class RequestT < FFI::Struct
+  class Request < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class BrowserT < FFI::Struct
+  class Browser < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class V8contextT < FFI::Struct
+  class V8context < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class DomvisitorT < FFI::Struct
+  class Domvisitor < FFI::Struct
     layout :dummy, :char
   end
   
@@ -109,7 +109,7 @@ module CEF
   # :visit_dom ::
   #   (FFI::Pointer(*)) Visit the DOM document. This function can only be called from the render
   #   process.
-  class FrameT < FFI::Struct
+  class Frame < FFI::Struct
     layout :base, :char,
            :is_valid, :pointer,
            :undo, :pointer,

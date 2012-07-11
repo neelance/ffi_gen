@@ -20,7 +20,7 @@ module CEF
   # :struct_type ::
   #   (unknown) 
   # :userfree_struct_type ::
-  #   (FFI::Pointer(StringUserfreeWideT)) 
+  #   (FFI::Pointer(StringUserfreeWide)) 
   # :clear ::
   #   (unknown) 
   class CefStringTraitsWide < FFI::Struct
@@ -38,7 +38,7 @@ module CEF
   # :struct_type ::
   #   (unknown) 
   # :userfree_struct_type ::
-  #   (FFI::Pointer(StringUserfreeUtf8T)) 
+  #   (FFI::Pointer(StringUserfreeUtf8)) 
   # :clear ::
   #   (unknown) 
   class CefStringTraitsUTF8 < FFI::Struct
@@ -56,7 +56,7 @@ module CEF
   # :struct_type ::
   #   (unknown) 
   # :userfree_struct_type ::
-  #   (FFI::Pointer(StringUserfreeUtf16T)) 
+  #   (FFI::Pointer(StringUserfreeUtf16)) 
   # :clear ::
   #   (unknown) 
   class CefStringTraitsUTF16 < FFI::Struct

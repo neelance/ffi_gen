@@ -13,32 +13,32 @@ module CEF
   end
   
   # (Not documented)
-  class BrowserT < FFI::Struct
+  class Browser < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class ClientT < FFI::Struct
+  class Client < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class BrowserT < FFI::Struct
+  class Browser < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class BrowserT < FFI::Struct
+  class Browser < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class BrowserT < FFI::Struct
+  class Browser < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class BrowserT < FFI::Struct
+  class Browser < FFI::Struct
     layout :dummy, :char
   end
   
@@ -74,7 +74,7 @@ module CEF
   #   (FFI::Pointer(*)) Called just before a window is closed. If this is a modal window and a
   #   custom modal loop implementation was provided in run_modal() this callback
   #   should be used to exit the custom modal loop.
-  class LifeSpanHandlerT < FFI::Struct
+  class LifeSpanHandler < FFI::Struct
     layout :base, :char,
            :on_before_popup, :pointer,
            :on_after_created, :pointer,

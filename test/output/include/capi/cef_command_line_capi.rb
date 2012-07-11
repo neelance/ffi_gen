@@ -68,7 +68,7 @@ module CEF
   #   (FFI::Pointer(*)) Get the remaining command line arguments.
   # :append_argument ::
   #   (FFI::Pointer(*)) Add an argument to the end of the command line.
-  class CommandLineT < FFI::Struct
+  class CommandLine < FFI::Struct
     layout :base, :char,
            :is_valid, :pointer,
            :is_read_only, :pointer,
@@ -93,16 +93,16 @@ module CEF
   # Create a new cef_command_line_t instance.
   # 
   # @method command_line_create()
-  # @return [CommandLineT] 
+  # @return [CommandLine] 
   # @scope class
-  attach_function :command_line_create, :cef_command_line_create, [], CommandLineT
+  attach_function :command_line_create, :cef_command_line_create, [], CommandLine
   
   # Returns the singleton global cef_command_line_t object. The returned object
   # will be read-only.
   # 
   # @method command_line_get_global()
-  # @return [CommandLineT] 
+  # @return [CommandLine] 
   # @scope class
-  attach_function :command_line_get_global, :cef_command_line_get_global, [], CommandLineT
+  attach_function :command_line_get_global, :cef_command_line_get_global, [], CommandLine
   
 end

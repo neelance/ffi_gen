@@ -27,7 +27,7 @@ module CEF
   #   (FFI::Pointer(*)) Return the current offset position.
   # :eof ::
   #   (FFI::Pointer(*)) Return non-zero if at end of file.
-  class ReadHandlerT < FFI::Struct
+  class ReadHandler < FFI::Struct
     layout :base, :char,
            :read, :pointer,
            :seek, :pointer,
@@ -50,7 +50,7 @@ module CEF
   #   (FFI::Pointer(*)) Return the current offset position.
   # :eof ::
   #   (FFI::Pointer(*)) Return non-zero if at end of file.
-  class StreamReaderT < FFI::Struct
+  class StreamReader < FFI::Struct
     layout :base, :char,
            :read, :pointer,
            :seek, :pointer,
@@ -61,27 +61,27 @@ module CEF
   # Create a new cef_stream_reader_t object from a file.
   # 
   # @method stream_reader_create_for_file(file_name)
-  # @param [FFI::Pointer(*StringT)] file_name 
-  # @return [StreamReaderT] 
+  # @param [FFI::Pointer(*String)] file_name 
+  # @return [StreamReader] 
   # @scope class
-  attach_function :stream_reader_create_for_file, :cef_stream_reader_create_for_file, [:pointer], StreamReaderT
+  attach_function :stream_reader_create_for_file, :cef_stream_reader_create_for_file, [:pointer], StreamReader
   
   # Create a new cef_stream_reader_t object from data.
   # 
   # @method stream_reader_create_for_data(data, size)
   # @param [FFI::Pointer(*Void)] data 
   # @param [Integer] size 
-  # @return [StreamReaderT] 
+  # @return [StreamReader] 
   # @scope class
-  attach_function :stream_reader_create_for_data, :cef_stream_reader_create_for_data, [:pointer, :ulong], StreamReaderT
+  attach_function :stream_reader_create_for_data, :cef_stream_reader_create_for_data, [:pointer, :ulong], StreamReader
   
   # Create a new cef_stream_reader_t object from a custom handler.
   # 
   # @method stream_reader_create_for_handler(handler)
-  # @param [ReadHandlerT] handler 
-  # @return [StreamReaderT] 
+  # @param [ReadHandler] handler 
+  # @return [StreamReader] 
   # @scope class
-  attach_function :stream_reader_create_for_handler, :cef_stream_reader_create_for_handler, [ReadHandlerT], StreamReaderT
+  attach_function :stream_reader_create_for_handler, :cef_stream_reader_create_for_handler, [ReadHandler], StreamReader
   
   # Structure the client can implement to provide a custom stream writer. The
   # functions of this structure may be called on any thread.
@@ -98,7 +98,7 @@ module CEF
   #   (FFI::Pointer(*)) Return the current offset position.
   # :flush ::
   #   (FFI::Pointer(*)) Flush the stream.
-  class WriteHandlerT < FFI::Struct
+  class WriteHandler < FFI::Struct
     layout :base, :char,
            :write, :pointer,
            :seek, :pointer,
@@ -121,7 +121,7 @@ module CEF
   #   (FFI::Pointer(*)) Return the current offset position.
   # :flush ::
   #   (FFI::Pointer(*)) Flush the stream.
-  class StreamWriterT < FFI::Struct
+  class StreamWriter < FFI::Struct
     layout :base, :char,
            :write, :pointer,
            :seek, :pointer,
@@ -132,17 +132,17 @@ module CEF
   # Create a new cef_stream_writer_t object for a file.
   # 
   # @method stream_writer_create_for_file(file_name)
-  # @param [FFI::Pointer(*StringT)] file_name 
-  # @return [StreamWriterT] 
+  # @param [FFI::Pointer(*String)] file_name 
+  # @return [StreamWriter] 
   # @scope class
-  attach_function :stream_writer_create_for_file, :cef_stream_writer_create_for_file, [:pointer], StreamWriterT
+  attach_function :stream_writer_create_for_file, :cef_stream_writer_create_for_file, [:pointer], StreamWriter
   
   # Create a new cef_stream_writer_t object for a custom handler.
   # 
   # @method stream_writer_create_for_handler(handler)
-  # @param [WriteHandlerT] handler 
-  # @return [StreamWriterT] 
+  # @param [WriteHandler] handler 
+  # @return [StreamWriter] 
   # @scope class
-  attach_function :stream_writer_create_for_handler, :cef_stream_writer_create_for_handler, [WriteHandlerT], StreamWriterT
+  attach_function :stream_writer_create_for_handler, :cef_stream_writer_create_for_handler, [WriteHandler], StreamWriter
   
 end

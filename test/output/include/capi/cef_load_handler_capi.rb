@@ -13,32 +13,32 @@ module CEF
   end
   
   # (Not documented)
-  class BrowserT < FFI::Struct
+  class Browser < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class FrameT < FFI::Struct
+  class Frame < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class BrowserT < FFI::Struct
+  class Browser < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class FrameT < FFI::Struct
+  class Frame < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class BrowserT < FFI::Struct
+  class Browser < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class FrameT < FFI::Struct
+  class Frame < FFI::Struct
     layout :dummy, :char
   end
   
@@ -67,7 +67,7 @@ module CEF
   #   code number, |errorText| is the error text and and |failedUrl| is the URL
   #   that failed to load. See net\base\net_error_list.h for complete
   #   descriptions of the error codes.
-  class LoadHandlerT < FFI::Struct
+  class LoadHandler < FFI::Struct
     layout :base, :char,
            :on_load_start, :pointer,
            :on_load_end, :pointer,

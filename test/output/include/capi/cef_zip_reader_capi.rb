@@ -50,7 +50,7 @@ module CEF
   #   (FFI::Pointer(*)) Returns the current offset in the uncompressed file contents.
   # :eof ::
   #   (FFI::Pointer(*)) Returns true (1) if at end of the file contents.
-  class ZipReaderT < FFI::Struct
+  class ZipReader < FFI::Struct
     layout :base, :char,
            :move_to_first_file, :pointer,
            :move_to_next_file, :pointer,
@@ -67,7 +67,7 @@ module CEF
   end
   
   # (Not documented)
-  class StreamReaderT < FFI::Struct
+  class StreamReader < FFI::Struct
     layout :dummy, :char
   end
   
@@ -75,9 +75,9 @@ module CEF
   # only be called from the thread that created the object.
   # 
   # @method zip_reader_create(stream)
-  # @param [StreamReaderT] stream 
-  # @return [ZipReaderT] 
+  # @param [StreamReader] stream 
+  # @return [ZipReader] 
   # @scope class
-  attach_function :zip_reader_create, :cef_zip_reader_create, [StreamReaderT], ZipReaderT
+  attach_function :zip_reader_create, :cef_zip_reader_create, [StreamReader], ZipReader
   
 end

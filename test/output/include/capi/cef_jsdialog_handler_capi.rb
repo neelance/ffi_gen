@@ -21,23 +21,23 @@ module CEF
   # :cont ::
   #   (FFI::Pointer(*)) Continue the JS dialog request. Set |success| to true (1) if the OK button
   #   was pressed. The |user_input| value should be specified for prompt dialogs.
-  class JsdialogCallbackT < FFI::Struct
+  class JsdialogCallback < FFI::Struct
     layout :base, :char,
            :cont, :pointer
   end
   
   # (Not documented)
-  class BrowserT < FFI::Struct
+  class Browser < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class BrowserT < FFI::Struct
+  class Browser < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class BrowserT < FFI::Struct
+  class Browser < FFI::Struct
     layout :dummy, :char
   end
   
@@ -72,7 +72,7 @@ module CEF
   #   (FFI::Pointer(*)) Called to cancel any pending dialogs and reset any saved dialog state. Will
   #   be called due to events like page navigation irregardless of whether any
   #   dialogs are currently pending.
-  class JsdialogHandlerT < FFI::Struct
+  class JsdialogHandler < FFI::Struct
     layout :base, :char,
            :on_jsdialog, :pointer,
            :on_before_unload_dialog, :pointer,

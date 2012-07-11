@@ -21,7 +21,7 @@ module CEF
   #   (FFI::Pointer(*)) Continue processing.
   # :cancel ::
   #   (FFI::Pointer(*)) Cancel processing.
-  class CallbackT < FFI::Struct
+  class Callback < FFI::Struct
     layout :base, :char,
            :cont, :pointer,
            :cancel, :pointer

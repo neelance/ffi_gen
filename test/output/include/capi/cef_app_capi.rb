@@ -13,7 +13,7 @@ module CEF
   end
   
   # (Not documented)
-  class AppT < FFI::Struct
+  class App < FFI::Struct
     layout :dummy, :char
   end
   
@@ -27,14 +27,14 @@ module CEF
   # the process exit code. The |application| parameter may be NULL.
   # 
   # @method execute_process(args, application)
-  # @param [FFI::Pointer(*MainArgsT)] args 
-  # @param [AppT] application 
+  # @param [FFI::Pointer(*MainArgs)] args 
+  # @param [App] application 
   # @return [Integer] 
   # @scope class
-  attach_function :execute_process, :cef_execute_process, [:pointer, AppT], :int
+  attach_function :execute_process, :cef_execute_process, [:pointer, App], :int
   
   # (Not documented)
-  class AppT < FFI::Struct
+  class App < FFI::Struct
     layout :dummy, :char
   end
   
@@ -44,12 +44,12 @@ module CEF
   # failed.
   # 
   # @method initialize(args, settings, application)
-  # @param [FFI::Pointer(*MainArgsT)] args 
-  # @param [FFI::Pointer(*SettingsT)] settings 
-  # @param [AppT] application 
+  # @param [FFI::Pointer(*MainArgs)] args 
+  # @param [FFI::Pointer(*Settings)] settings 
+  # @param [App] application 
   # @return [Integer] 
   # @scope class
-  attach_function :initialize, :cef_initialize, [:pointer, :pointer, AppT], :int
+  attach_function :initialize, :cef_initialize, [:pointer, :pointer, App], :int
   
   # This function should be called on the main application thread to shut down
   # the CEF browser process before the application exits.
@@ -93,27 +93,27 @@ module CEF
   attach_function :quit_message_loop, :cef_quit_message_loop, [], :void
   
   # (Not documented)
-  class CommandLineT < FFI::Struct
+  class CommandLine < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class SchemeRegistrarT < FFI::Struct
+  class SchemeRegistrar < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class ResourceBundleHandlerT < FFI::Struct
+  class ResourceBundleHandler < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class BrowserProcessHandlerT < FFI::Struct
+  class BrowserProcessHandler < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class RenderProcessHandlerT < FFI::Struct
+  class RenderProcessHandler < FFI::Struct
     layout :dummy, :char
   end
   
@@ -149,7 +149,7 @@ module CEF
   # :get_render_process_handler ::
   #   (FFI::Pointer(*)) Return the handler for functionality specific to the render process. This
   #   function is called on the render process main thread.
-  class AppT < FFI::Struct
+  class App < FFI::Struct
     layout :base, :char,
            :on_before_command_line_processing, :pointer,
            :on_register_custom_schemes, :pointer,

@@ -18,6 +18,7 @@ def run_test(options = {})
       headers:     [header],
       cflags:      ["-nostdinc", "-Itest/headers"] + options.fetch(:cflags, []),
       prefixes:    options.fetch(:prefixes, []),
+      suffixes:    options.fetch(:suffixes, []),
       blocking:    options.fetch(:blocking, []),
       output:      output_file
     )

@@ -22,74 +22,74 @@ module CEF
   #   (FFI::Pointer(*)) Continue the authentication request.
   # :cancel ::
   #   (FFI::Pointer(*)) Cancel the authentication request.
-  class AuthCallbackT < FFI::Struct
+  class AuthCallback < FFI::Struct
     layout :base, :char,
            :cont, :pointer,
            :cancel, :pointer
   end
   
   # (Not documented)
-  class BrowserT < FFI::Struct
+  class Browser < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class FrameT < FFI::Struct
+  class Frame < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class RequestT < FFI::Struct
+  class Request < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class ResourceHandlerT < FFI::Struct
+  class ResourceHandler < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class BrowserT < FFI::Struct
+  class Browser < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class FrameT < FFI::Struct
+  class Frame < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class RequestT < FFI::Struct
+  class Request < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class BrowserT < FFI::Struct
+  class Browser < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class FrameT < FFI::Struct
+  class Frame < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class BrowserT < FFI::Struct
+  class Browser < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class FrameT < FFI::Struct
+  class Frame < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CookieManagerT < FFI::Struct
+  class CookieManager < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class BrowserT < FFI::Struct
+  class Browser < FFI::Struct
     layout :dummy, :char
   end
   
@@ -124,7 +124,7 @@ module CEF
   #   URL of the top-level frame. Cookies managers can be unique per browser or
   #   shared across multiple browsers. The global cookie manager will be used if
   #   this function returns NULL.
-  class RequestHandlerT < FFI::Struct
+  class RequestHandler < FFI::Struct
     layout :base, :char,
            :on_before_resource_load, :pointer,
            :get_resource_handler, :pointer,

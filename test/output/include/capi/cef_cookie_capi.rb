@@ -13,12 +13,12 @@ module CEF
   end
   
   # (Not documented)
-  class CookieVisitorT < FFI::Struct
+  class CookieVisitor < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CookieVisitorT < FFI::Struct
+  class CookieVisitor < FFI::Struct
     layout :dummy, :char
   end
   
@@ -60,7 +60,7 @@ module CEF
   #   (FFI::Pointer(*)) Sets the directory path that will be used for storing cookie data. If
   #   |path| is NULL data will be stored in memory only. Returns false (0) if
   #   cookies cannot be accessed.
-  class CookieManagerT < FFI::Struct
+  class CookieManager < FFI::Struct
     layout :base, :char,
            :set_supported_schemes, :pointer,
            :visit_all_cookies, :pointer,
@@ -74,18 +74,18 @@ module CEF
   # CefSettings.cache_path if specified or in memory otherwise.
   # 
   # @method cookie_manager_get_global_manager()
-  # @return [CookieManagerT] 
+  # @return [CookieManager] 
   # @scope class
-  attach_function :cookie_manager_get_global_manager, :cef_cookie_manager_get_global_manager, [], CookieManagerT
+  attach_function :cookie_manager_get_global_manager, :cef_cookie_manager_get_global_manager, [], CookieManager
   
   # Creates a new cookie manager. If |path| is NULL data will be stored in memory
   # only. Returns NULL if creation fails.
   # 
   # @method cookie_manager_create_manager(path)
-  # @param [FFI::Pointer(*StringT)] path 
-  # @return [CookieManagerT] 
+  # @param [FFI::Pointer(*String)] path 
+  # @return [CookieManager] 
   # @scope class
-  attach_function :cookie_manager_create_manager, :cef_cookie_manager_create_manager, [:pointer], CookieManagerT
+  attach_function :cookie_manager_create_manager, :cef_cookie_manager_create_manager, [:pointer], CookieManager
   
   # Structure to implement for visiting cookie values. The functions of this
   # structure will always be called on the IO thread.
@@ -99,7 +99,7 @@ module CEF
   #   |deleteCookie| to true (1) to delete the cookie currently being visited.
   #   Return false (0) to stop visiting cookies. This function may never be
   #   called if no cookies are found.
-  class CookieVisitorT < FFI::Struct
+  class CookieVisitor < FFI::Struct
     layout :base, :char,
            :visit, :pointer
   end

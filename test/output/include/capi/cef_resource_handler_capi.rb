@@ -13,22 +13,22 @@ module CEF
   end
   
   # (Not documented)
-  class RequestT < FFI::Struct
+  class Request < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CallbackT < FFI::Struct
+  class Callback < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class ResponseT < FFI::Struct
+  class Response < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CallbackT < FFI::Struct
+  class Callback < FFI::Struct
     layout :dummy, :char
   end
   
@@ -68,7 +68,7 @@ module CEF
   #   set or false (0) otherwise.
   # :cancel ::
   #   (FFI::Pointer(*)) Request processing has been canceled.
-  class ResourceHandlerT < FFI::Struct
+  class ResourceHandler < FFI::Struct
     layout :base, :char,
            :process_request, :pointer,
            :get_response_headers, :pointer,

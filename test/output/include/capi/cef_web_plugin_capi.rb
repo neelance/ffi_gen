@@ -13,17 +13,17 @@ module CEF
   end
   
   # (Not documented)
-  class WebPluginInfoVisitorT < FFI::Struct
+  class WebPluginInfoVisitor < FFI::Struct
     layout :dummy, :char
   end
   
   # Visit web plugin information.
   # 
   # @method visit_web_plugin_info(visitor)
-  # @param [WebPluginInfoVisitorT] visitor 
+  # @param [WebPluginInfoVisitor] visitor 
   # @return [nil] 
   # @scope class
-  attach_function :visit_web_plugin_info, :cef_visit_web_plugin_info, [WebPluginInfoVisitorT], :void
+  attach_function :visit_web_plugin_info, :cef_visit_web_plugin_info, [WebPluginInfoVisitor], :void
   
   # Information about a specific web plugin.
   # 
@@ -38,7 +38,7 @@ module CEF
   #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :get_description ::
   #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
-  class WebPluginInfoT < FFI::Struct
+  class WebPluginInfo < FFI::Struct
     layout :base, :char,
            :get_name, :pointer,
            :get_path, :pointer,
@@ -57,7 +57,7 @@ module CEF
   #   index for the current plugin. |total| is the total number of plugins.
   #   Return false (0) to stop visiting plugins. This function may never be
   #   called if no plugins are found.
-  class WebPluginInfoVisitorT < FFI::Struct
+  class WebPluginInfoVisitor < FFI::Struct
     layout :base, :char,
            :visit, :pointer
   end

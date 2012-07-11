@@ -267,6 +267,7 @@ class FFI::Gen
     @headers       = options[:headers] or fail "No headers given."
     @cflags        = options.fetch :cflags, []
     @prefixes      = options.fetch :prefixes, []
+    @suffixes      = options.fetch :suffixes, []
     @blocking      = options.fetch :blocking, []
     @ffi_lib_flags = options.fetch :ffi_lib_flags, nil
     @output        = options.fetch :output, $stdout
@@ -692,7 +693,9 @@ class FFI::Gen
   def read_name(source)
     source = Clang.get_cursor_spelling(source).to_s_and_dispose if source.is_a? Clang::Cursor
     return nil if source.empty?
-    parts = source.sub(/^(#{@prefixes.join('|')})/, '').split(/_|(?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z])/).reject(&:empty?)
+    trimmed = source.sub(/^(#{@prefixes.join('|')})/, '')
+    trimmed = trimmed.sub(/(#{@suffixes.join('|')})$/, '')
+    parts = trimmed.split(/_|(?=[A-Z][a-z])|(?<=[a-z])(?=[A-Z])/).reject(&:empty?)
     Name.new parts, source
   end
   

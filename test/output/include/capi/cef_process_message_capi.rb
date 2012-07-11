@@ -13,7 +13,7 @@ module CEF
   end
   
   # (Not documented)
-  class ListValueT < FFI::Struct
+  class ListValue < FFI::Struct
     layout :dummy, :char
   end
   
@@ -34,7 +34,7 @@ module CEF
   #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :get_argument_list ::
   #   (FFI::Pointer(*)) Returns the list of arguments.
-  class ProcessMessageT < FFI::Struct
+  class ProcessMessage < FFI::Struct
     layout :base, :char,
            :is_valid, :pointer,
            :is_read_only, :pointer,
@@ -46,9 +46,9 @@ module CEF
   # Create a new cef_process_message_t object with the specified name.
   # 
   # @method process_message_create(name)
-  # @param [FFI::Pointer(*StringT)] name 
-  # @return [ProcessMessageT] 
+  # @param [FFI::Pointer(*String)] name 
+  # @return [ProcessMessage] 
   # @scope class
-  attach_function :process_message_create, :cef_process_message_create, [:pointer], ProcessMessageT
+  attach_function :process_message_create, :cef_process_message_create, [:pointer], ProcessMessage
   
 end

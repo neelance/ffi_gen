@@ -13,57 +13,57 @@ module CEF
   end
   
   # (Not documented)
-  class ContextMenuHandlerT < FFI::Struct
+  class ContextMenuHandler < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class DisplayHandlerT < FFI::Struct
+  class DisplayHandler < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class FocusHandlerT < FFI::Struct
+  class FocusHandler < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class GeolocationHandlerT < FFI::Struct
+  class GeolocationHandler < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class JsdialogHandlerT < FFI::Struct
+  class JsdialogHandler < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class KeyboardHandlerT < FFI::Struct
+  class KeyboardHandler < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class LifeSpanHandlerT < FFI::Struct
+  class LifeSpanHandler < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class LoadHandlerT < FFI::Struct
+  class LoadHandler < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class RequestHandlerT < FFI::Struct
+  class RequestHandler < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class BrowserT < FFI::Struct
+  class Browser < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class ProcessMessageT < FFI::Struct
+  class ProcessMessage < FFI::Struct
     layout :dummy, :char
   end
   
@@ -97,7 +97,7 @@ module CEF
   #   (FFI::Pointer(*)) Called when a new message is received from a different process. Return true
   #   (1) if the message was handled or false (0) otherwise. Do not keep a
   #   reference to or attempt to access the message outside of this callback.
-  class ClientT < FFI::Struct
+  class Client < FFI::Struct
     layout :base, :char,
            :get_context_menu_handler, :pointer,
            :get_display_handler, :pointer,
