@@ -13,7 +13,7 @@ module CEF
   end
   
   # (Not documented)
-  class CefDomdocumentT < FFI::Struct
+  class DomdocumentT < FFI::Struct
     layout :dummy, :char
   end
   
@@ -29,7 +29,7 @@ module CEF
   #   executed. DOM objects are only valid for the scope of this function. Do not
   #   keep references to or attempt to access any DOM objects outside the scope
   #   of this function.
-  class CefDomvisitorT < FFI::Struct
+  class DomvisitorT < FFI::Struct
     layout :base, :char,
            :visit, :pointer
   end
@@ -72,7 +72,7 @@ module CEF
   #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
   # :get_complete_url ::
   #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
-  class CefDomdocumentT < FFI::Struct
+  class DomdocumentT < FFI::Struct
     layout :base, :char,
            :get_type, :pointer,
            :get_document, :pointer,
@@ -93,7 +93,7 @@ module CEF
   end
   
   # (Not documented)
-  class CefDomeventListenerT < FFI::Struct
+  class DomeventListenerT < FFI::Struct
     layout :dummy, :char
   end
   
@@ -164,7 +164,7 @@ module CEF
   #   on success.
   # :get_element_inner_text ::
   #   (FFI::Pointer(*)) The resulting string must be freed by calling cef_string_userfree_free().
-  class CefDomnodeT < FFI::Struct
+  class DomnodeT < FFI::Struct
     layout :base, :char,
            :get_type, :pointer,
            :is_text, :pointer,
@@ -216,7 +216,7 @@ module CEF
   #   (FFI::Pointer(*)) Returns the target of the event.
   # :get_current_target ::
   #   (FFI::Pointer(*)) Returns the current target of the event.
-  class CefDomeventT < FFI::Struct
+  class DomeventT < FFI::Struct
     layout :base, :char,
            :get_type, :pointer,
            :get_category, :pointer,
@@ -240,7 +240,7 @@ module CEF
   #   objects are only valid for the scope of this function. Do not keep
   #   references to or attempt to access any DOM objects outside the scope of
   #   this function.
-  class CefDomeventListenerT < FFI::Struct
+  class DomeventListenerT < FFI::Struct
     layout :base, :char,
            :handle_event, :pointer
   end

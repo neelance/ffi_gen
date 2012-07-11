@@ -49,7 +49,7 @@ module CEF
   # :set_first_party_for_cookies ::
   #   (FFI::Pointer(*)) Get the URL to the first party for cookies used in combination with
   #   cef_urlrequest_t.
-  class CefRequestT < FFI::Struct
+  class RequestT < FFI::Struct
     layout :base, :char,
            :is_read_only, :pointer,
            :get_url, :pointer,
@@ -70,22 +70,22 @@ module CEF
   # Create a new cef_request_t object.
   # 
   # @method request_create()
-  # @return [CefRequestT] 
+  # @return [RequestT] 
   # @scope class
-  attach_function :request_create, :cef_request_create, [], CefRequestT
+  attach_function :request_create, :cef_request_create, [], RequestT
   
   # (Not documented)
-  class CefPostDataElementT < FFI::Struct
+  class PostDataElementT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefPostDataElementT < FFI::Struct
+  class PostDataElementT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefPostDataElementT < FFI::Struct
+  class PostDataElementT < FFI::Struct
     layout :dummy, :char
   end
   
@@ -108,7 +108,7 @@ module CEF
   #   (FFI::Pointer(*)) Add the specified post data element.  Returns true (1) if the add succeeds.
   # :remove_elements ::
   #   (FFI::Pointer(*)) Remove all existing post data elements.
-  class CefPostDataT < FFI::Struct
+  class PostDataT < FFI::Struct
     layout :base, :char,
            :is_read_only, :pointer,
            :get_element_count, :pointer,
@@ -121,9 +121,9 @@ module CEF
   # Create a new cef_post_data_t object.
   # 
   # @method post_data_create()
-  # @return [CefPostDataT] 
+  # @return [PostDataT] 
   # @scope class
-  attach_function :post_data_create, :cef_post_data_create, [], CefPostDataT
+  attach_function :post_data_create, :cef_post_data_create, [], PostDataT
   
   # Structure used to represent a single element in the request post data. The
   # functions of this structure may be called on any thread.
@@ -149,7 +149,7 @@ module CEF
   # :get_bytes ::
   #   (FFI::Pointer(*)) Read up to |size| bytes into |bytes| and return the number of bytes
   #   actually read.
-  class CefPostDataElementT < FFI::Struct
+  class PostDataElementT < FFI::Struct
     layout :base, :char,
            :is_read_only, :pointer,
            :set_to_empty, :pointer,
@@ -164,8 +164,8 @@ module CEF
   # Create a new cef_post_data_element_t object.
   # 
   # @method post_data_element_create()
-  # @return [CefPostDataElementT] 
+  # @return [PostDataElementT] 
   # @scope class
-  attach_function :post_data_element_create, :cef_post_data_element_create, [], CefPostDataElementT
+  attach_function :post_data_element_create, :cef_post_data_element_create, [], PostDataElementT
   
 end

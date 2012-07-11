@@ -13,12 +13,12 @@ module CEF
   end
   
   # (Not documented)
-  class CefBrowserT < FFI::Struct
+  class BrowserT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefBrowserT < FFI::Struct
+  class BrowserT < FFI::Struct
     layout :dummy, :char
   end
   
@@ -35,7 +35,7 @@ module CEF
   #   handle the event. |event| contains information about the keyboard event.
   #   |os_event| is the operating system event message, if any. Return true (1)
   #   if the keyboard event was handled or false (0) otherwise.
-  class CefKeyboardHandlerT < FFI::Struct
+  class KeyboardHandlerT < FFI::Struct
     layout :base, :char,
            :on_pre_key_event, :pointer,
            :on_key_event, :pointer

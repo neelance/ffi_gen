@@ -13,12 +13,12 @@ module CEF
   end
   
   # (Not documented)
-  class CefFrameT < FFI::Struct
+  class FrameT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefProcessMessageT < FFI::Struct
+  class ProcessMessageT < FFI::Struct
     layout :dummy, :char
   end
   
@@ -72,7 +72,7 @@ module CEF
   # :send_process_message ::
   #   (FFI::Pointer(*)) Send a message to the specified |target_process|. Returns true (1) if the
   #   message was sent successfully.
-  class CefBrowserT < FFI::Struct
+  class BrowserT < FFI::Struct
     layout :base, :char,
            :get_host, :pointer,
            :can_go_back, :pointer,
@@ -97,7 +97,7 @@ module CEF
   end
   
   # (Not documented)
-  class CefClientT < FFI::Struct
+  class ClientT < FFI::Struct
     layout :dummy, :char
   end
   
@@ -132,7 +132,7 @@ module CEF
   #   (FFI::Pointer(*)) Get the zoom level. This function can only be called on the UI thread.
   # :set_zoom_level ::
   #   (FFI::Pointer(*)) Change the zoom level to the specified value.
-  class CefBrowserHostT < FFI::Struct
+  class BrowserHostT < FFI::Struct
     layout :base, :char,
            :get_browser, :pointer,
            :parent_window_will_close, :pointer,
@@ -153,12 +153,12 @@ module CEF
   # 
   # @method browser_host_create_browser(window_info, client, url, settings)
   # @param [FFI::Pointer(*WindowInfoT)] window_info 
-  # @param [CefClientT] client 
+  # @param [ClientT] client 
   # @param [FFI::Pointer(*StringT)] url 
-  # @param [FFI::Pointer(*CefBrowserSettingsT)] settings 
+  # @param [FFI::Pointer(*BrowserSettingsT)] settings 
   # @return [Integer] 
   # @scope class
-  attach_function :browser_host_create_browser, :cef_browser_host_create_browser, [:pointer, CefClientT, :pointer, :pointer], :int
+  attach_function :browser_host_create_browser, :cef_browser_host_create_browser, [:pointer, ClientT, :pointer, :pointer], :int
   
   # Create a new browser window using the window parameters specified by
   # |windowInfo|. This function can only be called on the browser process UI
@@ -166,11 +166,11 @@ module CEF
   # 
   # @method browser_host_create_browser_sync(window_info, client, url, settings)
   # @param [FFI::Pointer(*WindowInfoT)] window_info 
-  # @param [CefClientT] client 
+  # @param [ClientT] client 
   # @param [FFI::Pointer(*StringT)] url 
-  # @param [FFI::Pointer(*CefBrowserSettingsT)] settings 
-  # @return [CefBrowserT] 
+  # @param [FFI::Pointer(*BrowserSettingsT)] settings 
+  # @return [BrowserT] 
   # @scope class
-  attach_function :browser_host_create_browser_sync, :cef_browser_host_create_browser_sync, [:pointer, CefClientT, :pointer, :pointer], CefBrowserT
+  attach_function :browser_host_create_browser_sync, :cef_browser_host_create_browser_sync, [:pointer, ClientT, :pointer, :pointer], BrowserT
   
 end

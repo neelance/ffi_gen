@@ -25,7 +25,7 @@ module CEF
   #   remain.
   # :get_refct ::
   #   (FFI::Pointer(*)) Returns the current number of references.
-  class CefBaseT < FFI::Struct
+  class BaseT < FFI::Struct
     layout :size, :ulong,
            :add_ref, :pointer,
            :release, :pointer,

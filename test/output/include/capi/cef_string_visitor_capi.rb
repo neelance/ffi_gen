@@ -19,7 +19,7 @@ module CEF
   #   (unknown) Base structure.
   # :visit ::
   #   (FFI::Pointer(*)) Method that will be executed.
-  class CefStringVisitorT < FFI::Struct
+  class StringVisitorT < FFI::Struct
     layout :base, :char,
            :visit, :pointer
   end

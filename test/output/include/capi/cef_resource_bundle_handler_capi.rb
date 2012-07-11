@@ -30,7 +30,7 @@ module CEF
   #   return false (0). The resource data will not be copied and must remain
   #   resident in memory. Supported resource IDs are listed in
   #   cef_pack_resources.h.
-  class CefResourceBundleHandlerT < FFI::Struct
+  class ResourceBundleHandlerT < FFI::Struct
     layout :base, :char,
            :get_localized_string, :pointer,
            :get_data_resource, :pointer

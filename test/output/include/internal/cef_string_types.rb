@@ -33,7 +33,7 @@ module CEF
   #   (Integer) 
   # :dtor ::
   #   (FFI::Pointer(*)) 
-  class CefStringWideT < FFI::Struct
+  class StringWideT < FFI::Struct
     layout :str, :pointer,
            :length, :ulong,
            :dtor, :pointer
@@ -48,7 +48,7 @@ module CEF
   #   (Integer) 
   # :dtor ::
   #   (FFI::Pointer(*)) 
-  class CefStringUtf8T < FFI::Struct
+  class StringUtf8T < FFI::Struct
     layout :str, :string,
            :length, :ulong,
            :dtor, :pointer
@@ -63,7 +63,7 @@ module CEF
   #   (Integer) 
   # :dtor ::
   #   (FFI::Pointer(*)) 
-  class CefStringUtf16T < FFI::Struct
+  class StringUtf16T < FFI::Struct
     layout :str, :pointer,
            :length, :ulong,
            :dtor, :pointer
@@ -76,84 +76,84 @@ module CEF
   # @method string_wide_set(src, src_len, output, copy)
   # @param [FFI::Pointer(*WcharT)] src 
   # @param [Integer] src_len 
-  # @param [CefStringWideT] output 
+  # @param [StringWideT] output 
   # @param [Integer] copy 
   # @return [Integer] 
   # @scope class
-  attach_function :string_wide_set, :cef_string_wide_set, [:pointer, :ulong, CefStringWideT, :int], :int
+  attach_function :string_wide_set, :cef_string_wide_set, [:pointer, :ulong, StringWideT, :int], :int
   
   # (Not documented)
   # 
   # @method string_utf8_set(src, src_len, output, copy)
   # @param [String] src 
   # @param [Integer] src_len 
-  # @param [CefStringUtf8T] output 
+  # @param [StringUtf8T] output 
   # @param [Integer] copy 
   # @return [Integer] 
   # @scope class
-  attach_function :string_utf8_set, :cef_string_utf8_set, [:string, :ulong, CefStringUtf8T, :int], :int
+  attach_function :string_utf8_set, :cef_string_utf8_set, [:string, :ulong, StringUtf8T, :int], :int
   
   # (Not documented)
   # 
   # @method string_utf16_set(src, src_len, output, copy)
   # @param [FFI::Pointer(*Char16)] src 
   # @param [Integer] src_len 
-  # @param [CefStringUtf16T] output 
+  # @param [StringUtf16T] output 
   # @param [Integer] copy 
   # @return [Integer] 
   # @scope class
-  attach_function :string_utf16_set, :cef_string_utf16_set, [:pointer, :ulong, CefStringUtf16T, :int], :int
+  attach_function :string_utf16_set, :cef_string_utf16_set, [:pointer, :ulong, StringUtf16T, :int], :int
   
   # These functions clear string values. The structure itself is not freed.
   # 
   # @method string_wide_clear(str)
-  # @param [CefStringWideT] str 
+  # @param [StringWideT] str 
   # @return [nil] 
   # @scope class
-  attach_function :string_wide_clear, :cef_string_wide_clear, [CefStringWideT], :void
+  attach_function :string_wide_clear, :cef_string_wide_clear, [StringWideT], :void
   
   # (Not documented)
   # 
   # @method string_utf8_clear(str)
-  # @param [CefStringUtf8T] str 
+  # @param [StringUtf8T] str 
   # @return [nil] 
   # @scope class
-  attach_function :string_utf8_clear, :cef_string_utf8_clear, [CefStringUtf8T], :void
+  attach_function :string_utf8_clear, :cef_string_utf8_clear, [StringUtf8T], :void
   
   # (Not documented)
   # 
   # @method string_utf16_clear(str)
-  # @param [CefStringUtf16T] str 
+  # @param [StringUtf16T] str 
   # @return [nil] 
   # @scope class
-  attach_function :string_utf16_clear, :cef_string_utf16_clear, [CefStringUtf16T], :void
+  attach_function :string_utf16_clear, :cef_string_utf16_clear, [StringUtf16T], :void
   
   # These functions compare two string values with the same results as strcmp().
   # 
   # @method string_wide_cmp(str1, str2)
-  # @param [CefStringWideT] str1 
-  # @param [CefStringWideT] str2 
+  # @param [StringWideT] str1 
+  # @param [StringWideT] str2 
   # @return [Integer] 
   # @scope class
-  attach_function :string_wide_cmp, :cef_string_wide_cmp, [CefStringWideT, CefStringWideT], :int
+  attach_function :string_wide_cmp, :cef_string_wide_cmp, [StringWideT, StringWideT], :int
   
   # (Not documented)
   # 
   # @method string_utf8_cmp(str1, str2)
-  # @param [CefStringUtf8T] str1 
-  # @param [CefStringUtf8T] str2 
+  # @param [StringUtf8T] str1 
+  # @param [StringUtf8T] str2 
   # @return [Integer] 
   # @scope class
-  attach_function :string_utf8_cmp, :cef_string_utf8_cmp, [CefStringUtf8T, CefStringUtf8T], :int
+  attach_function :string_utf8_cmp, :cef_string_utf8_cmp, [StringUtf8T, StringUtf8T], :int
   
   # (Not documented)
   # 
   # @method string_utf16_cmp(str1, str2)
-  # @param [CefStringUtf16T] str1 
-  # @param [CefStringUtf16T] str2 
+  # @param [StringUtf16T] str1 
+  # @param [StringUtf16T] str2 
   # @return [Integer] 
   # @scope class
-  attach_function :string_utf16_cmp, :cef_string_utf16_cmp, [CefStringUtf16T, CefStringUtf16T], :int
+  attach_function :string_utf16_cmp, :cef_string_utf16_cmp, [StringUtf16T, StringUtf16T], :int
   
   # These functions convert between UTF-8, -16, and -32 strings. They are
   # potentially slow so unnecessary conversions should be avoided. The best
@@ -163,60 +163,60 @@ module CEF
   # @method string_wide_to_utf8(src, src_len, output)
   # @param [FFI::Pointer(*WcharT)] src 
   # @param [Integer] src_len 
-  # @param [CefStringUtf8T] output 
+  # @param [StringUtf8T] output 
   # @return [Integer] 
   # @scope class
-  attach_function :string_wide_to_utf8, :cef_string_wide_to_utf8, [:pointer, :ulong, CefStringUtf8T], :int
+  attach_function :string_wide_to_utf8, :cef_string_wide_to_utf8, [:pointer, :ulong, StringUtf8T], :int
   
   # (Not documented)
   # 
   # @method string_utf8_to_wide(src, src_len, output)
   # @param [String] src 
   # @param [Integer] src_len 
-  # @param [CefStringWideT] output 
+  # @param [StringWideT] output 
   # @return [Integer] 
   # @scope class
-  attach_function :string_utf8_to_wide, :cef_string_utf8_to_wide, [:string, :ulong, CefStringWideT], :int
+  attach_function :string_utf8_to_wide, :cef_string_utf8_to_wide, [:string, :ulong, StringWideT], :int
   
   # (Not documented)
   # 
   # @method string_wide_to_utf16(src, src_len, output)
   # @param [FFI::Pointer(*WcharT)] src 
   # @param [Integer] src_len 
-  # @param [CefStringUtf16T] output 
+  # @param [StringUtf16T] output 
   # @return [Integer] 
   # @scope class
-  attach_function :string_wide_to_utf16, :cef_string_wide_to_utf16, [:pointer, :ulong, CefStringUtf16T], :int
+  attach_function :string_wide_to_utf16, :cef_string_wide_to_utf16, [:pointer, :ulong, StringUtf16T], :int
   
   # (Not documented)
   # 
   # @method string_utf16_to_wide(src, src_len, output)
   # @param [FFI::Pointer(*Char16)] src 
   # @param [Integer] src_len 
-  # @param [CefStringWideT] output 
+  # @param [StringWideT] output 
   # @return [Integer] 
   # @scope class
-  attach_function :string_utf16_to_wide, :cef_string_utf16_to_wide, [:pointer, :ulong, CefStringWideT], :int
+  attach_function :string_utf16_to_wide, :cef_string_utf16_to_wide, [:pointer, :ulong, StringWideT], :int
   
   # (Not documented)
   # 
   # @method string_utf8_to_utf16(src, src_len, output)
   # @param [String] src 
   # @param [Integer] src_len 
-  # @param [CefStringUtf16T] output 
+  # @param [StringUtf16T] output 
   # @return [Integer] 
   # @scope class
-  attach_function :string_utf8_to_utf16, :cef_string_utf8_to_utf16, [:string, :ulong, CefStringUtf16T], :int
+  attach_function :string_utf8_to_utf16, :cef_string_utf8_to_utf16, [:string, :ulong, StringUtf16T], :int
   
   # (Not documented)
   # 
   # @method string_utf16_to_utf8(src, src_len, output)
   # @param [FFI::Pointer(*Char16)] src 
   # @param [Integer] src_len 
-  # @param [CefStringUtf8T] output 
+  # @param [StringUtf8T] output 
   # @return [Integer] 
   # @scope class
-  attach_function :string_utf16_to_utf8, :cef_string_utf16_to_utf8, [:pointer, :ulong, CefStringUtf8T], :int
+  attach_function :string_utf16_to_utf8, :cef_string_utf16_to_utf8, [:pointer, :ulong, StringUtf8T], :int
   
   # These functions convert an ASCII string, typically a hardcoded constant, to a
   # Wide/UTF16 string. Use instead of the UTF8 conversion routines if you know
@@ -225,66 +225,66 @@ module CEF
   # @method string_ascii_to_wide(src, src_len, output)
   # @param [String] src 
   # @param [Integer] src_len 
-  # @param [CefStringWideT] output 
+  # @param [StringWideT] output 
   # @return [Integer] 
   # @scope class
-  attach_function :string_ascii_to_wide, :cef_string_ascii_to_wide, [:string, :ulong, CefStringWideT], :int
+  attach_function :string_ascii_to_wide, :cef_string_ascii_to_wide, [:string, :ulong, StringWideT], :int
   
   # (Not documented)
   # 
   # @method string_ascii_to_utf16(src, src_len, output)
   # @param [String] src 
   # @param [Integer] src_len 
-  # @param [CefStringUtf16T] output 
+  # @param [StringUtf16T] output 
   # @return [Integer] 
   # @scope class
-  attach_function :string_ascii_to_utf16, :cef_string_ascii_to_utf16, [:string, :ulong, CefStringUtf16T], :int
+  attach_function :string_ascii_to_utf16, :cef_string_ascii_to_utf16, [:string, :ulong, StringUtf16T], :int
   
   # These functions allocate a new string structure. They must be freed by
   # calling the associated free function.
   # 
   # @method string_userfree_wide_alloc()
-  # @return [CefStringWideT] 
+  # @return [StringWideT] 
   # @scope class
-  attach_function :string_userfree_wide_alloc, :cef_string_userfree_wide_alloc, [], CefStringWideT
+  attach_function :string_userfree_wide_alloc, :cef_string_userfree_wide_alloc, [], StringWideT
   
   # (Not documented)
   # 
   # @method string_userfree_utf8_alloc()
-  # @return [CefStringUtf8T] 
+  # @return [StringUtf8T] 
   # @scope class
-  attach_function :string_userfree_utf8_alloc, :cef_string_userfree_utf8_alloc, [], CefStringUtf8T
+  attach_function :string_userfree_utf8_alloc, :cef_string_userfree_utf8_alloc, [], StringUtf8T
   
   # (Not documented)
   # 
   # @method string_userfree_utf16_alloc()
-  # @return [CefStringUtf16T] 
+  # @return [StringUtf16T] 
   # @scope class
-  attach_function :string_userfree_utf16_alloc, :cef_string_userfree_utf16_alloc, [], CefStringUtf16T
+  attach_function :string_userfree_utf16_alloc, :cef_string_userfree_utf16_alloc, [], StringUtf16T
   
   # These functions free the string structure allocated by the associated
   # alloc function. Any string contents will first be cleared.
   # 
   # @method string_userfree_wide_free(str)
-  # @param [CefStringWideT] str 
+  # @param [StringWideT] str 
   # @return [nil] 
   # @scope class
-  attach_function :string_userfree_wide_free, :cef_string_userfree_wide_free, [CefStringWideT], :void
+  attach_function :string_userfree_wide_free, :cef_string_userfree_wide_free, [StringWideT], :void
   
   # (Not documented)
   # 
   # @method string_userfree_utf8_free(str)
-  # @param [CefStringUtf8T] str 
+  # @param [StringUtf8T] str 
   # @return [nil] 
   # @scope class
-  attach_function :string_userfree_utf8_free, :cef_string_userfree_utf8_free, [CefStringUtf8T], :void
+  attach_function :string_userfree_utf8_free, :cef_string_userfree_utf8_free, [StringUtf8T], :void
   
   # (Not documented)
   # 
   # @method string_userfree_utf16_free(str)
-  # @param [CefStringUtf16T] str 
+  # @param [StringUtf16T] str 
   # @return [nil] 
   # @scope class
-  attach_function :string_userfree_utf16_free, :cef_string_userfree_utf16_free, [CefStringUtf16T], :void
+  attach_function :string_userfree_utf16_free, :cef_string_userfree_utf16_free, [StringUtf16T], :void
   
 end

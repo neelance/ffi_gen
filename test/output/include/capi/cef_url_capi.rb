@@ -17,7 +17,7 @@ module CEF
   # 
   # @method parse_url(url, parts)
   # @param [FFI::Pointer(*StringT)] url 
-  # @param [FFI::Pointer(*CefUrlpartsT)] parts 
+  # @param [FFI::Pointer(*UrlpartsT)] parts 
   # @return [Integer] 
   # @scope class
   attach_function :parse_url, :cef_parse_url, [:pointer, :pointer], :int
@@ -27,7 +27,7 @@ module CEF
   # if |parts| isn't initialized as described.
   # 
   # @method create_url(parts, url)
-  # @param [FFI::Pointer(*CefUrlpartsT)] parts 
+  # @param [FFI::Pointer(*UrlpartsT)] parts 
   # @param [FFI::Pointer(*StringT)] url 
   # @return [Integer] 
   # @scope class

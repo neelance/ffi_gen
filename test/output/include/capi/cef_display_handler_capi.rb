@@ -13,37 +13,37 @@ module CEF
   end
   
   # (Not documented)
-  class CefBrowserT < FFI::Struct
+  class BrowserT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefBrowserT < FFI::Struct
+  class BrowserT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefFrameT < FFI::Struct
+  class FrameT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefBrowserT < FFI::Struct
+  class BrowserT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefBrowserT < FFI::Struct
+  class BrowserT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefBrowserT < FFI::Struct
+  class BrowserT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefBrowserT < FFI::Struct
+  class BrowserT < FFI::Struct
     layout :dummy, :char
   end
   
@@ -72,7 +72,7 @@ module CEF
   # :on_console_message ::
   #   (FFI::Pointer(*)) Called to display a console message. Return true (1) to stop the message
   #   from being output to the console.
-  class CefDisplayHandlerT < FFI::Struct
+  class DisplayHandlerT < FFI::Struct
     layout :base, :char,
            :on_loading_state_change, :pointer,
            :on_address_change, :pointer,

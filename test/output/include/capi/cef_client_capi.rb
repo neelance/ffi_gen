@@ -13,57 +13,57 @@ module CEF
   end
   
   # (Not documented)
-  class CefContextMenuHandlerT < FFI::Struct
+  class ContextMenuHandlerT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefDisplayHandlerT < FFI::Struct
+  class DisplayHandlerT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefFocusHandlerT < FFI::Struct
+  class FocusHandlerT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefGeolocationHandlerT < FFI::Struct
+  class GeolocationHandlerT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefJsdialogHandlerT < FFI::Struct
+  class JsdialogHandlerT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefKeyboardHandlerT < FFI::Struct
+  class KeyboardHandlerT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefLifeSpanHandlerT < FFI::Struct
+  class LifeSpanHandlerT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefLoadHandlerT < FFI::Struct
+  class LoadHandlerT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefRequestHandlerT < FFI::Struct
+  class RequestHandlerT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefBrowserT < FFI::Struct
+  class BrowserT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefProcessMessageT < FFI::Struct
+  class ProcessMessageT < FFI::Struct
     layout :dummy, :char
   end
   
@@ -97,7 +97,7 @@ module CEF
   #   (FFI::Pointer(*)) Called when a new message is received from a different process. Return true
   #   (1) if the message was handled or false (0) otherwise. Do not keep a
   #   reference to or attempt to access the message outside of this callback.
-  class CefClientT < FFI::Struct
+  class ClientT < FFI::Struct
     layout :base, :char,
            :get_context_menu_handler, :pointer,
            :get_display_handler, :pointer,

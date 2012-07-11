@@ -25,7 +25,7 @@ module CEF
   attach_function :currently_on, :cef_currently_on, [:char], :int
   
   # (Not documented)
-  class CefTaskT < FFI::Struct
+  class TaskT < FFI::Struct
     layout :dummy, :char
   end
   
@@ -35,13 +35,13 @@ module CEF
   # 
   # @method post_task(thread_id, task)
   # @param [unknown] thread_id 
-  # @param [CefTaskT] task 
+  # @param [TaskT] task 
   # @return [Integer] 
   # @scope class
-  attach_function :post_task, :cef_post_task, [:char, CefTaskT], :int
+  attach_function :post_task, :cef_post_task, [:char, TaskT], :int
   
   # (Not documented)
-  class CefTaskT < FFI::Struct
+  class TaskT < FFI::Struct
     layout :dummy, :char
   end
   
@@ -51,11 +51,11 @@ module CEF
   # 
   # @method post_delayed_task(thread_id, task, delay_ms)
   # @param [unknown] thread_id 
-  # @param [CefTaskT] task 
+  # @param [TaskT] task 
   # @param [Integer] delay_ms 
   # @return [Integer] 
   # @scope class
-  attach_function :post_delayed_task, :cef_post_delayed_task, [:char, CefTaskT, :long], :int
+  attach_function :post_delayed_task, :cef_post_delayed_task, [:char, TaskT, :long], :int
   
   # Implement this structure for task execution. The functions of this structure
   # may be called on any thread.
@@ -65,7 +65,7 @@ module CEF
   #   (unknown) Base structure.
   # :execute ::
   #   (FFI::Pointer(*)) Method that will be executed. |threadId| is the thread executing the call.
-  class CefTaskT < FFI::Struct
+  class TaskT < FFI::Struct
     layout :base, :char,
            :execute, :pointer
   end

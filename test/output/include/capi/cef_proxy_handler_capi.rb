@@ -19,7 +19,7 @@ module CEF
   #   (unknown) Base structure.
   # :get_proxy_for_url ::
   #   (FFI::Pointer(*)) Called to retrieve proxy information for the specified |url|.
-  class CefProxyHandlerT < FFI::Struct
+  class ProxyHandlerT < FFI::Struct
     layout :base, :char,
            :get_proxy_for_url, :pointer
   end

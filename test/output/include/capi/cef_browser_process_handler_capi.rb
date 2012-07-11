@@ -13,7 +13,7 @@ module CEF
   end
   
   # (Not documented)
-  class CefProxyHandlerT < FFI::Struct
+  class ProxyHandlerT < FFI::Struct
     layout :dummy, :char
   end
   
@@ -31,7 +31,7 @@ module CEF
   # :on_context_initialized ::
   #   (FFI::Pointer(*)) Called on the browser process UI thread immediately after the CEF context
   #   has been initialized.
-  class CefBrowserProcessHandlerT < FFI::Struct
+  class BrowserProcessHandlerT < FFI::Struct
     layout :base, :char,
            :get_proxy_handler, :pointer,
            :on_context_initialized, :pointer

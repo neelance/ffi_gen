@@ -13,67 +13,67 @@ module CEF
   end
   
   # (Not documented)
-  class CefBrowserT < FFI::Struct
+  class BrowserT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefBrowserT < FFI::Struct
+  class BrowserT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefBrowserT < FFI::Struct
+  class BrowserT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefFrameT < FFI::Struct
+  class FrameT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefV8contextT < FFI::Struct
+  class V8contextT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefBrowserT < FFI::Struct
+  class BrowserT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefFrameT < FFI::Struct
+  class FrameT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefV8contextT < FFI::Struct
+  class V8contextT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefBrowserT < FFI::Struct
+  class BrowserT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefFrameT < FFI::Struct
+  class FrameT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefDomnodeT < FFI::Struct
+  class DomnodeT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefBrowserT < FFI::Struct
+  class BrowserT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefProcessMessageT < FFI::Struct
+  class ProcessMessageT < FFI::Struct
     layout :dummy, :char
   end
   
@@ -109,7 +109,7 @@ module CEF
   #   (FFI::Pointer(*)) Called when a new message is received from a different process. Return true
   #   (1) if the message was handled or false (0) otherwise. Do not keep a
   #   reference to or attempt to access the message outside of this callback.
-  class CefRenderProcessHandlerT < FFI::Struct
+  class RenderProcessHandlerT < FFI::Struct
     layout :base, :char,
            :on_render_thread_created, :pointer,
            :on_web_kit_initialized, :pointer,

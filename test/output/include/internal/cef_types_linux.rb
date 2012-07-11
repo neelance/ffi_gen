@@ -19,7 +19,7 @@ module CEF
   #   (Integer) 
   # :argv ::
   #   (FFI::Pointer(**CharS)) 
-  class CefMainArgsT < FFI::Struct
+  class MainArgsT < FFI::Struct
     layout :argc, :int,
            :argv, :pointer
   end
@@ -31,7 +31,7 @@ module CEF
   #   (FFI::Pointer(*Int)) 
   # :widget ::
   #   (FFI::Pointer(*Int)) 
-  class CefWindowInfoT < FFI::Struct
+  class WindowInfoT < FFI::Struct
     layout :parent_widget, :pointer,
            :widget, :pointer
   end

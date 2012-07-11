@@ -29,7 +29,7 @@ module CEF
   # :get_data ::
   #   (FFI::Pointer(*)) Read up to |buffer_size| number of bytes into |buffer|. Reading begins at
   #   the specified byte |data_offset|. Returns the number of bytes read.
-  class CefBinaryValueT < FFI::Struct
+  class BinaryValueT < FFI::Struct
     layout :base, :char,
            :is_valid, :pointer,
            :is_owned, :pointer,
@@ -44,9 +44,9 @@ module CEF
   # @method binary_value_create(data, data_size)
   # @param [FFI::Pointer(*Void)] data 
   # @param [Integer] data_size 
-  # @return [CefBinaryValueT] 
+  # @return [BinaryValueT] 
   # @scope class
-  attach_function :binary_value_create, :cef_binary_value_create, [:pointer, :ulong], CefBinaryValueT
+  attach_function :binary_value_create, :cef_binary_value_create, [:pointer, :ulong], BinaryValueT
   
   # Structure representing a dictionary value. Can be used on any process and
   # thread.
@@ -127,7 +127,7 @@ module CEF
   #   then the value will be copied and the |value| reference will not change.
   #   Otherwise, ownership will be transferred to this object and the |value|
   #   reference will be invalidated.
-  class CefDictionaryValueT < FFI::Struct
+  class DictionaryValueT < FFI::Struct
     layout :base, :char,
            :is_valid, :pointer,
            :is_owned, :pointer,
@@ -159,9 +159,9 @@ module CEF
   # Creates a new object that is not owned by any other object.
   # 
   # @method dictionary_value_create()
-  # @return [CefDictionaryValueT] 
+  # @return [DictionaryValueT] 
   # @scope class
-  attach_function :dictionary_value_create, :cef_dictionary_value_create, [], CefDictionaryValueT
+  attach_function :dictionary_value_create, :cef_dictionary_value_create, [], DictionaryValueT
   
   # Structure representing a list value. Can be used on any process and thread.
   # 
@@ -239,7 +239,7 @@ module CEF
   #   then the value will be copied and the |value| reference will not change.
   #   Otherwise, ownership will be transferred to this object and the |value|
   #   reference will be invalidated.
-  class CefListValueT < FFI::Struct
+  class ListValueT < FFI::Struct
     layout :base, :char,
            :is_valid, :pointer,
            :is_owned, :pointer,
@@ -270,8 +270,8 @@ module CEF
   # Creates a new object that is not owned by any other object.
   # 
   # @method list_value_create()
-  # @return [CefListValueT] 
+  # @return [ListValueT] 
   # @scope class
-  attach_function :list_value_create, :cef_list_value_create, [], CefListValueT
+  attach_function :list_value_create, :cef_list_value_create, [], ListValueT
   
 end

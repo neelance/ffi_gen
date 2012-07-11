@@ -31,7 +31,7 @@ module CEF
   #   (Integer) Second within the current minute (0-59 plus leap
   # :millisecond ::
   #   (Integer) Milliseconds within the current second (0-999)
-  class CefTimeT < FFI::Struct
+  class TimeT < FFI::Struct
     layout :year, :int,
            :month, :int,
            :day_of_week, :int,
@@ -46,20 +46,20 @@ module CEF
   # on failure.
   # 
   # @method time_to_timet(time, time)
-  # @param [CefTimeT] time 
+  # @param [TimeT] time 
   # @param [FFI::Pointer(*TimeT)] time 
   # @return [Integer] 
   # @scope class
-  attach_function :time_to_timet, :cef_time_to_timet, [CefTimeT, :pointer], :int
+  attach_function :time_to_timet, :cef_time_to_timet, [TimeT, :pointer], :int
   
   # (Not documented)
   # 
   # @method time_from_timet(time, time)
   # @param [Integer] time 
-  # @param [CefTimeT] time 
+  # @param [TimeT] time 
   # @return [Integer] 
   # @scope class
-  attach_function :time_from_timet, :cef_time_from_timet, [:long, CefTimeT], :int
+  attach_function :time_from_timet, :cef_time_from_timet, [:long, TimeT], :int
   
   # Converts cef_time_t to/from a double which is the number of seconds since
   # epoch (Jan 1, 1970). Webkit uses this format to represent time. A value of 0
@@ -67,19 +67,19 @@ module CEF
   # failure.
   # 
   # @method time_to_doublet(time, time)
-  # @param [CefTimeT] time 
+  # @param [TimeT] time 
   # @param [FFI::Pointer(*Double)] time 
   # @return [Integer] 
   # @scope class
-  attach_function :time_to_doublet, :cef_time_to_doublet, [CefTimeT, :pointer], :int
+  attach_function :time_to_doublet, :cef_time_to_doublet, [TimeT, :pointer], :int
   
   # (Not documented)
   # 
   # @method time_from_doublet(time, time)
   # @param [Float] time 
-  # @param [CefTimeT] time 
+  # @param [TimeT] time 
   # @return [Integer] 
   # @scope class
-  attach_function :time_from_doublet, :cef_time_from_doublet, [:double, CefTimeT], :int
+  attach_function :time_from_doublet, :cef_time_from_doublet, [:double, TimeT], :int
   
 end

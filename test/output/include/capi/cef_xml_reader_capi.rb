@@ -88,7 +88,7 @@ module CEF
   # :move_to_carrying_element ::
   #   (FFI::Pointer(*)) Moves the cursor back to the carrying element. Returns true (1) if the
   #   cursor position was set successfully.
-  class CefXmlReaderT < FFI::Struct
+  class XmlReaderT < FFI::Struct
     layout :base, :char,
            :move_to_next_node, :pointer,
            :close, :pointer,
@@ -122,7 +122,7 @@ module CEF
   end
   
   # (Not documented)
-  class CefStreamReaderT < FFI::Struct
+  class StreamReaderT < FFI::Struct
     layout :dummy, :char
   end
   
@@ -130,11 +130,11 @@ module CEF
   # only be called from the thread that created the object.
   # 
   # @method xml_reader_create(stream, encoding_type, uri)
-  # @param [CefStreamReaderT] stream 
+  # @param [StreamReaderT] stream 
   # @param [unknown] encoding_type 
   # @param [FFI::Pointer(*StringT)] uri 
-  # @return [CefXmlReaderT] 
+  # @return [XmlReaderT] 
   # @scope class
-  attach_function :xml_reader_create, :cef_xml_reader_create, [CefStreamReaderT, :char, :pointer], CefXmlReaderT
+  attach_function :xml_reader_create, :cef_xml_reader_create, [StreamReaderT, :char, :pointer], XmlReaderT
   
 end

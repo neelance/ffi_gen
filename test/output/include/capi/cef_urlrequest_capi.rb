@@ -13,12 +13,12 @@ module CEF
   end
   
   # (Not documented)
-  class CefRequestT < FFI::Struct
+  class RequestT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefResponseT < FFI::Struct
+  class ResponseT < FFI::Struct
     layout :dummy, :char
   end
   
@@ -47,7 +47,7 @@ module CEF
   #   The returned object is read-only and should not be modified.
   # :cancel ::
   #   (FFI::Pointer(*)) Cancel the request.
-  class CefUrlrequestT < FFI::Struct
+  class UrlrequestT < FFI::Struct
     layout :base, :char,
            :get_request, :pointer,
            :get_client, :pointer,
@@ -62,11 +62,11 @@ module CEF
   # after calling this function.
   # 
   # @method urlrequest_create(request, client)
-  # @param [CefRequestT] request 
-  # @param [FFI::Pointer(*CefUrlrequestClientT)] client 
-  # @return [CefUrlrequestT] 
+  # @param [RequestT] request 
+  # @param [FFI::Pointer(*UrlrequestClientT)] client 
+  # @return [UrlrequestT] 
   # @scope class
-  attach_function :urlrequest_create, :cef_urlrequest_create, [CefRequestT, :pointer], CefUrlrequestT
+  attach_function :urlrequest_create, :cef_urlrequest_create, [RequestT, :pointer], UrlrequestT
   
   # Structure that should be implemented by the cef_urlrequest_t client. The
   # functions of this structure will be called on the same thread that created
@@ -92,7 +92,7 @@ module CEF
   #   (FFI::Pointer(*)) Called when some part of the response is read. |data| contains the current
   #   bytes received since the last call. This function will not be called if the
   #   UR_FLAG_NO_DOWNLOAD_DATA flag is set on the request.
-  class CefUrlrequestClientT < FFI::Struct
+  class UrlrequestClientT < FFI::Struct
     layout :base, :char,
            :on_request_complete, :pointer,
            :on_upload_progress, :pointer,

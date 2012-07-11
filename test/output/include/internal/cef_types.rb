@@ -115,7 +115,7 @@ module CEF
   #   specified port. For example, if 8080 is specified the remote debugging URL
   #   will be http://localhost:8080. CEF can be remotely debugged from any CEF or
   #   Chrome browser window.
-  class CefSettingsT < FFI::Struct
+  class SettingsT < FFI::Struct
     layout :size, :ulong,
            :single_process, :int,
            :browser_subprocess_path, :char,
@@ -244,7 +244,7 @@ module CEF
   #   (Integer) Set to true (1) to disable developer tools (WebKit inspector).
   # :fullscreen_enabled ::
   #   (Integer) Set to true (1) to enable fullscreen mode.
-  class CefBrowserSettingsT < FFI::Struct
+  class BrowserSettingsT < FFI::Struct
     layout :size, :ulong,
            :standard_font_family, :char,
            :fixed_font_family, :char,
@@ -316,7 +316,7 @@ module CEF
   #   (unknown) Path component including the first slash following the host.
   # :query ::
   #   (unknown) Query string component (i.e., everything following the '?').
-  class CefUrlpartsT < FFI::Struct
+  class UrlpartsT < FFI::Struct
     layout :spec, :char,
            :scheme, :char,
            :username, :char,
@@ -355,7 +355,7 @@ module CEF
   #   (Integer) The cookie expiration date is only valid if |has_expires| is true.
   # :expires ::
   #   (unknown) 
-  class CefCookieT < FFI::Struct
+  class CookieT < FFI::Struct
     layout :name, :char,
            :value, :char,
            :domain, :char,
@@ -701,7 +701,7 @@ module CEF
   #   (Integer) 
   # :height ::
   #   (Integer) 
-  class CefRectT < FFI::Struct
+  class RectT < FFI::Struct
     layout :x, :int,
            :y, :int,
            :width, :int,
@@ -1186,7 +1186,7 @@ module CEF
   # :focus_on_editable_field ::
   #   (Integer) True if the focus is currently on an editable field on the page. This is
   #   useful for determining if standard key events should be intercepted.
-  class CefKeyEventT < FFI::Struct
+  class KeyEventT < FFI::Struct
     layout :type, :key_event_type_t,
            :modifiers, :int,
            :windows_key_code, :int,
@@ -1348,7 +1348,7 @@ module CEF
   #   (Integer) 
   # :additional_features ::
   #   (FFI::Pointer(StringListT)) 
-  class CefPopupFeaturesT < FFI::Struct
+  class PopupFeaturesT < FFI::Struct
     layout :x, :int,
            :x_set, :int,
            :y, :int,
@@ -1396,7 +1396,7 @@ module CEF
   #   (Symbol from _enum_proxy_type_t_) 
   # :proxy_list ::
   #   (unknown) 
-  class CefProxyInfoT < FFI::Struct
+  class ProxyInfoT < FFI::Struct
     layout :proxy_type, :proxy_type_t,
            :proxy_list, :char
   end

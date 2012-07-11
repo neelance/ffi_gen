@@ -13,47 +13,47 @@ module CEF
   end
   
   # (Not documented)
-  class CefBrowserT < FFI::Struct
+  class BrowserT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefFrameT < FFI::Struct
+  class FrameT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefContextMenuParamsT < FFI::Struct
+  class ContextMenuParamsT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefMenuModelT < FFI::Struct
+  class MenuModelT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefBrowserT < FFI::Struct
+  class BrowserT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefFrameT < FFI::Struct
+  class FrameT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefContextMenuParamsT < FFI::Struct
+  class ContextMenuParamsT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefBrowserT < FFI::Struct
+  class BrowserT < FFI::Struct
     layout :dummy, :char
   end
   
   # (Not documented)
-  class CefFrameT < FFI::Struct
+  class FrameT < FFI::Struct
     layout :dummy, :char
   end
   
@@ -80,7 +80,7 @@ module CEF
   # :on_context_menu_dismissed ::
   #   (FFI::Pointer(*)) Called when the context menu is dismissed irregardless of whether the menu
   #   was NULL or a command was selected.
-  class CefContextMenuHandlerT < FFI::Struct
+  class ContextMenuHandlerT < FFI::Struct
     layout :base, :char,
            :on_before_context_menu, :pointer,
            :on_context_menu_command, :pointer,
@@ -131,7 +131,7 @@ module CEF
   # :get_edit_state_flags ::
   #   (FFI::Pointer(*)) Returns flags representing the actions supported by the editable node, if
   #   any, that the context menu was invoked on.
-  class CefContextMenuParamsT < FFI::Struct
+  class ContextMenuParamsT < FFI::Struct
     layout :base, :char,
            :get_xcoord, :pointer,
            :get_ycoord, :pointer,
