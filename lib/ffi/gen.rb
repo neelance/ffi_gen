@@ -94,7 +94,7 @@ class FFI::Gen
   end
   
   class StructOrUnion < Type
-    attr_accessor :name, :description
+    attr_accessor :name, :description, :packed
     attr_reader :fields, :oo_functions, :written
     
     def initialize(generator, name, is_union)
@@ -105,6 +105,7 @@ class FFI::Gen
       @fields = []
       @oo_functions = []
       @written = false
+      @packed = false
     end
   end
   
@@ -419,6 +420,7 @@ class FFI::Gen
       
       struct_children = Clang.get_children declaration_cursor
       previous_field_end = Clang.get_cursor_location declaration_cursor
+      struct.packed=packed_at(declaration_cursor)
       last_nested_declaration = nil
       until struct_children.empty?
         child = struct_children.shift
@@ -447,6 +449,8 @@ class FFI::Gen
           last_nested_declaration.name ||= Name.new(name.parts + field_name.parts) if last_nested_declaration
           last_nested_declaration = nil
           struct.fields << { name: field_name, type: field_type, comment: field_comment }
+        when :unexposed_attr
+          # skip pragma pack
         else
           raise
         end
@@ -631,6 +635,43 @@ class FFI::Gen
     @declarations_by_type[type] = declaration unless type.nil?
     
     declaration
+  end
+
+  def packed_at(declaration_cursor)
+    location_data=Clang.get_spelling_location_data(Clang.get_cursor_location(declaration_cursor))
+    lines=IO.readlines(Clang.get_file_name(location_data[:file]).to_s_and_dispose)
+    # parse pragma pack at declaration_cursor
+    packed=false
+    stack=[]
+    lines[0,location_data[:line]-1].each do|line|
+      if line=~/^#\s*pragma\s+pack\s*\((.*)\).*$/
+        params=$1.split(",").map(&:strip)
+        push_or_pop=params.shift if params.first=~/^(push|pop)$/
+        identifier=params.shift if params.first=~/[a-zA-Z_]/
+        n=params.shift if params.first=~/^(1|2|4|8|16)$/
+        next unless params.empty? # unknwon parameter
+        case push_or_pop
+        when "push"
+          stack.push([identifier,packed])
+        when "pop"
+          next if stack.empty?
+          if identifier
+            if i=stack.rindex{|v|v[0]==identifier}
+              packed=stack[i][1]
+              stack.slice!(i,stack.size)
+            else
+              next
+            end
+          else
+            packed=stack.pop[1]
+          end
+        else
+          packed=false unless n
+        end
+        packed=n.to_i if n
+      end
+     end
+    packed
   end
   
   def resolve_type(full_type)
