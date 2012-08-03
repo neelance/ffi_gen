@@ -320,7 +320,7 @@ class FFI::Gen
     
     unit_cursor = Clang.get_translation_unit_cursor translation_unit
     declaration_cursors = Clang.get_children unit_cursor
-    declaration_cursors.delete_if { |cursor| [:macro_expansion, :inclusion_directive, :var_decl].include? cursor[:kind] }
+    declaration_cursors.delete_if { |cursor| [:macro_expansion, :inclusion_directive].include? cursor[:kind] }
     declaration_cursors.delete_if { |cursor| !header_files.include?(Clang.get_spelling_location_data(Clang.get_cursor_location(cursor))[:file]) }
     
     is_nested_declaration = []
@@ -618,6 +618,13 @@ class FFI::Gen
         nil
       end
     
+    when :var_decl
+      const_var=Clang.get_tokens(translation_unit, Clang.get_cursor_extent(declaration_cursor)).map{|extent|Clang.get_token_spelling(translation_unit, extent)}.join(" ")
+      if const_var=~/const.+=(.+)/
+        Define.new(self, name, nil, [$1]) # TODO
+      else
+        nil
+      end
     else
       raise declaration_cursor[:kind].to_s
 
