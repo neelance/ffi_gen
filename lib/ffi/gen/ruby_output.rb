@@ -39,7 +39,6 @@ class FFI::Gen
   
   class Enum
     def write_ruby(writer)
-      return if @name.nil?
       shorten_names
       
       @constants.each do |constant|
@@ -56,8 +55,7 @@ class FFI::Gen
         end
         writer.puts "", "@method _enum_#{ruby_name}_", "@return [Symbol]", "@scope class"
       end
-      
-      writer.puts "enum :#{ruby_name}, ["
+      writer.puts ruby_name.empty? ? "enum  [" : "enum :#{ruby_name}, ["
       writer.indent do
         writer.write_array @constants, "," do |constant|
           "#{constant[:symbol]}, #{constant[:value]}"
