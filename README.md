@@ -42,13 +42,12 @@ Use the following interface in a script or Rake task:
       headers:     ["clang-c/Index.h"],
       cflags:      `llvm-config --cflags`.split(" "),
       prefixes:    ["clang_", "CX"],
-      blacklist:   ["clang_getExpansionLocation"],
-      output:      "Clang/index.rb"
+      output:      "clang-c/index.rb"
     )
 
-Output: [Clang/index.rb](https://github.com/neelance/ffi-gen/blob/master/test/gen/Clang/index.rb)
+Output: [clang-c/index.rb](https://github.com/neelance/ffi-gen/blob/master/test/output/clang-c/Index.rb)
 
-Other generated files can be found in the [test/gen](https://github.com/neelance/ffi-gen/tree/master/test/gen) directory.
+Other generated files can be found in the [test/output](https://github.com/neelance/ffi-gen/tree/master/test/output) directory.
 
 
 Hints
