@@ -271,13 +271,17 @@ class FFI::Gen
     end
   end
   
-  class ConstantArrayType
+  class ArrayType
     def ruby_name
       "array"
     end
     
     def ruby_ffi_type
-      "[#{@element_type.ruby_ffi_type}, #{@size}]"
+      if @constant_size
+        "[#{@element_type.ruby_ffi_type}, #{@constant_size}]"
+      else
+        ":pointer"
+      end
     end
     
     def ruby_description

@@ -242,10 +242,10 @@ class FFI::Gen
     end
   end
   
-  class ConstantArrayType < Type
-    def initialize(element_type, size)
+  class ArrayType < Type
+    def initialize(element_type, constant_size)
       @element_type = element_type
-      @size = size
+      @constant_size = constant_size
     end
     
     def name
@@ -474,13 +474,13 @@ class FFI::Gen
       Clang.get_children(declaration_cursor).each do |function_child|
         next if function_child[:kind] != :parm_decl
         param_name = read_name function_child
-        param_type = resolve_type Clang.get_cursor_type(function_child)
+        tokens = Clang.get_tokens translation_unit, Clang.get_cursor_extent(function_child)
+        is_array = tokens.any? { |t| Clang.get_token_spelling(translation_unit, t).to_s_and_dispose == "[" }
+        param_type = resolve_type Clang.get_cursor_type(function_child), is_array
         param_name ||= param_type.name
         param_name ||= Name.new []
         first_parameter_type ||= Clang.get_cursor_type function_child
-        tokens = Clang.get_tokens translation_unit, Clang.get_cursor_extent(function_child)
-        is_array = tokens.any? { |t| Clang.get_token_spelling(translation_unit, t).to_s_and_dispose == "[" }
-        parameters << { name: param_name, type: param_type, is_array: is_array }
+        parameters << { name: param_name, type: param_type }
       end
       
       parameters.each_with_index do |parameter, index|
@@ -633,48 +633,52 @@ class FFI::Gen
     declaration
   end
   
-  def resolve_type(full_type)
+  def resolve_type(full_type, is_array = false)
     canonical_type = Clang.get_canonical_type full_type
     data_array = case canonical_type[:kind]
     when :void, :bool, :u_char, :u_short, :u_int, :u_long, :u_long_long, :char_s, :s_char, :short, :int, :long, :long_long, :float, :double
       PrimitiveType.new canonical_type[:kind]
     when :pointer
-      pointee_type = Clang.get_pointee_type canonical_type
-      type = case pointee_type[:kind]
-      when :char_s
-        StringType.new
-      when :record
-        @declarations_by_type[Clang.get_cursor_type(Clang.get_type_declaration(pointee_type))]
-      when :function_proto
-        @declarations_by_type[full_type]
+      if is_array
+        ArrayType.new resolve_type(Clang.get_pointee_type(canonical_type)), nil
       else
-        nil
-      end
-      
-      if type.nil?
-        pointer_depth = 0
-        pointee_name = ""
-        current_type = full_type
-        loop do
-          declaration_cursor = Clang.get_type_declaration current_type
-          pointee_name = read_name declaration_cursor
-          break if pointee_name
-
-          case current_type[:kind]
-          when :pointer
-            pointer_depth += 1
-            current_type = Clang.get_pointee_type current_type
-          when :unexposed
-            break
-          else
-            pointee_name = Name.new Clang.get_type_kind_spelling(current_type[:kind]).to_s_and_dispose.split("_")
-            break
-          end
+        pointee_type = Clang.get_pointee_type canonical_type
+        type = case pointee_type[:kind]
+        when :char_s
+          StringType.new
+        when :record
+          @declarations_by_type[Clang.get_cursor_type(Clang.get_type_declaration(pointee_type))]
+        when :function_proto
+          @declarations_by_type[full_type]
+        else
+          nil
         end
-        type = PointerType.new pointee_name, pointer_depth
+        
+        if type.nil?
+          pointer_depth = 0
+          pointee_name = ""
+          current_type = full_type
+          loop do
+            declaration_cursor = Clang.get_type_declaration current_type
+            pointee_name = read_name declaration_cursor
+            break if pointee_name
+  
+            case current_type[:kind]
+            when :pointer
+              pointer_depth += 1
+              current_type = Clang.get_pointee_type current_type
+            when :unexposed
+              break
+            else
+              pointee_name = Name.new Clang.get_type_kind_spelling(current_type[:kind]).to_s_and_dispose.split("_")
+              break
+            end
+          end
+          type = PointerType.new pointee_name, pointer_depth
+        end
+        
+        type
       end
-      
-      type
     when :record
       type = @declarations_by_type[canonical_type]
       type &&= ByValueType.new(type)
@@ -682,7 +686,7 @@ class FFI::Gen
     when :enum
       @declarations_by_type[canonical_type] || UnknownType.new # TODO
     when :constant_array
-      ConstantArrayType.new resolve_type(Clang.get_array_element_type(canonical_type)), Clang.get_array_size(canonical_type)
+      ArrayType.new resolve_type(Clang.get_array_element_type(canonical_type)), Clang.get_array_size(canonical_type)
     when :unexposed, :function_proto
       UnknownType.new
     else

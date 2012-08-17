@@ -2075,7 +2075,7 @@ module LLVM
   # @method const_int_of_arbitrary_precision(int_ty, num_words, words)
   # @param [OpaqueType] int_ty 
   # @param [Integer] num_words 
-  # @param [FFI::Pointer(*Uint64T)] words 
+  # @param [Array<Integer>] words 
   # @return [OpaqueValue] 
   # @scope class
   attach_function :const_int_of_arbitrary_precision, :LLVMConstIntOfArbitraryPrecision, [OpaqueType, :uint, :pointer], OpaqueValue

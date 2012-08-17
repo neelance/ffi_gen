@@ -5707,7 +5707,7 @@ module GL
   # (Not documented)
   # 
   # @method load_transpose_matrixd(m)
-  # @param [FFI::Pointer(*GLdouble)] m 
+  # @param [Array<Float>] m 
   # @return [nil] 
   # @scope class
   attach_function :load_transpose_matrixd, :glLoadTransposeMatrixd, [:pointer], :void
@@ -5715,7 +5715,7 @@ module GL
   # (Not documented)
   # 
   # @method load_transpose_matrixf(m)
-  # @param [FFI::Pointer(*GLfloat)] m 
+  # @param [Array<Float>] m 
   # @return [nil] 
   # @scope class
   attach_function :load_transpose_matrixf, :glLoadTransposeMatrixf, [:pointer], :void
@@ -5723,7 +5723,7 @@ module GL
   # (Not documented)
   # 
   # @method mult_transpose_matrixd(m)
-  # @param [FFI::Pointer(*GLdouble)] m 
+  # @param [Array<Float>] m 
   # @return [nil] 
   # @scope class
   attach_function :mult_transpose_matrixd, :glMultTransposeMatrixd, [:pointer], :void
@@ -5731,7 +5731,7 @@ module GL
   # (Not documented)
   # 
   # @method mult_transpose_matrixf(m)
-  # @param [FFI::Pointer(*GLfloat)] m 
+  # @param [Array<Float>] m 
   # @return [nil] 
   # @scope class
   attach_function :mult_transpose_matrixf, :glMultTransposeMatrixf, [:pointer], :void
