@@ -330,7 +330,7 @@ class FFIGen
     writer.indent do
       writer.puts "extend FFI::Library"
       writer.puts "ffi_lib_flags #{@ffi_lib_flags.map(&:inspect).join(', ')}" if @ffi_lib_flags
-      writer.puts "ffi_lib '#{@ffi_lib}'", ""
+      writer.puts "ffi_lib #{@ffi_lib.inspect}", ""
       declarations.values.compact.uniq.each do |declaration|
         declaration.write writer
       end
