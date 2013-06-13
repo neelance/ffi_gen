@@ -495,7 +495,7 @@ class FFI::Gen
       if pointee_declaration
         type_prefix = pointee_declaration.name.parts.join.downcase
         function_name_parts = name.parts.dup
-        while type_prefix.start_with? function_name_parts.first.downcase
+        while fn_name = function_name_parts.first and type_prefix.start_with(fn_name.downcase)
           type_prefix = type_prefix[function_name_parts.first.size..-1]
           function_name_parts.shift
         end
