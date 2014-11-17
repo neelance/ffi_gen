@@ -1,5 +1,5 @@
 require "fileutils"
-require "ffi/gen"
+require "ffi_gen"
 
 def find_headers(dir, prefix = "")
   Dir.chdir dir do
@@ -12,7 +12,7 @@ def run_test(options = {})
     output_file = "#{File.dirname(__FILE__)}/output/#{header.sub(/\.h$/, ".rb")}"
     FileUtils.mkdir_p File.dirname(output_file)
     
-    FFI::Gen.generate(
+    FFIGen.generate(
       module_name: options[:library_name],
       ffi_lib:     options[:ffi_lib],
       headers:     [header],
