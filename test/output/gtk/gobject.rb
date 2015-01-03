@@ -14,7 +14,7 @@ module GObject
   
   G_SIGNAL_FLAGS_MASK = 0x1ff
   
-  G_SIGNAL_MATCH_MASK = 0x3
+  G_SIGNAL_MATCH_MASK = 0x3f
   
   # (Not documented)
   module GTypePluginWrappers

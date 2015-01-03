@@ -1,12 +1,10 @@
+# TODO: Net yet integrated into rake test task
+
 require_relative "test_utils"
 
-gtk_include_dirs = Dir.glob('./headers/gtk+/{include,lib}/**/*')
+gtk_include_flags = Dir.glob('./headers/gtk+/{include,lib}/**/*')
   .select { |f| Dir.exists? f }
-  .map { |d| "-I#{d}"}
-
-common_cflags = gtk_include_dirs + [
-  "-IC:\\Program Files (x86)\\LLVM\\lib\\clang\\3.5.0\\include"
-]
+  .map { |d| "-I#{d}"} + ["-I#{$CLANG_HEADERS}"]
 
 modules = [
   {
@@ -37,7 +35,7 @@ modules.each do |mod|
   FFIGen.generate(
     module_name: mod[:module_name],
     ffi_lib:     mod[:ffi_lib],
-    cflags:      common_cflags + mod[:cflags],
+    cflags:      gtk_include_flags + mod[:cflags],
     headers:     mod[:headers],
     output:      mod[:output],
     skip_macro_functions: true

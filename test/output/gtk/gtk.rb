@@ -12,7 +12,7 @@ module Gtk
     end
   end
   
-  GTK_PATH_PRIO_MASK = 0x0
+  GTK_PATH_PRIO_MASK = 0x0f
   
   GTK_STOCK_ABOUT = "gtk-about"
   
