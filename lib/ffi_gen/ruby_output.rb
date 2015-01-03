@@ -205,7 +205,17 @@ class FFIGen
       if @parameters
         writer.puts "def #{@name.to_ruby_downcase}(#{@parameters.map{ |p| Name.new([p]).to_ruby_downcase }.join(", ")})"
         writer.indent do
-          writer.puts parts.map { |p| Name.new([p]).to_ruby_downcase }.join
+          writer.puts parts.map { |p|
+            if @parameters.member? p
+              # This token was a parameter of the macro, so make sure it
+              # matches the adjusted ruby version of the parameter's name.
+              # (If it wasn't a parameter, it may be a valid constant like TRUE,
+              #  which we do not want to convert)
+              Name.new([p]).to_ruby_downcase
+            else
+              p
+            end
+          }.join
         end
         writer.puts "end", ""
       else
