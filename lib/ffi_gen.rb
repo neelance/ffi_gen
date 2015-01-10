@@ -515,7 +515,7 @@ class FFIGen
       elsif typedef_children.size > 1
         return_type = resolve_type Clang.get_cursor_type(typedef_children.first)
         parameters = []
-        typedef_children[1..-1].each do |param_decl|
+        typedef_children.each do |param_decl|
           param_name = read_name param_decl
           param_type = resolve_type Clang.get_cursor_type(param_decl)
           param_name ||= param_type.name
