@@ -14,38 +14,38 @@ class FFIGen
     writer.puts "end"
     writer.output
   end
-  
+
   class Name
     RUBY_KEYWORDS = %w{alias and begin break case class def defined do else elsif end ensure false for if in module next nil not or redo rescue retry return self super then true undef unless until when while yield BEGIN END}
 
     def to_ruby_downcase
       format :downcase, :underscores, RUBY_KEYWORDS
     end
-    
+
     def to_ruby_classname
       format :camelcase, RUBY_KEYWORDS
     end
-    
+
     def to_ruby_constant
       format :upcase, :underscores, RUBY_KEYWORDS
     end
   end
-  
+
   class Type
     def ruby_description
       ruby_name
     end
   end
-  
+
   class Enum
     def write_ruby(writer)
       return if @name.nil?
       shorten_names
-      
+
       @constants.each do |constant|
         constant[:symbol] = ":#{constant[:name].to_ruby_downcase}"
       end
-      
+
       writer.comment do
         writer.write_description @description
         writer.puts "", "<em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:#{ruby_name}).</em>"
@@ -56,7 +56,7 @@ class FFIGen
         end
         writer.puts "", "@method _enum_#{ruby_name}_", "@return [Symbol]", "@scope class"
       end
-      
+
       writer.puts "enum :#{ruby_name}, ["
       writer.indent do
         writer.write_array @constants, "," do |constant|
@@ -65,20 +65,20 @@ class FFIGen
       end
       writer.puts "]", ""
     end
-    
+
     def ruby_name
       @ruby_name ||= @name.to_ruby_downcase
     end
-    
+
     def ruby_ffi_type
       ":#{ruby_name}"
     end
-    
+
     def ruby_description
       "Symbol from _enum_#{ruby_name}_"
     end
   end
-  
+
   class StructOrUnion
     def write_ruby(writer)
       writer.comment do
@@ -91,7 +91,7 @@ class FFIGen
           end
         end
       end
-      
+
       @fields << { name: Name.new(["dummy"]), type: PrimitiveType.new(:char_s) } if @fields.empty?
 
       unless @oo_functions.empty?
@@ -117,7 +117,7 @@ class FFIGen
         end
         writer.puts "end", ""
       end
-            
+
       writer.puts "class #{ruby_name} < #{@is_union ? 'FFI::Union' : 'FFI::Struct'}"
       writer.indent do
         writer.puts "include #{ruby_name}Wrappers" unless @oo_functions.empty?
@@ -126,23 +126,23 @@ class FFIGen
         end
       end
       writer.puts "end", ""
-      
+
       @written = true
     end
-    
+
     def ruby_name
       @ruby_name ||= @name.to_ruby_classname
     end
-    
+
     def ruby_ffi_type
       @written ? ruby_name : ":pointer"
     end
-    
+
     def ruby_description
       @written ? ruby_name : "FFI::Pointer(*#{ruby_name})"
     end
   end
-  
+
   class FunctionOrCallback
     def write_ruby(writer)
       writer.puts "@blocking = true" if @blocking
@@ -156,7 +156,7 @@ class FFIGen
         writer.write_description @return_value_description, false, "@return [#{@return_type.ruby_description}] ", "  "
         writer.puts "@scope class"
       end
-      
+
       ffi_signature = "[#{@parameters.map{ |parameter| parameter[:type].ruby_ffi_type }.join(', ')}], #{@return_type.ruby_ffi_type}"
       if @is_callback
         writer.puts "callback :#{ruby_name}, #{ffi_signature}", ""
@@ -164,20 +164,20 @@ class FFIGen
         writer.puts "attach_function :#{ruby_name}, :#{@name.raw}, #{ffi_signature}", ""
       end
     end
-    
+
     def ruby_name
       @ruby_name ||= @name.to_ruby_downcase
     end
-    
+
     def ruby_ffi_type
       ":#{ruby_name}"
     end
-    
+
     def ruby_description
       "Proc(_callback_#{ruby_name}_)"
     end
   end
-  
+
   class Define
     def write_ruby(writer)
       parts = @value.map { |v|
@@ -202,7 +202,7 @@ class FFIGen
       end
     end
   end
-  
+
   class PrimitiveType
     def ruby_name
       case @clang_type
@@ -216,7 +216,7 @@ class FFIGen
         "Float"
       end
     end
-    
+
     def ruby_ffi_type
       case @clang_type
       when :void            then ":void"
@@ -236,46 +236,46 @@ class FFIGen
       end
     end
   end
-  
+
   class StringType
     def ruby_name
       "String"
     end
-    
+
     def ruby_ffi_type
       ":string"
     end
   end
-  
+
   class ByValueType
     def ruby_name
       @inner_type.ruby_name
     end
-    
+
     def ruby_ffi_type
       "#{@inner_type.ruby_ffi_type}.by_value"
     end
   end
-  
+
   class PointerType
     def ruby_name
       @pointee_name.to_ruby_downcase
     end
-    
+
     def ruby_ffi_type
       ":pointer"
     end
-    
+
     def ruby_description
       "FFI::Pointer(#{'*' * @depth}#{@pointee_name ? @pointee_name.to_ruby_classname : ''})"
     end
   end
-  
+
   class ArrayType
     def ruby_name
       "array"
     end
-    
+
     def ruby_ffi_type
       if @constant_size
         "[#{@element_type.ruby_ffi_type}, #{@constant_size}]"
@@ -283,12 +283,12 @@ class FFIGen
         ":pointer"
       end
     end
-    
+
     def ruby_description
       "Array<#{@element_type.ruby_description}>"
     end
   end
-    
+
   class UnknownType
     def ruby_name
       "unknown"
@@ -298,5 +298,5 @@ class FFIGen
       ":char"
     end
   end
-  
+
 end
