@@ -1,7 +1,7 @@
 # A generator for Ruby FFI bindings
 
-*Author:* Richard Musiol  
-*Contributors:* Jeremy Voorhis (thanks for the initial idea)  
+*Author:* Richard Musiol
+*Contributors:* Jeremy Voorhis (thanks for the initial idea)
 *License:* MIT (see LICENSE)
 
 
@@ -22,7 +22,8 @@
 ## Requirements
 
 * Ruby 1.9
-* Clang 3.0 ([Download](http://llvm.org/releases/download.html#3.0), use the binaries or configure with ``--enable-shared``)
+* Clang 3.5 or later ([Download](http://llvm.org/releases/download.html#3.5) the binaries or
+  build from source configured with ``--enable-shared``)
 
 *These requirements are only for running the generator. The generated files are Ruby 1.8 compatible and do not need Clang.*
 
