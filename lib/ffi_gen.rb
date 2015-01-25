@@ -498,6 +498,7 @@ class FFIGen
         while type_prefix.start_with? function_name_parts.first.downcase
           type_prefix = type_prefix[function_name_parts.first.size..-1]
           function_name_parts.shift
+          break if function_name_parts.empty?
         end
         if type_prefix.empty?
           pointee_declaration.oo_functions << [Name.new(function_name_parts), function]
