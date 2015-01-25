@@ -6,7 +6,7 @@ class FFIGen
   class << Clang
     def get_children(cursor)
       children = []
-      visit_children cursor, lambda { |child, child_parent, child_client_data|
+      visit_children cursor, lambda { |visit_result, child, child_parent, child_client_data|
         children << child
         :continue
       }, nil
