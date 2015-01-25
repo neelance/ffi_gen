@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.email = "mail@richard-musiol.de"
   s.homepage = "https://github.com/neelance/ffi_gen"
 
-  s.add_dependency "ffi", ">= 1.0.0"
+  s.add_dependency "ffi", "~> 1.0"
   s.files = Dir["lib/**/*.rb"] + ["LICENSE", "README.md", "lib/ffi_gen/empty.h"]
   s.require_path = "lib"
 end
