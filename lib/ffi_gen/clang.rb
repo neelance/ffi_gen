@@ -3532,13 +3532,14 @@ module FFIGen::Clang
   # 
   # <em>This entry is only for documentation and no real method.</em>
   # 
-  # @method _callback_cursor_visitor_(cursor, parent, client_data)
+  # @method _callback_cursor_visitor_(enum cx_child_visit_result, cursor, parent, client_data)
+  # @param [Symbol from _enum_child_visit_result_] enum cx_child_visit_result 
   # @param [Cursor] cursor 
   # @param [Cursor] parent 
   # @param [FFI::Pointer(ClientData)] client_data 
   # @return [Symbol from _enum_child_visit_result_] 
   # @scope class
-  callback :cursor_visitor, [Cursor.by_value, Cursor.by_value, :pointer], :child_visit_result
+  callback :cursor_visitor, [:child_visit_result, Cursor.by_value, Cursor.by_value, :pointer], :child_visit_result
   
   # Visit the children of a particular cursor.
   # 
@@ -4953,13 +4954,14 @@ module FFIGen::Clang
   # 
   # <em>This entry is only for documentation and no real method.</em>
   # 
-  # @method _callback_inclusion_visitor_(inclusion_stack, include_len, client_data)
+  # @method _callback_inclusion_visitor_(included_file, inclusion_stack, include_len, client_data)
+  # @param [FFI::Pointer(File)] included_file 
   # @param [SourceLocation] inclusion_stack 
   # @param [Integer] include_len 
   # @param [FFI::Pointer(ClientData)] client_data 
   # @return [FFI::Pointer(File)] 
   # @scope class
-  callback :inclusion_visitor, [SourceLocation, :uint, :pointer], :pointer
+  callback :inclusion_visitor, [:pointer, SourceLocation, :uint, :pointer], :pointer
   
   # Visit the set of preprocessor inclusions in a translation unit.
   #   The visitor function is called with the provided data for every included
