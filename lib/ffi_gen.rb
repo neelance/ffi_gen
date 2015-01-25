@@ -689,6 +689,8 @@ class FFIGen
       ArrayType.new resolve_type(Clang.get_array_element_type(canonical_type)), Clang.get_array_size(canonical_type)
     when :unexposed, :function_proto
       UnknownType.new
+    when :incomplete_array
+      PointerType.new resolve_type(Clang.get_array_element_type(canonical_type)).name, 1
     else
       raise NotImplementedError, "No translation for values of type #{canonical_type[:kind]}"
     end
