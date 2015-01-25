@@ -749,8 +749,8 @@ end
 if __FILE__ == $0
   FFIGen.generate(
     module_name: "FFIGen::Clang",
-    ffi_lib:     "clang",
-    headers:     ["clang-c/Index.h"],
+    ffi_lib:     ["libclang-3.5.so.1", "libclang.so.1", "clang"],
+    headers:     ["clang-c/CXErrorCode.h", "clang-c/CXString.h", "clang-c/Index.h"],
     cflags:      `llvm-config --cflags`.split(" "),
     prefixes:    ["clang_", "CX"],
     output:      File.join(File.dirname(__FILE__), "ffi_gen/clang.rb")
