@@ -1,78 +1,14 @@
 require 'ffi'
 
+require 'ffi_gen/clang'
+require 'ffi_gen/clang_ffi'
+require 'ffi_gen/clang/cursor'
+require 'ffi_gen/clang/string'
+require 'ffi_gen/clang/type'
 require 'ffi_gen/generator'
 
+
 module FFIGen
-  require "ffi_gen/clang"
-
-  class << Clang
-    def get_children(cursor)
-      children = []
-      visit_children cursor, lambda { |visit_result, child, child_parent, child_client_data|
-        children << child
-        :continue
-      }, nil
-      children
-    end
-
-    def get_spelling_location_data(location)
-      file_ptr = FFI::MemoryPointer.new :pointer
-      line_ptr = FFI::MemoryPointer.new :uint
-      column_ptr = FFI::MemoryPointer.new :uint
-      offset_ptr = FFI::MemoryPointer.new :uint
-      get_spelling_location location, file_ptr, line_ptr, column_ptr, offset_ptr
-      { file: file_ptr.read_pointer, line: line_ptr.read_uint, column: column_ptr.read_uint, offset: offset_ptr.read_uint }
-    end
-
-    def get_tokens(translation_unit, range)
-      tokens_ptr_ptr = FFI::MemoryPointer.new :pointer
-      num_tokens_ptr = FFI::MemoryPointer.new :uint
-      Clang.tokenize translation_unit, range, tokens_ptr_ptr, num_tokens_ptr
-      num_tokens = num_tokens_ptr.read_uint
-      tokens_ptr = FFI::Pointer.new Clang::Token, tokens_ptr_ptr.read_pointer
-      (num_tokens - 1).times.map { |i| Clang::Token.new tokens_ptr[i] }
-    end
-  end
-
-  class Clang::String
-    def to_s
-      Clang.get_c_string self
-    end
-
-    def to_s_and_dispose
-      str = to_s
-      Clang.dispose_string self
-      str
-    end
-  end
-
-  class Clang::Cursor
-    def ==(other)
-      other.is_a?(Clang::Cursor) && Clang.equal_cursors(self, other) == 1
-    end
-
-    def eql?(other)
-      self == other
-    end
-
-    def hash
-      Clang.hash_cursor self
-    end
-  end
-
-  class Clang::Type
-    def ==(other)
-      other.is_a?(Clang::Type) && Clang.equal_types(self, other) == 1
-    end
-
-    def eql?(other)
-      self == other
-    end
-
-    def hash
-      0 # no hash available
-    end
-  end
 
   class Type
   end
@@ -277,6 +213,6 @@ if __FILE__ == $0
     headers:     ["clang-c/CXErrorCode.h", "clang-c/CXString.h", "clang-c/Index.h"],
     cflags:      `llvm-config --cflags`.split(" "),
     prefixes:    ["clang_", "CX"],
-    output:      File.join(File.dirname(__FILE__), "ffi_gen/clang.rb")
+    output:      File.join(File.dirname(__FILE__), "ffi_gen/clang_ffi.rb")
   )
 end
