@@ -483,5 +483,9 @@ module FFIGen
       return comment_lines, comment_token
     end
 
+    def inspect
+      "#<#{self.class.name}:#{object_id} module_name:#{@module_name} ffi_lib:#{@ffi_lib} headers:#{@headers} cflags:#{cflags} prefixes:#{@prefixes} suffixes:#{@suffixes} blocking:#{@blocking} ffi_lib_flags:#{@ffi_lib_flags} output:#{@output} >"
+    end
+
   end
 end
