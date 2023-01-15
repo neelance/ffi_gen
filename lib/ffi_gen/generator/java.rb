@@ -19,7 +19,7 @@ module FFIGen
         end
         writer.puts "}", ""
         declarations.each do |declaration|
-          declaration.write_java writer
+          declaration.write_java(writer)
         end
       end
       writer.puts "}"
@@ -165,8 +165,8 @@ module FFIGen
     
     class Define
       def write_java(writer)
-        parts = @value.map { |v|
-          if v.is_a? Array
+        parts = @value.map do |v|
+          if v.is_a?(Array)
             case v[0]
             when :method then v[1].to_java_downcase
             when :constant then v[1].to_java_constant
@@ -175,7 +175,7 @@ module FFIGen
           else
             v
           end
-        }
+        end
         if @parameters
           # not implemented
         else

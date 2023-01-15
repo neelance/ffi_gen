@@ -8,7 +8,7 @@ module FFIGen
       end
 
       def name
-        Name.new ["array"]
+        Name.new(["array"])
       end
 
     end

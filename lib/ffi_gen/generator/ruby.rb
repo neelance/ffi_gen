@@ -10,7 +10,7 @@ module FFIGen
         writer.puts "ffi_lib #{@ffi_lib.inspect}", "" if @ffi_lib
         writer.puts "def self.attach_function(name, *_)", "  begin; super; rescue FFI::NotFoundError => e", "    (class << self; self; end).class_eval { define_method(name) { |*_| raise e } }", "  end", "end", ""
         declarations.each do |declaration|
-          declaration.write_ruby writer
+          declaration.write_ruby(writer)
         end
       end
       writer.puts "end"
@@ -182,8 +182,8 @@ module FFIGen
 
     class Define
       def write_ruby(writer)
-        parts = @value.map { |v|
-          if v.is_a? Array
+        parts = @value.map do |v|
+          if v.is_a?(Array)
             case v[0]
             when :method then v[1].to_ruby_downcase
             when :constant then v[1].to_ruby_constant
@@ -192,7 +192,7 @@ module FFIGen
           else
             v
           end
-        }
+        end
         if @parameters
           writer.puts "def #{@name.to_ruby_downcase}(#{@parameters.join(", ")})"
           writer.indent do

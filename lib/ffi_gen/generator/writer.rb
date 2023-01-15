@@ -21,9 +21,9 @@ module FFIGen
       end
 
       def comment(&block)
-        self.puts @comment_start unless @comment_start.nil?
-        self.indent @comment_prefix, &block
-        self.puts @comment_end unless @comment_end.nil?
+        puts(@comment_start) unless @comment_start.nil?
+        indent(@comment_prefix, &block)
+        puts(@comment_end) unless @comment_end.nil?
       end
 
       def puts(*lines)
@@ -34,20 +34,20 @@ module FFIGen
 
       def write_array(array, separator = "", first_line_prefix = "", other_lines_prefix = "")
         array.each_with_index do |entry, index|
-          entry = yield entry if block_given?
-          puts "#{index == 0 ? first_line_prefix : other_lines_prefix}#{entry}#{index < array.size - 1 ? separator : ''}"
+          entry = yield(entry) if block_given?
+          puts("#{index == 0 ? first_line_prefix : other_lines_prefix}#{entry}#{index < array.size - 1 ? separator : ''}")
         end
       end
 
       def write_description(description, not_documented_message = true, first_line_prefix = "", other_lines_prefix = "")
         description.shift while not description.empty? and description.first.strip.empty?
         description.pop while not description.empty? and description.last.strip.empty?
-        description.map! { |line| line.gsub "\t", "    " }
+        description.map! { |line| line.gsub("\t", "    ") }
         space_prefix_length = description.map{ |line| line.index(/\S/) }.compact.min
         description.map! { |line| line[space_prefix_length..-1] }
         description << (not_documented_message ? "(Not documented)" : "") if description.empty?
 
-        write_array description, "", first_line_prefix, other_lines_prefix
+        write_array(description, "", first_line_prefix, other_lines_prefix)
       end
     end
 

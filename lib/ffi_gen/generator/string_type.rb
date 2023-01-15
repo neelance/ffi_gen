@@ -3,7 +3,7 @@ module FFIGen
     class StringType < Type
 
       def name
-        Name.new ["string"]
+        Name.new(["string"])
       end
 
     end

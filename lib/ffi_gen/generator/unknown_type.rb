@@ -3,7 +3,7 @@ module FFIGen
     class UnknownType < Type
 
       def name
-        Name.new ["unknown"]
+        Name.new(["unknown"])
       end
 
     end

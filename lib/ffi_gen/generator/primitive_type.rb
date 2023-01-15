@@ -7,7 +7,7 @@ module FFIGen
       end
 
       def name
-        Name.new [@clang_type.to_s]
+        Name.new([@clang_type.to_s])
       end
 
     end

@@ -11,7 +11,7 @@ module FFIGen
       end
 
       def hash
-        Clang.hash_cursor self
+        Clang.hash_cursor(self)
       end
 
     end
