@@ -4,9 +4,9 @@ module FFIGen
     attr_reader :module_name, :ffi_lib, :headers, :prefixes, :output, :cflags
 
     def initialize(options = {})
-      @module_name   = options[:module_name] or fail("No module name given.")
+      @module_name   = options[:module_name] || fail("No module name given.")
       @ffi_lib       = options.fetch(:ffi_lib, nil)
-      @headers       = options[:headers] or fail("No headers given.")
+      @headers       = options[:headers] || fail("No headers given.")
       @cflags        = options.fetch(:cflags, [])
       @prefixes      = options.fetch(:prefixes, [])
       @suffixes      = options.fetch(:suffixes, [])
@@ -157,7 +157,7 @@ module FFIGen
 
       when :struct_decl, :union_decl
         struct = @declarations_by_type[Clang.get_cursor_type(declaration_cursor)] || StructOrUnion.new(self, name, (declaration_cursor[:kind] == :union_decl))
-        raise if not struct.fields.empty?
+        raise if !struct.fields.empty?
         struct.description.concat(comment)
 
         struct_children = Clang.get_children(declaration_cursor)
@@ -179,7 +179,7 @@ module FFIGen
             next_field_start = struct_children.first ? Clang.get_cursor_location(struct_children.first) : Clang.get_range_end(Clang.get_cursor_extent(declaration_cursor))
             following_comment_range = Clang.get_range(Clang.get_range_end(field_extent), next_field_start)
             following_comment, following_comment_token = extract_comment(translation_unit, following_comment_range, false)
-            if following_comment_token and Clang.get_spelling_location_data(Clang.get_token_location(translation_unit, following_comment_token))[:line] == Clang.get_spelling_location_data(Clang.get_range_end(field_extent))[:line]
+            if following_comment_token && Clang.get_spelling_location_data(Clang.get_token_location(translation_unit, following_comment_token))[:line] == Clang.get_spelling_location_data(Clang.get_range_end(field_extent))[:line]
               field_comment = following_comment
               previous_field_end = Clang.get_range_end(Clang.get_token_extent(translation_unit, following_comment_token))
             else
@@ -254,7 +254,7 @@ module FFIGen
         typedef_children = Clang.get_children(declaration_cursor)
         if typedef_children.size == 1
           child_declaration = @declarations_by_type[Clang.get_cursor_type(typedef_children.first)]
-          child_declaration.name = name if child_declaration and child_declaration.name.nil?
+          child_declaration.name = name if child_declaration && child_declaration.name.nil?
           nil
         elsif typedef_children.size > 1
           return_type = resolve_type(Clang.get_cursor_type(typedef_children.first))
@@ -327,12 +327,12 @@ module FFIGen
                 elsif spelling == "NULL"
                   value << "nil"
                 else
-                  if not tokens.empty? and tokens.first[1] == "("
+                  if !tokens.empty? && tokens.first[1] == "("
                     tokens.shift
                     if spelling == "strlen"
                       argument_kind, argument_spelling = tokens.shift
                       second_token_kind, second_token_spelling = tokens.shift
-                      raise(ArgumentError) unless argument_kind == :identifier and second_token_spelling == ")"
+                      raise(ArgumentError) unless argument_kind == :identifier && second_token_spelling == ")"
                       value << "#{argument_spelling}.length"
                     else
                       value << [:method, read_name(spelling)]
@@ -343,7 +343,7 @@ module FFIGen
                   end
                 end
               when :keyword
-                raise(ArgumentError) unless spelling == "sizeof" and tokens[0][1] == "(" and tokens[1][0] == :literal and tokens[2][1] == ")"
+                raise(ArgumentError) unless spelling == "sizeof" && tokens[0][1] == "(" && tokens[1][0] == :literal && tokens[2][1] == ")"
                 tokens.shift
                 argument_kind, argument_spelling = tokens.shift
                 value << "#{argument_spelling}.length"
@@ -477,7 +477,7 @@ module FFIGen
         comment_lines = lines + comment_lines
         comment_token = token
         comment_block = !comment_block if comment == "///"
-        break unless comment_block and search_backwards
+        break unless comment_block && search_backwards
       end
 
       return comment_lines, comment_token

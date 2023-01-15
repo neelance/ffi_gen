@@ -40,8 +40,8 @@ module FFIGen
       end
 
       def write_description(description, not_documented_message = true, first_line_prefix = "", other_lines_prefix = "")
-        description.shift while not description.empty? and description.first.strip.empty?
-        description.pop while not description.empty? and description.last.strip.empty?
+        description.shift while !description.empty? && description.first.strip.empty?
+        description.pop while !description.empty? && description.last.strip.empty?
         description.map! { |line| line.gsub("\t", "    ") }
         space_prefix_length = description.map{ |line| line.index(/\S/) }.compact.min
         description.map! { |line| line[space_prefix_length..-1] }
