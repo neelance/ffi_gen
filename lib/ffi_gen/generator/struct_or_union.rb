@@ -14,7 +14,7 @@ module FFIGen
         @oo_functions = []
         @written = false
       end
-    
+
     end
   end
 end
