@@ -4,7 +4,7 @@ require 'ffi'
 
 module FFIGen::Clang::C
   extend FFI::Library
-  ffi_lib ["libclang-3.5.so.1", "libclang.so.1", "clang"]
+  ffi_lib "clang-15"
   
   def self.attach_function(name, *_)
     begin; super; rescue FFI::NotFoundError => e
@@ -14,7 +14,7 @@ module FFIGen::Clang::C
   
   CINDEX_VERSION_MAJOR = 0
   
-  CINDEX_VERSION_MINOR = 27
+  CINDEX_VERSION_MINOR = 62
   
   def cindex_version_stringize(major, minor)
     cindex_version_stringize(major, minor)
@@ -63,6 +63,18 @@ module FFIGen::Clang::C
            :private_flags, :uint
   end
   
+  # (Not documented)
+  # 
+  # = Fields:
+  # :strings ::
+  #   (String) 
+  # :count ::
+  #   (Integer) 
+  class StringSet < FFI::Struct
+    layout :strings, String,
+           :count, :uint
+  end
+  
   # Retrieve the character data associated with the given string.
   # 
   # @method get_c_string(string)
@@ -78,6 +90,20 @@ module FFIGen::Clang::C
   # @return [nil] 
   # @scope class
   attach_function :dispose_string, :clang_disposeString, [String.by_value], :void
+  
+  # Free the given string set.
+  # 
+  # @method dispose_string_set(set)
+  # @param [StringSet] set 
+  # @return [nil] 
+  # @scope class
+  attach_function :dispose_string_set, :clang_disposeStringSet, [StringSet], :void
+  
+  # An opaque type representing target information for a given translation
+  # unit.
+  class TargetInfoImpl < FFI::Struct
+    layout :dummy, :char
+  end
   
   # A single translation unit, which resides in an index.
   class TranslationUnitImpl < FFI::Struct
@@ -141,7 +167,7 @@ module FFIGen::Clang::C
   #   value indicates that there is no version number at all.
   # :minor ::
   #   (Integer) The minor version number, e.g., the '7' in '10.7.3'. This value
-  #   will be negative if no minor version number was provided, e.g., for 
+  #   will be negative if no minor version number was provided, e.g., for
   #   version '10'.
   # :subminor ::
   #   (Integer) The subminor version number, e.g., the '3' in '10.7.3'. This value
@@ -152,6 +178,50 @@ module FFIGen::Clang::C
            :minor, :int,
            :subminor, :int
   end
+  
+  # Describes the exception specification of a cursor.
+  # 
+  # A negative value indicates that the cursor is not a function declaration.
+  # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:cursor_exception_specification_kind).</em>
+  # 
+  # === Options:
+  # :none ::
+  #   The cursor has no exception specification.
+  # :dynamic_none ::
+  #   The cursor has exception specification throw()
+  # :dynamic ::
+  #   The cursor has exception specification throw(T1, T2)
+  # :ms_any ::
+  #   The cursor has exception specification throw(...).
+  # :basic_noexcept ::
+  #   The cursor has exception specification basic noexcept.
+  # :computed_noexcept ::
+  #   The cursor has exception specification computed noexcept.
+  # :unevaluated ::
+  #   The exception specification has not yet been evaluated.
+  # :uninstantiated ::
+  #   The exception specification has not yet been instantiated.
+  # :unparsed ::
+  #   The exception specification has not been parsed yet.
+  # :no_throw ::
+  #   The cursor has a __declspec(nothrow) exception specification.
+  # 
+  # @method _enum_cursor_exception_specification_kind_
+  # @return [Symbol]
+  # @scope class
+  enum :cursor_exception_specification_kind, [
+    :none, 0,
+    :dynamic_none, 1,
+    :dynamic, 2,
+    :ms_any, 3,
+    :basic_noexcept, 4,
+    :computed_noexcept, 5,
+    :unevaluated, 6,
+    :uninstantiated, 7,
+    :unparsed, 8,
+    :no_throw, 9
+  ]
   
   # Provides a shared context for creating translation units.
   # 
@@ -265,6 +335,19 @@ module FFIGen::Clang::C
   # @scope class
   attach_function :cx_index_get_global_options, :clang_CXIndex_getGlobalOptions, [:pointer], :uint
   
+  # Sets the invocation emission path option in a CXIndex.
+  # 
+  # The invocation emission path specifies a path which will contain log
+  # files for certain libclang invocations. A null value (default) implies that
+  # libclang invocations are not logged..
+  # 
+  # @method cx_index_set_invocation_emission_path_option(index, path)
+  # @param [FFI::Pointer(Index)] index 
+  # @param [String] path 
+  # @return [nil] 
+  # @scope class
+  attach_function :cx_index_set_invocation_emission_path_option, :clang_CXIndex_setInvocationEmissionPathOption, [:pointer, :string], :void
+  
   # Retrieve the complete file and path name of the given file.
   # 
   # @method get_file_name(s_file)
@@ -321,6 +404,37 @@ module FFIGen::Clang::C
   #   or a NULL file handle if the file was not a part of this translation unit.
   # @scope class
   attach_function :get_file, :clang_getFile, [TranslationUnitImpl, :string], :pointer
+  
+  # Retrieve the buffer associated with the given file.
+  # 
+  # @method get_file_contents(tu, file, size)
+  # @param [TranslationUnitImpl] tu the translation unit
+  # @param [FFI::Pointer(File)] file the file for which to retrieve the buffer.
+  # @param [FFI::Pointer(*SizeT)] size (out) if non-NULL, will be set to the size of the buffer.
+  # @return [String] a pointer to the buffer in memory that holds the contents of
+  #   \p file, or a NULL pointer when the file is not loaded.
+  # @scope class
+  attach_function :get_file_contents, :clang_getFileContents, [TranslationUnitImpl, :pointer, :pointer], :string
+  
+  # Returns non-zero if the \c file1 and \c file2 point to the same file,
+  # or they are both NULL.
+  # 
+  # @method file_is_equal(file1, file2)
+  # @param [FFI::Pointer(File)] file1 
+  # @param [FFI::Pointer(File)] file2 
+  # @return [Integer] 
+  # @scope class
+  attach_function :file_is_equal, :clang_File_isEqual, [:pointer, :pointer], :int
+  
+  # Returns the real path name of \c file.
+  # 
+  # An empty string may be returned. Use \c clang_getFileName() in that case.
+  # 
+  # @method file_try_get_real_path_name(file)
+  # @param [FFI::Pointer(File)] file 
+  # @return [String] 
+  # @scope class
+  attach_function :file_try_get_real_path_name, :clang_File_tryGetRealPathName, [:pointer], String.by_value
   
   # Identifies a specific source location within a translation
   # unit.
@@ -470,8 +584,8 @@ module FFIGen::Clang::C
   # @scope class
   attach_function :get_expansion_location, :clang_getExpansionLocation, [SourceLocation.by_value, :pointer, :pointer, :pointer, :pointer], :void
   
-  # Retrieve the file, line, column, and offset represented by
-  # the given source location, as specified in a # line directive.
+  # Retrieve the file, line and column represented by the given source
+  # location, as specified in a # line directive.
   # 
   # Example: given the following source code in a file somefile.c
   # 
@@ -612,6 +726,18 @@ module FFIGen::Clang::C
   # @scope class
   attach_function :get_skipped_ranges, :clang_getSkippedRanges, [TranslationUnitImpl, :pointer], SourceRangeList
   
+  # Retrieve all ranges from all files that were skipped by the
+  # preprocessor.
+  # 
+  # The preprocessor will skip lines when they are surrounded by an
+  # if/ifdef/ifndef directive whose condition does not evaluate to true.
+  # 
+  # @method get_all_skipped_ranges(tu)
+  # @param [TranslationUnitImpl] tu 
+  # @return [SourceRangeList] 
+  # @scope class
+  attach_function :get_all_skipped_ranges, :clang_getAllSkippedRanges, [TranslationUnitImpl], SourceRangeList
+  
   # Destroy the given \c CXSourceRangeList.
   # 
   # @method dispose_source_range_list(ranges)
@@ -720,7 +846,7 @@ module FFIGen::Clang::C
   # @scope class
   attach_function :dispose_diagnostic_set, :clang_disposeDiagnosticSet, [:pointer], :void
   
-  # Retrieve the child diagnostics of a CXDiagnostic. 
+  # Retrieve the child diagnostics of a CXDiagnostic.
   # 
   # This CXDiagnosticSet does not need to be released by
   # clang_disposeDiagnosticSet.
@@ -809,13 +935,13 @@ module FFIGen::Clang::C
   #   Display the category number associated with this diagnostic, if any.
   #   
   #   The category number is displayed within brackets after the diagnostic text.
-  #   This option corresponds to the clang flag 
+  #   This option corresponds to the clang flag
   #   \c -fdiagnostics-show-category=id.
   # :category_name ::
   #   Display the category name associated with this diagnostic, if any.
   #   
   #   The category name is displayed within brackets after the diagnostic text.
-  #   This option corresponds to the clang flag 
+  #   This option corresponds to the clang flag
   #   \c -fdiagnostics-show-category=name.
   # 
   # @method _enum_diagnostic_display_options_
@@ -889,14 +1015,14 @@ module FFIGen::Clang::C
   # @param [String] disable If non-NULL, will be set to the option that disables this
   #   diagnostic (if any).
   # @return [String] A string that contains the command-line option used to enable this
-  #   warning, such as "-Wconversion" or "-pedantic". 
+  #   warning, such as "-Wconversion" or "-pedantic".
   # @scope class
   attach_function :get_diagnostic_option, :clang_getDiagnosticOption, [:pointer, String], String.by_value
   
   # Retrieve the category number for this diagnostic.
   # 
   # Diagnostics can be categorized into groups along with other, related
-  # diagnostics (e.g., diagnostics under the same warning flag). This routine 
+  # diagnostics (e.g., diagnostics under the same warning flag). This routine
   # retrieves the category number for the given diagnostic.
   # 
   # @method get_diagnostic_category(diagnostic)
@@ -911,7 +1037,7 @@ module FFIGen::Clang::C
   #  instead.
   # 
   # @method get_diagnostic_category_name(category)
-  # @param [Integer] category A diagnostic category number, as returned by 
+  # @param [Integer] category A diagnostic category number, as returned by
   #   \c clang_getDiagnosticCategory().
   # @return [String] The name of the given diagnostic category.
   # @scope class
@@ -1083,7 +1209,7 @@ module FFIGen::Clang::C
   #   C++. This option is typically used when parsing a header with the
   #   intent of producing a precompiled header.
   # :precompiled_preamble ::
-  #   Used to indicate that the translation unit should be built with an 
+  #   Used to indicate that the translation unit should be built with an
   #   implicit precompiled header for the preamble.
   #   
   #   An implicit precompiled header is used as an optimization when a
@@ -1123,6 +1249,39 @@ module FFIGen::Clang::C
   #   Used to indicate that brief documentation comments should be
   #   included into the set of code completions returned from this translation
   #   unit.
+  # :create_preamble_on_first_parse ::
+  #   Used to indicate that the precompiled preamble should be created on
+  #   the first parse. Otherwise it will be created on the first reparse. This
+  #   trades runtime on the first parse (serializing the preamble takes time) for
+  #   reduced runtime on the second parse (can now reuse the preamble).
+  # :keep_going ::
+  #   Do not stop processing when fatal errors are encountered.
+  #   
+  #   When fatal errors are encountered while parsing a translation unit,
+  #   semantic analysis is typically stopped early when compiling code. A common
+  #   source for fatal errors are unresolvable include files. For the
+  #   purposes of an IDE, this is undesirable behavior and as much information
+  #   as possible should be reported. Use this flag to enable this behavior.
+  # :single_file_parse ::
+  #   Sets the preprocessor in a mode for parsing a single file only.
+  # :limit_skip_function_bodies_to_preamble ::
+  #   Used in combination with CXTranslationUnit_SkipFunctionBodies to
+  #   constrain the skipping of function bodies to the preamble.
+  #   
+  #   The function bodies of the main file are not skipped.
+  # :include_attributed_types ::
+  #   Used to indicate that attributed types should be included in CXType.
+  # :visit_implicit_attributes ::
+  #   Used to indicate that implicit attributes should be visited.
+  # :ignore_non_errors_from_included_files ::
+  #   Used to indicate that non-errors from included files should be ignored.
+  #   
+  #   If set, clang_getDiagnosticSetFromTU() will not report e.g. warnings from
+  #   included files anymore. This speeds up clang_getDiagnosticSetFromTU() for
+  #   the case where these warnings are not of interest, as for an IDE for
+  #   example, which typically shows only the diagnostics in the main file.
+  # :retain_excluded_conditional_blocks ::
+  #   Tells the preprocessor not to skip excluded conditional blocks.
   # 
   # @method _enum_translation_unit_flags_
   # @return [Symbol]
@@ -1136,7 +1295,15 @@ module FFIGen::Clang::C
     :for_serialization, 16,
     :cxx_chained_pch, 32,
     :skip_function_bodies, 64,
-    :include_brief_comments_in_code_completion, 128
+    :include_brief_comments_in_code_completion, 128,
+    :create_preamble_on_first_parse, 256,
+    :keep_going, 512,
+    :single_file_parse, 1024,
+    :limit_skip_function_bodies_to_preamble, 2048,
+    :include_attributed_types, 4096,
+    :visit_implicit_attributes, 8192,
+    :ignore_non_errors_from_included_files, 16384,
+    :retain_excluded_conditional_blocks, 32768
   ]
   
   # Returns the set of flags that is suitable for parsing a translation
@@ -1146,7 +1313,7 @@ module FFIGen::Clang::C
   # to indicate that the translation unit is likely to be reparsed many times,
   # either explicitly (via \c clang_reparseTranslationUnit()) or implicitly
   # (e.g., by code completion (\c clang_codeCompletionAt())). The returned flag
-  # set contains an unspecified set of optimizations (e.g., the precompiled 
+  # set contains an unspecified set of optimizations (e.g., the precompiled
   # preamble) geared toward improving the performance of these routines. The
   # set of optimizations enabled may change from one version to the next.
   # 
@@ -1182,14 +1349,14 @@ module FFIGen::Clang::C
   # way that the compiler is configured on the command line.
   # 
   # @method parse_translation_unit2(c_idx, source_filename, command_line_args, num_command_line_args, unsaved_files, num_unsaved_files, options, out_tu)
-  # @param [FFI::Pointer(Index)] c_idx The index object with which the translation unit will be 
+  # @param [FFI::Pointer(Index)] c_idx The index object with which the translation unit will be
   #   associated.
   # @param [String] source_filename The name of the source file to load, or NULL if the
   #   source file is included in \c command_line_args.
   # @param [FFI::Pointer(**CharS)] command_line_args The command-line arguments that would be
   #   passed to the \c clang executable if it were being invoked out-of-process.
   #   These command-line options will be parsed and will affect how the translation
-  #   unit is parsed. Note that the following options are ignored: '-c', 
+  #   unit is parsed. Note that the following options are ignored: '-c',
   #   '-emit-ast', '-fsyntax-only' (which is the default), and '-o \<output file>'.
   # @param [Integer] num_command_line_args The number of command-line arguments in
   #   \c command_line_args.
@@ -1211,6 +1378,23 @@ module FFIGen::Clang::C
   # @return [Symbol from _enum_error_code_] Zero on success, otherwise returns an error code.
   # @scope class
   attach_function :parse_translation_unit2, :clang_parseTranslationUnit2, [:pointer, :string, :pointer, :int, UnsavedFile, :uint, :uint, :pointer], :error_code
+  
+  # Same as clang_parseTranslationUnit2 but requires a full command line
+  # for \c command_line_args including argv(0). This is useful if the standard
+  # library paths are relative to the binary.
+  # 
+  # @method parse_translation_unit2_full_argv(c_idx, source_filename, command_line_args, num_command_line_args, unsaved_files, num_unsaved_files, options, out_tu)
+  # @param [FFI::Pointer(Index)] c_idx 
+  # @param [String] source_filename 
+  # @param [FFI::Pointer(**CharS)] command_line_args 
+  # @param [Integer] num_command_line_args 
+  # @param [UnsavedFile] unsaved_files 
+  # @param [Integer] num_unsaved_files 
+  # @param [Integer] options 
+  # @param [FFI::Pointer(*TranslationUnit)] out_tu 
+  # @return [Symbol from _enum_error_code_] 
+  # @scope class
+  attach_function :parse_translation_unit2_full_argv, :clang_parseTranslationUnit2FullArgv, [:pointer, :string, :pointer, :int, UnsavedFile, :uint, :uint, :pointer], :error_code
   
   # Flags that control how translation units are saved.
   # 
@@ -1257,7 +1441,7 @@ module FFIGen::Clang::C
   #   Indicates that an unknown error occurred while attempting to save
   #   the file.
   #   
-  #   This error typically indicates that file I/O failed when attempting to 
+  #   This error typically indicates that file I/O failed when attempting to
   #   write the file.
   # :translation_errors ::
   #   Indicates that errors during translation prevented this attempt
@@ -1296,10 +1480,22 @@ module FFIGen::Clang::C
   #   is saved. This should be a bitwise OR of the
   #   CXSaveTranslationUnit_XXX flags.
   # @return [Integer] A value that will match one of the enumerators of the CXSaveError
-  #   enumeration. Zero (CXSaveError_None) indicates that the translation unit was 
+  #   enumeration. Zero (CXSaveError_None) indicates that the translation unit was
   #   saved successfully, while a non-zero value indicates that a problem occurred.
   # @scope class
   attach_function :save_translation_unit, :clang_saveTranslationUnit, [TranslationUnitImpl, :string, :uint], :int
+  
+  # Suspend a translation unit in order to free memory associated with it.
+  # 
+  # A suspended translation unit uses significantly less memory but on the other
+  # side does not support any other calls than \c clang_reparseTranslationUnit
+  # to resume it or \c clang_disposeTranslationUnit to dispose it completely.
+  # 
+  # @method suspend_translation_unit(translation_unit_impl)
+  # @param [TranslationUnitImpl] translation_unit_impl 
+  # @return [Integer] 
+  # @scope class
+  attach_function :suspend_translation_unit, :clang_suspendTranslationUnit, [TranslationUnitImpl], :uint
   
   # Destroy the specified CXTranslationUnit object.
   # 
@@ -1334,7 +1530,7 @@ module FFIGen::Clang::C
   # The set of flags returned provide options for
   # \c clang_reparseTranslationUnit() by default. The returned flag
   # set contains an unspecified set of optimizations geared toward common uses
-  # of reparsing. The set of optimizations enabled may change from one version 
+  # of reparsing. The set of optimizations enabled may change from one version
   # to the next.
   # 
   # @method default_reparse_options(tu)
@@ -1349,18 +1545,18 @@ module FFIGen::Clang::C
   # created the given translation unit, for example because those source files
   # have changed (either on disk or as passed via \p unsaved_files). The
   # source code will be reparsed with the same command-line options as it
-  # was originally parsed. 
+  # was originally parsed.
   # 
   # Reparsing a translation unit invalidates all cursors and source locations
   # that refer into that translation unit. This makes reparsing a translation
   # unit semantically equivalent to destroying the translation unit and then
   # creating a new translation unit with the same command-line arguments.
-  # However, it may be more efficient to reparse a translation 
+  # However, it may be more efficient to reparse a translation
   # unit using this routine.
   # 
   # @method reparse_translation_unit(tu, num_unsaved_files, unsaved_files, options)
   # @param [TranslationUnitImpl] tu The translation unit whose contents will be re-parsed. The
-  #   translation unit must originally have been built with 
+  #   translation unit must originally have been built with
   #   \c clang_createTranslationUnitFromSourceFile().
   # @param [Integer] num_unsaved_files The number of unsaved file entries in \p
   #   unsaved_files.
@@ -1449,7 +1645,7 @@ module FFIGen::Clang::C
   # :kind ::
   #   (Symbol from _enum_tu_resource_usage_kind_) The memory usage category.
   # :amount ::
-  #   (Integer) Amount of resources used. 
+  #   (Integer) Amount of resources used.
   #         The units will depend on the resource kind.
   class TUResourceUsageEntry < FFI::Struct
     layout :kind, :tu_resource_usage_kind,
@@ -1488,6 +1684,44 @@ module FFIGen::Clang::C
   # @return [nil] 
   # @scope class
   attach_function :dispose_cxtu_resource_usage, :clang_disposeCXTUResourceUsage, [TUResourceUsage.by_value], :void
+  
+  # Get target information for this translation unit.
+  # 
+  # The CXTargetInfo object cannot outlive the CXTranslationUnit object.
+  # 
+  # @method get_translation_unit_target_info(ct_unit)
+  # @param [TranslationUnitImpl] ct_unit 
+  # @return [TargetInfoImpl] 
+  # @scope class
+  attach_function :get_translation_unit_target_info, :clang_getTranslationUnitTargetInfo, [TranslationUnitImpl], TargetInfoImpl
+  
+  # Destroy the CXTargetInfo object.
+  # 
+  # @method target_info_dispose(info)
+  # @param [TargetInfoImpl] info 
+  # @return [nil] 
+  # @scope class
+  attach_function :target_info_dispose, :clang_TargetInfo_dispose, [TargetInfoImpl], :void
+  
+  # Get the normalized target triple as a string.
+  # 
+  # Returns the empty string in case of any error.
+  # 
+  # @method target_info_get_triple(info)
+  # @param [TargetInfoImpl] info 
+  # @return [String] 
+  # @scope class
+  attach_function :target_info_get_triple, :clang_TargetInfo_getTriple, [TargetInfoImpl], String.by_value
+  
+  # Get the pointer width of the target in bits.
+  # 
+  # Returns -1 in case of error.
+  # 
+  # @method target_info_get_pointer_width(info)
+  # @param [TargetInfoImpl] info 
+  # @return [Integer] 
+  # @scope class
+  attach_function :target_info_get_pointer_width, :clang_TargetInfo_getPointerWidth, [TargetInfoImpl], :int
   
   # Describes the kind of entity that a cursor refers to.
   # 
@@ -1540,7 +1774,7 @@ module FFIGen::Clang::C
   # :obj_c_category_impl_decl ::
   #   An Objective-C \@implementation for a category.
   # :typedef_decl ::
-  #   A typedef
+  #   A typedef.
   # :cxx_method ::
   #   A C++ class method.
   # :namespace ::
@@ -1609,12 +1843,12 @@ module FFIGen::Clang::C
   # :namespace_ref ::
   #   A reference to a namespace or namespace alias.
   # :member_ref ::
-  #   A reference to a member of a struct, union, or class that occurs in 
+  #   A reference to a member of a struct, union, or class that occurs in
   #   some non-expression context, e.g., a designated initializer.
   # :label_ref ::
   #   A reference to a labeled statement.
   #   
-  #   This cursor kind is used to describe the jump to "start_over" in the 
+  #   This cursor kind is used to describe the jump to "start_over" in the
   #   goto statement in the following example:
   #   
   #   \code
@@ -1657,11 +1891,11 @@ module FFIGen::Clang::C
   #   argument-dependent lookup (e.g., the "swap" function at the end of the
   #   example).
   #   
-  #   The functions \c clang_getNumOverloadedDecls() and 
+  #   The functions \c clang_getNumOverloadedDecls() and
   #   \c clang_getOverloadedDecl() can be used to retrieve the definitions
   #   referenced by this cursor.
   # :variable_ref ::
-  #   A reference to a variable that occurs in some non-expression 
+  #   A reference to a variable that occurs in some non-expression
   #   context, e.g., a C++ lambda capture list.
   # :first_invalid ::
   #   Error conditions
@@ -1781,7 +2015,7 @@ module FFIGen::Clang::C
   #   A delete expression for memory deallocation and destructor calls,
   #   e.g. "delete() pArray".
   # :unary_expr ::
-  #   A unary expression.
+  #   A unary expression. (noexcept, sizeof, or other traits)
   # :obj_c_string_literal ::
   #   An Objective-C string literal i.e. @"foo".
   # :obj_c_encode_expr ::
@@ -1836,6 +2070,22 @@ module FFIGen::Clang::C
   #   Objective-c Boolean Literal.
   # :obj_c_self_expr ::
   #   Represents the "self" expression in an Objective-C method.
+  # :omp_array_section_expr ::
+  #   OpenMP 5.0 (2.1.5, Array Section).
+  # :obj_c_availability_check_expr ::
+  #   Represents an @available(...) check.
+  # :fixed_point_literal ::
+  #   Fixed point literal
+  # :omp_array_shaping_expr ::
+  #   OpenMP 5.0 (2.1.4, Array Shaping).
+  # :omp_iterator_expr ::
+  #   OpenMP 5.0 (2.1.6 Iterators)
+  # :cxx_addrspace_cast_expr ::
+  #   OpenCL's addrspace_cast<> expression.
+  # :concept_specialization_expr ::
+  #   Expression that references a C++20 concept.
+  # :requires_expr ::
+  #   Expression that references a C++20 concept.
   # :first_stmt ::
   #   Statements
   # :unexposed_stmt ::
@@ -1847,9 +2097,9 @@ module FFIGen::Clang::C
   #   children, etc. However, the specific kind of the statement is not
   #   reported.
   # :label_stmt ::
-  #   A labelled statement in a function. 
+  #   A labelled statement in a function.
   #   
-  #   This cursor kind is used to describe the "start_over:" label statement in 
+  #   This cursor kind is used to describe the "start_over:" label statement in
   #   the following example:
   #   
   #   \code
@@ -1916,7 +2166,7 @@ module FFIGen::Clang::C
   # :ms_asm_stmt ::
   #   A MS inline assembly statement extension.
   # :null_stmt ::
-  #   The null satement ";": C99 6.8.3p3.
+  #   The null statement ";": C99 6.8.3p3.
   #   
   #   This cursor kind is used to describe the null statement.
   # :decl_stmt ::
@@ -1925,7 +2175,7 @@ module FFIGen::Clang::C
   # :omp_parallel_directive ::
   #   OpenMP parallel directive.
   # :omp_simd_directive ::
-  #   OpenMP simd directive.
+  #   OpenMP SIMD directive.
   # :omp_for_directive ::
   #   OpenMP for directive.
   # :omp_sections_directive ::
@@ -1954,6 +2204,120 @@ module FFIGen::Clang::C
   #   OpenMP flush directive.
   # :seh_leave_stmt ::
   #   Windows Structured Exception Handling's leave statement.
+  # :omp_ordered_directive ::
+  #   OpenMP ordered directive.
+  # :omp_atomic_directive ::
+  #   OpenMP atomic directive.
+  # :omp_for_simd_directive ::
+  #   OpenMP for SIMD directive.
+  # :omp_parallel_for_simd_directive ::
+  #   OpenMP parallel for SIMD directive.
+  # :omp_target_directive ::
+  #   OpenMP target directive.
+  # :omp_teams_directive ::
+  #   OpenMP teams directive.
+  # :omp_taskgroup_directive ::
+  #   OpenMP taskgroup directive.
+  # :omp_cancellation_point_directive ::
+  #   OpenMP cancellation point directive.
+  # :omp_cancel_directive ::
+  #   OpenMP cancel directive.
+  # :omp_target_data_directive ::
+  #   OpenMP target data directive.
+  # :omp_task_loop_directive ::
+  #   OpenMP taskloop directive.
+  # :omp_task_loop_simd_directive ::
+  #   OpenMP taskloop simd directive.
+  # :omp_distribute_directive ::
+  #   OpenMP distribute directive.
+  # :omp_target_enter_data_directive ::
+  #   OpenMP target enter data directive.
+  # :omp_target_exit_data_directive ::
+  #   OpenMP target exit data directive.
+  # :omp_target_parallel_directive ::
+  #   OpenMP target parallel directive.
+  # :omp_target_parallel_for_directive ::
+  #   OpenMP target parallel for directive.
+  # :omp_target_update_directive ::
+  #   OpenMP target update directive.
+  # :omp_distribute_parallel_for_directive ::
+  #   OpenMP distribute parallel for directive.
+  # :omp_distribute_parallel_for_simd_directive ::
+  #   OpenMP distribute parallel for simd directive.
+  # :omp_distribute_simd_directive ::
+  #   OpenMP distribute simd directive.
+  # :omp_target_parallel_for_simd_directive ::
+  #   OpenMP target parallel for simd directive.
+  # :omp_target_simd_directive ::
+  #   OpenMP target simd directive.
+  # :omp_teams_distribute_directive ::
+  #   OpenMP teams distribute directive.
+  # :omp_teams_distribute_simd_directive ::
+  #   OpenMP teams distribute simd directive.
+  # :omp_teams_distribute_parallel_for_simd_directive ::
+  #   OpenMP teams distribute parallel for simd directive.
+  # :omp_teams_distribute_parallel_for_directive ::
+  #   OpenMP teams distribute parallel for directive.
+  # :omp_target_teams_directive ::
+  #   OpenMP target teams directive.
+  # :omp_target_teams_distribute_directive ::
+  #   OpenMP target teams distribute directive.
+  # :omp_target_teams_distribute_parallel_for_directive ::
+  #   OpenMP target teams distribute parallel for directive.
+  # :omp_target_teams_distribute_parallel_for_simd_directive ::
+  #   OpenMP target teams distribute parallel for simd directive.
+  # :omp_target_teams_distribute_simd_directive ::
+  #   OpenMP target teams distribute simd directive.
+  # :builtin_bit_cast_expr ::
+  #   C++2a std::bit_cast expression.
+  # :omp_master_task_loop_directive ::
+  #   OpenMP master taskloop directive.
+  # :omp_parallel_master_task_loop_directive ::
+  #   OpenMP parallel master taskloop directive.
+  # :omp_master_task_loop_simd_directive ::
+  #   OpenMP master taskloop simd directive.
+  # :omp_parallel_master_task_loop_simd_directive ::
+  #   OpenMP parallel master taskloop simd directive.
+  # :omp_parallel_master_directive ::
+  #   OpenMP parallel master directive.
+  # :omp_depobj_directive ::
+  #   OpenMP depobj directive.
+  # :omp_scan_directive ::
+  #   OpenMP scan directive.
+  # :omp_tile_directive ::
+  #   OpenMP tile directive.
+  # :omp_canonical_loop ::
+  #   OpenMP canonical loop.
+  # :omp_interop_directive ::
+  #   OpenMP interop directive.
+  # :omp_dispatch_directive ::
+  #   OpenMP dispatch directive.
+  # :omp_masked_directive ::
+  #   OpenMP masked directive.
+  # :omp_unroll_directive ::
+  #   OpenMP unroll directive.
+  # :omp_meta_directive ::
+  #   OpenMP metadirective directive.
+  # :omp_generic_loop_directive ::
+  #   OpenMP loop directive.
+  # :omp_teams_generic_loop_directive ::
+  #   OpenMP teams loop directive.
+  # :omp_target_teams_generic_loop_directive ::
+  #   OpenMP target teams loop directive.
+  # :omp_parallel_generic_loop_directive ::
+  #   OpenMP parallel loop directive.
+  # :omp_target_parallel_generic_loop_directive ::
+  #   OpenMP target parallel loop directive.
+  # :omp_parallel_masked_directive ::
+  #   OpenMP parallel masked directive.
+  # :omp_masked_task_loop_directive ::
+  #   OpenMP masked taskloop directive.
+  # :omp_masked_task_loop_simd_directive ::
+  #   OpenMP masked taskloop simd directive.
+  # :omp_parallel_masked_task_loop_directive ::
+  #   OpenMP parallel masked taskloop directive.
+  # :omp_parallel_masked_task_loop_simd_directive ::
+  #   OpenMP parallel masked taskloop simd directive.
   # :translation_unit ::
   #   Cursor that represents the translation unit itself.
   #   
@@ -1994,6 +2358,58 @@ module FFIGen::Clang::C
   #   
   # :cuda_host_attr ::
   #   
+  # :cuda_shared_attr ::
+  #   
+  # :visibility_attr ::
+  #   
+  # :dll_export ::
+  #   
+  # :dll_import ::
+  #   
+  # :ns_returns_retained ::
+  #   
+  # :ns_returns_not_retained ::
+  #   
+  # :ns_returns_autoreleased ::
+  #   
+  # :ns_consumes_self ::
+  #   
+  # :ns_consumed ::
+  #   
+  # :obj_c_exception ::
+  #   
+  # :obj_cns_object ::
+  #   
+  # :obj_c_independent_class ::
+  #   
+  # :obj_c_precise_lifetime ::
+  #   
+  # :obj_c_returns_inner_pointer ::
+  #   
+  # :obj_c_requires_super ::
+  #   
+  # :obj_c_root_class ::
+  #   
+  # :obj_c_subclassing_restricted ::
+  #   
+  # :obj_c_explicit_protocol_impl ::
+  #   
+  # :obj_c_designated_initializer ::
+  #   
+  # :obj_c_runtime_visible ::
+  #   
+  # :obj_c_boxable ::
+  #   
+  # :flag_enum ::
+  #   
+  # :convergent_attr ::
+  #   
+  # :warn_unused_attr ::
+  #   
+  # :warn_unused_result_attr ::
+  #   
+  # :aligned_attr ::
+  #   
   # :preprocessing_directive ::
   #   Preprocessing
   # :macro_definition ::
@@ -2004,6 +2420,16 @@ module FFIGen::Clang::C
   #   
   # :module_import_decl ::
   #   A module import declaration.
+  # :type_alias_template_decl ::
+  #   
+  # :static_assert ::
+  #   A static_assert or _Static_assert node
+  # :friend_decl ::
+  #   a friend declaration.
+  # :concept_decl ::
+  #   a concept declaration.
+  # :overload_candidate ::
+  #   A code completion overload candidate.
   # 
   # @method _enum_cursor_kind_
   # @return [Symbol]
@@ -2113,6 +2539,14 @@ module FFIGen::Clang::C
     :lambda_expr, 144,
     :obj_c_bool_literal_expr, 145,
     :obj_c_self_expr, 146,
+    :omp_array_section_expr, 147,
+    :obj_c_availability_check_expr, 148,
+    :fixed_point_literal, 149,
+    :omp_array_shaping_expr, 150,
+    :omp_iterator_expr, 151,
+    :cxx_addrspace_cast_expr, 152,
+    :concept_specialization_expr, 153,
+    :requires_expr, 154,
     :first_stmt, 200,
     :unexposed_stmt, 200,
     :label_stmt, 201,
@@ -2162,7 +2596,64 @@ module FFIGen::Clang::C
     :omp_taskwait_directive, 245,
     :omp_flush_directive, 246,
     :seh_leave_stmt, 247,
-    :translation_unit, 300,
+    :omp_ordered_directive, 248,
+    :omp_atomic_directive, 249,
+    :omp_for_simd_directive, 250,
+    :omp_parallel_for_simd_directive, 251,
+    :omp_target_directive, 252,
+    :omp_teams_directive, 253,
+    :omp_taskgroup_directive, 254,
+    :omp_cancellation_point_directive, 255,
+    :omp_cancel_directive, 256,
+    :omp_target_data_directive, 257,
+    :omp_task_loop_directive, 258,
+    :omp_task_loop_simd_directive, 259,
+    :omp_distribute_directive, 260,
+    :omp_target_enter_data_directive, 261,
+    :omp_target_exit_data_directive, 262,
+    :omp_target_parallel_directive, 263,
+    :omp_target_parallel_for_directive, 264,
+    :omp_target_update_directive, 265,
+    :omp_distribute_parallel_for_directive, 266,
+    :omp_distribute_parallel_for_simd_directive, 267,
+    :omp_distribute_simd_directive, 268,
+    :omp_target_parallel_for_simd_directive, 269,
+    :omp_target_simd_directive, 270,
+    :omp_teams_distribute_directive, 271,
+    :omp_teams_distribute_simd_directive, 272,
+    :omp_teams_distribute_parallel_for_simd_directive, 273,
+    :omp_teams_distribute_parallel_for_directive, 274,
+    :omp_target_teams_directive, 275,
+    :omp_target_teams_distribute_directive, 276,
+    :omp_target_teams_distribute_parallel_for_directive, 277,
+    :omp_target_teams_distribute_parallel_for_simd_directive, 278,
+    :omp_target_teams_distribute_simd_directive, 279,
+    :builtin_bit_cast_expr, 280,
+    :omp_master_task_loop_directive, 281,
+    :omp_parallel_master_task_loop_directive, 282,
+    :omp_master_task_loop_simd_directive, 283,
+    :omp_parallel_master_task_loop_simd_directive, 284,
+    :omp_parallel_master_directive, 285,
+    :omp_depobj_directive, 286,
+    :omp_scan_directive, 287,
+    :omp_tile_directive, 288,
+    :omp_canonical_loop, 289,
+    :omp_interop_directive, 290,
+    :omp_dispatch_directive, 291,
+    :omp_masked_directive, 292,
+    :omp_unroll_directive, 293,
+    :omp_meta_directive, 294,
+    :omp_generic_loop_directive, 295,
+    :omp_teams_generic_loop_directive, 296,
+    :omp_target_teams_generic_loop_directive, 297,
+    :omp_parallel_generic_loop_directive, 298,
+    :omp_target_parallel_generic_loop_directive, 299,
+    :omp_parallel_masked_directive, 300,
+    :omp_masked_task_loop_directive, 301,
+    :omp_masked_task_loop_simd_directive, 302,
+    :omp_parallel_masked_task_loop_directive, 303,
+    :omp_parallel_masked_task_loop_simd_directive, 304,
+    :translation_unit, 350,
     :first_attr, 400,
     :unexposed_attr, 400,
     :ib_action_attr, 401,
@@ -2180,11 +2671,42 @@ module FFIGen::Clang::C
     :cuda_device_attr, 413,
     :cuda_global_attr, 414,
     :cuda_host_attr, 415,
+    :cuda_shared_attr, 416,
+    :visibility_attr, 417,
+    :dll_export, 418,
+    :dll_import, 419,
+    :ns_returns_retained, 420,
+    :ns_returns_not_retained, 421,
+    :ns_returns_autoreleased, 422,
+    :ns_consumes_self, 423,
+    :ns_consumed, 424,
+    :obj_c_exception, 425,
+    :obj_cns_object, 426,
+    :obj_c_independent_class, 427,
+    :obj_c_precise_lifetime, 428,
+    :obj_c_returns_inner_pointer, 429,
+    :obj_c_requires_super, 430,
+    :obj_c_root_class, 431,
+    :obj_c_subclassing_restricted, 432,
+    :obj_c_explicit_protocol_impl, 433,
+    :obj_c_designated_initializer, 434,
+    :obj_c_runtime_visible, 435,
+    :obj_c_boxable, 436,
+    :flag_enum, 437,
+    :convergent_attr, 438,
+    :warn_unused_attr, 439,
+    :warn_unused_result_attr, 440,
+    :aligned_attr, 441,
     :preprocessing_directive, 500,
     :macro_definition, 501,
     :macro_expansion, 502,
     :inclusion_directive, 503,
-    :module_import_decl, 600
+    :module_import_decl, 600,
+    :type_alias_template_decl, 601,
+    :static_assert, 602,
+    :friend_decl, 603,
+    :concept_decl, 604,
+    :overload_candidate, 700
   ]
   
   # A cursor representing some element in the abstract syntax tree for
@@ -2276,6 +2798,17 @@ module FFIGen::Clang::C
   # @scope class
   attach_function :is_declaration, :clang_isDeclaration, [:cursor_kind], :uint
   
+  # Determine whether the given declaration is invalid.
+  # 
+  # A declaration is invalid if it could not be parsed successfully.
+  # 
+  # @method is_invalid_declaration(cursor)
+  # @param [Cursor] cursor 
+  # @return [Integer] non-zero if the cursor represents a declaration and it is
+  #   invalid, otherwise NULL.
+  # @scope class
+  attach_function :is_invalid_declaration, :clang_isInvalidDeclaration, [Cursor.by_value], :uint
+  
   # Determine whether the given cursor kind represents a simple
   # reference.
   # 
@@ -2312,6 +2845,14 @@ module FFIGen::Clang::C
   # @return [Integer] 
   # @scope class
   attach_function :is_attribute, :clang_isAttribute, [:cursor_kind], :uint
+  
+  # Determine whether the given cursor has any attributes.
+  # 
+  # @method cursor_has_attrs(c)
+  # @param [Cursor] c 
+  # @return [Integer] 
+  # @scope class
+  attach_function :cursor_has_attrs, :clang_Cursor_hasAttrs, [Cursor.by_value], :uint
   
   # Determine whether the given cursor kind represents an invalid
   # cursor.
@@ -2387,6 +2928,43 @@ module FFIGen::Clang::C
   # @scope class
   attach_function :get_cursor_linkage, :clang_getCursorLinkage, [Cursor.by_value], :linkage_kind
   
+  # (Not documented)
+  # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:visibility_kind).</em>
+  # 
+  # === Options:
+  # :invalid ::
+  #   This value indicates that no visibility information is available
+  #   for a provided CXCursor.
+  # :hidden ::
+  #   Symbol not seen by the linker.
+  # :protected ::
+  #   Symbol seen by the linker but resolves to a symbol inside this object.
+  # :default ::
+  #   Symbol seen by the linker and acts like a normal symbol.
+  # 
+  # @method _enum_visibility_kind_
+  # @return [Symbol]
+  # @scope class
+  enum :visibility_kind, [
+    :invalid, 0,
+    :hidden, 1,
+    :protected, 2,
+    :default, 3
+  ]
+  
+  # Describe the visibility of the entity referred to by a cursor.
+  # 
+  # This returns the default visibility if not explicitly specified by
+  # a visibility attribute. The default visibility may be changed by
+  # commandline arguments.
+  # 
+  # @method get_cursor_visibility(cursor)
+  # @param [Cursor] cursor The cursor to query.
+  # @return [Symbol from _enum_visibility_kind_] The visibility of the cursor.
+  # @scope class
+  attach_function :get_cursor_visibility, :clang_getCursorVisibility, [Cursor.by_value], :visibility_kind
+  
   # Determine the availability of the entity that this cursor refers to,
   # taking the current target platform into account.
   # 
@@ -2404,7 +2982,7 @@ module FFIGen::Clang::C
   #   (String) A string that describes the platform for which this structure
   #   provides availability information.
   #   
-  #   Possible values are "ios" or "macosx".
+  #   Possible values are "ios" or "macos".
   # :introduced ::
   #   (Version) The version number in which this entity was introduced.
   # :deprecated ::
@@ -2432,28 +3010,28 @@ module FFIGen::Clang::C
   # 
   # @method get_cursor_platform_availability(cursor, always_deprecated, deprecated_message, always_unavailable, unavailable_message, availability, availability_size)
   # @param [Cursor] cursor The cursor to query.
-  # @param [FFI::Pointer(*Int)] always_deprecated If non-NULL, will be set to indicate whether the 
+  # @param [FFI::Pointer(*Int)] always_deprecated If non-NULL, will be set to indicate whether the
   #   entity is deprecated on all platforms.
-  # @param [String] deprecated_message If non-NULL, will be set to the message text 
+  # @param [String] deprecated_message If non-NULL, will be set to the message text
   #   provided along with the unconditional deprecation of this entity. The client
   #   is responsible for deallocating this string.
   # @param [FFI::Pointer(*Int)] always_unavailable If non-NULL, will be set to indicate whether the
   #   entity is unavailable on all platforms.
   # @param [String] unavailable_message If non-NULL, will be set to the message text
-  #   provided along with the unconditional unavailability of this entity. The 
+  #   provided along with the unconditional unavailability of this entity. The
   #   client is responsible for deallocating this string.
   # @param [PlatformAvailability] availability If non-NULL, an array of CXPlatformAvailability instances
   #   that will be populated with platform availability information, up to either
   #   the number of platforms for which availability information is available (as
   #   returned by this function) or \c availability_size, whichever is smaller.
-  # @param [Integer] availability_size The number of elements available in the 
+  # @param [Integer] availability_size The number of elements available in the
   #   \c availability array.
   # @return [Integer] The number of platforms (N) for which availability information is
   #   available (which is unrelated to \c availability_size).
   #   
-  #   Note that the client is responsible for calling 
-  #   \c clang_disposeCXPlatformAvailability to free each of the 
-  #   platform-availability structures returned. There are 
+  #   Note that the client is responsible for calling
+  #   \c clang_disposeCXPlatformAvailability to free each of the
+  #   platform-availability structures returned. There are
   #   \c min(N, availability_size) such structures.
   # @scope class
   attach_function :get_cursor_platform_availability, :clang_getCursorPlatformAvailability, [Cursor.by_value, :pointer, String, :pointer, String, PlatformAvailability, :int], :int
@@ -2465,6 +3043,35 @@ module FFIGen::Clang::C
   # @return [nil] 
   # @scope class
   attach_function :dispose_cx_platform_availability, :clang_disposeCXPlatformAvailability, [PlatformAvailability], :void
+  
+  # If cursor refers to a variable declaration and it has initializer returns
+  # cursor referring to the initializer otherwise return null cursor.
+  # 
+  # @method cursor_get_var_decl_initializer(cursor)
+  # @param [Cursor] cursor 
+  # @return [Cursor] 
+  # @scope class
+  attach_function :cursor_get_var_decl_initializer, :clang_Cursor_getVarDeclInitializer, [Cursor.by_value], Cursor.by_value
+  
+  # If cursor refers to a variable declaration that has global storage returns 1.
+  # If cursor refers to a variable declaration that doesn't have global storage
+  # returns 0. Otherwise returns -1.
+  # 
+  # @method cursor_has_var_decl_global_storage(cursor)
+  # @param [Cursor] cursor 
+  # @return [Integer] 
+  # @scope class
+  attach_function :cursor_has_var_decl_global_storage, :clang_Cursor_hasVarDeclGlobalStorage, [Cursor.by_value], :int
+  
+  # If cursor refers to a variable declaration that has external storage
+  # returns 1. If cursor refers to a variable declaration that doesn't have
+  # external storage returns 0. Otherwise returns -1.
+  # 
+  # @method cursor_has_var_decl_external_storage(cursor)
+  # @param [Cursor] cursor 
+  # @return [Integer] 
+  # @scope class
+  attach_function :cursor_has_var_decl_external_storage, :clang_Cursor_hasVarDeclExternalStorage, [Cursor.by_value], :int
   
   # Describe the "language" of the entity referred to by a cursor.
   # 
@@ -2497,6 +3104,37 @@ module FFIGen::Clang::C
   # @return [Symbol from _enum_language_kind_] 
   # @scope class
   attach_function :get_cursor_language, :clang_getCursorLanguage, [Cursor.by_value], :language_kind
+  
+  # Describe the "thread-local storage (TLS) kind" of the declaration
+  # referred to by a cursor.
+  # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:tls_kind).</em>
+  # 
+  # === Options:
+  # :none ::
+  #   
+  # :dynamic ::
+  #   
+  # :static ::
+  #   
+  # 
+  # @method _enum_tls_kind_
+  # @return [Symbol]
+  # @scope class
+  enum :tls_kind, [
+    :none, 0,
+    :dynamic, 1,
+    :static, 2
+  ]
+  
+  # Determine the "thread-local storage (TLS) kind" of the declaration
+  # referred to by a cursor.
+  # 
+  # @method get_cursor_tls_kind(cursor)
+  # @param [Cursor] cursor 
+  # @return [Symbol from _enum_tls_kind_] 
+  # @scope class
+  attach_function :get_cursor_tls_kind, :clang_getCursorTLSKind, [Cursor.by_value], :tls_kind
   
   # Returns the translation unit that a cursor originated from.
   # 
@@ -2548,7 +3186,7 @@ module FFIGen::Clang::C
   # 
   # The semantic parent of a cursor is the cursor that semantically contains
   # the given \p cursor. For many declarations, the lexical and semantic parents
-  # are equivalent (the lexical parent is returned by 
+  # are equivalent (the lexical parent is returned by
   # \c clang_getCursorLexicalParent()). They diverge when declarations or
   # definitions are provided out-of-line. For example:
   # 
@@ -2586,7 +3224,7 @@ module FFIGen::Clang::C
   # 
   # The lexical parent of a cursor is the cursor in which the given \p cursor
   # was actually written. For many declarations, the lexical and semantic parents
-  # are equivalent (the semantic parent is returned by 
+  # are equivalent (the semantic parent is returned by
   # \c clang_getCursorSemanticParent()). They diverge when declarations or
   # definitions are provided out-of-line. For example:
   # 
@@ -2656,7 +3294,7 @@ module FFIGen::Clang::C
   # @param [FFI::Pointer(**Cursor)] overridden A pointer whose pointee will be replaced with a
   #   pointer to an array of cursors, representing the set of overridden
   #   methods. If there are no overridden methods, the pointee will be
-  #   set to NULL. The pointee must be freed via a call to 
+  #   set to NULL. The pointee must be freed via a call to
   #   \c clang_disposeOverriddenCursors().
   # @param [FFI::Pointer(*UInt)] num_overridden A pointer to the number of overridden
   #   functions, will be set to the number of overridden functions in the
@@ -2799,6 +3437,28 @@ module FFIGen::Clang::C
   #   
   # :obj_c_sel ::
   #   
+  # :float128 ::
+  #   
+  # :half ::
+  #   
+  # :float16 ::
+  #   
+  # :short_accum ::
+  #   
+  # :accum ::
+  #   
+  # :long_accum ::
+  #   
+  # :u_short_accum ::
+  #   
+  # :u_accum ::
+  #   
+  # :u_long_accum ::
+  #   
+  # :b_float16 ::
+  #   
+  # :ibm128 ::
+  #   
   # :complex ::
   #   
   # :pointer ::
@@ -2835,6 +3495,130 @@ module FFIGen::Clang::C
   #   
   # :member_pointer ::
   #   
+  # :auto ::
+  #   
+  # :elaborated ::
+  #   Represents a type that was referred to using an elaborated type keyword.
+  #   
+  #   E.g., struct S, or via a qualified name, e.g., N::M::type, or both.
+  # :pipe ::
+  #   OpenCL PipeType.
+  # :ocl_image1d_ro ::
+  #   OpenCL builtin types.
+  # :ocl_image1d_array_ro ::
+  #   
+  # :ocl_image1d_buffer_ro ::
+  #   
+  # :ocl_image2d_ro ::
+  #   
+  # :ocl_image2d_array_ro ::
+  #   
+  # :ocl_image2d_depth_ro ::
+  #   
+  # :ocl_image2d_array_depth_ro ::
+  #   
+  # :ocl_image2d_msaaro ::
+  #   
+  # :ocl_image2d_array_msaaro ::
+  #   
+  # :ocl_image2d_msaa_depth_ro ::
+  #   
+  # :ocl_image2d_array_msaa_depth_ro ::
+  #   
+  # :ocl_image3d_ro ::
+  #   
+  # :ocl_image1d_wo ::
+  #   
+  # :ocl_image1d_array_wo ::
+  #   
+  # :ocl_image1d_buffer_wo ::
+  #   
+  # :ocl_image2d_wo ::
+  #   
+  # :ocl_image2d_array_wo ::
+  #   
+  # :ocl_image2d_depth_wo ::
+  #   
+  # :ocl_image2d_array_depth_wo ::
+  #   
+  # :ocl_image2d_msaawo ::
+  #   
+  # :ocl_image2d_array_msaawo ::
+  #   
+  # :ocl_image2d_msaa_depth_wo ::
+  #   
+  # :ocl_image2d_array_msaa_depth_wo ::
+  #   
+  # :ocl_image3d_wo ::
+  #   
+  # :ocl_image1d_rw ::
+  #   
+  # :ocl_image1d_array_rw ::
+  #   
+  # :ocl_image1d_buffer_rw ::
+  #   
+  # :ocl_image2d_rw ::
+  #   
+  # :ocl_image2d_array_rw ::
+  #   
+  # :ocl_image2d_depth_rw ::
+  #   
+  # :ocl_image2d_array_depth_rw ::
+  #   
+  # :ocl_image2d_msaarw ::
+  #   
+  # :ocl_image2d_array_msaarw ::
+  #   
+  # :ocl_image2d_msaa_depth_rw ::
+  #   
+  # :ocl_image2d_array_msaa_depth_rw ::
+  #   
+  # :ocl_image3d_rw ::
+  #   
+  # :ocl_sampler ::
+  #   
+  # :ocl_event ::
+  #   
+  # :ocl_queue ::
+  #   
+  # :ocl_reserve_id ::
+  #   
+  # :obj_c_object ::
+  #   
+  # :obj_c_type_param ::
+  #   
+  # :attributed ::
+  #   
+  # :ocl_intel_subgroup_avc_mce_payload ::
+  #   
+  # :ocl_intel_subgroup_avc_ime_payload ::
+  #   
+  # :ocl_intel_subgroup_avc_ref_payload ::
+  #   
+  # :ocl_intel_subgroup_avc_sic_payload ::
+  #   
+  # :ocl_intel_subgroup_avc_mce_result ::
+  #   
+  # :ocl_intel_subgroup_avc_ime_result ::
+  #   
+  # :ocl_intel_subgroup_avc_ref_result ::
+  #   
+  # :ocl_intel_subgroup_avc_sic_result ::
+  #   
+  # :ocl_intel_subgroup_avc_ime_result_single_ref_streamout ::
+  #   
+  # :ocl_intel_subgroup_avc_ime_result_dual_ref_streamout ::
+  #   
+  # :ocl_intel_subgroup_avc_ime_single_ref_streamin ::
+  #   
+  # :ocl_intel_subgroup_avc_ime_dual_ref_streamin ::
+  #   
+  # :ext_vector ::
+  #   
+  # :atomic ::
+  #   
+  # :btf_tag_attributed ::
+  #   
   # 
   # @method _enum_type_kind_
   # @return [Symbol]
@@ -2870,6 +3654,17 @@ module FFIGen::Clang::C
     :obj_c_id, 27,
     :obj_c_class, 28,
     :obj_c_sel, 29,
+    :float128, 30,
+    :half, 31,
+    :float16, 32,
+    :short_accum, 33,
+    :accum, 34,
+    :long_accum, 35,
+    :u_short_accum, 36,
+    :u_accum, 37,
+    :u_long_accum, 38,
+    :b_float16, 39,
+    :ibm128, 40,
     :complex, 100,
     :pointer, 101,
     :block_pointer, 102,
@@ -2887,7 +3682,68 @@ module FFIGen::Clang::C
     :incomplete_array, 114,
     :variable_array, 115,
     :dependent_sized_array, 116,
-    :member_pointer, 117
+    :member_pointer, 117,
+    :auto, 118,
+    :elaborated, 119,
+    :pipe, 120,
+    :ocl_image1d_ro, 121,
+    :ocl_image1d_array_ro, 122,
+    :ocl_image1d_buffer_ro, 123,
+    :ocl_image2d_ro, 124,
+    :ocl_image2d_array_ro, 125,
+    :ocl_image2d_depth_ro, 126,
+    :ocl_image2d_array_depth_ro, 127,
+    :ocl_image2d_msaaro, 128,
+    :ocl_image2d_array_msaaro, 129,
+    :ocl_image2d_msaa_depth_ro, 130,
+    :ocl_image2d_array_msaa_depth_ro, 131,
+    :ocl_image3d_ro, 132,
+    :ocl_image1d_wo, 133,
+    :ocl_image1d_array_wo, 134,
+    :ocl_image1d_buffer_wo, 135,
+    :ocl_image2d_wo, 136,
+    :ocl_image2d_array_wo, 137,
+    :ocl_image2d_depth_wo, 138,
+    :ocl_image2d_array_depth_wo, 139,
+    :ocl_image2d_msaawo, 140,
+    :ocl_image2d_array_msaawo, 141,
+    :ocl_image2d_msaa_depth_wo, 142,
+    :ocl_image2d_array_msaa_depth_wo, 143,
+    :ocl_image3d_wo, 144,
+    :ocl_image1d_rw, 145,
+    :ocl_image1d_array_rw, 146,
+    :ocl_image1d_buffer_rw, 147,
+    :ocl_image2d_rw, 148,
+    :ocl_image2d_array_rw, 149,
+    :ocl_image2d_depth_rw, 150,
+    :ocl_image2d_array_depth_rw, 151,
+    :ocl_image2d_msaarw, 152,
+    :ocl_image2d_array_msaarw, 153,
+    :ocl_image2d_msaa_depth_rw, 154,
+    :ocl_image2d_array_msaa_depth_rw, 155,
+    :ocl_image3d_rw, 156,
+    :ocl_sampler, 157,
+    :ocl_event, 158,
+    :ocl_queue, 159,
+    :ocl_reserve_id, 160,
+    :obj_c_object, 161,
+    :obj_c_type_param, 162,
+    :attributed, 163,
+    :ocl_intel_subgroup_avc_mce_payload, 164,
+    :ocl_intel_subgroup_avc_ime_payload, 165,
+    :ocl_intel_subgroup_avc_ref_payload, 166,
+    :ocl_intel_subgroup_avc_sic_payload, 167,
+    :ocl_intel_subgroup_avc_mce_result, 168,
+    :ocl_intel_subgroup_avc_ime_result, 169,
+    :ocl_intel_subgroup_avc_ref_result, 170,
+    :ocl_intel_subgroup_avc_sic_result, 171,
+    :ocl_intel_subgroup_avc_ime_result_single_ref_streamout, 172,
+    :ocl_intel_subgroup_avc_ime_result_dual_ref_streamout, 173,
+    :ocl_intel_subgroup_avc_ime_single_ref_streamin, 174,
+    :ocl_intel_subgroup_avc_ime_dual_ref_streamin, 175,
+    :ext_vector, 176,
+    :atomic, 177,
+    :btf_tag_attributed, 178
   ]
   
   # Describes the calling convention of a function type
@@ -2911,13 +3767,27 @@ module FFIGen::Clang::C
   #   
   # :aapcs_vfp ::
   #   
-  # :pnacl_call ::
+  # :x86_reg_call ::
   #   
   # :intel_ocl_bicc ::
   #   
-  # :x86_64_win64 ::
+  # :win64 ::
   #   
   # :x86_64_sys_v ::
+  #   
+  # :x86_vector_call ::
+  #   
+  # :swift ::
+  #   
+  # :preserve_most ::
+  #   
+  # :preserve_all ::
+  #   
+  # :a_arch64_vector_call ::
+  #   
+  # :swift_async ::
+  #   
+  # :a_arch64svepcs ::
   #   
   # :invalid ::
   #   
@@ -2936,10 +3806,17 @@ module FFIGen::Clang::C
     :x86_pascal, 5,
     :aapcs, 6,
     :aapcs_vfp, 7,
-    :pnacl_call, 8,
+    :x86_reg_call, 8,
     :intel_ocl_bicc, 9,
-    :x86_64_win64, 10,
+    :win64, 10,
     :x86_64_sys_v, 11,
+    :x86_vector_call, 12,
+    :swift, 13,
+    :preserve_most, 14,
+    :preserve_all, 15,
+    :a_arch64_vector_call, 16,
+    :swift_async, 17,
+    :a_arch64svepcs, 18,
     :invalid, 100,
     :unexposed, 200
   ]
@@ -3000,9 +3877,9 @@ module FFIGen::Clang::C
   # Retrieve the integer value of an enum constant declaration as a signed
   #  long long.
   # 
-  # If the cursor does not reference an enum constant declaration, LLONG_MIN is returned.
-  # Since this is also potentially a valid constant value, the kind of the cursor
-  # must be verified before calling this function.
+  # If the cursor does not reference an enum constant declaration, LLONG_MIN is
+  # returned. Since this is also potentially a valid constant value, the kind of
+  # the cursor must be verified before calling this function.
   # 
   # @method get_enum_constant_decl_value(c)
   # @param [Cursor] c 
@@ -3013,9 +3890,9 @@ module FFIGen::Clang::C
   # Retrieve the integer value of an enum constant declaration as an unsigned
   #  long long.
   # 
-  # If the cursor does not reference an enum constant declaration, ULLONG_MAX is returned.
-  # Since this is also potentially a valid constant value, the kind of the cursor
-  # must be verified before calling this function.
+  # If the cursor does not reference an enum constant declaration, ULLONG_MAX is
+  # returned. Since this is also potentially a valid constant value, the kind of
+  # the cursor must be verified before calling this function.
   # 
   # @method get_enum_constant_decl_unsigned_value(c)
   # @param [Cursor] c 
@@ -3058,6 +3935,164 @@ module FFIGen::Clang::C
   # @scope class
   attach_function :cursor_get_argument, :clang_Cursor_getArgument, [Cursor.by_value, :uint], Cursor.by_value
   
+  # Describes the kind of a template argument.
+  # 
+  # See the definition of llvm::clang::TemplateArgument::ArgKind for full
+  # element descriptions.
+  # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:template_argument_kind).</em>
+  # 
+  # === Options:
+  # :null ::
+  #   
+  # :type ::
+  #   
+  # :declaration ::
+  #   
+  # :null_ptr ::
+  #   
+  # :integral ::
+  #   
+  # :template ::
+  #   
+  # :template_expansion ::
+  #   
+  # :expression ::
+  #   
+  # :pack ::
+  #   
+  # :invalid ::
+  #   Indicates an error case, preventing the kind from being deduced.
+  # 
+  # @method _enum_template_argument_kind_
+  # @return [Symbol]
+  # @scope class
+  enum :template_argument_kind, [
+    :null, 0,
+    :type, 1,
+    :declaration, 2,
+    :null_ptr, 3,
+    :integral, 4,
+    :template, 5,
+    :template_expansion, 6,
+    :expression, 7,
+    :pack, 8,
+    :invalid, 9
+  ]
+  
+  # Returns the number of template args of a function decl representing a
+  # template specialization.
+  # 
+  # If the argument cursor cannot be converted into a template function
+  # declaration, -1 is returned.
+  # 
+  # For example, for the following declaration and specialization:
+  #   template <typename T, int kInt, bool kBool>
+  #   void foo() { ... }
+  # 
+  #   template <>
+  #   void foo<float, -7, true>();
+  # 
+  # The value 3 would be returned from this call.
+  # 
+  # @method cursor_get_num_template_arguments(c)
+  # @param [Cursor] c 
+  # @return [Integer] 
+  # @scope class
+  attach_function :cursor_get_num_template_arguments, :clang_Cursor_getNumTemplateArguments, [Cursor.by_value], :int
+  
+  # Retrieve the kind of the I'th template argument of the CXCursor C.
+  # 
+  # If the argument CXCursor does not represent a FunctionDecl, an invalid
+  # template argument kind is returned.
+  # 
+  # For example, for the following declaration and specialization:
+  #   template <typename T, int kInt, bool kBool>
+  #   void foo() { ... }
+  # 
+  #   template <>
+  #   void foo<float, -7, true>();
+  # 
+  # For I = 0, 1, and 2, Type, Integral, and Integral will be returned,
+  # respectively.
+  # 
+  # @method cursor_get_template_argument_kind(c, i)
+  # @param [Cursor] c 
+  # @param [Integer] i 
+  # @return [Symbol from _enum_template_argument_kind_] 
+  # @scope class
+  attach_function :cursor_get_template_argument_kind, :clang_Cursor_getTemplateArgumentKind, [Cursor.by_value, :uint], :template_argument_kind
+  
+  # Retrieve a CXType representing the type of a TemplateArgument of a
+  #  function decl representing a template specialization.
+  # 
+  # If the argument CXCursor does not represent a FunctionDecl whose I'th
+  # template argument has a kind of CXTemplateArgKind_Integral, an invalid type
+  # is returned.
+  # 
+  # For example, for the following declaration and specialization:
+  #   template <typename T, int kInt, bool kBool>
+  #   void foo() { ... }
+  # 
+  #   template <>
+  #   void foo<float, -7, true>();
+  # 
+  # If called with I = 0, "float", will be returned.
+  # Invalid types will be returned for I == 1 or 2.
+  # 
+  # @method cursor_get_template_argument_type(c, i)
+  # @param [Cursor] c 
+  # @param [Integer] i 
+  # @return [Type] 
+  # @scope class
+  attach_function :cursor_get_template_argument_type, :clang_Cursor_getTemplateArgumentType, [Cursor.by_value, :uint], Type.by_value
+  
+  # Retrieve the value of an Integral TemplateArgument (of a function
+  #  decl representing a template specialization) as a signed long long.
+  # 
+  # It is undefined to call this function on a CXCursor that does not represent a
+  # FunctionDecl or whose I'th template argument is not an integral value.
+  # 
+  # For example, for the following declaration and specialization:
+  #   template <typename T, int kInt, bool kBool>
+  #   void foo() { ... }
+  # 
+  #   template <>
+  #   void foo<float, -7, true>();
+  # 
+  # If called with I = 1 or 2, -7 or true will be returned, respectively.
+  # For I == 0, this function's behavior is undefined.
+  # 
+  # @method cursor_get_template_argument_value(c, i)
+  # @param [Cursor] c 
+  # @param [Integer] i 
+  # @return [Integer] 
+  # @scope class
+  attach_function :cursor_get_template_argument_value, :clang_Cursor_getTemplateArgumentValue, [Cursor.by_value, :uint], :long_long
+  
+  # Retrieve the value of an Integral TemplateArgument (of a function
+  #  decl representing a template specialization) as an unsigned long long.
+  # 
+  # It is undefined to call this function on a CXCursor that does not represent a
+  # FunctionDecl or whose I'th template argument is not an integral value.
+  # 
+  # For example, for the following declaration and specialization:
+  #   template <typename T, int kInt, bool kBool>
+  #   void foo() { ... }
+  # 
+  #   template <>
+  #   void foo<float, 2147483649, true>();
+  # 
+  # If called with I = 1 or 2, 2147483649 or true will be returned, respectively.
+  # For I == 0, this function's behavior is undefined.
+  # 
+  # @method cursor_get_template_argument_unsigned_value(c, i)
+  # @param [Cursor] c 
+  # @param [Integer] i 
+  # @return [Integer] 
+  # @scope class
+  attach_function :cursor_get_template_argument_unsigned_value, :clang_Cursor_getTemplateArgumentUnsignedValue, [Cursor.by_value, :uint], :ulong_long
+  
   # Determine whether two CXTypes represent the same type.
   # 
   # @method equal_types(a, b)
@@ -3091,6 +4126,33 @@ module FFIGen::Clang::C
   # @scope class
   attach_function :is_const_qualified_type, :clang_isConstQualifiedType, [Type.by_value], :uint
   
+  # Determine whether a  CXCursor that is a macro, is
+  # function like.
+  # 
+  # @method cursor_is_macro_function_like(c)
+  # @param [Cursor] c 
+  # @return [Integer] 
+  # @scope class
+  attach_function :cursor_is_macro_function_like, :clang_Cursor_isMacroFunctionLike, [Cursor.by_value], :uint
+  
+  # Determine whether a  CXCursor that is a macro, is a
+  # builtin one.
+  # 
+  # @method cursor_is_macro_builtin(c)
+  # @param [Cursor] c 
+  # @return [Integer] 
+  # @scope class
+  attach_function :cursor_is_macro_builtin, :clang_Cursor_isMacroBuiltin, [Cursor.by_value], :uint
+  
+  # Determine whether a  CXCursor that is a function declaration, is an
+  # inline declaration.
+  # 
+  # @method cursor_is_function_inlined(c)
+  # @param [Cursor] c 
+  # @return [Integer] 
+  # @scope class
+  attach_function :cursor_is_function_inlined, :clang_Cursor_isFunctionInlined, [Cursor.by_value], :uint
+  
   # Determine whether a CXType has the "volatile" qualifier set,
   # without looking through typedefs that may have added "volatile" at
   # a different level.
@@ -3110,6 +4172,22 @@ module FFIGen::Clang::C
   # @return [Integer] 
   # @scope class
   attach_function :is_restrict_qualified_type, :clang_isRestrictQualifiedType, [Type.by_value], :uint
+  
+  # Returns the address space of the given type.
+  # 
+  # @method get_address_space(t)
+  # @param [Type] t 
+  # @return [Integer] 
+  # @scope class
+  attach_function :get_address_space, :clang_getAddressSpace, [Type.by_value], :uint
+  
+  # Returns the typedef name of the given type.
+  # 
+  # @method get_typedef_name(ct)
+  # @param [Type] ct 
+  # @return [String] 
+  # @scope class
+  attach_function :get_typedef_name, :clang_getTypedefName, [Type.by_value], String.by_value
   
   # For pointer types, returns the type of the pointee.
   # 
@@ -3134,6 +4212,14 @@ module FFIGen::Clang::C
   # @return [String] 
   # @scope class
   attach_function :get_decl_obj_c_type_encoding, :clang_getDeclObjCTypeEncoding, [Cursor.by_value], String.by_value
+  
+  # Returns the Objective-C type encoding for the specified CXType.
+  # 
+  # @method type_get_obj_c_encoding(type)
+  # @param [Type] type 
+  # @return [String] 
+  # @scope class
+  attach_function :type_get_obj_c_encoding, :clang_Type_getObjCEncoding, [Type.by_value], String.by_value
   
   # Retrieve the spelling of a given CXTypeKind.
   # 
@@ -3163,6 +4249,17 @@ module FFIGen::Clang::C
   # @scope class
   attach_function :get_result_type, :clang_getResultType, [Type.by_value], Type.by_value
   
+  # Retrieve the exception specification type associated with a function type.
+  # This is a value of type CXCursor_ExceptionSpecificationKind.
+  # 
+  # If a non-function type is passed in, an error code of -1 is returned.
+  # 
+  # @method get_exception_specification_type(t)
+  # @param [Type] t 
+  # @return [Integer] 
+  # @scope class
+  attach_function :get_exception_specification_type, :clang_getExceptionSpecificationType, [Type.by_value], :int
+  
   # Retrieve the number of non-variadic parameters associated with a
   # function type.
   # 
@@ -3186,6 +4283,60 @@ module FFIGen::Clang::C
   # @scope class
   attach_function :get_arg_type, :clang_getArgType, [Type.by_value, :uint], Type.by_value
   
+  # Retrieves the base type of the ObjCObjectType.
+  # 
+  # If the type is not an ObjC object, an invalid type is returned.
+  # 
+  # @method type_get_obj_c_object_base_type(t)
+  # @param [Type] t 
+  # @return [Type] 
+  # @scope class
+  attach_function :type_get_obj_c_object_base_type, :clang_Type_getObjCObjectBaseType, [Type.by_value], Type.by_value
+  
+  # Retrieve the number of protocol references associated with an ObjC object/id.
+  # 
+  # If the type is not an ObjC object, 0 is returned.
+  # 
+  # @method type_get_num_obj_c_protocol_refs(t)
+  # @param [Type] t 
+  # @return [Integer] 
+  # @scope class
+  attach_function :type_get_num_obj_c_protocol_refs, :clang_Type_getNumObjCProtocolRefs, [Type.by_value], :uint
+  
+  # Retrieve the decl for a protocol reference for an ObjC object/id.
+  # 
+  # If the type is not an ObjC object or there are not enough protocol
+  # references, an invalid cursor is returned.
+  # 
+  # @method type_get_obj_c_protocol_decl(t, i)
+  # @param [Type] t 
+  # @param [Integer] i 
+  # @return [Cursor] 
+  # @scope class
+  attach_function :type_get_obj_c_protocol_decl, :clang_Type_getObjCProtocolDecl, [Type.by_value, :uint], Cursor.by_value
+  
+  # Retrieve the number of type arguments associated with an ObjC object.
+  # 
+  # If the type is not an ObjC object, 0 is returned.
+  # 
+  # @method type_get_num_obj_c_type_args(t)
+  # @param [Type] t 
+  # @return [Integer] 
+  # @scope class
+  attach_function :type_get_num_obj_c_type_args, :clang_Type_getNumObjCTypeArgs, [Type.by_value], :uint
+  
+  # Retrieve a type argument associated with an ObjC object.
+  # 
+  # If the type is not an ObjC or the index is not valid,
+  # an invalid type is returned.
+  # 
+  # @method type_get_obj_c_type_arg(t, i)
+  # @param [Type] t 
+  # @param [Integer] i 
+  # @return [Type] 
+  # @scope class
+  attach_function :type_get_obj_c_type_arg, :clang_Type_getObjCTypeArg, [Type.by_value, :uint], Type.by_value
+  
   # Return 1 if the CXType is a variadic function type, and 0 otherwise.
   # 
   # @method is_function_type_variadic(t)
@@ -3203,6 +4354,18 @@ module FFIGen::Clang::C
   # @return [Type] 
   # @scope class
   attach_function :get_cursor_result_type, :clang_getCursorResultType, [Cursor.by_value], Type.by_value
+  
+  # Retrieve the exception specification type associated with a given cursor.
+  # This is a value of type CXCursor_ExceptionSpecificationKind.
+  # 
+  # This only returns a valid result if the cursor refers to a function or
+  # method.
+  # 
+  # @method get_cursor_exception_specification_type(c)
+  # @param [Cursor] c 
+  # @return [Integer] 
+  # @scope class
+  attach_function :get_cursor_exception_specification_type, :clang_getCursorExceptionSpecificationType, [Cursor.by_value], :int
   
   # Return 1 if the CXType is a POD (plain old data) type, and 0
   #  otherwise.
@@ -3255,6 +4418,68 @@ module FFIGen::Clang::C
   # @scope class
   attach_function :get_array_size, :clang_getArraySize, [Type.by_value], :long_long
   
+  # Retrieve the type named by the qualified-id.
+  # 
+  # If a non-elaborated type is passed in, an invalid type is returned.
+  # 
+  # @method type_get_named_type(t)
+  # @param [Type] t 
+  # @return [Type] 
+  # @scope class
+  attach_function :type_get_named_type, :clang_Type_getNamedType, [Type.by_value], Type.by_value
+  
+  # Determine if a typedef is 'transparent' tag.
+  # 
+  # A typedef is considered 'transparent' if it shares a name and spelling
+  # location with its underlying tag type, as is the case with the NS_ENUM macro.
+  # 
+  # @method type_is_transparent_tag_typedef(t)
+  # @param [Type] t 
+  # @return [Integer] non-zero if transparent and zero otherwise.
+  # @scope class
+  attach_function :type_is_transparent_tag_typedef, :clang_Type_isTransparentTagTypedef, [Type.by_value], :uint
+  
+  # (Not documented)
+  # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:type_nullability_kind).</em>
+  # 
+  # === Options:
+  # :non_null ::
+  #   Values of this type can never be null.
+  # :nullable ::
+  #   Values of this type can be null.
+  # :unspecified ::
+  #   Whether values of this type can be null is (explicitly)
+  #   unspecified. This captures a (fairly rare) case where we
+  #   can't conclude anything about the nullability of the type even
+  #   though it has been considered.
+  # :invalid ::
+  #   Nullability is not applicable to this type.
+  # :nullable_result ::
+  #   Generally behaves like Nullable, except when used in a block parameter that
+  #   was imported into a swift async method. There, swift will assume that the
+  #   parameter can get null even if no error occurred. _Nullable parameters are
+  #   assumed to only get null on error.
+  # 
+  # @method _enum_type_nullability_kind_
+  # @return [Symbol]
+  # @scope class
+  enum :type_nullability_kind, [
+    :non_null, 0,
+    :nullable, 1,
+    :unspecified, 2,
+    :invalid, 3,
+    :nullable_result, 4
+  ]
+  
+  # Retrieve the nullability kind of a pointer type.
+  # 
+  # @method type_get_nullability(t)
+  # @param [Type] t 
+  # @return [Symbol from _enum_type_nullability_kind_] 
+  # @scope class
+  attach_function :type_get_nullability, :clang_Type_getNullability, [Type.by_value], :type_nullability_kind
+  
   # List the possible error codes for \c clang_Type_getSizeOf,
   #   \c clang_Type_getAlignOf, \c clang_Type_getOffsetOf and
   #   \c clang_Cursor_getOffsetOf.
@@ -3275,6 +4500,8 @@ module FFIGen::Clang::C
   #   The type is not a constant size type.
   # :invalid_field_name ::
   #   The Field name is not valid for this record.
+  # :undeduced ::
+  #   The type is undeduced.
   # 
   # @method _enum_type_layout_error_
   # @return [Symbol]
@@ -3284,7 +4511,8 @@ module FFIGen::Clang::C
     :incomplete, -2,
     :dependent, -3,
     :not_constant_size, -4,
-    :invalid_field_name, -5
+    :invalid_field_name, -5,
+    :undeduced, -6
   ]
   
   # Return the alignment of a type in bytes as per C++(expr.alignof)
@@ -3347,6 +4575,71 @@ module FFIGen::Clang::C
   # @scope class
   attach_function :type_get_offset_of, :clang_Type_getOffsetOf, [Type.by_value, :string], :long_long
   
+  # Return the type that was modified by this attributed type.
+  # 
+  # If the type is not an attributed type, an invalid type is returned.
+  # 
+  # @method type_get_modified_type(t)
+  # @param [Type] t 
+  # @return [Type] 
+  # @scope class
+  attach_function :type_get_modified_type, :clang_Type_getModifiedType, [Type.by_value], Type.by_value
+  
+  # Gets the type contained by this atomic type.
+  # 
+  # If a non-atomic type is passed in, an invalid type is returned.
+  # 
+  # @method type_get_value_type(ct)
+  # @param [Type] ct 
+  # @return [Type] 
+  # @scope class
+  attach_function :type_get_value_type, :clang_Type_getValueType, [Type.by_value], Type.by_value
+  
+  # Return the offset of the field represented by the Cursor.
+  # 
+  # If the cursor is not a field declaration, -1 is returned.
+  # If the cursor semantic parent is not a record field declaration,
+  #   CXTypeLayoutError_Invalid is returned.
+  # If the field's type declaration is an incomplete type,
+  #   CXTypeLayoutError_Incomplete is returned.
+  # If the field's type declaration is a dependent type,
+  #   CXTypeLayoutError_Dependent is returned.
+  # If the field's name S is not found,
+  #   CXTypeLayoutError_InvalidFieldName is returned.
+  # 
+  # @method cursor_get_offset_of_field(c)
+  # @param [Cursor] c 
+  # @return [Integer] 
+  # @scope class
+  attach_function :cursor_get_offset_of_field, :clang_Cursor_getOffsetOfField, [Cursor.by_value], :long_long
+  
+  # Determine whether the given cursor represents an anonymous
+  # tag or namespace
+  # 
+  # @method cursor_is_anonymous(c)
+  # @param [Cursor] c 
+  # @return [Integer] 
+  # @scope class
+  attach_function :cursor_is_anonymous, :clang_Cursor_isAnonymous, [Cursor.by_value], :uint
+  
+  # Determine whether the given cursor represents an anonymous record
+  # declaration.
+  # 
+  # @method cursor_is_anonymous_record_decl(c)
+  # @param [Cursor] c 
+  # @return [Integer] 
+  # @scope class
+  attach_function :cursor_is_anonymous_record_decl, :clang_Cursor_isAnonymousRecordDecl, [Cursor.by_value], :uint
+  
+  # Determine whether the given cursor represents an inline namespace
+  # declaration.
+  # 
+  # @method cursor_is_inline_namespace(c)
+  # @param [Cursor] c 
+  # @return [Integer] 
+  # @scope class
+  attach_function :cursor_is_inline_namespace, :clang_Cursor_isInlineNamespace, [Cursor.by_value], :uint
+  
   # (Not documented)
   # 
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:ref_qualifier_kind).</em>
@@ -3368,11 +4661,8 @@ module FFIGen::Clang::C
     :r_value, 2
   ]
   
-  # Returns the number of template arguments for given class template
-  # specialization, or -1 if type \c T is not a class template specialization.
-  # 
-  # Variadic argument packs count as only one argument, and can not be inspected
-  # further.
+  # Returns the number of template arguments for given template
+  # specialization, or -1 if type \c T is not a template specialization.
   # 
   # @method type_get_num_template_arguments(t)
   # @param [Type] t 
@@ -3449,9 +4739,9 @@ module FFIGen::Clang::C
   
   # Returns the access control level for the referenced object.
   # 
-  # If the cursor refers to a C++ declaration, its access control level within its
-  # parent scope is returned. Otherwise, if the cursor refers to a base specifier or
-  # access specifier, the specifier itself is returned.
+  # If the cursor refers to a C++ declaration, its access control level within
+  # its parent scope is returned. Otherwise, if the cursor refers to a base
+  # specifier or access specifier, the specifier itself is returned.
   # 
   # @method get_cxx_access_specifier(cursor)
   # @param [Cursor] cursor 
@@ -3459,7 +4749,55 @@ module FFIGen::Clang::C
   # @scope class
   attach_function :get_cxx_access_specifier, :clang_getCXXAccessSpecifier, [Cursor.by_value], :cxx_access_specifier
   
-  # Determine the number of overloaded declarations referenced by a 
+  # Represents the storage classes as declared in the source. CX_SC_Invalid
+  # was added for the case that the passed cursor in not a declaration.
+  # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:storage_class).</em>
+  # 
+  # === Options:
+  # :sc_invalid ::
+  #   
+  # :sc_none ::
+  #   
+  # :sc_extern ::
+  #   
+  # :sc_static ::
+  #   
+  # :sc_private_extern ::
+  #   
+  # :sc_open_cl_work_group_local ::
+  #   
+  # :sc_auto ::
+  #   
+  # :sc_register ::
+  #   
+  # 
+  # @method _enum_storage_class_
+  # @return [Symbol]
+  # @scope class
+  enum :storage_class, [
+    :sc_invalid, 0,
+    :sc_none, 1,
+    :sc_extern, 2,
+    :sc_static, 3,
+    :sc_private_extern, 4,
+    :sc_open_cl_work_group_local, 5,
+    :sc_auto, 6,
+    :sc_register, 7
+  ]
+  
+  # Returns the storage class for a function or variable declaration.
+  # 
+  # If the passed in Cursor is not a function or variable declaration,
+  # CX_SC_Invalid is returned else the storage class.
+  # 
+  # @method cursor_get_storage_class(cursor)
+  # @param [Cursor] cursor 
+  # @return [Symbol from _enum_storage_class_] 
+  # @scope class
+  attach_function :cursor_get_storage_class, :clang_Cursor_getStorageClass, [Cursor.by_value], :storage_class
+  
+  # Determine the number of overloaded declarations referenced by a
   # \c CXCursor_OverloadedDeclRef cursor.
   # 
   # @method get_num_overloaded_decls(cursor)
@@ -3476,8 +4814,8 @@ module FFIGen::Clang::C
   # @param [Cursor] cursor The cursor whose overloaded declarations are being queried.
   # @param [Integer] index The zero-based index into the set of overloaded declarations in
   #   the cursor.
-  # @return [Cursor] A cursor representing the declaration referenced by the given 
-  #   \c cursor at the specified \c index. If the cursor does not have an 
+  # @return [Cursor] A cursor representing the declaration referenced by the given
+  #   \c cursor at the specified \c index. If the cursor does not have an
   #   associated set of overloaded declarations, or if the index is out of bounds,
   #   returns \c clang_getNullCursor();
   # @scope class
@@ -3654,10 +4992,151 @@ module FFIGen::Clang::C
   # @scope class
   attach_function :cursor_get_spelling_name_range, :clang_Cursor_getSpellingNameRange, [Cursor.by_value, :uint, :uint], SourceRange.by_value
   
+  # Properties for the printing policy.
+  # 
+  # See \c clang::PrintingPolicy for more information.
+  # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:printing_policy_property).</em>
+  # 
+  # === Options:
+  # :indentation ::
+  #   
+  # :suppress_specifiers ::
+  #   
+  # :suppress_tag_keyword ::
+  #   
+  # :include_tag_definition ::
+  #   
+  # :suppress_scope ::
+  #   
+  # :suppress_unwritten_scope ::
+  #   
+  # :suppress_initializers ::
+  #   
+  # :constant_array_size_as_written ::
+  #   
+  # :anonymous_tag_locations ::
+  #   
+  # :suppress_strong_lifetime ::
+  #   
+  # :suppress_lifetime_qualifiers ::
+  #   
+  # :suppress_template_args_in_cxx_constructors ::
+  #   
+  # :bool ::
+  #   
+  # :restrict ::
+  #   
+  # :alignof ::
+  #   
+  # :underscore_alignof ::
+  #   
+  # :use_void_for_zero_params ::
+  #   
+  # :terse_output ::
+  #   
+  # :polish_for_declaration ::
+  #   
+  # :half ::
+  #   
+  # :msw_char ::
+  #   
+  # :include_newlines ::
+  #   
+  # :msvc_formatting ::
+  #   
+  # :constants_as_written ::
+  #   
+  # :suppress_implicit_base ::
+  #   
+  # :fully_qualified_name ::
+  #   
+  # 
+  # @method _enum_printing_policy_property_
+  # @return [Symbol]
+  # @scope class
+  enum :printing_policy_property, [
+    :indentation, 0,
+    :suppress_specifiers, 1,
+    :suppress_tag_keyword, 2,
+    :include_tag_definition, 3,
+    :suppress_scope, 4,
+    :suppress_unwritten_scope, 5,
+    :suppress_initializers, 6,
+    :constant_array_size_as_written, 7,
+    :anonymous_tag_locations, 8,
+    :suppress_strong_lifetime, 9,
+    :suppress_lifetime_qualifiers, 10,
+    :suppress_template_args_in_cxx_constructors, 11,
+    :bool, 12,
+    :restrict, 13,
+    :alignof, 14,
+    :underscore_alignof, 15,
+    :use_void_for_zero_params, 16,
+    :terse_output, 17,
+    :polish_for_declaration, 18,
+    :half, 19,
+    :msw_char, 20,
+    :include_newlines, 21,
+    :msvc_formatting, 22,
+    :constants_as_written, 23,
+    :suppress_implicit_base, 24,
+    :fully_qualified_name, 25
+  ]
+  
+  # Get a property value for the given printing policy.
+  # 
+  # @method printing_policy_get_property(policy, property)
+  # @param [FFI::Pointer(PrintingPolicy)] policy 
+  # @param [Symbol from _enum_printing_policy_property_] property 
+  # @return [Integer] 
+  # @scope class
+  attach_function :printing_policy_get_property, :clang_PrintingPolicy_getProperty, [:pointer, :printing_policy_property], :uint
+  
+  # Set a property value for the given printing policy.
+  # 
+  # @method printing_policy_set_property(policy, property, value)
+  # @param [FFI::Pointer(PrintingPolicy)] policy 
+  # @param [Symbol from _enum_printing_policy_property_] property 
+  # @param [Integer] value 
+  # @return [nil] 
+  # @scope class
+  attach_function :printing_policy_set_property, :clang_PrintingPolicy_setProperty, [:pointer, :printing_policy_property, :uint], :void
+  
+  # Retrieve the default policy for the cursor.
+  # 
+  # The policy should be released after use with \c
+  # clang_PrintingPolicy_dispose.
+  # 
+  # @method get_cursor_printing_policy(cursor)
+  # @param [Cursor] cursor 
+  # @return [FFI::Pointer(PrintingPolicy)] 
+  # @scope class
+  attach_function :get_cursor_printing_policy, :clang_getCursorPrintingPolicy, [Cursor.by_value], :pointer
+  
+  # Release a printing policy.
+  # 
+  # @method printing_policy_dispose(policy)
+  # @param [FFI::Pointer(PrintingPolicy)] policy 
+  # @return [nil] 
+  # @scope class
+  attach_function :printing_policy_dispose, :clang_PrintingPolicy_dispose, [:pointer], :void
+  
+  # Pretty print declarations.
+  # 
+  # @method get_cursor_pretty_printed(cursor, policy)
+  # @param [Cursor] cursor The cursor representing a declaration.
+  # @param [FFI::Pointer(PrintingPolicy)] policy The policy to control the entities being printed. If
+  #   NULL, a default policy is used.
+  # @return [String] The pretty printed declaration or the empty string for
+  #   other cursors.
+  # @scope class
+  attach_function :get_cursor_pretty_printed, :clang_getCursorPrettyPrinted, [Cursor.by_value, :pointer], String.by_value
+  
   # Retrieve the display name for the entity referenced by this cursor.
   # 
   # The display name contains extra information that helps identify the cursor,
-  # such as the parameters of a function or template or the arguments of a 
+  # such as the parameters of a function or template or the arguments of a
   # class template specialization.
   # 
   # @method get_cursor_display_name(cursor)
@@ -3738,10 +5217,10 @@ module FFIGen::Clang::C
   # };
   # \endcode
   # 
-  # The declarations and the definition of \c X are represented by three 
-  # different cursors, all of which are declarations of the same underlying 
+  # The declarations and the definition of \c X are represented by three
+  # different cursors, all of which are declarations of the same underlying
   # entity. One of these cursor is considered the "canonical" cursor, which
-  # is effectively the representative for the underlying entity. One can 
+  # is effectively the representative for the underlying entity. One can
   # determine if two cursors are declarations of the same underlying entity by
   # comparing their canonical cursors.
   # 
@@ -3781,8 +5260,8 @@ module FFIGen::Clang::C
   # @scope class
   attach_function :cursor_is_dynamic_call, :clang_Cursor_isDynamicCall, [Cursor.by_value], :int
   
-  # Given a cursor pointing to an Objective-C message, returns the CXType
-  # of the receiver.
+  # Given a cursor pointing to an Objective-C message or property
+  # reference, or C++ method call, returns the CXType of the receiver.
   # 
   # @method cursor_get_receiver_type(c)
   # @param [Cursor] c 
@@ -3821,6 +5300,8 @@ module FFIGen::Clang::C
   #   
   # :unsafe_unretained ::
   #   
+  # :class_ ::
+  #   
   # 
   # @method _enum_obj_c_property_attr_kind_
   # @return [Symbol]
@@ -3838,7 +5319,8 @@ module FFIGen::Clang::C
     :atomic, 256,
     :weak, 512,
     :strong, 1024,
-    :unsafe_unretained, 2048
+    :unsafe_unretained, 2048,
+    :class_, 4096
   ]
   
   # Given a cursor that represents a property declaration, return the
@@ -3851,6 +5333,24 @@ module FFIGen::Clang::C
   # @return [Integer] 
   # @scope class
   attach_function :cursor_get_obj_c_property_attributes, :clang_Cursor_getObjCPropertyAttributes, [Cursor.by_value, :uint], :uint
+  
+  # Given a cursor that represents a property declaration, return the
+  # name of the method that implements the getter.
+  # 
+  # @method cursor_get_obj_c_property_getter_name(c)
+  # @param [Cursor] c 
+  # @return [String] 
+  # @scope class
+  attach_function :cursor_get_obj_c_property_getter_name, :clang_Cursor_getObjCPropertyGetterName, [Cursor.by_value], String.by_value
+  
+  # Given a cursor that represents a property declaration, return the
+  # name of the method that implements the setter, if any.
+  # 
+  # @method cursor_get_obj_c_property_setter_name(c)
+  # @param [Cursor] c 
+  # @return [String] 
+  # @scope class
+  attach_function :cursor_get_obj_c_property_setter_name, :clang_Cursor_getObjCPropertySetterName, [Cursor.by_value], String.by_value
   
   # 'Qualifiers' written next to the return and parameter types in
   # Objective-C method declarations.
@@ -3898,8 +5398,8 @@ module FFIGen::Clang::C
   attach_function :cursor_get_obj_c_decl_qualifiers, :clang_Cursor_getObjCDeclQualifiers, [Cursor.by_value], :uint
   
   # Given a cursor that represents an Objective-C method or property
-  # declaration, return non-zero if the declaration was affected by "@optional".
-  # Returns zero if the cursor is not such a declaration or it is "@required".
+  # declaration, return non-zero if the declaration was affected by "\@optional".
+  # Returns zero if the cursor is not such a declaration or it is "\@required".
   # 
   # @method cursor_is_obj_c_optional(c)
   # @param [Cursor] c 
@@ -3914,6 +5414,21 @@ module FFIGen::Clang::C
   # @return [Integer] 
   # @scope class
   attach_function :cursor_is_variadic, :clang_Cursor_isVariadic, [Cursor.by_value], :uint
+  
+  # Returns non-zero if the given cursor points to a symbol marked with
+  # external_source_symbol attribute.
+  # 
+  # @method cursor_is_external_symbol(c, language, defined_in, is_generated)
+  # @param [Cursor] c 
+  # @param [String] language If non-NULL, and the attribute is present, will be set to
+  #   the 'language' string from the attribute.
+  # @param [String] defined_in If non-NULL, and the attribute is present, will be set to
+  #   the 'definedIn' string from the attribute.
+  # @param [FFI::Pointer(*UInt)] is_generated If non-NULL, and the attribute is present, will be set to
+  #   non-zero if the 'generated_declaration' is set in the attribute.
+  # @return [Integer] 
+  # @scope class
+  attach_function :cursor_is_external_symbol, :clang_Cursor_isExternalSymbol, [Cursor.by_value, String, String, :pointer], :uint
   
   # Given a cursor that represents a declaration, return the associated
   # comment's source range.  The range may include multiple consecutive comments
@@ -3943,6 +5458,32 @@ module FFIGen::Clang::C
   # @return [String] 
   # @scope class
   attach_function :cursor_get_brief_comment_text, :clang_Cursor_getBriefCommentText, [Cursor.by_value], String.by_value
+  
+  # Retrieve the CXString representing the mangled name of the cursor.
+  # 
+  # @method cursor_get_mangling(cursor)
+  # @param [Cursor] cursor 
+  # @return [String] 
+  # @scope class
+  attach_function :cursor_get_mangling, :clang_Cursor_getMangling, [Cursor.by_value], String.by_value
+  
+  # Retrieve the CXStrings representing the mangled symbols of the C++
+  # constructor or destructor at the cursor.
+  # 
+  # @method cursor_get_cxx_manglings(cursor)
+  # @param [Cursor] cursor 
+  # @return [StringSet] 
+  # @scope class
+  attach_function :cursor_get_cxx_manglings, :clang_Cursor_getCXXManglings, [Cursor.by_value], StringSet
+  
+  # Retrieve the CXStrings representing the mangled symbols of the ObjC
+  # class interface or implementation at the cursor.
+  # 
+  # @method cursor_get_obj_c_manglings(cursor)
+  # @param [Cursor] cursor 
+  # @return [StringSet] 
+  # @scope class
+  attach_function :cursor_get_obj_c_manglings, :clang_Cursor_getObjCManglings, [Cursor.by_value], StringSet
   
   # Given a CXCursor_ModuleImportDecl cursor, return the associated module.
   # 
@@ -4023,6 +5564,54 @@ module FFIGen::Clang::C
   # @scope class
   attach_function :module_get_top_level_header, :clang_Module_getTopLevelHeader, [TranslationUnitImpl, :pointer, :uint], :pointer
   
+  # Determine if a C++ constructor is a converting constructor.
+  # 
+  # @method cxx_constructor_is_converting_constructor(c)
+  # @param [Cursor] c 
+  # @return [Integer] 
+  # @scope class
+  attach_function :cxx_constructor_is_converting_constructor, :clang_CXXConstructor_isConvertingConstructor, [Cursor.by_value], :uint
+  
+  # Determine if a C++ constructor is a copy constructor.
+  # 
+  # @method cxx_constructor_is_copy_constructor(c)
+  # @param [Cursor] c 
+  # @return [Integer] 
+  # @scope class
+  attach_function :cxx_constructor_is_copy_constructor, :clang_CXXConstructor_isCopyConstructor, [Cursor.by_value], :uint
+  
+  # Determine if a C++ constructor is the default constructor.
+  # 
+  # @method cxx_constructor_is_default_constructor(c)
+  # @param [Cursor] c 
+  # @return [Integer] 
+  # @scope class
+  attach_function :cxx_constructor_is_default_constructor, :clang_CXXConstructor_isDefaultConstructor, [Cursor.by_value], :uint
+  
+  # Determine if a C++ constructor is a move constructor.
+  # 
+  # @method cxx_constructor_is_move_constructor(c)
+  # @param [Cursor] c 
+  # @return [Integer] 
+  # @scope class
+  attach_function :cxx_constructor_is_move_constructor, :clang_CXXConstructor_isMoveConstructor, [Cursor.by_value], :uint
+  
+  # Determine if a C++ field is declared 'mutable'.
+  # 
+  # @method cxx_field_is_mutable(c)
+  # @param [Cursor] c 
+  # @return [Integer] 
+  # @scope class
+  attach_function :cxx_field_is_mutable, :clang_CXXField_isMutable, [Cursor.by_value], :uint
+  
+  # Determine if a C++ method is declared '= default'.
+  # 
+  # @method cxx_method_is_defaulted(c)
+  # @param [Cursor] c 
+  # @return [Integer] 
+  # @scope class
+  attach_function :cxx_method_is_defaulted, :clang_CXXMethod_isDefaulted, [Cursor.by_value], :uint
+  
   # Determine if a C++ member function or member function template is
   # pure virtual.
   # 
@@ -4032,7 +5621,7 @@ module FFIGen::Clang::C
   # @scope class
   attach_function :cxx_method_is_pure_virtual, :clang_CXXMethod_isPureVirtual, [Cursor.by_value], :uint
   
-  # Determine if a C++ member function or member function template is 
+  # Determine if a C++ member function or member function template is
   # declared 'static'.
   # 
   # @method cxx_method_is_static(c)
@@ -4050,6 +5639,23 @@ module FFIGen::Clang::C
   # @return [Integer] 
   # @scope class
   attach_function :cxx_method_is_virtual, :clang_CXXMethod_isVirtual, [Cursor.by_value], :uint
+  
+  # Determine if a C++ record is abstract, i.e. whether a class or struct
+  # has a pure virtual member function.
+  # 
+  # @method cxx_record_is_abstract(c)
+  # @param [Cursor] c 
+  # @return [Integer] 
+  # @scope class
+  attach_function :cxx_record_is_abstract, :clang_CXXRecord_isAbstract, [Cursor.by_value], :uint
+  
+  # Determine if an enum declaration refers to a scoped enum.
+  # 
+  # @method enum_decl_is_scoped(c)
+  # @param [Cursor] c 
+  # @return [Integer] 
+  # @scope class
+  attach_function :enum_decl_is_scoped, :clang_EnumDecl_isScoped, [Cursor.by_value], :uint
   
   # Determine if a C++ member function or member function template is
   # declared 'const'.
@@ -4082,10 +5688,10 @@ module FFIGen::Clang::C
   # of a template, retrieve the cursor that represents the template that it
   # specializes or from which it was instantiated.
   # 
-  # This routine determines the template involved both for explicit 
+  # This routine determines the template involved both for explicit
   # specializations of templates and for implicit instantiations of the template,
   # both of which are referred to as "specializations". For a class template
-  # specialization (e.g., \c std::vector<bool>), this routine will return 
+  # specialization (e.g., \c std::vector<bool>), this routine will return
   # either the primary template (\c std::vector) or, if the specialization was
   # instantiated from a class template partial specialization, the class template
   # partial specialization. For a class template partial specialization and a
@@ -4093,7 +5699,7 @@ module FFIGen::Clang::C
   # this routine will return the specialized template.
   # 
   # For members of a class template (e.g., member functions, member classes, or
-  # static data members), returns the specialized or instantiated member. 
+  # static data members), returns the specialized or instantiated member.
   # Although not strictly "templates" in the C++ language, members of class
   # templates have the same notions of specializations and instantiations that
   # templates do, so this routine treats them similarly.
@@ -4101,7 +5707,7 @@ module FFIGen::Clang::C
   # @method get_specialized_cursor_template(c)
   # @param [Cursor] c A cursor that may be a specialization of a template or a member
   #   of a template.
-  # @return [Cursor] If the given cursor is a specialization or instantiation of a 
+  # @return [Cursor] If the given cursor is a specialization or instantiation of a
   #   template or a member thereof, the template or member that it specializes or
   #   from which it was instantiated. Otherwise, returns a NULL cursor.
   # @scope class
@@ -4113,11 +5719,11 @@ module FFIGen::Clang::C
   # @method get_cursor_reference_name_range(c, name_flags, piece_index)
   # @param [Cursor] c A cursor pointing to a member reference, a declaration reference, or
   #   an operator call.
-  # @param [Integer] name_flags A bitset with three independent flags: 
+  # @param [Integer] name_flags A bitset with three independent flags:
   #   CXNameRange_WantQualifier, CXNameRange_WantTemplateArgs, and
   #   CXNameRange_WantSinglePiece.
-  # @param [Integer] piece_index For contiguous names or when passing the flag 
-  #   CXNameRange_WantSinglePiece, only one piece with index 0 is 
+  # @param [Integer] piece_index For contiguous names or when passing the flag
+  #   CXNameRange_WantSinglePiece, only one piece with index 0 is
   #   available. When the CXNameRange_WantSinglePiece flag is not passed for a
   #   non-contiguous names, this index can be used to retrieve the individual
   #   pieces of the name. See also CXNameRange_WantSinglePiece.
@@ -4194,6 +5800,17 @@ module FFIGen::Clang::C
     layout :int_data, [:uint, 4],
            :ptr_data, :pointer
   end
+  
+  # Get the raw lexical token starting with the given location.
+  # 
+  # @method get_token(tu, location)
+  # @param [TranslationUnitImpl] tu the translation unit whose text is being tokenized.
+  # @param [SourceLocation] location the source location with which the token starts.
+  # @return [Token] The token starting with the given location or NULL if no such token
+  #   exist. The returned pointer must be freed with clang_disposeTokens before the
+  #   translation unit is destroyed.
+  # @scope class
+  attach_function :get_token, :clang_getToken, [TranslationUnitImpl, SourceLocation.by_value], Token
   
   # Determine the kind of the given token.
   # 
@@ -4321,7 +5938,7 @@ module FFIGen::Clang::C
   # (Not documented)
   # 
   # @method execute_on_thread(fn, user_data, stack_size)
-  # @param [FFI::Pointer(*)] fn 
+  # @param [FFI::Pointer(*FunctionProto)] fn 
   # @param [FFI::Pointer(*Void)] user_data 
   # @param [Integer] stack_size 
   # @return [nil] 
@@ -4438,7 +6055,7 @@ module FFIGen::Clang::C
   #   for "int x", indicating that the current argument will initialize that
   #   parameter. After typing further, to \c add(17, (where the code-completion
   #   point is after the ","), the code-completion string will contain a
-  #   "current paremeter" chunk to "int y".
+  #   "current parameter" chunk to "int y".
   # :left_paren ::
   #   A left parenthesis ('('), used to initiate a function call or
   #   signal the beginning of a function parameter list.
@@ -4474,7 +6091,7 @@ module FFIGen::Clang::C
   # :horizontal_space ::
   #   Horizontal space (' ').
   # :vertical_space ::
-  #   Vertical space ('\n'), after which it is generally a good idea to
+  #   Vertical space ('\\n'), after which it is generally a good idea to
   #   perform indentation.
   # 
   # @method _enum_completion_chunk_kind_
@@ -4544,7 +6161,7 @@ module FFIGen::Clang::C
   
   # Determine the priority of this code completion.
   # 
-  # The priority of a code completion indicates how likely it is that this 
+  # The priority of a code completion indicates how likely it is that this
   # particular completion is the completion that the user will select. The
   # priority is selected by various internal heuristics.
   # 
@@ -4587,7 +6204,7 @@ module FFIGen::Clang::C
   
   # Retrieve the parent context of the given completion string.
   # 
-  # The parent context of a completion string is the semantic parent of 
+  # The parent context of a completion string is the semantic parent of
   # the declaration (if any) that the code completion represents. For example,
   # a code completion for an Objective-C method would have the method's class
   # or protocol as its context.
@@ -4637,6 +6254,62 @@ module FFIGen::Clang::C
            :num_results, :uint
   end
   
+  # Retrieve the number of fix-its for the given completion index.
+  # 
+  # Calling this makes sense only if CXCodeComplete_IncludeCompletionsWithFixIts
+  # option was set.
+  # 
+  # @method get_completion_num_fix_its(results, completion_index)
+  # @param [CodeCompleteResults] results The structure keeping all completion results
+  # @param [Integer] completion_index The index of the completion
+  #   
+  #   \return The number of fix-its which must be applied before the completion at
+  #   completion_index can be applied
+  # @return [Integer] 
+  # @scope class
+  attach_function :get_completion_num_fix_its, :clang_getCompletionNumFixIts, [CodeCompleteResults, :uint], :uint
+  
+  # Fix-its that *must* be applied before inserting the text for the
+  # corresponding completion.
+  # 
+  # By default, clang_codeCompleteAt() only returns completions with empty
+  # fix-its. Extra completions with non-empty fix-its should be explicitly
+  # requested by setting CXCodeComplete_IncludeCompletionsWithFixIts.
+  # 
+  # For the clients to be able to compute position of the cursor after applying
+  # fix-its, the following conditions are guaranteed to hold for
+  # replacement_range of the stored fix-its:
+  #  - Ranges in the fix-its are guaranteed to never contain the completion
+  #  point (or identifier under completion point, if any) inside them, except
+  #  at the start or at the end of the range.
+  #  - If a fix-it range starts or ends with completion point (or starts or
+  #  ends after the identifier under completion point), it will contain at
+  #  least one character. It allows to unambiguously recompute completion
+  #  point after applying the fix-it.
+  # 
+  # The intuition is that provided fix-its change code around the identifier we
+  # complete, but are not allowed to touch the identifier itself or the
+  # completion point. One example of completions with corrections are the ones
+  # replacing '.' with '->' and vice versa:
+  # 
+  # std::unique_ptr<std::vector<int>> vec_ptr;
+  # In 'vec_ptr.^', one of the completions is 'push_back', it requires
+  # replacing '.' with '->'.
+  # In 'vec_ptr->^', one of the completions is 'release', it requires
+  # replacing '->' with '.'.
+  # 
+  # @method get_completion_fix_it(results, completion_index, fixit_index, replacement_range)
+  # @param [CodeCompleteResults] results The structure keeping all completion results
+  # @param [Integer] completion_index The index of the completion
+  # @param [Integer] fixit_index The index of the fix-it for the completion at
+  #   completion_index
+  # @param [SourceRange] replacement_range The fix-it range that must be replaced before the
+  #   completion at completion_index can be applied
+  # @return [String] The fix-it string that must replace the code at replacement_range
+  #   before the completion at completion_index can be applied
+  # @scope class
+  attach_function :get_completion_fix_it, :clang_getCompletionFixIt, [CodeCompleteResults, :uint, :uint, SourceRange], String.by_value
+  
   # Flags that can be passed to \c clang_codeCompleteAt() to
   # modify its behavior.
   # 
@@ -4655,6 +6328,13 @@ module FFIGen::Clang::C
   # :include_brief_comments ::
   #   Whether to include brief documentation within the set of code
   #   completions returned.
+  # :skip_preamble ::
+  #   Whether to speed up completion by omitting top- or namespace-level entities
+  #   defined in the preamble. There's no guarantee any particular entity is
+  #   omitted. This may be useful if the headers are indexed externally.
+  # :include_completions_with_fix_its ::
+  #   Whether to include completions with small
+  #   fix-its, e.g. change '.' to '->' on member access, etc.
   # 
   # @method _enum_code_complete_flags_
   # @return [Symbol]
@@ -4662,7 +6342,9 @@ module FFIGen::Clang::C
   enum :code_complete_flags, [
     :include_macros, 1,
     :include_code_patterns, 2,
-    :include_brief_comments, 4
+    :include_brief_comments, 4,
+    :skip_preamble, 8,
+    :include_completions_with_fix_its, 16
   ]
   
   # Bits that represent the context under which completion is occurring.
@@ -4736,6 +6418,8 @@ module FFIGen::Clang::C
   #   the results.
   # :natural_language ::
   #   Natural language completions should be included in the results.
+  # :included_file ::
+  #   #include file completions should be included in the results.
   # :unknown ::
   #   The current context is unknown, so set all contexts.
   # 
@@ -4766,11 +6450,12 @@ module FFIGen::Clang::C
     :obj_c_selector_name, 524288,
     :macro_name, 1048576,
     :natural_language, 2097152,
-    :unknown, 4194303
+    :included_file, 4194304,
+    :unknown, 8388607
   ]
   
   # Returns a default set of code-completion options that can be
-  # passed to\c clang_codeCompleteAt(). 
+  # passed to\c clang_codeCompleteAt().
   # 
   # @method default_code_complete_options()
   # @return [Integer] 
@@ -4794,7 +6479,7 @@ module FFIGen::Clang::C
   # user types punctuation characters or whitespace, at which point the
   # code-completion location will coincide with the cursor. For example, if \c p
   # is a pointer, code-completion might be triggered after the "-" and then
-  # after the ">" in \c p->. When the code-completion location is afer the ">",
+  # after the ">" in \c p->. When the code-completion location is after the ">",
   # the completion results will provide, e.g., the members of the struct that
   # "p" points to. The client is responsible for placing the cursor at the
   # beginning of the token currently being typed, then filtering the results
@@ -4820,7 +6505,7 @@ module FFIGen::Clang::C
   # @param [Integer] complete_column The column at which code-completion should occur.
   #   Note that the column should point just after the syntactic construct that
   #   initiated code completion, and not in the middle of a lexical token.
-  # @param [UnsavedFile] unsaved_files the Tiles that have not yet been saved to disk
+  # @param [UnsavedFile] unsaved_files the Files that have not yet been saved to disk
   #   but may be required for parsing or code completion, including the
   #   contents of those files.  The contents and name of these files (as
   #   specified by CXUnsavedFile) are copied when necessary, so the
@@ -4830,7 +6515,7 @@ module FFIGen::Clang::C
   #   unsaved_files.
   # @param [Integer] options Extra options that control the behavior of code
   #   completion, expressed as a bitwise OR of the enumerators of the
-  #   CXCodeComplete_Flags enumeration. The 
+  #   CXCodeComplete_Flags enumeration. The
   #   \c clang_defaultCodeCompleteOptions() function returns a default set
   #   of code-completion options.
   # @return [CodeCompleteResults] If successful, a new \c CXCodeCompleteResults structure
@@ -4840,7 +6525,7 @@ module FFIGen::Clang::C
   # @scope class
   attach_function :code_complete_at, :clang_codeCompleteAt, [TranslationUnitImpl, :string, :uint, :uint, UnsavedFile, :uint, :uint], CodeCompleteResults
   
-  # Sort the code-completion results in case-insensitive alphabetical 
+  # Sort the code-completion results in case-insensitive alphabetical
   # order.
   # 
   # @method sort_code_completion_results(results, num_results)
@@ -4976,6 +6661,123 @@ module FFIGen::Clang::C
   # @scope class
   attach_function :get_inclusions, :clang_getInclusions, [TranslationUnitImpl, :inclusion_visitor, :pointer], :void
   
+  # (Not documented)
+  # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:eval_result_kind).</em>
+  # 
+  # === Options:
+  # :int ::
+  #   
+  # :float ::
+  #   
+  # :obj_c_str_literal ::
+  #   
+  # :str_literal ::
+  #   
+  # :cf_str ::
+  #   
+  # :other ::
+  #   
+  # :un_exposed ::
+  #   
+  # 
+  # @method _enum_eval_result_kind_
+  # @return [Symbol]
+  # @scope class
+  enum :eval_result_kind, [
+    :int, 1,
+    :float, 2,
+    :obj_c_str_literal, 3,
+    :str_literal, 4,
+    :cf_str, 5,
+    :other, 6,
+    :un_exposed, 0
+  ]
+  
+  # If cursor is a statement declaration tries to evaluate the
+  # statement and if its variable, tries to evaluate its initializer,
+  # into its corresponding type.
+  # If it's an expression, tries to evaluate the expression.
+  # 
+  # @method cursor_evaluate(c)
+  # @param [Cursor] c 
+  # @return [FFI::Pointer(EvalResult)] 
+  # @scope class
+  attach_function :cursor_evaluate, :clang_Cursor_Evaluate, [Cursor.by_value], :pointer
+  
+  # Returns the kind of the evaluated result.
+  # 
+  # @method eval_result_get_kind(e)
+  # @param [FFI::Pointer(EvalResult)] e 
+  # @return [Symbol from _enum_eval_result_kind_] 
+  # @scope class
+  attach_function :eval_result_get_kind, :clang_EvalResult_getKind, [:pointer], :eval_result_kind
+  
+  # Returns the evaluation result as integer if the
+  # kind is Int.
+  # 
+  # @method eval_result_get_as_int(e)
+  # @param [FFI::Pointer(EvalResult)] e 
+  # @return [Integer] 
+  # @scope class
+  attach_function :eval_result_get_as_int, :clang_EvalResult_getAsInt, [:pointer], :int
+  
+  # Returns the evaluation result as a long long integer if the
+  # kind is Int. This prevents overflows that may happen if the result is
+  # returned with clang_EvalResult_getAsInt.
+  # 
+  # @method eval_result_get_as_long_long(e)
+  # @param [FFI::Pointer(EvalResult)] e 
+  # @return [Integer] 
+  # @scope class
+  attach_function :eval_result_get_as_long_long, :clang_EvalResult_getAsLongLong, [:pointer], :long_long
+  
+  # Returns a non-zero value if the kind is Int and the evaluation
+  # result resulted in an unsigned integer.
+  # 
+  # @method eval_result_is_unsigned_int(e)
+  # @param [FFI::Pointer(EvalResult)] e 
+  # @return [Integer] 
+  # @scope class
+  attach_function :eval_result_is_unsigned_int, :clang_EvalResult_isUnsignedInt, [:pointer], :uint
+  
+  # Returns the evaluation result as an unsigned integer if
+  # the kind is Int and clang_EvalResult_isUnsignedInt is non-zero.
+  # 
+  # @method eval_result_get_as_unsigned(e)
+  # @param [FFI::Pointer(EvalResult)] e 
+  # @return [Integer] 
+  # @scope class
+  attach_function :eval_result_get_as_unsigned, :clang_EvalResult_getAsUnsigned, [:pointer], :ulong_long
+  
+  # Returns the evaluation result as double if the
+  # kind is double.
+  # 
+  # @method eval_result_get_as_double(e)
+  # @param [FFI::Pointer(EvalResult)] e 
+  # @return [Float] 
+  # @scope class
+  attach_function :eval_result_get_as_double, :clang_EvalResult_getAsDouble, [:pointer], :double
+  
+  # Returns the evaluation result as a constant string if the
+  # kind is other than Int or float. User must not free this pointer,
+  # instead call clang_EvalResult_dispose on the CXEvalResult returned
+  # by clang_Cursor_Evaluate.
+  # 
+  # @method eval_result_get_as_str(e)
+  # @param [FFI::Pointer(EvalResult)] e 
+  # @return [String] 
+  # @scope class
+  attach_function :eval_result_get_as_str, :clang_EvalResult_getAsStr, [:pointer], :string
+  
+  # Disposes the created Eval memory.
+  # 
+  # @method eval_result_dispose(e)
+  # @param [FFI::Pointer(EvalResult)] e 
+  # @return [nil] 
+  # @scope class
+  attach_function :eval_result_dispose, :clang_EvalResult_dispose, [:pointer], :void
+  
   # Retrieve a remapping.
   # 
   # @method get_remappings(path)
@@ -5049,7 +6851,7 @@ module FFIGen::Clang::C
   # :context ::
   #   (FFI::Pointer(*Void)) 
   # :visit ::
-  #   (FFI::Pointer(*)) 
+  #   (FFI::Pointer(*FunctionProto)) 
   class CursorAndRangeVisitor < FFI::Struct
     layout :context, :pointer,
            :visit, :pointer
@@ -5216,6 +7018,8 @@ module FFIGen::Clang::C
   #   
   # :cxx_interface ::
   #   
+  # :cxx_concept ::
+  #   
   # 
   # @method _enum_idx_entity_kind_
   # @return [Symbol]
@@ -5247,7 +7051,8 @@ module FFIGen::Clang::C
     :cxx_destructor, 23,
     :cxx_conversion_function, 24,
     :cxx_type_alias, 25,
-    :cxx_interface, 26
+    :cxx_interface, 26,
+    :cxx_concept, 27
   ]
   
   # (Not documented)
@@ -5263,6 +7068,8 @@ module FFIGen::Clang::C
   #   
   # :lang_cxx ::
   #   
+  # :lang_swift ::
+  #   
   # 
   # @method _enum_idx_entity_language_
   # @return [Symbol]
@@ -5271,7 +7078,8 @@ module FFIGen::Clang::C
     :lang_none, 0,
     :lang_c, 1,
     :lang_obj_c, 2,
-    :lang_cxx, 3
+    :lang_cxx, 3,
+    :lang_swift, 4
   ]
   
   # Extra C++ template information for an entity. This can apply to:
@@ -5606,6 +7414,9 @@ module FFIGen::Clang::C
   
   # Data for IndexerCallbacks#indexEntityReference.
   # 
+  # This may be deprecated in a future version as this duplicates
+  # the \c CXSymbolRole_Implicit bit in \c CXSymbolRole.
+  # 
   # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:idx_entity_ref_kind).</em>
   # 
   # === Options:
@@ -5621,6 +7432,51 @@ module FFIGen::Clang::C
   enum :idx_entity_ref_kind, [
     :direct, 1,
     :implicit, 2
+  ]
+  
+  # Roles that are attributed to symbol occurrences.
+  # 
+  # Internal: this currently mirrors low 9 bits of clang::index::SymbolRole with
+  # higher bits zeroed. These high bits may be exposed in the future.
+  # 
+  # <em>This entry is only for documentation and no real method. The FFI::Enum can be accessed via #enum_type(:symbol_role).</em>
+  # 
+  # === Options:
+  # :none ::
+  #   
+  # :declaration ::
+  #   
+  # :definition ::
+  #   
+  # :reference ::
+  #   
+  # :read ::
+  #   
+  # :write ::
+  #   
+  # :call ::
+  #   
+  # :dynamic ::
+  #   
+  # :address_of ::
+  #   
+  # :implicit ::
+  #   
+  # 
+  # @method _enum_symbol_role_
+  # @return [Symbol]
+  # @scope class
+  enum :symbol_role, [
+    :none, 0,
+    :declaration, 1,
+    :definition, 2,
+    :reference, 4,
+    :read, 8,
+    :write, 16,
+    :call, 32,
+    :dynamic, 64,
+    :address_of, 128,
+    :implicit, 256
   ]
   
   # Data for IndexerCallbacks#indexEntityReference.
@@ -5646,13 +7502,16 @@ module FFIGen::Clang::C
   #   the parentEntity will be the function/method.
   # :container ::
   #   (IdxContainerInfo) Lexical container context of the reference.
+  # :role ::
+  #   (Symbol from _enum_symbol_role_) Sets of symbol roles of the reference.
   class IdxEntityRefInfo < FFI::Struct
     layout :kind, :idx_entity_ref_kind,
            :cursor, Cursor.by_value,
            :loc, IdxLoc.by_value,
            :referenced_entity, IdxEntityInfo,
            :parent_entity, IdxEntityInfo,
-           :container, IdxContainerInfo
+           :container, IdxContainerInfo,
+           :role, :symbol_role
   end
   
   # A group of callbacks used by #clang_indexSourceFile and
@@ -5660,27 +7519,27 @@ module FFIGen::Clang::C
   # 
   # = Fields:
   # :abort_query ::
-  #   (FFI::Pointer(*)) Called periodically to check whether indexing should be aborted.
+  #   (FFI::Pointer(*FunctionProto)) Called periodically to check whether indexing should be aborted.
   #   Should return 0 to continue, and non-zero to abort.
   # :diagnostic ::
-  #   (FFI::Pointer(*)) Called at the end of indexing; passes the complete diagnostic set.
+  #   (FFI::Pointer(*FunctionProto)) Called at the end of indexing; passes the complete diagnostic set.
   # :entered_main_file ::
-  #   (FFI::Pointer(*)) 
+  #   (FFI::Pointer(*FunctionProto)) 
   # :pp_included_file ::
-  #   (FFI::Pointer(*)) Called when a file gets \#included/\#imported.
+  #   (FFI::Pointer(*FunctionProto)) Called when a file gets \#included/\#imported.
   # :imported_ast_file ::
-  #   (FFI::Pointer(*)) Called when a AST file (PCH or module) gets imported.
+  #   (FFI::Pointer(*FunctionProto)) Called when a AST file (PCH or module) gets imported.
   #   
   #   AST files will not get indexed (there will not be callbacks to index all
   #   the entities in an AST file). The recommended action is that, if the AST
   #   file is not already indexed, to initiate a new indexing job specific to
   #   the AST file.
   # :started_translation_unit ::
-  #   (FFI::Pointer(*)) Called at the beginning of indexing a translation unit.
+  #   (FFI::Pointer(*FunctionProto)) Called at the beginning of indexing a translation unit.
   # :index_declaration ::
-  #   (FFI::Pointer(*)) 
+  #   (FFI::Pointer(*FunctionProto)) 
   # :index_entity_reference ::
-  #   (FFI::Pointer(*)) Called to index a reference of an entity.
+  #   (FFI::Pointer(*FunctionProto)) Called to index a reference of an entity.
   class IndexerCallbacks < FFI::Struct
     layout :abort_query, :pointer,
            :diagnostic, :pointer,
@@ -5872,12 +7731,33 @@ module FFIGen::Clang::C
   # @param [FFI::Pointer(*TranslationUnit)] out_tu 
   # @param [Integer] tu_options 
   # @return [Integer] 0 on success or if there were errors from which the compiler could
-  #   recover.  If there is a failure from which the there is no recovery, returns
+  #   recover.  If there is a failure from which there is no recovery, returns
   #   a non-zero \c CXErrorCode.
   #   
   #   The rest of the parameters are the same as #clang_parseTranslationUnit.
   # @scope class
   attach_function :index_source_file, :clang_indexSourceFile, [:pointer, :pointer, IndexerCallbacks, :uint, :uint, :string, :pointer, :int, UnsavedFile, :uint, :pointer, :uint], :int
+  
+  # Same as clang_indexSourceFile but requires a full command line
+  # for \c command_line_args including argv(0). This is useful if the standard
+  # library paths are relative to the binary.
+  # 
+  # @method index_source_file_full_argv(index_action, client_data, index_callbacks, index_callbacks_size, index_options, source_filename, command_line_args, num_command_line_args, unsaved_files, num_unsaved_files, out_tu, tu_options)
+  # @param [FFI::Pointer(IndexAction)] index_action 
+  # @param [FFI::Pointer(ClientData)] client_data 
+  # @param [IndexerCallbacks] index_callbacks 
+  # @param [Integer] index_callbacks_size 
+  # @param [Integer] index_options 
+  # @param [String] source_filename 
+  # @param [FFI::Pointer(**CharS)] command_line_args 
+  # @param [Integer] num_command_line_args 
+  # @param [UnsavedFile] unsaved_files 
+  # @param [Integer] num_unsaved_files 
+  # @param [FFI::Pointer(*TranslationUnit)] out_tu 
+  # @param [Integer] tu_options 
+  # @return [Integer] 
+  # @scope class
+  attach_function :index_source_file_full_argv, :clang_indexSourceFileFullArgv, [:pointer, :pointer, IndexerCallbacks, :uint, :uint, :string, :pointer, :int, UnsavedFile, :uint, :pointer, :uint], :int
   
   # Index the given translation unit via callbacks implemented through
   # #IndexerCallbacks.
@@ -5898,7 +7778,7 @@ module FFIGen::Clang::C
   # @param [Integer] index_callbacks_size 
   # @param [Integer] index_options 
   # @param [TranslationUnitImpl] translation_unit_impl 
-  # @return [Integer] If there is a failure from which the there is no recovery, returns
+  # @return [Integer] If there is a failure from which there is no recovery, returns
   #   non-zero, otherwise returns 0.
   # @scope class
   attach_function :index_translation_unit, :clang_indexTranslationUnit, [:pointer, :pointer, IndexerCallbacks, :uint, :uint, TranslationUnitImpl], :int
@@ -5928,5 +7808,43 @@ module FFIGen::Clang::C
   # @return [SourceLocation] 
   # @scope class
   attach_function :index_loc_get_cx_source_location, :clang_indexLoc_getCXSourceLocation, [IdxLoc.by_value], SourceLocation.by_value
+  
+  # Visitor invoked for each field found by a traversal.
+  # 
+  # This visitor function will be invoked for each field found by
+  # \c clang_Type_visitFields. Its first argument is the cursor being
+  # visited, its second argument is the client data provided to
+  # \c clang_Type_visitFields.
+  # 
+  # The visitor should return one of the \c CXVisitorResult values
+  # to direct \c clang_Type_visitFields.
+  # 
+  # <em>This entry is only for documentation and no real method.</em>
+  # 
+  # @method _callback_field_visitor_(enum cx_visitor_result, c, client_data)
+  # @param [Symbol from _enum_visitor_result_] enum cx_visitor_result 
+  # @param [Cursor] c 
+  # @param [FFI::Pointer(ClientData)] client_data 
+  # @return [Symbol from _enum_visitor_result_] 
+  # @scope class
+  callback :field_visitor, [:visitor_result, Cursor.by_value, :pointer], :visitor_result
+  
+  # Visit the fields of a particular type.
+  # 
+  # This function visits all the direct fields of the given cursor,
+  # invoking the given \p visitor function with the cursors of each
+  # visited field. The traversal may be ended prematurely, if
+  # the visitor returns \c CXFieldVisit_Break.
+  # 
+  # @method type_visit_fields(t, visitor, client_data)
+  # @param [Type] t the record type whose field may be visited.
+  # @param [Proc(_callback_field_visitor_)] visitor the visitor function that will be invoked for each
+  #   field of \p T.
+  # @param [FFI::Pointer(ClientData)] client_data pointer data supplied by the client, which will
+  #   be passed to the visitor each time it is invoked.
+  # @return [Integer] a non-zero value if the traversal was terminated
+  #   prematurely by the visitor returning \c CXFieldVisit_Break.
+  # @scope class
+  attach_function :type_visit_fields, :clang_Type_visitFields, [Type.by_value, :field_visitor, :pointer], :uint
   
 end
