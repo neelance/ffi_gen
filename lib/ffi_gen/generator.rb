@@ -40,8 +40,8 @@ module FFIGen
       pointers = args.map { |arg| FFI::MemoryPointer.from_string(arg) }
       args_ptr.write_array_of_pointer(pointers)
 
-      index = Clang::C.create_index(0, 0)
-      @translation_unit = Clang::C.parse_translation_unit(index, File.join(File.dirname(__FILE__), "empty.h"), args_ptr, args.size, nil, 0, Clang::C.enum_type(:translation_unit_flags)[:detailed_preprocessing_record])
+      index = Clang::Index.create
+      @translation_unit = Clang::C.parse_translation_unit(index.c, File.join(File.dirname(__FILE__), "empty.h"), args_ptr, args.size, nil, 0, Clang::C.enum_type(:translation_unit_flags)[:detailed_preprocessing_record])
 
       Clang::C.get_num_diagnostics(@translation_unit).times do |i|
         diag = Clang::C.get_diagnostic(@translation_unit, i)
