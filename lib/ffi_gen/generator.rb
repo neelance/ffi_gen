@@ -97,273 +97,17 @@ module FFIGen
 
       declaration = case declaration_cursor[:kind]
       when :enum_decl
-        enum_description = []
-        constant_descriptions = {}
-        current_description = enum_description
-        comment.each do |line|
-          if line.gsub!(/@(.*?): /, '')
-            current_description = []
-            constant_descriptions[$1] = current_description
-          end
-          current_description = enum_description if line.strip.empty?
-          current_description << line
-        end
-
-        constants = []
-        previous_constant_location = Clang.get_cursor_location(declaration_cursor)
-        next_constant_value = 0
-        Clang.get_children(declaration_cursor).each do |enum_constant|
-          constant_name = read_name(enum_constant)
-
-          constant_location = Clang.get_cursor_location(enum_constant)
-          constant_comment_range = Clang.get_range(previous_constant_location, constant_location)
-          constant_description, _ = extract_comment(translation_unit, constant_comment_range)
-          constant_description.concat(constant_descriptions[constant_name.raw] || [])
-          previous_constant_location = constant_location
-
-          begin
-            value_cursor = Clang.get_children(enum_constant).first
-            constant_value = if value_cursor
-              parts = []
-              Clang.get_tokens(translation_unit, Clang.get_cursor_extent(value_cursor)).each do |token|
-                spelling = Clang.get_token_spelling(translation_unit, token).to_s_and_dispose
-                case Clang.get_token_kind(token)
-                when :literal
-                  parts << spelling
-                when :punctuation
-                  case spelling
-                  when "+", "-", "<<", ">>", "(", ")"
-                    parts << spelling
-                  else
-                    raise ArgumentError
-                  end
-                else
-                  raise ArgumentError
-                end
-              end
-              eval(parts.join)
-            else
-              next_constant_value
-            end
-
-            constants << { name: constant_name, value: constant_value, comment: constant_description }
-            next_constant_value = constant_value + 1
-          rescue ArgumentError
-            puts "Warning: Could not process value of enum constant \"#{constant_name.raw}\""
-          end
-        end
-
-        Enum.new(self, name, constants, enum_description)
-
+        read_enum_declaration(declaration_cursor, comment, name)
       when :struct_decl, :union_decl
-        struct = @declarations_by_type[Clang.get_cursor_type(declaration_cursor)] || StructOrUnion.new(self, name, (declaration_cursor[:kind] == :union_decl))
-        raise if !struct.fields.empty?
-        struct.description.concat(comment)
-
-        struct_children = Clang.get_children(declaration_cursor)
-        previous_field_end = Clang.get_cursor_location(declaration_cursor)
-        last_nested_declaration = nil
-        until struct_children.empty?
-          child = struct_children.shift
-          case child[:kind]
-          when :struct_decl, :union_decl
-            last_nested_declaration = read_declaration(child, [])
-          when :field_decl
-            field_name = read_name(child)
-            field_extent = Clang.get_cursor_extent(child)
-
-            field_comment_range = Clang.get_range(previous_field_end, Clang.get_range_start(field_extent))
-            field_comment, _ = extract_comment(translation_unit, field_comment_range)
-
-            # check for comment starting on same line
-            next_field_start = struct_children.first ? Clang.get_cursor_location(struct_children.first) : Clang.get_range_end(Clang.get_cursor_extent(declaration_cursor))
-            following_comment_range = Clang.get_range(Clang.get_range_end(field_extent), next_field_start)
-            following_comment, following_comment_token = extract_comment(translation_unit, following_comment_range, false)
-            if following_comment_token && Clang.get_spelling_location_data(Clang.get_token_location(translation_unit, following_comment_token))[:line] == Clang.get_spelling_location_data(Clang.get_range_end(field_extent))[:line]
-              field_comment = following_comment
-              previous_field_end = Clang.get_range_end(Clang.get_token_extent(translation_unit, following_comment_token))
-            else
-              previous_field_end = Clang.get_range_end(field_extent)
-            end
-
-            field_type = resolve_type(Clang.get_cursor_type(child))
-            last_nested_declaration.name ||= Name.new(name.parts + field_name.parts) if last_nested_declaration
-            last_nested_declaration = nil
-            struct.fields << { name: field_name, type: field_type, comment: field_comment }
-          else
-            raise
-          end
-        end
-
-        struct
-
+        read_struct_or_union_declaration(declaration_cursor, comment, name)
       when :function_decl
-        function_description = []
-        return_value_description = []
-        parameter_descriptions = {}
-        current_description = function_description
-        comment.each do |line|
-          if line.gsub!(/\\param (.*?) /, '')
-            current_description = []
-            parameter_descriptions[$1] = current_description
-          end
-          current_description = return_value_description if line.gsub!('\\returns ', '')
-          current_description << line
-        end
-
-        return_type = resolve_type(Clang.get_cursor_result_type(declaration_cursor))
-        parameters = []
-        first_parameter_type = nil
-        Clang.get_children(declaration_cursor).each do |function_child|
-          next if function_child[:kind] != :parm_decl
-          param_name = read_name(function_child)
-          tokens = Clang.get_tokens(translation_unit, Clang.get_cursor_extent(function_child))
-          is_array = tokens.any? { |t| Clang.get_token_spelling(translation_unit, t).to_s_and_dispose == "[" }
-          param_type = resolve_type(Clang.get_cursor_type(function_child), is_array)
-          param_name ||= param_type.name
-          param_name ||= Name.new([])
-          first_parameter_type ||= Clang.get_cursor_type(function_child)
-          parameters << { name: param_name, type: param_type }
-        end
-
-        parameters.each_with_index do |parameter, index|
-          parameter[:description] = parameter[:name] && parameter_descriptions[parameter[:name].raw]
-          parameter[:description] ||= parameter_descriptions.values[index] if parameter_descriptions.size == parameters.size # workaround for wrong names
-          parameter[:description] ||= []
-        end
-
-        function = FunctionOrCallback.new(self, name, parameters, return_type, false, @blocking.include?(name.raw), function_description, return_value_description)
-
-        pointee_declaration = first_parameter_type && get_pointee_declaration(first_parameter_type)
-        if pointee_declaration
-          type_prefix = pointee_declaration.name.parts.join.downcase
-          function_name_parts = name.parts.dup
-          while type_prefix.start_with? function_name_parts.first.downcase
-            type_prefix = type_prefix[function_name_parts.first.size..-1]
-            function_name_parts.shift
-            break if function_name_parts.empty?
-          end
-          if type_prefix.empty?
-            pointee_declaration.oo_functions << [Name.new(function_name_parts), function]
-          end
-        end
-
-        function
-
+        read_function_declaration(declaration_cursor, comment, name)
       when :typedef_decl
-        typedef_children = Clang.get_children(declaration_cursor)
-        if typedef_children.size == 1
-          child_declaration = @declarations_by_type[Clang.get_cursor_type(typedef_children.first)]
-          child_declaration.name = name if child_declaration && child_declaration.name.nil?
-          nil
-        elsif typedef_children.size > 1
-          return_type = resolve_type(Clang.get_cursor_type(typedef_children.first))
-          parameters = []
-          typedef_children.each do |param_decl|
-            param_name = read_name(param_decl)
-            param_type = resolve_type(Clang.get_cursor_type(param_decl))
-            param_name ||= param_type.name
-            parameters << { name:param_name, type: param_type, description: [] }
-          end
-          FunctionOrCallback.new(self, name, parameters, return_type, true, false, comment, [])
-        else
-          nil
-        end
-
+        read_typedef_declaration(declaration_cursor, comment, name)
       when :macro_definition
-        tokens = Clang.get_tokens(translation_unit, Clang.get_cursor_extent(declaration_cursor))
-          .map { |token| [Clang.get_token_kind(token), Clang.get_token_spelling(translation_unit, token).to_s_and_dispose] }
-        if tokens.size > 1
-          tokens.shift
-          begin
-            parameters = nil
-            if tokens.first[1] == "("
-              tokens_backup = tokens.dup
-              begin
-                parameters = []
-                tokens.shift
-                loop do
-                  kind, spelling = tokens.shift
-                  case kind
-                  when :identifier
-                    parameters << spelling
-                  when :punctuation
-                    break if spelling == ")"
-                    raise(ArgumentError) unless spelling == ","
-                  else
-                    raise ArgumentError
-                  end
-                end
-              rescue ArgumentError
-                parameters = nil
-                tokens = tokens_backup
-              end
-            end
-            value = []
-            until tokens.empty?
-              kind, spelling = tokens.shift
-              case kind
-              when :literal
-                value << spelling
-              when :punctuation
-                case spelling
-                when "+", "-", "<<", ">>", ")"
-                  value << spelling
-                when ","
-                  value << ", "
-                when "("
-                  if tokens[1][1] == ")"
-                    tokens.delete_at(1)
-                  else
-                    value << spelling
-                  end
-                else
-                  raise ArgumentError
-                end
-              when :identifier
-                raise(ArgumentError) unless parameters
-                if parameters.include?(spelling)
-                  value << spelling
-                elsif spelling == "NULL"
-                  value << "nil"
-                else
-                  if !tokens.empty? && tokens.first[1] == "("
-                    tokens.shift
-                    if spelling == "strlen"
-                      argument_kind, argument_spelling = tokens.shift
-                      second_token_kind, second_token_spelling = tokens.shift
-                      raise(ArgumentError) unless argument_kind == :identifier && second_token_spelling == ")"
-                      value << "#{argument_spelling}.length"
-                    else
-                      value << [:method, read_name(spelling)]
-                      value << "("
-                    end
-                  else
-                    value << [:constant, read_name(spelling)]
-                  end
-                end
-              when :keyword
-                raise(ArgumentError) unless spelling == "sizeof" && tokens[0][1] == "(" && tokens[1][0] == :literal && tokens[2][1] == ")"
-                tokens.shift
-                argument_kind, argument_spelling = tokens.shift
-                value << "#{argument_spelling}.length"
-                tokens.shift
-              else
-                raise ArgumentError
-              end
-            end
-            Define.new(self, name, parameters, value)
-          rescue ArgumentError
-            puts "Warning: Could not process value of macro \"#{name.raw}\""
-            nil
-          end
-        else
-          nil
-        end
-
+        read_macro_definition(declaration_cursor, name)
       else
         raise declaration_cursor[:kind].to_s
-
       end
 
       return nil if declaration.nil?
@@ -374,6 +118,276 @@ module FFIGen
       @declarations_by_type[type] = declaration unless type.nil?
 
       declaration
+    end
+
+    def read_enum_declaration(declaration_cursor, comment, name)
+      enum_description = []
+      constant_descriptions = {}
+      current_description = enum_description
+      comment.each do |line|
+        if line.gsub!(/@(.*?): /, '')
+          current_description = []
+          constant_descriptions[$1] = current_description
+        end
+        current_description = enum_description if line.strip.empty?
+        current_description << line
+      end
+
+      constants = []
+      previous_constant_location = Clang.get_cursor_location(declaration_cursor)
+      next_constant_value = 0
+      Clang.get_children(declaration_cursor).each do |enum_constant|
+        constant_name = read_name(enum_constant)
+
+        constant_location = Clang.get_cursor_location(enum_constant)
+        constant_comment_range = Clang.get_range(previous_constant_location, constant_location)
+        constant_description, _ = extract_comment(translation_unit, constant_comment_range)
+        constant_description.concat(constant_descriptions[constant_name.raw] || [])
+        previous_constant_location = constant_location
+
+        begin
+          value_cursor = Clang.get_children(enum_constant).first
+          constant_value = if value_cursor
+            parts = []
+            Clang.get_tokens(translation_unit, Clang.get_cursor_extent(value_cursor)).each do |token|
+              spelling = Clang.get_token_spelling(translation_unit, token).to_s_and_dispose
+              case Clang.get_token_kind(token)
+              when :literal
+                parts << spelling
+              when :punctuation
+                case spelling
+                when "+", "-", "<<", ">>", "(", ")"
+                  parts << spelling
+                else
+                  raise ArgumentError
+                end
+              else
+                raise ArgumentError
+              end
+            end
+            eval(parts.join)
+          else
+            next_constant_value
+          end
+
+          constants << { name: constant_name, value: constant_value, comment: constant_description }
+          next_constant_value = constant_value + 1
+        rescue ArgumentError
+          puts "Warning: Could not process value of enum constant \"#{constant_name.raw}\""
+        end
+      end
+
+      return Enum.new(self, name, constants, enum_description)
+    end
+
+    def read_struct_or_union_declaration(declaration_cursor, comment, name)
+      struct = @declarations_by_type[Clang.get_cursor_type(declaration_cursor)] || StructOrUnion.new(self, name, (declaration_cursor[:kind] == :union_decl))
+      raise if !struct.fields.empty?
+      struct.description.concat(comment)
+
+      struct_children = Clang.get_children(declaration_cursor)
+      previous_field_end = Clang.get_cursor_location(declaration_cursor)
+      last_nested_declaration = nil
+      until struct_children.empty?
+        child = struct_children.shift
+        case child[:kind]
+        when :struct_decl, :union_decl
+          last_nested_declaration = read_declaration(child, [])
+        when :field_decl
+          field_name = read_name(child)
+          field_extent = Clang.get_cursor_extent(child)
+
+          field_comment_range = Clang.get_range(previous_field_end, Clang.get_range_start(field_extent))
+          field_comment, _ = extract_comment(translation_unit, field_comment_range)
+
+          # check for comment starting on same line
+          next_field_start = struct_children.first ? Clang.get_cursor_location(struct_children.first) : Clang.get_range_end(Clang.get_cursor_extent(declaration_cursor))
+          following_comment_range = Clang.get_range(Clang.get_range_end(field_extent), next_field_start)
+          following_comment, following_comment_token = extract_comment(translation_unit, following_comment_range, false)
+          if following_comment_token && Clang.get_spelling_location_data(Clang.get_token_location(translation_unit, following_comment_token))[:line] == Clang.get_spelling_location_data(Clang.get_range_end(field_extent))[:line]
+            field_comment = following_comment
+            previous_field_end = Clang.get_range_end(Clang.get_token_extent(translation_unit, following_comment_token))
+          else
+            previous_field_end = Clang.get_range_end(field_extent)
+          end
+
+          field_type = resolve_type(Clang.get_cursor_type(child))
+          last_nested_declaration.name ||= Name.new(name.parts + field_name.parts) if last_nested_declaration
+          last_nested_declaration = nil
+          struct.fields << { name: field_name, type: field_type, comment: field_comment }
+        else
+          raise
+        end
+      end
+
+      return struct
+    end
+
+    def read_function_declaration(declaration_cursor, comment, name)
+      function_description = []
+      return_value_description = []
+      parameter_descriptions = {}
+      current_description = function_description
+      comment.each do |line|
+        if line.gsub!(/\\param (.*?) /, '')
+          current_description = []
+          parameter_descriptions[$1] = current_description
+        end
+        current_description = return_value_description if line.gsub!('\\returns ', '')
+        current_description << line
+      end
+
+      return_type = resolve_type(Clang.get_cursor_result_type(declaration_cursor))
+      parameters = []
+      first_parameter_type = nil
+      Clang.get_children(declaration_cursor).each do |function_child|
+        next if function_child[:kind] != :parm_decl
+        param_name = read_name(function_child)
+        tokens = Clang.get_tokens(translation_unit, Clang.get_cursor_extent(function_child))
+        is_array = tokens.any? { |t| Clang.get_token_spelling(translation_unit, t).to_s_and_dispose == "[" }
+        param_type = resolve_type(Clang.get_cursor_type(function_child), is_array)
+        param_name ||= param_type.name
+        param_name ||= Name.new([])
+        first_parameter_type ||= Clang.get_cursor_type(function_child)
+        parameters << { name: param_name, type: param_type }
+      end
+
+      parameters.each_with_index do |parameter, index|
+        parameter[:description] = parameter[:name] && parameter_descriptions[parameter[:name].raw]
+        parameter[:description] ||= parameter_descriptions.values[index] if parameter_descriptions.size == parameters.size # workaround for wrong names
+        parameter[:description] ||= []
+      end
+
+      function = FunctionOrCallback.new(self, name, parameters, return_type, false, @blocking.include?(name.raw), function_description, return_value_description)
+
+      pointee_declaration = first_parameter_type && get_pointee_declaration(first_parameter_type)
+      if pointee_declaration
+        type_prefix = pointee_declaration.name.parts.join.downcase
+        function_name_parts = name.parts.dup
+        while type_prefix.start_with? function_name_parts.first.downcase
+          type_prefix = type_prefix[function_name_parts.first.size..-1]
+          function_name_parts.shift
+          break if function_name_parts.empty?
+        end
+        if type_prefix.empty?
+          pointee_declaration.oo_functions << [Name.new(function_name_parts), function]
+        end
+      end
+
+      return function
+    end
+
+    def read_typedef_declaration(declaration_cursor, comment, name)
+      typedef_children = Clang.get_children(declaration_cursor)
+      if typedef_children.count == 1
+        child_declaration = @declarations_by_type[Clang.get_cursor_type(typedef_children.first)]
+        child_declaration.name = name if child_declaration && child_declaration.name.nil?
+        return nil
+      elsif typedef_children.count > 1
+        return_type = resolve_type(Clang.get_cursor_type(typedef_children.first))
+        parameters = []
+        typedef_children.each do |param_decl|
+          param_name = read_name(param_decl)
+          param_type = resolve_type(Clang.get_cursor_type(param_decl))
+          param_name ||= param_type.name
+          parameters << { name:param_name, type: param_type, description: [] }
+        end
+        return FunctionOrCallback.new(self, name, parameters, return_type, true, false, comment, [])
+      else
+        return nil
+      end
+    end
+
+    def read_macro_definition(declaration_cursor, name)
+      tokens = Clang.get_tokens(translation_unit, Clang.get_cursor_extent(declaration_cursor))
+        .map { |token| [Clang.get_token_kind(token), Clang.get_token_spelling(translation_unit, token).to_s_and_dispose] }
+
+      return nil if tokens.count == 0 # skip empty macro
+      return nil if tokens.count == 1
+
+      tokens.shift
+      begin
+        parameters = nil
+        if tokens.first[1] == "("
+          tokens_backup = tokens.dup
+          begin
+            parameters = []
+            tokens.shift
+            loop do
+              kind, spelling = tokens.shift
+              case kind
+              when :identifier
+                parameters << spelling
+              when :punctuation
+                break if spelling == ")"
+                raise(ArgumentError) unless spelling == ","
+              else
+                raise ArgumentError
+              end
+            end
+          rescue ArgumentError
+            parameters = nil
+            tokens = tokens_backup
+          end
+        end
+        value = []
+        until tokens.empty?
+          kind, spelling = tokens.shift
+          case kind
+          when :literal
+            value << spelling
+          when :punctuation
+            case spelling
+            when "+", "-", "<<", ">>", ")"
+              value << spelling
+            when ","
+              value << ", "
+            when "("
+              if tokens[1][1] == ")"
+                tokens.delete_at(1)
+              else
+                value << spelling
+              end
+            else
+              raise ArgumentError
+            end
+          when :identifier
+            raise(ArgumentError) unless parameters
+            if parameters.include?(spelling)
+              value << spelling
+            elsif spelling == "NULL"
+              value << "nil"
+            else
+              if !tokens.empty? && tokens.first[1] == "("
+                tokens.shift
+                if spelling == "strlen"
+                  argument_kind, argument_spelling = tokens.shift
+                  second_token_kind, second_token_spelling = tokens.shift
+                  raise(ArgumentError) unless argument_kind == :identifier && second_token_spelling == ")"
+                  value << "#{argument_spelling}.length"
+                else
+                  value << [:method, read_name(spelling)]
+                  value << "("
+                end
+              else
+                value << [:constant, read_name(spelling)]
+              end
+            end
+          when :keyword
+            raise(ArgumentError) unless spelling == "sizeof" && tokens[0][1] == "(" && tokens[1][0] == :literal && tokens[2][1] == ")"
+            tokens.shift
+            argument_kind, argument_spelling = tokens.shift
+            value << "#{argument_spelling}.length"
+            tokens.shift
+          else
+            raise ArgumentError
+          end
+        end
+        return Define.new(self, name, parameters, value)
+      rescue ArgumentError
+        puts "Warning: Could not process value of macro \"#{name.raw}\""
+        return nil
+      end
     end
 
     def resolve_type(full_type, is_array = false)
