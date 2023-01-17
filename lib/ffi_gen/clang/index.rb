@@ -28,6 +28,10 @@ module FFIGen
         @c = FFI::Pointer::NULL
       end
 
+      def parse_translation_unit(**args)
+        TranslationUnit.parse(index: self, **args)
+      end
+
       def inspect
         "#<#{self.class.name}:#{object_id}>"
       end

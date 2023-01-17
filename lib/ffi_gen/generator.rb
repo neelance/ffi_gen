@@ -31,40 +31,28 @@ module FFIGen
     def translation_unit
       return @translation_unit unless @translation_unit.nil?
 
-      args = []
-      @headers.each do |header|
-        args.push("-include", header) unless header.is_a?(Regexp)
-      end
-      args.concat(@cflags)
-      args_ptr = FFI::MemoryPointer.new(:pointer, args.size)
-      pointers = args.map { |arg| FFI::MemoryPointer.from_string(arg) }
-      args_ptr.write_array_of_pointer(pointers)
+      args = @cflags
 
       index = Clang::Index.create
-      @translation_unit = Clang::C.parse_translation_unit(index.c, File.join(File.dirname(__FILE__), "empty.h"), args_ptr, args.size, nil, 0, Clang::C.enum_type(:translation_unit_flags)[:detailed_preprocessing_record])
 
-      Clang::C.get_num_diagnostics(@translation_unit).times do |i|
-        diag = Clang::C.get_diagnostic(@translation_unit, i)
-        $stderr.puts(Clang::C.format_diagnostic(diag, Clang::C.default_diagnostic_display_options).to_s_and_dispose)
-      end
+      source_files = @headers.reject { |h| h.is_a?(Regexp) }
+      @translation_unit = index.parse_translation_unit(source_files: source_files, arguments: @cflags)
 
-      @translation_unit
+      $stderr.puts(@translation_unit.get_diagnostics) # print out any errors encountered while parsing the header files
+
+      return @translation_unit
     end
 
     def declarations
       return @declarations unless @declarations.nil?
 
-      header_files = []
-      inclusion_visitor = proc do |included_file, inclusion_stack, include_length, client_data|
-        filename = Clang::C.get_file_name(included_file).to_s_and_dispose
-        header_files << included_file if @headers.any? { |header| header.is_a?(Regexp) ? header =~ filename : filename.end_with?(header) }
-      end
-      Clang::C.get_inclusions(translation_unit, inclusion_visitor, nil)
+      header_files = translation_unit.included_files
+        .select { |file| @headers.any? { |header| header.is_a?(Regexp) ? header =~ file : file.end_with?(header) } }
 
-      unit_cursor = Clang::C.get_translation_unit_cursor(translation_unit)
+      unit_cursor = Clang::C.get_translation_unit_cursor(translation_unit.c)
       declaration_cursors = Clang::C.get_children(unit_cursor)
       declaration_cursors.delete_if { |cursor| [:macro_expansion, :inclusion_directive, :var_decl].include?(cursor[:kind]) }
-      declaration_cursors.delete_if { |cursor| !header_files.include?(Clang::C.get_spelling_location_data(Clang::C.get_cursor_location(cursor))[:file]) }
+      declaration_cursors.delete_if { |cursor| !header_files.include?(Clang::C.get_file_name(Clang::C.get_spelling_location_data(Clang::C.get_cursor_location(cursor))[:file]).to_s_and_dispose) }
 
       is_nested_declaration = []
       min_offset = Clang::C.get_spelling_location_data(Clang::C.get_cursor_location(declaration_cursors.last))[:offset]
@@ -149,8 +137,8 @@ module FFIGen
           value_cursor = Clang::C.get_children(enum_constant).first
           constant_value = if value_cursor
             parts = []
-            Clang::C.get_tokens(translation_unit, Clang::C.get_cursor_extent(value_cursor)).each do |token|
-              spelling = Clang::C.get_token_spelling(translation_unit, token).to_s_and_dispose
+            Clang::C.get_tokens(translation_unit.c, Clang::C.get_cursor_extent(value_cursor)).each do |token|
+              spelling = Clang::C.get_token_spelling(translation_unit.c, token).to_s_and_dispose
               case Clang::C.get_token_kind(token)
               when :literal
                 parts << spelling
@@ -204,9 +192,9 @@ module FFIGen
           next_field_start = struct_children.first ? Clang::C.get_cursor_location(struct_children.first) : Clang::C.get_range_end(Clang::C.get_cursor_extent(declaration_cursor))
           following_comment_range = Clang::C.get_range(Clang::C.get_range_end(field_extent), next_field_start)
           following_comment, following_comment_token = extract_comment(translation_unit, following_comment_range, false)
-          if following_comment_token && Clang::C.get_spelling_location_data(Clang::C.get_token_location(translation_unit, following_comment_token))[:line] == Clang::C.get_spelling_location_data(Clang::C.get_range_end(field_extent))[:line]
+          if following_comment_token && Clang::C.get_spelling_location_data(Clang::C.get_token_location(translation_unit.c, following_comment_token))[:line] == Clang::C.get_spelling_location_data(Clang::C.get_range_end(field_extent))[:line]
             field_comment = following_comment
-            previous_field_end = Clang::C.get_range_end(Clang::C.get_token_extent(translation_unit, following_comment_token))
+            previous_field_end = Clang::C.get_range_end(Clang::C.get_token_extent(translation_unit.c, following_comment_token))
           else
             previous_field_end = Clang::C.get_range_end(field_extent)
           end
@@ -243,8 +231,8 @@ module FFIGen
       Clang::C.get_children(declaration_cursor).each do |function_child|
         next if function_child[:kind] != :parm_decl
         param_name = read_name(function_child)
-        tokens = Clang::C.get_tokens(translation_unit, Clang::C.get_cursor_extent(function_child))
-        is_array = tokens.any? { |t| Clang::C.get_token_spelling(translation_unit, t).to_s_and_dispose == "[" }
+        tokens = Clang::C.get_tokens(translation_unit.c, Clang::C.get_cursor_extent(function_child))
+        is_array = tokens.any? { |t| Clang::C.get_token_spelling(translation_unit.c, t).to_s_and_dispose == "[" }
         param_type = resolve_type(Clang::C.get_cursor_type(function_child), is_array)
         param_name ||= param_type.name
         param_name ||= Name.new([])
@@ -299,8 +287,8 @@ module FFIGen
     end
 
     def read_macro_definition(declaration_cursor, name)
-      tokens = Clang::C.get_tokens(translation_unit, Clang::C.get_cursor_extent(declaration_cursor))
-        .map { |token| [Clang::C.get_token_kind(token), Clang::C.get_token_spelling(translation_unit, token).to_s_and_dispose] }
+      tokens = Clang::C.get_tokens(translation_unit.c, Clang::C.get_cursor_extent(declaration_cursor))
+        .map { |token| [Clang::C.get_token_kind(token), Clang::C.get_token_spelling(translation_unit.c, token).to_s_and_dispose] }
 
       return nil if tokens.count == 0 # skip empty macro
       return nil if tokens.count == 1
@@ -471,7 +459,7 @@ module FFIGen
     end
 
     def extract_comment(translation_unit, range, search_backwards = true)
-      tokens = Clang::C.get_tokens(translation_unit, range)
+      tokens = Clang::C.get_tokens(translation_unit.c, range)
 
       iterator = search_backwards ? tokens.reverse_each : tokens.each
       comment_lines = []
@@ -479,7 +467,7 @@ module FFIGen
       comment_block = false
       iterator.each do |token|
         next if Clang::C.get_token_kind(token) != :comment
-        comment = Clang::C.get_token_spelling(translation_unit, token).to_s_and_dispose
+        comment = Clang::C.get_token_spelling(translation_unit.c, token).to_s_and_dispose
         lines = comment.split("\n").map do |line|
           line.sub!(/\ ?\*+\/\s*$/, '')
           line.sub!(/^\s*\/?[*\/]+ ?/, '')
