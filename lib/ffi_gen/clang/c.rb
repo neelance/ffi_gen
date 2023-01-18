@@ -2,16 +2,6 @@ module FFIGen
   module Clang
     module C
 
-      def self.get_children(cursor)
-        children = []
-        cursor_visitor = lambda do |visit_result, child, child_parent, child_client_data|
-          children << child
-          :continue
-        end
-        visit_children(cursor, cursor_visitor, nil)
-        children
-      end
-
       def self.get_spelling_location_data(location)
         file_ptr = FFI::MemoryPointer.new(:pointer)
         line_ptr = FFI::MemoryPointer.new(:uint)

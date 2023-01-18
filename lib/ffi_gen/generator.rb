@@ -49,15 +49,15 @@ module FFIGen
       header_files = translation_unit.included_files
         .select { |file| @headers.any? { |header| header.is_a?(Regexp) ? header =~ file : file.end_with?(header) } }
 
-      unit_cursor = Clang::C.get_translation_unit_cursor(translation_unit.c)
-      declaration_cursors = Clang::C.get_children(unit_cursor)
-      declaration_cursors.delete_if { |cursor| [:macro_expansion, :inclusion_directive, :var_decl].include?(cursor[:kind]) }
-      declaration_cursors.delete_if { |cursor| !header_files.include?(Clang::String.from_c(C.get_file_name(Clang::C.get_spelling_location_data(Clang::C.get_cursor_location(cursor))[:file])).to_s) }
+      declaration_cursors = translation_unit.get_cursor.children
+        .reject { |cursor| [:macro_expansion, :inclusion_directive, :var_decl].include?(cursor.kind) }
+        # only include declarations from one of the target header files
+        .select { |cursor| header_files.include?(Clang::String.from_c(Clang::C.get_file_name(Clang::C.get_spelling_location_data(Clang::C.get_cursor_location(cursor.c))[:file])).to_s) }
 
       is_nested_declaration = []
-      min_offset = Clang::C.get_spelling_location_data(Clang::C.get_cursor_location(declaration_cursors.last))[:offset]
+      min_offset = Clang::C.get_spelling_location_data(Clang::C.get_cursor_location(declaration_cursors.last.c))[:offset]
       declaration_cursors.reverse_each do |declaration_cursor|
-        offset = Clang::C.get_spelling_location_data(Clang::C.get_cursor_location(declaration_cursor))[:offset]
+        offset = Clang::C.get_spelling_location_data(Clang::C.get_cursor_location(declaration_cursor.c))[:offset]
         is_nested_declaration.unshift(offset > min_offset)
         min_offset = offset if offset < min_offset
       end
@@ -65,13 +65,13 @@ module FFIGen
       @declarations = []
       @declarations_by_name = {}
       @declarations_by_type = {}
-      previous_declaration_end = Clang::C.get_cursor_location(unit_cursor)
+      previous_declaration_end = Clang::C.get_cursor_location(translation_unit.get_cursor.c)
       declaration_cursors.each_with_index do |declaration_cursor, index|
         comment = []
         unless is_nested_declaration[index]
-          comment_range = Clang::C.get_range(previous_declaration_end, Clang::C.get_cursor_location(declaration_cursor))
+          comment_range = Clang::C.get_range(previous_declaration_end, Clang::C.get_cursor_location(declaration_cursor.c))
           comment, _ = extract_comment(translation_unit, comment_range)
-          previous_declaration_end = Clang::C.get_range_end(Clang::C.get_cursor_extent(declaration_cursor))
+          previous_declaration_end = Clang::C.get_range_end(Clang::C.get_cursor_extent(declaration_cursor.c))
         end
 
         read_declaration(declaration_cursor, comment)
@@ -83,7 +83,7 @@ module FFIGen
     def read_declaration(declaration_cursor, comment)
       name = read_name(declaration_cursor)
 
-      declaration = case declaration_cursor[:kind]
+      declaration = case declaration_cursor.kind
       when :enum_decl
         read_enum_declaration(declaration_cursor, comment, name)
       when :struct_decl, :union_decl
@@ -95,14 +95,14 @@ module FFIGen
       when :macro_definition
         read_macro_definition(declaration_cursor, name)
       else
-        raise declaration_cursor[:kind].to_s
+        raise declaration_cursor.kind.to_s
       end
 
       return nil if declaration.nil?
       @declarations.delete(declaration)
       @declarations << declaration
       @declarations_by_name[name] = name.raw unless name.nil?
-      type = Clang::C.get_cursor_type(declaration_cursor)
+      type = Clang::C.get_cursor_type(declaration_cursor.c)
       @declarations_by_type[type] = declaration unless type.nil?
 
       declaration
@@ -122,22 +122,22 @@ module FFIGen
       end
 
       constants = []
-      previous_constant_location = Clang::C.get_cursor_location(declaration_cursor)
+      previous_constant_location = Clang::C.get_cursor_location(declaration_cursor.c)
       next_constant_value = 0
-      Clang::C.get_children(declaration_cursor).each do |enum_constant|
+      declaration_cursor.children.each do |enum_constant|
         constant_name = read_name(enum_constant)
 
-        constant_location = Clang::C.get_cursor_location(enum_constant)
+        constant_location = Clang::C.get_cursor_location(enum_constant.c)
         constant_comment_range = Clang::C.get_range(previous_constant_location, constant_location)
         constant_description, _ = extract_comment(translation_unit, constant_comment_range)
         constant_description.concat(constant_descriptions[constant_name.raw] || [])
         previous_constant_location = constant_location
 
         begin
-          value_cursor = Clang::C.get_children(enum_constant).first
+          value_cursor = enum_constant.children.first
           constant_value = if value_cursor
             parts = []
-            Clang::C.get_tokens(translation_unit.c, Clang::C.get_cursor_extent(value_cursor)).each do |token|
+            Clang::C.get_tokens(translation_unit.c, Clang::C.get_cursor_extent(value_cursor.c)).each do |token|
               string_c = Clang::C.get_token_spelling(translation_unit.c, token)
               spelling = Clang::String.from_c(string_c).to_s
               case Clang::C.get_token_kind(token)
@@ -170,27 +170,27 @@ module FFIGen
     end
 
     def read_struct_or_union_declaration(declaration_cursor, comment, name)
-      struct = @declarations_by_type[Clang::C.get_cursor_type(declaration_cursor)] || StructOrUnion.new(self, name, (declaration_cursor[:kind] == :union_decl))
+      struct = @declarations_by_type[Clang::C.get_cursor_type(declaration_cursor.c)] || StructOrUnion.new(self, name, (declaration_cursor.kind == :union_decl))
       raise if !struct.fields.empty?
       struct.description.concat(comment)
 
-      struct_children = Clang::C.get_children(declaration_cursor)
-      previous_field_end = Clang::C.get_cursor_location(declaration_cursor)
+      struct_children = declaration_cursor.children
+      previous_field_end = Clang::C.get_cursor_location(declaration_cursor.c)
       last_nested_declaration = nil
       until struct_children.empty?
         child = struct_children.shift
-        case child[:kind]
+        case child.kind
         when :struct_decl, :union_decl
           last_nested_declaration = read_declaration(child, [])
         when :field_decl
           field_name = read_name(child)
-          field_extent = Clang::C.get_cursor_extent(child)
+          field_extent = Clang::C.get_cursor_extent(child.c)
 
           field_comment_range = Clang::C.get_range(previous_field_end, Clang::C.get_range_start(field_extent))
           field_comment, _ = extract_comment(translation_unit, field_comment_range)
 
           # check for comment starting on same line
-          next_field_start = struct_children.first ? Clang::C.get_cursor_location(struct_children.first) : Clang::C.get_range_end(Clang::C.get_cursor_extent(declaration_cursor))
+          next_field_start = struct_children.first ? Clang::C.get_cursor_location(struct_children.first.c) : Clang::C.get_range_end(Clang::C.get_cursor_extent(declaration_cursor.c))
           following_comment_range = Clang::C.get_range(Clang::C.get_range_end(field_extent), next_field_start)
           following_comment, following_comment_token = extract_comment(translation_unit, following_comment_range, false)
           if following_comment_token && Clang::C.get_spelling_location_data(Clang::C.get_token_location(translation_unit.c, following_comment_token))[:line] == Clang::C.get_spelling_location_data(Clang::C.get_range_end(field_extent))[:line]
@@ -200,7 +200,7 @@ module FFIGen
             previous_field_end = Clang::C.get_range_end(field_extent)
           end
 
-          field_type = resolve_type(Clang::C.get_cursor_type(child))
+          field_type = resolve_type(Clang::C.get_cursor_type(child.c))
           last_nested_declaration.name ||= Name.new(name.parts + field_name.parts) if last_nested_declaration
           last_nested_declaration = nil
           struct.fields << { name: field_name, type: field_type, comment: field_comment }
@@ -226,21 +226,21 @@ module FFIGen
         current_description << line
       end
 
-      return_type = resolve_type(Clang::C.get_cursor_result_type(declaration_cursor))
+      return_type = resolve_type(Clang::C.get_cursor_result_type(declaration_cursor.c))
       parameters = []
       first_parameter_type = nil
-      Clang::C.get_children(declaration_cursor).each do |function_child|
-        next if function_child[:kind] != :parm_decl
+      declaration_cursor.children.each do |function_child|
+        next if function_child.kind != :parm_decl
         param_name = read_name(function_child)
-        tokens = Clang::C.get_tokens(translation_unit.c, Clang::C.get_cursor_extent(function_child))
+        tokens = Clang::C.get_tokens(translation_unit.c, Clang::C.get_cursor_extent(function_child.c))
         is_array = tokens.any? do |t|
           string_c = Clang::C.get_token_spelling(translation_unit.c, t)
           Clang::String.from_c(string_c).to_s == "["
         end
-        param_type = resolve_type(Clang::C.get_cursor_type(function_child), is_array)
+        param_type = resolve_type(Clang::C.get_cursor_type(function_child.c), is_array)
         param_name ||= param_type.name
         param_name ||= Name.new([])
-        first_parameter_type ||= Clang::C.get_cursor_type(function_child)
+        first_parameter_type ||= Clang::C.get_cursor_type(function_child.c)
         parameters << { name: param_name, type: param_type }
       end
 
@@ -270,17 +270,17 @@ module FFIGen
     end
 
     def read_typedef_declaration(declaration_cursor, comment, name)
-      typedef_children = Clang::C.get_children(declaration_cursor)
+      typedef_children = declaration_cursor.children
       if typedef_children.count == 1
-        child_declaration = @declarations_by_type[Clang::C.get_cursor_type(typedef_children.first)]
+        child_declaration = @declarations_by_type[Clang::C.get_cursor_type(typedef_children.first.c)]
         child_declaration.name = name if child_declaration && child_declaration.name.nil?
         return nil
       elsif typedef_children.count > 1
-        return_type = resolve_type(Clang::C.get_cursor_type(typedef_children.first))
+        return_type = resolve_type(Clang::C.get_cursor_type(typedef_children.first.c))
         parameters = []
         typedef_children.each do |param_decl|
           param_name = read_name(param_decl)
-          param_type = resolve_type(Clang::C.get_cursor_type(param_decl))
+          param_type = resolve_type(Clang::C.get_cursor_type(param_decl.c))
           param_name ||= param_type.name
           parameters << { name:param_name, type: param_type, description: [] }
         end
@@ -291,7 +291,7 @@ module FFIGen
     end
 
     def read_macro_definition(declaration_cursor, name)
-      tokens = Clang::C.get_tokens(translation_unit.c, Clang::C.get_cursor_extent(declaration_cursor))
+      tokens = Clang::C.get_tokens(translation_unit.c, Clang::C.get_cursor_extent(declaration_cursor.c))
         .map { |token| [Clang::C.get_token_kind(token), Clang::String.from_c(Clang::C.get_token_spelling(translation_unit.c, token)).to_s] }
 
       return nil if tokens.count == 0 # skip empty macro
@@ -396,7 +396,7 @@ module FFIGen
           when :char_s
             StringType.new
           when :record
-            @declarations_by_type[Clang::C.get_cursor_type(Clang::C.get_type_declaration(pointee_type))]
+            @declarations_by_type[Clang::C.get_cursor_type(Clang::Cursor.from_c(translation_unit: translation_unit, c: Clang::C.get_type_declaration(pointee_type)).c)]
           when :function_proto
             @declarations_by_type[full_type]
           else
@@ -408,7 +408,7 @@ module FFIGen
             pointee_name = ""
             current_type = full_type
             loop do
-              declaration_cursor = Clang::C.get_type_declaration(current_type)
+              declaration_cursor = Clang::Cursor.from_c(translation_unit: translation_unit, c: Clang::C.get_type_declaration(current_type))
               pointee_name = read_name(declaration_cursor)
               break if pointee_name
 
@@ -446,7 +446,7 @@ module FFIGen
     end
 
     def read_name(source)
-      source = Clang::String.from_c(Clang::C.get_cursor_spelling(source)).to_s if source.is_a?(Clang::C::Cursor)
+      source = source.spelling if source.is_a?(Clang::Cursor)
       return nil if source.empty?
       trimmed = source.sub(/^(#{@prefixes.join('|')})/, '')
       trimmed = trimmed.sub(/(#{@suffixes.join('|')})$/, '')

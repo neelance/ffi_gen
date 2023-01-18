@@ -67,6 +67,10 @@ module FFIGen
         return files
       end
 
+      def get_cursor
+        Cursor.get(translation_unit: self)
+      end
+
       def inspect
         "#<#{self.class.name}:#{object_id} index:#{index.inspect} >"
       end
