@@ -52,7 +52,7 @@ module FFIGen
       unit_cursor = Clang::C.get_translation_unit_cursor(translation_unit.c)
       declaration_cursors = Clang::C.get_children(unit_cursor)
       declaration_cursors.delete_if { |cursor| [:macro_expansion, :inclusion_directive, :var_decl].include?(cursor[:kind]) }
-      declaration_cursors.delete_if { |cursor| !header_files.include?(Clang::C.get_file_name(Clang::C.get_spelling_location_data(Clang::C.get_cursor_location(cursor))[:file]).to_s_and_dispose) }
+      declaration_cursors.delete_if { |cursor| !header_files.include?(Clang::String.from_c(C.get_file_name(Clang::C.get_spelling_location_data(Clang::C.get_cursor_location(cursor))[:file])).to_s) }
 
       is_nested_declaration = []
       min_offset = Clang::C.get_spelling_location_data(Clang::C.get_cursor_location(declaration_cursors.last))[:offset]
@@ -138,7 +138,8 @@ module FFIGen
           constant_value = if value_cursor
             parts = []
             Clang::C.get_tokens(translation_unit.c, Clang::C.get_cursor_extent(value_cursor)).each do |token|
-              spelling = Clang::C.get_token_spelling(translation_unit.c, token).to_s_and_dispose
+              string_c = Clang::C.get_token_spelling(translation_unit.c, token)
+              spelling = Clang::String.from_c(string_c).to_s
               case Clang::C.get_token_kind(token)
               when :literal
                 parts << spelling
@@ -232,7 +233,10 @@ module FFIGen
         next if function_child[:kind] != :parm_decl
         param_name = read_name(function_child)
         tokens = Clang::C.get_tokens(translation_unit.c, Clang::C.get_cursor_extent(function_child))
-        is_array = tokens.any? { |t| Clang::C.get_token_spelling(translation_unit.c, t).to_s_and_dispose == "[" }
+        is_array = tokens.any? do |t|
+          string_c = Clang::C.get_token_spelling(translation_unit.c, t)
+          Clang::String.from_c(string_c).to_s == "["
+        end
         param_type = resolve_type(Clang::C.get_cursor_type(function_child), is_array)
         param_name ||= param_type.name
         param_name ||= Name.new([])
@@ -288,7 +292,7 @@ module FFIGen
 
     def read_macro_definition(declaration_cursor, name)
       tokens = Clang::C.get_tokens(translation_unit.c, Clang::C.get_cursor_extent(declaration_cursor))
-        .map { |token| [Clang::C.get_token_kind(token), Clang::C.get_token_spelling(translation_unit.c, token).to_s_and_dispose] }
+        .map { |token| [Clang::C.get_token_kind(token), Clang::String.from_c(Clang::C.get_token_spelling(translation_unit.c, token)).to_s] }
 
       return nil if tokens.count == 0 # skip empty macro
       return nil if tokens.count == 1
@@ -415,7 +419,7 @@ module FFIGen
               when :unexposed
                 break
               else
-                pointee_name = Name.new(Clang::C.get_type_kind_spelling(current_type[:kind]).to_s_and_dispose.split("_"))
+                pointee_name = Name.new(Clang::String.from_c(Clang::C.get_type_kind_spelling(current_type[:kind])).to_s.split("_"))
                 break
               end
             end
@@ -442,7 +446,7 @@ module FFIGen
     end
 
     def read_name(source)
-      source = Clang::C.get_cursor_spelling(source).to_s_and_dispose if source.is_a?(Clang::C::Cursor)
+      source = Clang::String.from_c(Clang::C.get_cursor_spelling(source)).to_s if source.is_a?(Clang::C::Cursor)
       return nil if source.empty?
       trimmed = source.sub(/^(#{@prefixes.join('|')})/, '')
       trimmed = trimmed.sub(/(#{@suffixes.join('|')})$/, '')
@@ -467,7 +471,7 @@ module FFIGen
       comment_block = false
       iterator.each do |token|
         next if Clang::C.get_token_kind(token) != :comment
-        comment = Clang::C.get_token_spelling(translation_unit.c, token).to_s_and_dispose
+        comment = Clang::String.from_c(Clang::C.get_token_spelling(translation_unit.c, token)).to_s
         lines = comment.split("\n").map do |line|
           line.sub!(/\ ?\*+\/\s*$/, '')
           line.sub!(/^\s*\/?[*\/]+ ?/, '')

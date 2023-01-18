@@ -49,7 +49,8 @@ module FFIGen
         string = ''
         C.get_num_diagnostics(@c).times do |i|
           diagnostic = C.get_diagnostic(@c, i)
-          string += C.format_diagnostic(diagnostic, C.default_diagnostic_display_options).to_s_and_dispose
+          string_c = C.format_diagnostic(diagnostic, C.default_diagnostic_display_options)
+          string += String.from_c(string_c).to_s
           C.dispose_diagnostic(diagnostic)
         end
         return string
@@ -58,7 +59,8 @@ module FFIGen
       def included_files
         files = []
         visitor = proc do |included_file, inclusion_stack, include_length, client_data|
-          files << C.get_file_name(included_file).to_s_and_dispose
+          string_c = C.get_file_name(included_file)
+          files << String.from_c(string_c).to_s
         end
         C.get_inclusions(@c, visitor, nil)
 
