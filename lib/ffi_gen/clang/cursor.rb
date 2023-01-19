@@ -46,6 +46,16 @@ module FFIGen
         return children
       end
 
+      # Retrieve the physical location of the source constructor referenced by the given cursor.
+      #
+      # The location of a declaration is typically the location of the name of that declaration,
+      # where the name of that declaration would occur if it is unnamed, or some keyword that
+      # introduces that particular declaration.
+      # The location of a reference is where that reference occurs within the source code.
+      def location
+        SourceLocation.from_cursor(cursor: self)
+      end
+
       def kind
         @c[:kind]
       end
@@ -67,9 +77,7 @@ module FFIGen
       end
 
       def inspect
-        location = C.get_spelling_location_data(C.get_cursor_location(@c))
-        filename = String.from_c(C.get_file_name(location[:file])).to_s
-        "#<#{self.class.name}:#{object_id} tu:#{translation_unit.object_id} locaiton:#{filename}:#{location[:line]}:#{location[:column]} spelling:#{spelling.inspect} kind:#{kind} children:#{children.count} >"
+        "#<#{self.class.name}:#{object_id} tu:#{translation_unit.object_id} locaiton:#{location.to_s} spelling:#{spelling.inspect} kind:#{kind} children:#{children.count} >"
       end
 
     end

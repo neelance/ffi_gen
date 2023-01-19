@@ -52,12 +52,12 @@ module FFIGen
       declaration_cursors = translation_unit.get_cursor.children
         .reject { |cursor| [:macro_expansion, :inclusion_directive, :var_decl].include?(cursor.kind) }
         # only include declarations from one of the target header files
-        .select { |cursor| header_files.include?(Clang::String.from_c(Clang::C.get_file_name(Clang::C.get_spelling_location_data(Clang::C.get_cursor_location(cursor.c))[:file])).to_s) }
+        .select { |cursor| header_files.include?(cursor.location.file) }
 
       is_nested_declaration = []
-      min_offset = Clang::C.get_spelling_location_data(Clang::C.get_cursor_location(declaration_cursors.last.c))[:offset]
+      min_offset = declaration_cursors.last.location.offset
       declaration_cursors.reverse_each do |declaration_cursor|
-        offset = Clang::C.get_spelling_location_data(Clang::C.get_cursor_location(declaration_cursor.c))[:offset]
+        offset = declaration_cursor.location.offset
         is_nested_declaration.unshift(offset > min_offset)
         min_offset = offset if offset < min_offset
       end
@@ -65,11 +65,11 @@ module FFIGen
       @declarations = []
       @declarations_by_name = {}
       @declarations_by_type = {}
-      previous_declaration_end = Clang::C.get_cursor_location(translation_unit.get_cursor.c)
+      previous_declaration_end = translation_unit.get_cursor.location # start at beginning of file
       declaration_cursors.each_with_index do |declaration_cursor, index|
         comment = []
         unless is_nested_declaration[index]
-          comment_range = Clang::C.get_range(previous_declaration_end, Clang::C.get_cursor_location(declaration_cursor.c))
+          comment_range = Clang::C.get_range((previous_declaration_end.is_a?(Clang::SourceLocation) ? previous_declaration_end.c : previous_declaration_end), declaration_cursor.location.c)
           comment, _ = extract_comment(translation_unit, comment_range)
           previous_declaration_end = Clang::C.get_range_end(Clang::C.get_cursor_extent(declaration_cursor.c))
         end
@@ -122,13 +122,13 @@ module FFIGen
       end
 
       constants = []
-      previous_constant_location = Clang::C.get_cursor_location(declaration_cursor.c)
+      previous_constant_location = declaration_cursor.location
       next_constant_value = 0
       declaration_cursor.children.each do |enum_constant|
         constant_name = read_name(enum_constant)
 
-        constant_location = Clang::C.get_cursor_location(enum_constant.c)
-        constant_comment_range = Clang::C.get_range(previous_constant_location, constant_location)
+        constant_location = enum_constant.location
+        constant_comment_range = Clang::C.get_range(previous_constant_location.c, constant_location.c)
         constant_description, _ = extract_comment(translation_unit, constant_comment_range)
         constant_description.concat(constant_descriptions[constant_name.raw] || [])
         previous_constant_location = constant_location
@@ -175,7 +175,7 @@ module FFIGen
       struct.description.concat(comment)
 
       struct_children = declaration_cursor.children
-      previous_field_end = Clang::C.get_cursor_location(declaration_cursor.c)
+      previous_field_end = declaration_cursor.location
       last_nested_declaration = nil
       until struct_children.empty?
         child = struct_children.shift
@@ -186,14 +186,14 @@ module FFIGen
           field_name = read_name(child)
           field_extent = Clang::C.get_cursor_extent(child.c)
 
-          field_comment_range = Clang::C.get_range(previous_field_end, Clang::C.get_range_start(field_extent))
+          field_comment_range = Clang::C.get_range((previous_field_end.is_a?(Clang::SourceLocation) ? previous_field_end.c : previous_field_end), Clang::C.get_range_start(field_extent))
           field_comment, _ = extract_comment(translation_unit, field_comment_range)
 
           # check for comment starting on same line
-          next_field_start = struct_children.first ? Clang::C.get_cursor_location(struct_children.first.c) : Clang::C.get_range_end(Clang::C.get_cursor_extent(declaration_cursor.c))
-          following_comment_range = Clang::C.get_range(Clang::C.get_range_end(field_extent), next_field_start)
+          next_field_start = struct_children.first ? struct_children.first.location : Clang::C.get_range_end(Clang::C.get_cursor_extent(declaration_cursor.c))
+          following_comment_range = Clang::C.get_range(Clang::C.get_range_end(field_extent), (next_field_start.is_a?(Clang::SourceLocation) ? next_field_start.c : next_field_start))
           following_comment, following_comment_token = extract_comment(translation_unit, following_comment_range, false)
-          if following_comment_token && Clang::C.get_spelling_location_data(Clang::C.get_token_location(translation_unit.c, following_comment_token))[:line] == Clang::C.get_spelling_location_data(Clang::C.get_range_end(field_extent))[:line]
+          if following_comment_token && Clang::SourceLocation.from_c(translation_unit: translation_unit, c: Clang::C.get_token_location(translation_unit.c, following_comment_token)).line == Clang::SourceLocation.from_c(translation_unit: translation_unit, c: Clang::C.get_range_end(field_extent)).line
             field_comment = following_comment
             previous_field_end = Clang::C.get_range_end(Clang::C.get_token_extent(translation_unit.c, following_comment_token))
           else
