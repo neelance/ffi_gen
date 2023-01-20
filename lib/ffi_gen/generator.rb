@@ -137,10 +137,9 @@ module FFIGen
           value_cursor = enum_constant.children.first
           constant_value = if value_cursor
             parts = []
-            Clang::C.get_tokens(translation_unit.c, Clang::C.get_cursor_extent(value_cursor.c)).each do |token|
-              string_c = Clang::C.get_token_spelling(translation_unit.c, token)
-              spelling = Clang::String.from_c(string_c).to_s
-              case Clang::C.get_token_kind(token)
+            value_cursor.extent.tokens.each do |token|
+              spelling = token.spelling
+              case token.kind
               when :literal
                 parts << spelling
               when :punctuation
@@ -193,9 +192,9 @@ module FFIGen
           next_field_start = struct_children.first ? struct_children.first.location : declaration_cursor.extent.end
           following_comment_range = Clang::SourceRange.get(start: field_extent.end, end: next_field_start)
           following_comment, following_comment_token = extract_comment(translation_unit, following_comment_range, false)
-          if following_comment_token && Clang::SourceLocation.from_c(translation_unit: translation_unit, c: Clang::C.get_token_location(translation_unit.c, following_comment_token)).line == field_extent.end.line
+          if following_comment_token && following_comment_token.location.line == field_extent.end.line
             field_comment = following_comment
-            previous_field_end = SourceRange.from_c(translation_unit: translation_unit, c: Clang::C.get_token_extent(translation_unit.c, following_comment_token)).end
+            previous_field_end = following_comment_token.extent.end
           else
             previous_field_end = field_extent.end
           end
@@ -232,11 +231,8 @@ module FFIGen
       declaration_cursor.children.each do |function_child|
         next if function_child.kind != :parm_decl
         param_name = read_name(function_child)
-        tokens = Clang::C.get_tokens(translation_unit.c, Clang::C.get_cursor_extent(function_child.c))
-        is_array = tokens.any? do |t|
-          string_c = Clang::C.get_token_spelling(translation_unit.c, t)
-          Clang::String.from_c(string_c).to_s == "["
-        end
+        tokens = function_child.extent.tokens
+        is_array = tokens.any? { |t| t.spelling == "[" }
         param_type = resolve_type(Clang::C.get_cursor_type(function_child.c), is_array)
         param_name ||= param_type.name
         param_name ||= Name.new([])
@@ -291,8 +287,7 @@ module FFIGen
     end
 
     def read_macro_definition(declaration_cursor, name)
-      tokens = Clang::C.get_tokens(translation_unit.c, Clang::C.get_cursor_extent(declaration_cursor.c))
-        .map { |token| [Clang::C.get_token_kind(token), Clang::String.from_c(Clang::C.get_token_spelling(translation_unit.c, token)).to_s] }
+      tokens = declaration_cursor.extent.tokens
 
       return nil if tokens.count == 0 # skip empty macro
       return nil if tokens.count == 1
@@ -300,19 +295,19 @@ module FFIGen
       tokens.shift
       begin
         parameters = nil
-        if tokens.first[1] == "("
+        if tokens.first.spelling == "("
           tokens_backup = tokens.dup
           begin
             parameters = []
             tokens.shift
             loop do
-              kind, spelling = tokens.shift
-              case kind
+              token = tokens.shift
+              case token.kind
               when :identifier
-                parameters << spelling
+                parameters << token.spelling
               when :punctuation
-                break if spelling == ")"
-                raise(ArgumentError) unless spelling == ","
+                break if token.spelling == ")"
+                raise(ArgumentError) unless token.spelling == ","
               else
                 raise ArgumentError
               end
@@ -324,52 +319,52 @@ module FFIGen
         end
         value = []
         until tokens.empty?
-          kind, spelling = tokens.shift
-          case kind
+          token = tokens.shift
+          case token.kind
           when :literal
-            value << spelling
+            value << token.spelling
           when :punctuation
-            case spelling
+            case token.spelling
             when "+", "-", "<<", ">>", ")"
-              value << spelling
+              value << token.spelling
             when ","
               value << ", "
             when "("
-              if tokens[1][1] == ")"
+              if tokens[1].spelling == ")"
                 tokens.delete_at(1)
               else
-                value << spelling
+                value << token.spelling
               end
             else
               raise ArgumentError
             end
           when :identifier
             raise(ArgumentError) unless parameters
-            if parameters.include?(spelling)
-              value << spelling
-            elsif spelling == "NULL"
+            if parameters.include?(token.spelling)
+              value << token.spelling
+            elsif token.spelling == "NULL"
               value << "nil"
             else
-              if !tokens.empty? && tokens.first[1] == "("
+              if !tokens.empty? && tokens.first.spelling == "("
                 tokens.shift
-                if spelling == "strlen"
-                  argument_kind, argument_spelling = tokens.shift
-                  second_token_kind, second_token_spelling = tokens.shift
-                  raise(ArgumentError) unless argument_kind == :identifier && second_token_spelling == ")"
-                  value << "#{argument_spelling}.length"
+                if token.spelling == "strlen"
+                  argument_token = tokens.shift
+                  second_token = tokens.shift
+                  raise(ArgumentError) unless argument_token.kind == :identifier && second_token.spelling == ")"
+                  value << "#{argument_token.spelling}.length"
                 else
-                  value << [:method, read_name(spelling)]
+                  value << [:method, read_name(token.spelling)]
                   value << "("
                 end
               else
-                value << [:constant, read_name(spelling)]
+                value << [:constant, read_name(token.spelling)]
               end
             end
           when :keyword
-            raise(ArgumentError) unless spelling == "sizeof" && tokens[0][1] == "(" && tokens[1][0] == :literal && tokens[2][1] == ")"
+            raise(ArgumentError) unless token.spelling == "sizeof" && tokens[0].spelling == "(" && tokens[1].kind == :literal && tokens[2].spelling == ")"
             tokens.shift
-            argument_kind, argument_spelling = tokens.shift
-            value << "#{argument_spelling}.length"
+            argument_token = tokens.shift
+            value << "#{argument_token.spelling}.length"
             tokens.shift
           else
             raise ArgumentError
@@ -463,15 +458,15 @@ module FFIGen
     end
 
     def extract_comment(translation_unit, range, search_backwards = true)
-      tokens = Clang::C.get_tokens(translation_unit.c, range.c)
+      tokens = range.tokens
 
       iterator = search_backwards ? tokens.reverse_each : tokens.each
       comment_lines = []
       comment_token = nil
       comment_block = false
       iterator.each do |token|
-        next if Clang::C.get_token_kind(token) != :comment
-        comment = Clang::String.from_c(Clang::C.get_token_spelling(translation_unit.c, token)).to_s
+        next if token.kind != :comment
+        comment = token.spelling
         lines = comment.split("\n").map do |line|
           line.sub!(/\ ?\*+\/\s*$/, '')
           line.sub!(/^\s*\/?[*\/]+ ?/, '')

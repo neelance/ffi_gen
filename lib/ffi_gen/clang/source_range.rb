@@ -36,6 +36,21 @@ module FFIGen
         SourceLocation.from_c(translation_unit: @translation_unit, c: C.get_range_end(@c))
       end
 
+      # Tokenize the source code described by the given range into raw lexical tokens.
+      #
+      # All of the tokens produced by tokenization will fall within this source range,
+      # TODO: The returned pointer must be freed with clang_disposeTokens() before the translation unit is destroyed.
+      def tokens
+        tokens_ptr_ptr = FFI::MemoryPointer.new(:pointer)
+        num_tokens_ptr = FFI::MemoryPointer.new(:uint)
+        C.tokenize(@translation_unit.c, @c, tokens_ptr_ptr, num_tokens_ptr)
+        num_tokens = num_tokens_ptr.read_uint
+        tokens_ptr = FFI::Pointer.new(C::Token, tokens_ptr_ptr.read_pointer)
+        num_tokens.times
+          .map { |i| C::Token.new(tokens_ptr[i]) }
+          .map { |c| Token.from_c(translation_unit: @translation_unit, c: c) }
+      end
+
       def ==(other)
         other.is_a?(self.class) && C.equal_ranges(@c, other.c) != 0
       end
