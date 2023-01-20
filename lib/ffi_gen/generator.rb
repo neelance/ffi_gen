@@ -69,9 +69,9 @@ module FFIGen
       declaration_cursors.each_with_index do |declaration_cursor, index|
         comment = []
         unless is_nested_declaration[index]
-          comment_range = Clang::C.get_range((previous_declaration_end.is_a?(Clang::SourceLocation) ? previous_declaration_end.c : previous_declaration_end), declaration_cursor.location.c)
+          comment_range = Clang::SourceRange.get(start: previous_declaration_end, end: declaration_cursor.location)
           comment, _ = extract_comment(translation_unit, comment_range)
-          previous_declaration_end = Clang::C.get_range_end(Clang::C.get_cursor_extent(declaration_cursor.c))
+          previous_declaration_end = declaration_cursor.extent.end
         end
 
         read_declaration(declaration_cursor, comment)
@@ -128,7 +128,7 @@ module FFIGen
         constant_name = read_name(enum_constant)
 
         constant_location = enum_constant.location
-        constant_comment_range = Clang::C.get_range(previous_constant_location.c, constant_location.c)
+        constant_comment_range = Clang::SourceRange.get(start: previous_constant_location, end: constant_location)
         constant_description, _ = extract_comment(translation_unit, constant_comment_range)
         constant_description.concat(constant_descriptions[constant_name.raw] || [])
         previous_constant_location = constant_location
@@ -184,20 +184,20 @@ module FFIGen
           last_nested_declaration = read_declaration(child, [])
         when :field_decl
           field_name = read_name(child)
-          field_extent = Clang::C.get_cursor_extent(child.c)
+          field_extent = child.extent
 
-          field_comment_range = Clang::C.get_range((previous_field_end.is_a?(Clang::SourceLocation) ? previous_field_end.c : previous_field_end), Clang::C.get_range_start(field_extent))
+          field_comment_range = Clang::SourceRange.get(start: previous_field_end, end: field_extent.start)
           field_comment, _ = extract_comment(translation_unit, field_comment_range)
 
           # check for comment starting on same line
-          next_field_start = struct_children.first ? struct_children.first.location : Clang::C.get_range_end(Clang::C.get_cursor_extent(declaration_cursor.c))
-          following_comment_range = Clang::C.get_range(Clang::C.get_range_end(field_extent), (next_field_start.is_a?(Clang::SourceLocation) ? next_field_start.c : next_field_start))
+          next_field_start = struct_children.first ? struct_children.first.location : declaration_cursor.extent.end
+          following_comment_range = Clang::SourceRange.get(start: field_extent.end, end: next_field_start)
           following_comment, following_comment_token = extract_comment(translation_unit, following_comment_range, false)
-          if following_comment_token && Clang::SourceLocation.from_c(translation_unit: translation_unit, c: Clang::C.get_token_location(translation_unit.c, following_comment_token)).line == Clang::SourceLocation.from_c(translation_unit: translation_unit, c: Clang::C.get_range_end(field_extent)).line
+          if following_comment_token && Clang::SourceLocation.from_c(translation_unit: translation_unit, c: Clang::C.get_token_location(translation_unit.c, following_comment_token)).line == field_extent.end.line
             field_comment = following_comment
-            previous_field_end = Clang::C.get_range_end(Clang::C.get_token_extent(translation_unit.c, following_comment_token))
+            previous_field_end = SourceRange.from_c(translation_unit: translation_unit, c: Clang::C.get_token_extent(translation_unit.c, following_comment_token)).end
           else
-            previous_field_end = Clang::C.get_range_end(field_extent)
+            previous_field_end = field_extent.end
           end
 
           field_type = resolve_type(Clang::C.get_cursor_type(child.c))
@@ -463,7 +463,7 @@ module FFIGen
     end
 
     def extract_comment(translation_unit, range, search_backwards = true)
-      tokens = Clang::C.get_tokens(translation_unit.c, range)
+      tokens = Clang::C.get_tokens(translation_unit.c, range.c)
 
       iterator = search_backwards ? tokens.reverse_each : tokens.each
       comment_lines = []
