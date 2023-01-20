@@ -71,6 +71,18 @@ module FFIGen
         @c[:kind]
       end
 
+      # Retrieve the type of a CXCursor (if any).
+      def type
+        Type.from_c(translation_unit: @translation_unit, c: C.get_cursor_type(@c))
+      end
+
+      # Retrieve the return type associated with a given cursor.
+      #
+      # This only returns a valid type if the cursor refers to a function or method.
+      def result_type
+        Type.from_c(translation_unit: @translation_unit, c: C.get_cursor_result_type(@c))
+      end
+
       def spelling
         String.from_c(C.get_cursor_spelling(@c)).to_s
       end

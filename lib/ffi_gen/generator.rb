@@ -102,8 +102,8 @@ module FFIGen
       @declarations.delete(declaration)
       @declarations << declaration
       @declarations_by_name[name] = name.raw unless name.nil?
-      type = Clang::C.get_cursor_type(declaration_cursor.c)
-      @declarations_by_type[type] = declaration unless type.nil?
+      type = declaration_cursor.type
+      @declarations_by_type[type] = declaration unless type == nil
 
       declaration
     end
@@ -169,7 +169,7 @@ module FFIGen
     end
 
     def read_struct_or_union_declaration(declaration_cursor, comment, name)
-      struct = @declarations_by_type[Clang::C.get_cursor_type(declaration_cursor.c)] || StructOrUnion.new(self, name, (declaration_cursor.kind == :union_decl))
+      struct = @declarations_by_type[declaration_cursor.type] || StructOrUnion.new(self, name, (declaration_cursor.kind == :union_decl))
       raise if !struct.fields.empty?
       struct.description.concat(comment)
 
@@ -199,7 +199,7 @@ module FFIGen
             previous_field_end = field_extent.end
           end
 
-          field_type = resolve_type(Clang::C.get_cursor_type(child.c))
+          field_type = resolve_type(child.type)
           last_nested_declaration.name ||= Name.new(name.parts + field_name.parts) if last_nested_declaration
           last_nested_declaration = nil
           struct.fields << { name: field_name, type: field_type, comment: field_comment }
@@ -225,7 +225,7 @@ module FFIGen
         current_description << line
       end
 
-      return_type = resolve_type(Clang::C.get_cursor_result_type(declaration_cursor.c))
+      return_type = resolve_type(declaration_cursor.result_type)
       parameters = []
       first_parameter_type = nil
       declaration_cursor.children.each do |function_child|
@@ -233,10 +233,10 @@ module FFIGen
         param_name = read_name(function_child)
         tokens = function_child.extent.tokens
         is_array = tokens.any? { |t| t.spelling == "[" }
-        param_type = resolve_type(Clang::C.get_cursor_type(function_child.c), is_array)
+        param_type = resolve_type(function_child.type, is_array)
         param_name ||= param_type.name
         param_name ||= Name.new([])
-        first_parameter_type ||= Clang::C.get_cursor_type(function_child.c)
+        first_parameter_type ||= function_child.type
         parameters << { name: param_name, type: param_type }
       end
 
@@ -268,15 +268,15 @@ module FFIGen
     def read_typedef_declaration(declaration_cursor, comment, name)
       typedef_children = declaration_cursor.children
       if typedef_children.count == 1
-        child_declaration = @declarations_by_type[Clang::C.get_cursor_type(typedef_children.first.c)]
+        child_declaration = @declarations_by_type[typedef_children.first.type]
         child_declaration.name = name if child_declaration && child_declaration.name.nil?
         return nil
       elsif typedef_children.count > 1
-        return_type = resolve_type(Clang::C.get_cursor_type(typedef_children.first.c))
+        return_type = resolve_type(typedef_children.first.type)
         parameters = []
         typedef_children.each do |param_decl|
           param_name = read_name(param_decl)
-          param_type = resolve_type(Clang::C.get_cursor_type(param_decl.c))
+          param_type = resolve_type(param_decl.type)
           param_name ||= param_type.name
           parameters << { name:param_name, type: param_type, description: [] }
         end
@@ -378,20 +378,20 @@ module FFIGen
     end
 
     def resolve_type(full_type, is_array = false)
-      canonical_type = Clang::C.get_canonical_type(full_type)
-      data_array = case canonical_type[:kind]
+      canonical_type = full_type.canonical
+      data_array = case canonical_type.kind
       when :void, :bool, :u_char, :u_short, :u_int, :u_long, :u_long_long, :char_s, :s_char, :short, :int, :long, :long_long, :float, :double
-        PrimitiveType.new(canonical_type[:kind])
+        PrimitiveType.new(canonical_type.kind)
       when :pointer
         if is_array
-          ArrayType.new(resolve_type(Clang::C.get_pointee_type(canonical_type)), nil)
+          ArrayType.new(resolve_type(canonical_type.pointee), nil)
         else
-          pointee_type = Clang::C.get_pointee_type(canonical_type)
-          type = case pointee_type[:kind]
+          pointee_type = canonical_type.pointee
+          type = case pointee_type.kind
           when :char_s
             StringType.new
           when :record
-            @declarations_by_type[Clang::C.get_cursor_type(Clang::Cursor.from_c(translation_unit: translation_unit, c: Clang::C.get_type_declaration(pointee_type)).c)]
+            @declarations_by_type[pointee_type.declaration.type]
           when :function_proto
             @declarations_by_type[full_type]
           else
@@ -403,18 +403,18 @@ module FFIGen
             pointee_name = ""
             current_type = full_type
             loop do
-              declaration_cursor = Clang::Cursor.from_c(translation_unit: translation_unit, c: Clang::C.get_type_declaration(current_type))
+              declaration_cursor = current_type.declaration
               pointee_name = read_name(declaration_cursor)
               break if pointee_name
 
-              case current_type[:kind]
+              case current_type.kind
               when :pointer
                 pointer_depth += 1
-                current_type = Clang::C.get_pointee_type(current_type)
+                current_type = current_type.pointee
               when :unexposed
                 break
               else
-                pointee_name = Name.new(Clang::String.from_c(Clang::C.get_type_kind_spelling(current_type[:kind])).to_s.split("_"))
+                pointee_name = Name.new(current_type.kind_spelling.split("_"))
                 break
               end
             end
@@ -430,13 +430,13 @@ module FFIGen
       when :enum
         @declarations_by_type[canonical_type] || UnknownType.new # TODO
       when :constant_array
-        ArrayType.new(resolve_type(Clang::C.get_array_element_type(canonical_type)), Clang::C.get_array_size(canonical_type))
+        ArrayType.new(resolve_type(canonical_type.array_element), canonical_type.array_size)
       when :unexposed, :function_proto
         UnknownType.new
       when :incomplete_array
-        PointerType.new(resolve_type(Clang::C.get_array_element_type(canonical_type)).name, 1)
+        PointerType.new(resolve_type(canonical_type.array_element).name, 1)
       else
-        raise NotImplementedError, "No translation for values of type #{canonical_type[:kind]}"
+        raise NotImplementedError, "No translation for values of type #{canonical_type.kind}"
       end
     end
 
@@ -450,11 +450,11 @@ module FFIGen
     end
 
     def get_pointee_declaration(type)
-      canonical_type = Clang::C.get_canonical_type(type)
-      return nil if canonical_type[:kind] != :pointer
-      pointee_type = Clang::C.get_pointee_type(canonical_type)
-      return nil if pointee_type[:kind] != :record
-      @declarations_by_type[Clang::C.get_cursor_type(Clang::C.get_type_declaration(pointee_type))]
+      canonical_type = type.canonical
+      return nil if canonical_type.kind != :pointer
+      pointee_type = canonical_type.pointee
+      return nil if pointee_type.kind != :record
+      @declarations_by_type[pointee_type.declaration.type]
     end
 
     def extract_comment(translation_unit, range, search_backwards = true)
