@@ -2,7 +2,6 @@ require 'ffi'
 
 require 'ffi_gen/clang'
 require 'ffi_gen/clang/c'
-require 'ffi_gen/clang/c_ffi'
 require 'ffi_gen/clang/c/type'
 require 'ffi_gen/clang/cursor'
 require 'ffi_gen/clang/index'
@@ -46,6 +45,6 @@ if __FILE__ == $0
     headers:     ["clang-c/CXErrorCode.h", "clang-c/CXString.h", "clang-c/Index.h"],
     cflags:      `llvm-config --cflags`.split(" "),
     prefixes:    ["clang_", "CX"],
-    output:      File.join(File.dirname(__FILE__), "ffi_gen/clang/c_ffi.rb")
+    output:      File.join(File.dirname(__FILE__), "ffi_gen/clang/c.rb")
   )
 end
