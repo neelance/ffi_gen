@@ -26,6 +26,8 @@
 
 *These requirements are only for running the generator. The generated files are Ruby 1.8 compatible and do not need Clang.*
 
+You can follow the [quickstart](quickstart.md) guide to install everything in a docker container and try out this gem.
+
 
 ## Example
 
