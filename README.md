@@ -22,10 +22,11 @@
 ## Requirements
 
 * Ruby 1.9
-* Clang 3.5 or later ([Download](http://llvm.org/releases/download.html#3.5) the binaries or
-  build from source configured with ``--enable-shared``)
+* Clang 15 (download the binaries [here](http://llvm.org/releases/download.html) or use the install script [here](https://apt.llvm.org) or build from source configured with ``--enable-shared``)
 
 *These requirements are only for running the generator. The generated files are Ruby 1.8 compatible and do not need Clang.*
+
+You can follow the [quickstart](quickstart.md) guide to install everything in a docker container and try out this gem.
 
 
 ## Example
